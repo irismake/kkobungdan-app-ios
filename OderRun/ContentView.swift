@@ -8,14 +8,12 @@
 import SwiftUI
 
 struct ContentView: View {
+  private let loginViewModel = LoginViewModel(
+    loginUseCase: LoginUseCase(authRepository: AuthRepositoryImpl())
+  )
+
   var body: some View {
-    VStack {
-      Image(systemName: "globe")
-        .imageScale(.large)
-        .foregroundStyle(.tint)
-      Text("Hello, world!")
-    }
-    .padding()
+    LoginView(viewModel: loginViewModel)
   }
 }
 
