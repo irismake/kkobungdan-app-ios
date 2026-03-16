@@ -20,18 +20,17 @@ struct LoginView: View {
         .ignoresSafeArea()
 
       VStack(spacing: 0) {
-        Spacer()
-          .frame(height: 120) // 상단 여백 (상태바 + 디자인 상단 공간)
+        Gap.v(150)
 
         brandSection
 
-        Spacer()
+        Gap.v(72)
 
         socialButtonsSection
-          .padding(.bottom, 12)
 
+        Spacer()
         bottomTermsSection
-          .padding(.bottom, 24)
+          .padding(.bottom, 23)
       }
       .frame(maxWidth: .infinity, maxHeight: .infinity)
       .padding(.horizontal, 24)
@@ -45,19 +44,15 @@ struct LoginView: View {
           .fill(Color(UIColor.gray600)) // #7D889E
           .frame(width: 96, height: 96)
 
-        Image(systemName: "figure.run")
-          .font(.system(size: 40, weight: .bold))
-          .foregroundStyle(Color.white)
+        // TODO: 브랜드 로고 추가
       }
 
       VStack(spacing: 8) {
         Text("브랜드명")
-          .font(.system(size: 30, weight: .bold))
-          .foregroundStyle(Color(UIColor.gray950)) // #0F141D
+          .odrStyle(.headline2(weight: .bold, color: Color(UIColor.gray950)))
 
         Text("내용")
-          .font(.system(size: 16))
-          .foregroundStyle(Color(UIColor.gray700)) // #5B6579
+          .odrStyle(.body1(color: Color(UIColor.gray700)))
       }
     }
     .frame(width: 120, height: 176)
@@ -70,13 +65,12 @@ struct LoginView: View {
         // TODO: 카카오 로그인 액션
       } label: {
         HStack(spacing: 6) {
-          Image(systemName: "message.fill")
-            .font(.system(size: 18))
-            .foregroundStyle(Color.black)
+          Image("icon_kakao")
+            .resizable()
+            .frame(width: 24, height: 24)
 
           Text("카카오로 시작하기")
-            .font(.system(size: 16, weight: .medium))
-            .foregroundStyle(Color.black)
+            .odrStyle(.body1(weight: .medium, color: .black))
         }
         .frame(maxWidth: .infinity)
         .frame(height: 56)
@@ -89,13 +83,12 @@ struct LoginView: View {
         // TODO: 애플 로그인 액션
       } label: {
         HStack(spacing: 6) {
-          Image(systemName: "applelogo")
-            .font(.system(size: 18))
-            .foregroundStyle(Color.white)
+          Image("icon_apple")
+            .resizable()
+            .frame(width: 24, height: 24)
 
           Text("Apple로 시작하기")
-            .font(.system(size: 16, weight: .medium))
-            .foregroundStyle(Color.white)
+            .odrStyle(.body1(weight: .medium, color: .white))
         }
         .frame(maxWidth: .infinity)
         .frame(height: 56)
@@ -110,19 +103,21 @@ struct LoginView: View {
     VStack(spacing: 0) {
       HStack(spacing: 2) {
         Text("로그인하면 오더런의")
+          .odrStyle(.caption1(color: Color(UIColor.gray600)))
         Text("이용약관")
+          .odrStyle(.caption1(color: Color(UIColor.gray600)))
           .underline()
         Text("및")
+          .odrStyle(.caption1(color: Color(UIColor.gray600)))
       }
-
       HStack(spacing: 2) {
         Text("개인정보처리방침")
+          .odrStyle(.caption1(color: Color(UIColor.gray600)))
           .underline()
         Text("에 동의하게 됩니다")
+          .odrStyle(.caption1(color: Color(UIColor.gray600)))
       }
     }
-    .font(.system(size: 12))
-    .foregroundStyle(Color(UIColor.gray600)) // #6A7282
     .multilineTextAlignment(.center)
     .frame(maxWidth: .infinity)
   }

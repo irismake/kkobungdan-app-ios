@@ -20,9 +20,8 @@ struct ProposalRequestView: View {
         .ignoresSafeArea()
 
       VStack(spacing: 0) {
-        Spacer()
-          .frame(height: 120) // 상단 여백 (상태바 + 디자인 상단 공간)
-
+        Gap.v(120) // 상단 여백 (상태바 + 디자인 상단 공간)
+        
         brandSection
 
         Spacer()
@@ -41,12 +40,10 @@ struct ProposalRequestView: View {
   private var brandSection: some View {
     VStack(alignment: .leading, spacing: 8) {
       Text("대신 웨이팅 요청하기")
-        .font(.system(size: 24, weight: .bold))
-        .foregroundStyle(Color(UIColor.gray950))
+        .odrStyle(.title1(weight: .bold, color: Color.gray950))
 
       Text("어디에서, 어떤 웨이팅을 맡길지와 보상을 적어주세요.")
-        .font(.system(size: 14))
-        .foregroundStyle(Color(UIColor.gray700))
+        .odrStyle(.body3(color: Color.gray700))
     }
   }
 
@@ -73,13 +70,12 @@ struct ProposalRequestView: View {
 
       VStack(alignment: .leading, spacing: 8) {
         Text("내용")
-          .font(.system(size: 14, weight: .medium))
-          .foregroundStyle(Color(UIColor.gray900))
+          .odrStyle(.body3(weight: .medium, color: Color.gray900))
 
         TextEditor(text: $viewModel.content)
           .frame(minHeight: 120)
           .padding(10)
-          .background(Color(UIColor.gray100))
+          .background(Color.gray100)
           .clipShape(RoundedRectangle(cornerRadius: 12))
       }
     }
@@ -93,15 +89,14 @@ struct ProposalRequestView: View {
   ) -> some View {
     VStack(alignment: .leading, spacing: 8) {
       Text(title)
-        .font(.system(size: 14, weight: .medium))
-        .foregroundStyle(Color(UIColor.gray900))
+        .odrStyle(.body3(weight: .medium, color: Color.gray900))
 
       TextField(placeholder, text: text)
-        .font(.system(size: 15))
+        .odrTextFieldStyle(.body2(color: Color.gray950))
         .keyboardType(keyboard)
         .padding(.horizontal, 12)
         .frame(height: 48)
-        .background(Color(UIColor.gray100))
+        .background(Color.gray100)
         .clipShape(RoundedRectangle(cornerRadius: 12))
     }
   }
@@ -118,14 +113,14 @@ struct ProposalRequestView: View {
             .tint(.white)
         } else {
           Text("요청 올리기")
-            .font(.system(size: 16, weight: .medium))
+            .odrStyle(.body1(weight: .medium))
         }
       }
       .frame(maxWidth: .infinity)
       .frame(height: 52)
     }
     .buttonStyle(.borderedProminent)
-    .tint(Color(UIColor.indigo600))
+    .tint(.indigo600)
     .disabled(viewModel.isLoading)
     .padding(.top, 8)
   }
