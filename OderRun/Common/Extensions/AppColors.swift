@@ -1,3 +1,4 @@
+import SwiftUI
 import UIKit
 
 extension UIColor {
@@ -53,6 +54,10 @@ extension UIColor {
   static let amber900 = UIColor(red: 0.573, green: 0.251, blue: 0.055, alpha: 1)
   static let amber950 = UIColor(red: 0.471, green: 0.208, blue: 0.059, alpha: 1)
 
+  // MARK: - Brand
+
+  static let kakaoBrand = UIColor(red: 0.996, green: 0.898, blue: 0.0, alpha: 1) // #FEE500
+
   // MARK: - Emerald
 
   static let emerald100 = UIColor(red: 0.925, green: 0.992, blue: 0.961, alpha: 1)
@@ -78,4 +83,82 @@ extension UIColor {
   static let blue800 = UIColor(red: 0.114, green: 0.306, blue: 0.847, alpha: 1)
   static let blue900 = UIColor(red: 0.118, green: 0.251, blue: 0.686, alpha: 1)
   static let blue950 = UIColor(red: 0.118, green: 0.227, blue: 0.541, alpha: 1)
+}
+
+extension Color {
+  // Indigo
+  static let indigo100 = Color(UIColor.indigo100)
+  static let indigo200 = Color(UIColor.indigo200)
+  static let indigo300 = Color(UIColor.indigo300)
+  static let indigo400 = Color(UIColor.indigo400)
+  static let indigo500 = Color(UIColor.indigo500)
+  static let indigo600 = Color(UIColor.indigo600)
+  static let indigo700 = Color(UIColor.indigo700)
+  static let indigo800 = Color(UIColor.indigo800)
+  static let indigo900 = Color(UIColor.indigo900)
+  static let indigo950 = Color(UIColor.indigo950)
+
+  // Gray
+  static let gray100 = Color(UIColor.gray100)
+  static let gray200 = Color(UIColor.gray200)
+  static let gray300 = Color(UIColor.gray300)
+  static let gray400 = Color(UIColor.gray400)
+  static let gray500 = Color(UIColor.gray500)
+  static let gray600 = Color(UIColor.gray600)
+  static let gray700 = Color(UIColor.gray700)
+  static let gray800 = Color(UIColor.gray800)
+  static let gray900 = Color(UIColor.gray900)
+  static let gray950 = Color(UIColor.gray950)
+
+  // Rose
+  static let rose100 = Color(UIColor.rose100)
+  static let rose200 = Color(UIColor.rose200)
+  static let rose300 = Color(UIColor.rose300)
+  static let rose400 = Color(UIColor.rose400)
+  static let rose500 = Color(UIColor.rose500)
+  static let rose600 = Color(UIColor.rose600)
+  static let rose700 = Color(UIColor.rose700)
+  static let rose800 = Color(UIColor.rose800)
+  static let rose900 = Color(UIColor.rose900)
+  static let rose950 = Color(UIColor.rose950)
+
+  // Amber
+  static let amber100 = Color(UIColor.amber100)
+  static let amber200 = Color(UIColor.amber200)
+  static let amber300 = Color(UIColor.amber300)
+  static let amber400 = Color(UIColor.amber400)
+  static let amber500 = Color(UIColor.amber500)
+  static let amber600 = Color(UIColor.amber600)
+  static let amber700 = Color(UIColor.amber700)
+  static let amber800 = Color(UIColor.amber800)
+  static let amber900 = Color(UIColor.amber900)
+  static let amber950 = Color(UIColor.amber950)
+
+  // Brand
+
+  static let kakaoBrand = Color(UIColor.kakaoBrand)
+
+  // Emerald
+  static let emerald100 = Color(UIColor.emerald100)
+  static let emerald200 = Color(UIColor.emerald200)
+  static let emerald300 = Color(UIColor.emerald300)
+  static let emerald400 = Color(UIColor.emerald400)
+  static let emerald500 = Color(UIColor.emerald500)
+  static let emerald600 = Color(UIColor.emerald600)
+  static let emerald700 = Color(UIColor.emerald700)
+  static let emerald800 = Color(UIColor.emerald800)
+  static let emerald900 = Color(UIColor.emerald900)
+  static let emerald950 = Color(UIColor.emerald950)
+
+  // Blue
+  static let blue100 = Color(UIColor.blue100)
+  static let blue200 = Color(UIColor.blue200)
+  static let blue300 = Color(UIColor.blue300)
+  static let blue400 = Color(UIColor.blue400)
+  static let blue500 = Color(UIColor.blue500)
+  static let blue600 = Color(UIColor.blue600)
+  static let blue700 = Color(UIColor.blue700)
+  static let blue800 = Color(UIColor.blue800)
+  static let blue900 = Color(UIColor.blue900)
+  static let blue950 = Color(UIColor.blue950)
 }

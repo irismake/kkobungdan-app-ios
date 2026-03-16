@@ -41,7 +41,7 @@ struct LoginView: View {
     VStack(spacing: 12) {
       ZStack {
         RoundedRectangle(cornerRadius: 24)
-          .fill(Color(UIColor.gray600)) // #7D889E
+          .fill(Color.gray600) // #7D889E
           .frame(width: 96, height: 96)
 
         // TODO: 브랜드 로고 추가
@@ -49,10 +49,10 @@ struct LoginView: View {
 
       VStack(spacing: 8) {
         Text("브랜드명")
-          .odrStyle(.headline2(weight: .bold, color: Color(UIColor.gray950)))
+          .odrStyle(.headline2(weight: .bold, color: Color.gray950))
 
         Text("내용")
-          .odrStyle(.body1(color: Color(UIColor.gray700)))
+          .odrStyle(.body1(color: Color.gray700))
       }
     }
     .frame(width: 120, height: 176)
@@ -74,7 +74,7 @@ struct LoginView: View {
         }
         .frame(maxWidth: .infinity)
         .frame(height: 56)
-        .background(Color(red: 0.996, green: 0.898, blue: 0.0)) // #FEE500
+        .background(Color.kakaoBrand)
         .clipShape(RoundedRectangle(cornerRadius: 12))
       }
 
@@ -103,19 +103,19 @@ struct LoginView: View {
     VStack(spacing: 0) {
       HStack(spacing: 2) {
         Text("로그인하면 오더런의")
-          .odrStyle(.caption1(color: Color(UIColor.gray600)))
+          .odrStyle(.caption1(color: Color.gray600))
         Text("이용약관")
-          .odrStyle(.caption1(color: Color(UIColor.gray600)))
+          .odrStyle(.caption1(color: Color.gray600))
           .underline()
         Text("및")
-          .odrStyle(.caption1(color: Color(UIColor.gray600)))
+          .odrStyle(.caption1(color: Color.gray600))
       }
       HStack(spacing: 2) {
         Text("개인정보처리방침")
-          .odrStyle(.caption1(color: Color(UIColor.gray600)))
+          .odrStyle(.caption1(color: Color.gray600))
           .underline()
         Text("에 동의하게 됩니다")
-          .odrStyle(.caption1(color: Color(UIColor.gray600)))
+          .odrStyle(.caption1(color: Color.gray600))
       }
     }
     .multilineTextAlignment(.center)
