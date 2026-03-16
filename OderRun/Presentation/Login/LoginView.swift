@@ -41,7 +41,7 @@ struct LoginView: View {
     VStack(spacing: 12) {
       ZStack {
         RoundedRectangle(cornerRadius: 24)
-          .fill(Color.gray600) // #7D889E
+          .fill(Color.gray600)
           .frame(width: 96, height: 96)
 
         // TODO: 브랜드 로고 추가
@@ -49,10 +49,10 @@ struct LoginView: View {
 
       VStack(spacing: 8) {
         Text("브랜드명")
-          .odrStyle(.headline2(weight: .bold, color: Color.gray950))
+          .odrStyle(.headline2(weight: .bold, color: Color.gray900))
 
         Text("내용")
-          .odrStyle(.body1(color: Color.gray700))
+          .odrStyle(.body1(color: Color.gray600))
       }
     }
     .frame(width: 120, height: 176)

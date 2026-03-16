@@ -23,7 +23,7 @@ enum OdrLineHeight {
 
 enum OdrFontSize {
   static let headline1: CGFloat = 36
-  static let headline2: CGFloat = 28
+  static let headline2: CGFloat = 30
   static let title1: CGFloat = 24
   static let title2: CGFloat = 22
   static let title3: CGFloat = 20
@@ -42,13 +42,13 @@ enum OdrFontSize {
 
 enum OdrLetterSpacing {
   static let headline1: CGFloat = -0.25
-  static let headline2: CGFloat = -0.2
+  static let headline2: CGFloat = 0.4
   static let title1: CGFloat = -0.2
   static let title2: CGFloat = -0.44
   static let title3: CGFloat = -0.2
   static let title4: CGFloat = -0.2
   static let title5: CGFloat = -0.2
-  static let body1: CGFloat = -0.31
+  static let body1: CGFloat = -0.3
   static let body2: CGFloat = -0.15
   static let body3: CGFloat = -0.14
   static let body4: CGFloat = -0.05
@@ -70,7 +70,30 @@ struct OdrTextStyle {
 
 extension Font {
   static func pretendard(_ weight: Font.Weight, size: CGFloat) -> Font {
-    Font.custom("Pretendard", size: size).weight(weight)
+    let name: String
+    
+    switch weight {
+    case .black:
+      name = "Pretendard-Black"
+    case .heavy:
+      name = "Pretendard-ExtraBold"
+    case .bold:
+      name = "Pretendard-Bold"
+    case .semibold:
+      name = "Pretendard-SemiBold"
+    case .medium:
+      name = "Pretendard-Medium"
+    case .light:
+      name = "Pretendard-Light"
+    case .thin:
+      name = "Pretendard-Thin"
+    case .ultraLight:
+      name = "Pretendard-ExtraLight"
+    default:
+      name = "Pretendard-Regular"
+    }
+
+    return .custom(name, size: size)
   }
 }
 
