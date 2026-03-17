@@ -25,7 +25,7 @@ struct LoginView: View {
       socialButtonsSection
 
       Spacer()
-      
+
       bottomTermsSection
         .padding(.bottom, 23)
     }
@@ -35,7 +35,7 @@ struct LoginView: View {
     VStack(spacing: 12) {
       ZStack {
         RoundedRectangle(cornerRadius: 24)
-          .fill(Color.gray600)
+          .fill(Color.gray500)
           .frame(width: 96, height: 96)
 
         // TODO: 브랜드 로고 추가
@@ -98,19 +98,19 @@ struct LoginView: View {
     VStack(spacing: 0) {
       HStack(spacing: 2) {
         Text("로그인하면 오더런의")
-          .odrStyle(.caption1(color: Color.gray600))
+          .odrStyle(.caption1(color: Color.gray500))
         Text("이용약관")
-          .odrStyle(.caption1(color: Color.gray600))
+          .odrStyle(.caption1(color: Color.gray500))
           .underline()
         Text("및")
-          .odrStyle(.caption1(color: Color.gray600))
+          .odrStyle(.caption1(color: Color.gray500))
       }
       HStack(spacing: 2) {
         Text("개인정보처리방침")
-          .odrStyle(.caption1(color: Color.gray600))
+          .odrStyle(.caption1(color: Color.gray500))
           .underline()
         Text("에 동의하게 됩니다")
-          .odrStyle(.caption1(color: Color.gray600))
+          .odrStyle(.caption1(color: Color.gray500))
       }
     }
     .multilineTextAlignment(.center)

@@ -33,10 +33,10 @@ struct ProposalRequestView: View {
   private var brandSection: some View {
     VStack(alignment: .leading, spacing: 8) {
       Text("대신 웨이팅 요청하기")
-        .odrStyle(.title1(weight: .bold, color: Color.gray950))
+        .odrStyle(.title1(weight: .bold, color: Color.gray800))
 
       Text("어디에서, 어떤 웨이팅을 맡길지와 보상을 적어주세요.")
-        .odrStyle(.body3(color: Color.gray700))
+        .odrStyle(.body3(color: Color.gray600))
     }
   }
 
@@ -63,12 +63,12 @@ struct ProposalRequestView: View {
 
       VStack(alignment: .leading, spacing: 8) {
         Text("내용")
-          .odrStyle(.body3(weight: .medium, color: Color.gray900))
+          .odrStyle(.body3(weight: .medium, color: Color.gray800))
 
         TextEditor(text: $viewModel.content)
           .frame(minHeight: 120)
           .padding(10)
-          .background(Color.gray100)
+          .background(Color.gray000)
           .clipShape(RoundedRectangle(cornerRadius: 12))
       }
     }
@@ -82,14 +82,14 @@ struct ProposalRequestView: View {
   ) -> some View {
     VStack(alignment: .leading, spacing: 8) {
       Text(title)
-        .odrStyle(.body3(weight: .medium, color: Color.gray900))
+        .odrStyle(.body3(weight: .medium, color: Color.gray800))
 
       TextField(placeholder, text: text)
-        .odrTextFieldStyle(.body2(color: Color.gray950))
+        .odrTextFieldStyle(.body2(color: Color.gray800))
         .keyboardType(keyboard)
         .padding(.horizontal, 12)
         .frame(height: 48)
-        .background(Color.gray100)
+        .background(Color.gray000)
         .clipShape(RoundedRectangle(cornerRadius: 12))
     }
   }
@@ -113,7 +113,7 @@ struct ProposalRequestView: View {
       .frame(height: 52)
     }
     .buttonStyle(.borderedProminent)
-    .tint(.indigo600)
+    .tint(.indigo500)
     .disabled(viewModel.isLoading)
     .padding(.top, 8)
   }
