@@ -15,25 +15,19 @@ struct LoginView: View {
   }
 
   var body: some View {
-    ZStack {
-      Color.white
-        .ignoresSafeArea()
+    VStack(spacing: 0) {
+      Gap.v(150)
 
-      VStack(spacing: 0) {
-        Gap.v(150)
+      brandSection
 
-        brandSection
+      Gap.v(72)
 
-        Gap.v(72)
+      socialButtonsSection
 
-        socialButtonsSection
-
-        Spacer()
-        bottomTermsSection
-          .padding(.bottom, 23)
-      }
-      .frame(maxWidth: .infinity, maxHeight: .infinity)
-      .padding(.horizontal, 24)
+      Spacer()
+      
+      bottomTermsSection
+        .padding(.bottom, 23)
     }
   }
 
@@ -96,6 +90,7 @@ struct LoginView: View {
         .clipShape(RoundedRectangle(cornerRadius: 12))
       }
     }
+    .padding(.horizontal, 4)
     .frame(maxWidth: .infinity)
   }
 
@@ -124,9 +119,11 @@ struct LoginView: View {
 }
 
 #Preview {
-  LoginView(
-    viewModel: LoginViewModel(
-      loginUseCase: LoginUseCase(authRepository: AuthRepositoryImpl())
+  ScreenContainer {
+    LoginView(
+      viewModel: LoginViewModel(
+        loginUseCase: LoginUseCase(authRepository: AuthRepositoryImpl())
+      )
     )
-  )
+  }
 }

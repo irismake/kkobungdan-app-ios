@@ -13,7 +13,9 @@ struct ContentView: View {
   )
 
   var body: some View {
-    LoginView(viewModel: loginViewModel)
+    ScreenContainer {
+      LoginView(viewModel: loginViewModel)
+    }
   }
 }
 

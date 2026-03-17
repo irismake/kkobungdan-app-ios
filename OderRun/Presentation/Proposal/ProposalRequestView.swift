@@ -15,25 +15,18 @@ struct ProposalRequestView: View {
   }
 
   var body: some View {
-    ZStack {
-      Color.white
-        .ignoresSafeArea()
+    VStack(spacing: 0) {
+      Gap.v(120) // 상단 여백 (상태바 + 디자인 상단 공간)
 
-      VStack(spacing: 0) {
-        Gap.v(120) // 상단 여백 (상태바 + 디자인 상단 공간)
-        
-        brandSection
+      brandSection
 
-        Spacer()
+      Spacer()
 
-        socialButtonsSection
-          .padding(.bottom, 12)
+      socialButtonsSection
+        .padding(.bottom, 12)
 
-        bottomTermsSection
-          .padding(.bottom, 24)
-      }
-      .frame(maxWidth: .infinity, maxHeight: .infinity)
-      .padding(.horizontal, 24)
+      bottomTermsSection
+        .padding(.bottom, 24)
     }
   }
 
@@ -127,11 +120,13 @@ struct ProposalRequestView: View {
 }
 
 #Preview {
-  ProposalRequestView(
-    viewModel: ProposalRequestViewModel(
-      createProposalUseCase: CreateProposalUseCase(
-        repository: ProposalRepositoryImpl()
+  ScreenContainer {
+    ProposalRequestView(
+      viewModel: ProposalRequestViewModel(
+        createProposalUseCase: CreateProposalUseCase(
+          repository: ProposalRepositoryImpl()
+        )
       )
     )
-  )
+  }
 }
