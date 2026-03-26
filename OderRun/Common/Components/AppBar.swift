@@ -24,7 +24,10 @@ struct AppBar: View {
         Gap.h(8)
 
         Text(title)
-          .odrStyle(.title4(weight: .semibold, color: Color.gray900))
+          .font(.custom("Pretendard-SemiBold", size: 18))
+          .kerning(-0.2)
+          .lineSpacing(26)
+          .foregroundColor(Color.gray900)
 
         Spacer()
       }

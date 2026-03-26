@@ -46,7 +46,10 @@ struct TermsAgreementView: View {
 
   private var subtitleSection: some View {
     Text("서비스 이용을 위해 아래 약관에 동의해 주세요.")
-      .odrStyle(.body3(color: Color.gray500))
+      .font(.custom("Pretendard-Regular", size: 14))
+      .kerning(-0.14)
+      .lineSpacing(20)
+      .foregroundColor(Color.gray500)
       .frame(maxWidth: .infinity, alignment: .leading)
   }
 
@@ -94,7 +97,10 @@ struct TermsAgreementView: View {
         checkboxIcon(isChecked: viewModel.isAllAgreed, size: 24)
 
         Text("전체 동의")
-          .odrStyle(.body1(color: Color.gray800))
+          .font(.custom("Pretendard-Regular", size: 16))
+          .kerning(-0.3)
+          .lineSpacing(24)
+          .foregroundColor(Color.gray800)
 
         Spacer()
       }
@@ -121,7 +127,10 @@ struct TermsAgreementView: View {
       .buttonStyle(.plain)
 
       Text(title)
-        .odrStyle(.body1(color: Color.gray800))
+        .font(.custom("Pretendard-Regular", size: 16))
+        .kerning(-0.3)
+        .lineSpacing(24)
+        .foregroundColor(Color.gray800)
 
       if isRequired {
         RequiredBadge()
@@ -131,7 +140,10 @@ struct TermsAgreementView: View {
 
       Button(action: onView) {
         Text("보기")
-          .odrStyle(.body3(weight: .medium, color: Color.gray700))
+          .font(.custom("Pretendard-Medium", size: 14))
+          .kerning(-0.14)
+          .lineSpacing(20)
+          .foregroundColor(Color.gray700)
           .underline()
       }
       .buttonStyle(.plain)

@@ -33,10 +33,16 @@ struct ProposalRequestView: View {
   private var brandSection: some View {
     VStack(alignment: .leading, spacing: 8) {
       Text("대신 웨이팅 요청하기")
-        .odrStyle(.title1(weight: .bold, color: Color.gray800))
+        .font(.custom("Pretendard-Bold", size: 24))
+        .kerning(-0.2)
+        .lineSpacing(32)
+        .foregroundColor(Color.gray800)
 
       Text("어디에서, 어떤 웨이팅을 맡길지와 보상을 적어주세요.")
-        .odrStyle(.body3(color: Color.gray600))
+        .font(.custom("Pretendard-Regular", size: 14))
+        .kerning(-0.14)
+        .lineSpacing(20)
+        .foregroundColor(Color.gray600)
     }
   }
 
@@ -63,7 +69,10 @@ struct ProposalRequestView: View {
 
       VStack(alignment: .leading, spacing: 8) {
         Text("내용")
-          .odrStyle(.body3(weight: .medium, color: Color.gray800))
+          .font(.custom("Pretendard-Medium", size: 14))
+          .kerning(-0.14)
+          .lineSpacing(20)
+          .foregroundColor(Color.gray800)
 
         TextEditor(text: $viewModel.content)
           .frame(minHeight: 120)
@@ -82,10 +91,15 @@ struct ProposalRequestView: View {
   ) -> some View {
     VStack(alignment: .leading, spacing: 8) {
       Text(title)
-        .odrStyle(.body3(weight: .medium, color: Color.gray800))
+        .font(.custom("Pretendard-Medium", size: 14))
+        .kerning(-0.14)
+        .lineSpacing(20)
+        .foregroundColor(Color.gray800)
 
       TextField(placeholder, text: text)
-        .odrTextFieldStyle(.body2(color: Color.gray800))
+        .font(.custom("Pretendard-Regular", size: 15))
+        .kerning(-0.15)
+        .foregroundColor(Color.gray800)
         .keyboardType(keyboard)
         .padding(.horizontal, 12)
         .frame(height: 48)
@@ -106,7 +120,10 @@ struct ProposalRequestView: View {
             .tint(.white)
         } else {
           Text("요청 올리기")
-            .odrStyle(.body1())
+            .font(.custom("Pretendard-Regular", size: 16))
+            .kerning(-0.3)
+            .lineSpacing(24)
+            .foregroundColor(.primary)
         }
       }
       .frame(maxWidth: .infinity)

@@ -45,10 +45,16 @@ struct LoginView: View {
 
       VStack(spacing: 8) {
         Text("브랜드명")
-          .odrStyle(.headline2(weight: .bold, color: Color.gray900))
+          .font(.custom("Pretendard-Bold", size: 30))
+          .kerning(0.4)
+          .lineSpacing(36)
+          .foregroundColor(Color.gray900)
 
         Text("내용")
-          .odrStyle(.body1(weight: .regular, color: Color.gray600))
+          .font(.custom("Pretendard-Regular", size: 16))
+          .kerning(-0.3)
+          .lineSpacing(24)
+          .foregroundColor(Color.gray600)
       }
     }
     .frame(width: 120, height: 176)
@@ -66,7 +72,10 @@ struct LoginView: View {
             .frame(width: 24, height: 24)
 
           Text("카카오로 시작하기")
-            .odrStyle(.body1(color: .black))
+            .font(.custom("Pretendard-Regular", size: 16))
+            .kerning(-0.3)
+            .lineSpacing(24)
+            .foregroundColor(.black)
         }
         .frame(maxWidth: .infinity)
         .frame(height: 56)
@@ -84,7 +93,10 @@ struct LoginView: View {
             .frame(width: 24, height: 24)
 
           Text("Apple로 시작하기")
-            .odrStyle(.body1(color: .white))
+            .font(.custom("Pretendard-Regular", size: 16))
+            .kerning(-0.3)
+            .lineSpacing(24)
+            .foregroundColor(.white)
         }
         .frame(maxWidth: .infinity)
         .frame(height: 56)
@@ -100,19 +112,34 @@ struct LoginView: View {
     VStack(spacing: 0) {
       HStack(spacing: 2) {
         Text("로그인하면 오더런의")
-          .odrStyle(.caption1(color: Color.gray500))
+          .font(.custom("Pretendard-Regular", size: 12))
+          .kerning(0)
+          .lineSpacing(16)
+          .foregroundColor(Color.gray500)
         Text("이용약관")
-          .odrStyle(.caption1(color: Color.gray500))
+          .font(.custom("Pretendard-Regular", size: 12))
+          .kerning(0)
+          .lineSpacing(16)
+          .foregroundColor(Color.gray500)
           .underline()
         Text("및")
-          .odrStyle(.caption1(color: Color.gray500))
+          .font(.custom("Pretendard-Regular", size: 12))
+          .kerning(0)
+          .lineSpacing(16)
+          .foregroundColor(Color.gray500)
       }
       HStack(spacing: 2) {
         Text("개인정보처리방침")
-          .odrStyle(.caption1(color: Color.gray500))
+          .font(.custom("Pretendard-Regular", size: 12))
+          .kerning(0)
+          .lineSpacing(16)
+          .foregroundColor(Color.gray500)
           .underline()
         Text("에 동의하게 됩니다")
-          .odrStyle(.caption1(color: Color.gray500))
+          .font(.custom("Pretendard-Regular", size: 12))
+          .kerning(0)
+          .lineSpacing(16)
+          .foregroundColor(Color.gray500)
       }
     }
     .multilineTextAlignment(.center)

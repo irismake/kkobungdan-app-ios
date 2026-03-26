@@ -17,7 +17,10 @@ struct CompleteButton: View {
       action()
     } }) {
       Text(title)
-        .odrStyle(.body1(weight: .semibold, color: isEnabled ? .white : .gray400))
+        .font(.custom("Pretendard-SemiBold", size: 16))
+        .kerning(-0.3)
+        .lineSpacing(24)
+        .foregroundColor(isEnabled ? .white : .gray400)
         .multilineTextAlignment(.center)
         .frame(maxWidth: .infinity)
         .frame(height: 56)
