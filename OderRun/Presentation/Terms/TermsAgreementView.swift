@@ -133,7 +133,7 @@ struct TermsAgreementView: View {
         .foregroundColor(Color.gray900)
 
       if isRequired {
-        RequiredBadge()
+        Badge(text: "필수")
       }
 
       Spacer()

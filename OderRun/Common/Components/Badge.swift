@@ -7,20 +7,28 @@
 
 import SwiftUI
 
-struct RequiredBadge: View {
+struct Badge: View {
+  let text: String
+  var textColor: Color = .rose500
+  var bgColor: Color = .rose000
+
   var body: some View {
-    Text("필수")
+    Text(text)
       .font(.custom("Pretendard-Medium", size: 12))
       .kerning(-0.1)
       .lineSpacing(20)
-      .foregroundColor(Color.rose500)
+      .foregroundColor(textColor)
       .padding(.horizontal, 8)
       .padding(.vertical, 2)
-      .background(Color.rose000)
+      .background(bgColor)
       .clipShape(RoundedRectangle(cornerRadius: 4))
   }
 }
 
 #Preview {
-  RequiredBadge()
+  VStack(spacing: 8) {
+    Badge(text: "필수")
+    Badge(text: "미입금")
+    Badge(text: "대기중", textColor: Color.blue500, bgColor: Color.blue000)
+  }
 }
