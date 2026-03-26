@@ -10,10 +10,10 @@ import SwiftUI
 struct RequiredBadge: View {
   var body: some View {
     Text("필수")
-      .font(.custom("Pretendard-Regular", size: 11))
-      .kerning(0)
-      .lineSpacing(16)
-      .foregroundColor(.primary)
+      .font(.custom("Pretendard-Medium", size: 12))
+      .kerning(-0.1)
+      .lineSpacing(20)
+      .foregroundColor(Color.rose500)
       .padding(.horizontal, 8)
       .padding(.vertical, 2)
       .background(Color.rose000)

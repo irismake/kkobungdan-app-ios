@@ -97,10 +97,10 @@ struct TermsAgreementView: View {
         checkboxIcon(isChecked: viewModel.isAllAgreed, size: 24)
 
         Text("전체 동의")
-          .font(.custom("Pretendard-Regular", size: 16))
+          .font(.custom("Pretendard-Medium", size: 16))
           .kerning(-0.3)
           .lineSpacing(24)
-          .foregroundColor(Color.gray800)
+          .foregroundColor(Color.gray900)
 
         Spacer()
       }
@@ -127,10 +127,10 @@ struct TermsAgreementView: View {
       .buttonStyle(.plain)
 
       Text(title)
-        .font(.custom("Pretendard-Regular", size: 16))
+        .font(.custom("Pretendard-Medium", size: 16))
         .kerning(-0.3)
         .lineSpacing(24)
-        .foregroundColor(Color.gray800)
+        .foregroundColor(Color.gray900)
 
       if isRequired {
         RequiredBadge()

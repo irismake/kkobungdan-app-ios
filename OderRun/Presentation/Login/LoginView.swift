@@ -72,7 +72,7 @@ struct LoginView: View {
             .frame(width: 24, height: 24)
 
           Text("카카오로 시작하기")
-            .font(.custom("Pretendard-Regular", size: 16))
+            .font(.custom("Pretendard-Medium", size: 16))
             .kerning(-0.3)
             .lineSpacing(24)
             .foregroundColor(.black)
@@ -93,7 +93,7 @@ struct LoginView: View {
             .frame(width: 24, height: 24)
 
           Text("Apple로 시작하기")
-            .font(.custom("Pretendard-Regular", size: 16))
+            .font(.custom("Pretendard-Medium", size: 16))
             .kerning(-0.3)
             .lineSpacing(24)
             .foregroundColor(.white)
