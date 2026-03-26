@@ -15,19 +15,21 @@ struct LoginView: View {
   }
 
   var body: some View {
-    VStack(spacing: 0) {
-      Gap.v(150)
+    ScreenContainer {
+      VStack(spacing: 0) {
+        Gap.v(150)
 
-      brandSection
+        brandSection
 
-      Gap.v(72)
+        Gap.v(72)
 
-      socialButtonsSection
+        socialButtonsSection
 
-      Spacer()
+        Spacer()
 
-      bottomTermsSection
-        .padding(.bottom, 23)
+        bottomTermsSection
+          .padding(.bottom, 23)
+      }
     }
   }
 
@@ -46,7 +48,7 @@ struct LoginView: View {
           .odrStyle(.headline2(weight: .bold, color: Color.gray900))
 
         Text("내용")
-          .odrStyle(.body1(color: Color.gray600))
+          .odrStyle(.body1(weight: .regular, color: Color.gray600))
       }
     }
     .frame(width: 120, height: 176)
@@ -64,7 +66,7 @@ struct LoginView: View {
             .frame(width: 24, height: 24)
 
           Text("카카오로 시작하기")
-            .odrStyle(.body1(weight: .medium, color: .black))
+            .odrStyle(.body1(color: .black))
         }
         .frame(maxWidth: .infinity)
         .frame(height: 56)
@@ -82,7 +84,7 @@ struct LoginView: View {
             .frame(width: 24, height: 24)
 
           Text("Apple로 시작하기")
-            .odrStyle(.body1(weight: .medium, color: .white))
+            .odrStyle(.body1(color: .white))
         }
         .frame(maxWidth: .infinity)
         .frame(height: 56)
@@ -119,11 +121,9 @@ struct LoginView: View {
 }
 
 #Preview {
-  ScreenContainer {
-    LoginView(
-      viewModel: LoginViewModel(
-        loginUseCase: LoginUseCase(authRepository: AuthRepositoryImpl())
-      )
+  LoginView(
+    viewModel: LoginViewModel(
+      loginUseCase: LoginUseCase(authRepository: AuthRepositoryImpl())
     )
-  }
+  )
 }

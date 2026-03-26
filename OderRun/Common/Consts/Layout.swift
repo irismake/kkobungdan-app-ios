@@ -12,13 +12,7 @@ struct ScreenContainer<Content: View>: View {
   }
 
   var body: some View {
-    ZStack {
-      Color.white
-        .ignoresSafeArea()
-
-      content
-        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
-        .padding(.horizontal, Layout.screenHorizontalPadding)
-    }
+    content
+      .padding(.horizontal, Layout.screenHorizontalPadding)
   }
 }

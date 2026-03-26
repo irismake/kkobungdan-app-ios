@@ -106,7 +106,7 @@ struct ProposalRequestView: View {
             .tint(.white)
         } else {
           Text("요청 올리기")
-            .odrStyle(.body1(weight: .medium))
+            .odrStyle(.body1())
         }
       }
       .frame(maxWidth: .infinity)

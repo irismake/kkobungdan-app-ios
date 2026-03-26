@@ -13,10 +13,8 @@ struct ContentView: View {
   )
 
   var body: some View {
-    ScreenContainer {
-      LoginView(viewModel: loginViewModel)
-    }
-  }
+    LoginView(viewModel: loginViewModel)
+   }
 }
 
 #Preview {
