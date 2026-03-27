@@ -8,7 +8,8 @@
 import SwiftUI
 
 struct AppBar: View {
-  let title: String
+  var title: String?
+  var isProgress: Bool = false
   var onBack: (() -> Void)?
 
   var body: some View {
@@ -21,17 +22,25 @@ struct AppBar: View {
               .frame(width: 24, height: 24)
           }
         }
-        Gap.h(8)
-
-        Text(title)
-          .font(.custom("Pretendard-SemiBold", size: 18))
-          .kerning(-0.4)
-          .appLineHeight(28, fontName: "Pretendard-SemiBold", fontSize: 18)
-          .foregroundColor(Color.gray900)
+        if let title, !title.isEmpty {
+          Gap.h(8)
+          Text(title)
+            .font(.custom("Pretendard-SemiBold", size: 18))
+            .kerning(-0.4)
+            .appLineHeight(28, fontName: "Pretendard-SemiBold", fontSize: 18)
+            .foregroundColor(Color.gray900)
+        }
 
         Spacer()
+          .frame(height: 40)
+        if isProgress {
+          Text("1/3")
+            .font(.custom("Pretendard-Medium", size: 14))
+            .kerning(-0.1)
+            .appLineHeight(20, fontName: "Pretendard-Medium", fontSize: 14)
+            .foregroundColor(Color.gray900)
+        }
       }
-      .frame(height: 40)
     }
   }
 }

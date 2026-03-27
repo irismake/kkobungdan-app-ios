@@ -29,25 +29,16 @@ struct ApplicantListView: View {
           // 헤더: 요청 제목 + 지원자 수
           VStack(alignment: .leading, spacing: 4) {
             Text(requestTitle)
-              .font(
-                Font.custom("Pretendard", size: 14)
-                  .weight(.medium)
-              )
+              .font(.custom("Pretendard-Medium", size: 14))
               .kerning(-0.15)
-              .lineSpacing(6)
+              .appLineHeight(20, fontName: "Pretendard-Medium", fontSize: 14)
               .foregroundColor(Color.gray600)
-
-            Gap.v(4)
 
             HStack(spacing: 0) {
               Text("\(applicants.count)명")
-                .font(
-                  Font.custom("Pretendard", size: 18)
-                    .weight(.semibold)
-                )
+                .font(.custom("Pretendard-Bold", size: 18))
                 .kerning(-0.4)
-                // 18px font with 28px line-height => 10px extra leading
-                .lineSpacing(10)
+                .appLineHeight(28, fontName: "Pretendard-Bold", fontSize: 18)
                 .foregroundColor(Color.indigo500)
 
               Text("이 웨이팅을 지원했습니다")
@@ -56,8 +47,7 @@ struct ApplicantListView: View {
                     .weight(.semibold)
                 )
                 .kerning(-0.4)
-                // 18px font with 28px line-height => 10px extra leading
-                .lineSpacing(10)
+                .appLineHeight(28, fontName: "Pretendard-SemiBold", fontSize: 18)
                 .foregroundColor(Color.gray700)
             }
           }

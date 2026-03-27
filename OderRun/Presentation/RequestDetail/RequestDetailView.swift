@@ -43,7 +43,9 @@ struct RequestDetailView: View {
         Text("고객센터 email@gmail")
           .font(.custom("Pretendard-Regular", size: 14))
           .kerning(-0.1)
+          .appLineHeight(20, fontName: "Pretendard-Regular", fontSize: 14)
           .foregroundColor(Color.gray700)
+          .multilineTextAlignment(.center)
           .frame(maxWidth: .infinity)
           .padding(.bottom, 32)
       }
