@@ -56,7 +56,7 @@ struct RequestDetailView: View {
 
       // Bottom buttons
       VStack(spacing: 8) {
-        CompleteButton(title: "지원 보기(\(applicantCount))") {
+        ConfirmButton(title: "지원 보기(\(applicantCount))") {
           // TODO: 지원 목록 화면으로 이동
         }
 

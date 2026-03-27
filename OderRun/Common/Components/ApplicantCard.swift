@@ -21,22 +21,18 @@ struct ApplicantCard: View {
         // 닉네임 + 레벨 정보
         VStack(alignment: .leading, spacing: 4) {
           Text(nickname)
-            .font(
-              Font.custom("Pretendard", size: 18)
-                .weight(.semibold)
-            )
+            .font(.custom("Pretendard-SemiBold", size: 18))
+            .kerning(-0.4)
+            .appLineHeight(18, fontName: "Pretendard-SemiBold", fontSize: 18)
             .foregroundColor(.black)
             .frame(width: 163, alignment: .topLeading)
 
           // 웨이팅 레벨 컨테이너
           VStack(alignment: .leading, spacing: 0) {
             Text("웨이팅 레벨")
-              .font(
-                Font.custom("Pretendard", size: 12)
-                  .weight(.regular)
-              )
+              .font(.custom("Pretendard-Regular", size: 12))
               .kerning(-0.15)
-              .lineSpacing(8)
+              .appLineHeight(20, fontName: "Pretendard-Regular", fontSize: 12)
               .foregroundColor(Color.gray500)
 
             HStack(spacing: 6) {
@@ -54,13 +50,9 @@ struct ApplicantCard: View {
                 }
                 Text(grade)
               }
-              .font(
-                Font.custom("Pretendard", size: 14)
-                  .weight(.medium)
-              )
+              .font(.custom("Pretendard-Medium", size: 14))
               .kerning(-0.15)
-              // 14px font with 20px line-height => 6px extra leading
-              .lineSpacing(6)
+              .appLineHeight(20, fontName: "Pretendard-Medium", fontSize: 14)
               .foregroundColor(Color.gray900)
             }
           }
@@ -69,12 +61,8 @@ struct ApplicantCard: View {
 
         // 지원 일시
         Text(appliedAt)
-          .font(
-            Font.custom("Pretendard", size: 12)
-              .weight(.regular)
-          )
-          // 12px font with 16px line-height => 4px extra leading
-          .lineSpacing(4)
+          .font(.custom("Pretendard-Regular", size: 12))
+          .appLineHeight(16, fontName: "Pretendard-Regular", fontSize: 12)
           .foregroundColor(Color.gray600)
           .padding(.horizontal, 2)
       }
@@ -82,13 +70,9 @@ struct ApplicantCard: View {
       // 지원자 선택 버튼
       Button(action: onSelect) {
         Text("지원자 선택")
-          .font(
-            Font.custom("Pretendard", size: 16)
-              .weight(.semibold)
-          )
+          .font(.custom("Pretendard-SemiBold", size: 16))
           .kerning(-0.2)
-          // 16px font with 24px line-height => 8px extra leading
-          .lineSpacing(8)
+          .appLineHeight(24, fontName: "Pretendard-SemiBold", fontSize: 16)
           .foregroundColor(.white)
           .multilineTextAlignment(.center)
           .frame(maxWidth: .infinity, alignment: .center)

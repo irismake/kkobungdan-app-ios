@@ -79,9 +79,11 @@ struct CompleteModal: View {
         HStack(spacing: 8) {
           Button(action: onCancel) {
             Text("취소")
-              .font(.custom("Pretendard-Medium", size: 16))
-              .kerning(-0.3)
+              .font(.custom("Inter-Medium", size: 16))
+              .kerning(-0.312)
+              .appLineHeight(24, fontName: "Inter-Medium", fontSize: 16)
               .foregroundColor(Color.gray700)
+              .multilineTextAlignment(.center)
               .frame(maxWidth: .infinity)
               .frame(height: 50)
               .background(Color.white)
@@ -95,9 +97,11 @@ struct CompleteModal: View {
 
           Button(action: onConfirm) {
             Text("확인")
-              .font(.custom("Pretendard-Medium", size: 16))
-              .kerning(-0.3)
+              .font(.custom("Inter-Medium", size: 16))
+              .kerning(-0.312)
+              .appLineHeight(24, fontName: "Inter-Medium", fontSize: 16)
               .foregroundColor(.white)
+              .multilineTextAlignment(.center)
               .frame(maxWidth: .infinity)
               .frame(height: 50)
               .background(Color.indigo500)

@@ -26,7 +26,7 @@ struct AppBar: View {
         Text(title)
           .font(.custom("Pretendard-SemiBold", size: 18))
           .kerning(-0.4)
-          .lineSpacing(28)
+          .appLineHeight(28, fontName: "Pretendard-SemiBold", fontSize: 18)
           .foregroundColor(Color.gray900)
 
         Spacer()

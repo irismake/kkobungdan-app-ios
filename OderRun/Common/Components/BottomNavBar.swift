@@ -50,8 +50,9 @@ struct BottomNavBar: View {
 
         Text(label)
           .font(.custom("Pretendard-Medium", size: 12))
-          .lineSpacing(16)
+          .appLineHeight(16, fontName: "Pretendard-Medium", fontSize: 12)
           .foregroundColor(color)
+          .multilineTextAlignment(.center)
       }
       .frame(maxWidth: .infinity)
     }

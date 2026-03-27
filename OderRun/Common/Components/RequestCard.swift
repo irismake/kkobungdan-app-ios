@@ -57,13 +57,14 @@ struct RequestCard: View {
       Text(title)
         .font(.custom("Pretendard-SemiBold", size: 18))
         .kerning(-0.4)
+        .appLineHeight(18, fontName: "Pretendard-SemiBold", fontSize: 18)
         .foregroundColor(Color.gray900)
         .frame(maxWidth: .infinity, alignment: .leading)
 
       Text(description)
         .font(.custom("Pretendard-Regular", size: 14))
         .kerning(-0.1)
-        .lineSpacing(3)
+        .appLineHeight(20, fontName: "Pretendard-Regular", fontSize: 14)
         .foregroundColor(Color.gray700)
         .frame(maxWidth: .infinity, alignment: .leading)
 
@@ -80,33 +81,31 @@ struct RequestCard: View {
         .renderingMode(.template)
         .resizable()
         .frame(width: 18, height: 18)
-        .foregroundColor(Color.gray700)
+        .foregroundColor(Color.gray800)
 
       Text(text)
         .font(.custom("Pretendard-Medium", size: 14))
         .kerning(-0.15)
-        .lineSpacing(20)
+        .appLineHeight(20, fontName: "Pretendard-Medium", fontSize: 14)
         .foregroundColor(Color.gray700)
     }
-    .frame(height: 20)
   }
 
   private var feeSection: some View {
-    HStack(spacing: 4) {
+    HStack(alignment: .center, spacing: 0) {
       Image("icon_dollar")
         .renderingMode(.template)
         .resizable()
         .frame(width: 20, height: 20)
         .foregroundColor(Color.indigo500)
-
+        
       Text(fee)
         .font(.custom("Pretendard-SemiBold", size: 16))
         .kerning(-0.2)
-        .lineSpacing(24)
+        .appLineHeight(24, fontName: "Pretendard-SemiBold", fontSize: 16)
         .foregroundColor(Color.indigo500)
-
-      Spacer()
     }
+    .frame(maxWidth: .infinity, alignment: .leading)
   }
 }
 

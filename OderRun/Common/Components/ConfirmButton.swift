@@ -1,5 +1,5 @@
 //
-//  CompleteButton.swift
+//  ConfirmButton.swift
 //  OderRun
 //
 //  Created by 김가희 on 3/17/26.
@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-struct CompleteButton: View {
+struct ConfirmButton: View {
   let title: String
   var isEnabled: Bool = true
   let action: () -> Void
@@ -18,8 +18,8 @@ struct CompleteButton: View {
     } }) {
       Text(title)
         .font(.custom("Pretendard-SemiBold", size: 16))
-        .kerning(-0.3)
-        .lineSpacing(24)
+        .kerning(-0.2)
+        .appLineHeight(24, fontName: "Pretendard-SemiBold", fontSize: 16)
         .foregroundColor(isEnabled ? .white : .gray400)
         .multilineTextAlignment(.center)
         .frame(maxWidth: .infinity)
@@ -34,9 +34,9 @@ struct CompleteButton: View {
 #Preview {
   ScreenContainer {
     VStack(spacing: 10) {
-      CompleteButton(title: "동의하고 시작하기", isEnabled: true, action: {})
+      ConfirmButton(title: "동의하고 시작하기", isEnabled: true, action: {})
 
-      CompleteButton(title: "동의하고 시작하기", isEnabled: false, action: {})
+      ConfirmButton(title: "동의하고 시작하기", isEnabled: false, action: {})
     }
   }
   .padding()

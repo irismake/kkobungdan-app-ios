@@ -36,7 +36,7 @@ struct TermsAgreementView: View {
 
       Spacer()
         
-      BottomButtonBar(title: "동의하고 시작하기", isEnabled: viewModel.canProceed) {
+      BottomActionBar(title: "동의하고 시작하기", isEnabled: viewModel.canProceed) {
         onComplete?()
       }
     }
