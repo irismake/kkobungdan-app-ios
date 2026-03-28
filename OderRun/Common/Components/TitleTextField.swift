@@ -11,8 +11,9 @@ struct TitleTextField: View {
   let title: String
   let placeholder: String
   @Binding var text: String
-  let maxLength: Int
+  var maxLength: Int?
   var autoFocus: Bool = false
+
   @FocusState private var isFocused: Bool
 
   var body: some View {
@@ -29,7 +30,7 @@ struct TitleTextField: View {
         .foregroundColor(Color.gray900)
         .focused($isFocused)
         .onChange(of: text) { _, new in
-          if new.count > maxLength {
+          if let maxLength, new.count > maxLength {
             text = String(new.prefix(maxLength))
           }
         }
@@ -42,12 +43,14 @@ struct TitleTextField: View {
             .stroke(isFocused ? Color.indigo500 : Color.gray200, lineWidth: 1)
         )
 
-      HStack {
-        Spacer()
-        Text("\(text.count)/\(maxLength)")
-          .font(.custom("Pretendard-Regular", size: 12))
-          .appLineHeight(16, fontName: "Pretendard-Regular", fontSize: 12)
-          .foregroundColor(Color.gray500)
+      if let maxLength {
+        HStack {
+          Spacer()
+          Text("\(text.count)/\(maxLength)")
+            .font(.custom("Pretendard-Regular", size: 12))
+            .appLineHeight(16, fontName: "Pretendard-Regular", fontSize: 12)
+            .foregroundColor(Color.gray500)
+        }
       }
     }
     .onAppear {

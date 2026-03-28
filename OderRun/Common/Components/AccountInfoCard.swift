@@ -29,41 +29,40 @@ struct AccountInfoCard: View {
   }
 
   private var accountRow: some View {
-      HStack(spacing: 0) {
-          VStack(alignment: .leading, spacing: 2) {
-              Text(bankName)
-                  .font(.custom("Pretendard-Medium", size: 14))
-                  .kerning(-0.2)
-                  .foregroundColor(Color.gray800)
+    HStack(spacing: 0) {
+      VStack(alignment: .leading, spacing: 2) {
+        Text(bankName)
+          .font(.custom("Pretendard-Medium", size: 14))
+          .kerning(-0.2)
+          .foregroundColor(Color.gray800)
               
-              Text(accountNumber)
-                  .font(.custom("Pretendard-Medium", size: 16))
-                  .kerning(-0.2)
-                  .foregroundColor(Color.gray900)
-          }
+        Text(accountNumber)
+          .font(.custom("Pretendard-Medium", size: 16))
+          .kerning(-0.2)
+          .foregroundColor(Color.gray900)
+      }
           
-          Spacer()
+      Spacer()
           
-          Button(action: onCopy) {
-              Image("icon_copy")
-                  .renderingMode(.template)
-                  .resizable()
-                  .scaledToFit()
-                  .frame(width: 20, height: 20)
-                  .foregroundColor(Color.gray800)
-          }
-          .padding(10)
-          .background(Color.gray100)
-          .clipShape(RoundedRectangle(cornerRadius: 4))
-          .overlay(
-            RoundedRectangle(cornerRadius: 4)
-                .stroke(Color.gray200, lineWidth: 1)
-          )
-          .padding(.horizontal, 4)
-          .frame(height: 40)
-          }
-          
-  }
+      Button(action: onCopy) {
+        Image("icon_copy")
+          .renderingMode(.template)
+          .resizable()
+          .scaledToFit()
+          .frame(width: 20, height: 20)
+          .foregroundColor(Color.gray800)
+      }
+      .padding(10)
+      .background(Color.gray100)
+      .clipShape(RoundedRectangle(cornerRadius: 4))
+      .overlay(
+        RoundedRectangle(cornerRadius: 4)
+          .stroke(Color.gray200, lineWidth: 1)
+      )
+      .padding(.horizontal, 4)
+      .frame(height: 40)
+    }
+   }
 
   private var warningBox: some View {
     HStack(alignment: .top, spacing: 4) {
@@ -97,5 +96,4 @@ struct AccountInfoCard: View {
     onCopy: {}
   )
   .padding(16)
-
 }
