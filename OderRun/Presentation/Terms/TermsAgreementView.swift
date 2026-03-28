@@ -23,23 +23,22 @@ struct TermsAgreementView: View {
   }
 
   var body: some View {
-    VStack(spacing: 0) {
+    VStack(spacing: 8) {
       AppBar(title: "약관 동의", onBack: onBack)
-       
-      Gap.v(8)
 
-      VStack(spacing: 24) {
-        subtitleSection
-        termsListSection
-      }
-      .padding(.horizontal, 24)
+        VStack(spacing: 24) {
+          subtitleSection
+          termsListSection
+        }
+        .padding(.horizontal, 24)
+      
+       Spacer()
 
-      Spacer()
-        
       BottomActionBar(title: "동의하고 시작하기", isEnabled: viewModel.canProceed) {
         onComplete?()
       }
     }
+    .navigationBarHidden(true)
   }
 
   // MARK: - Subtitle
@@ -47,8 +46,8 @@ struct TermsAgreementView: View {
   private var subtitleSection: some View {
     Text("서비스 이용을 위해 아래 약관에 동의해 주세요.")
       .font(.custom("Pretendard-Regular", size: 14))
-      .kerning(-0.14)
-      .lineSpacing(20)
+      .kerning(-0.15)
+      .appLineHeight(20, fontName: "Pretendard-Regular", fontSize: 14)
       .foregroundColor(Color.gray500)
       .frame(maxWidth: .infinity, alignment: .leading)
   }
@@ -99,7 +98,7 @@ struct TermsAgreementView: View {
         Text("전체 동의")
           .font(.custom("Pretendard-Medium", size: 16))
           .kerning(-0.3)
-          .lineSpacing(24)
+          .appLineHeight(24, fontName: "Pretendard-Medium", fontSize: 16)
           .foregroundColor(Color.gray900)
 
         Spacer()
@@ -161,7 +160,7 @@ struct TermsAgreementView: View {
     ZStack {
       Circle()
         .fill(isChecked ? Color.indigo500 : Color.white)
-        .overlay(Circle().stroke(isChecked ? Color.clear : Color.indigo300, lineWidth: 2))
+        .overlay(Circle().stroke(isChecked ? Color.clear : Color.gray300, lineWidth: 2))
         .frame(width: size, height: size)
 
       if isChecked {
