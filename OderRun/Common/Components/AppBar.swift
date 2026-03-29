@@ -17,7 +17,7 @@ struct AppBar: View {
       HStack(spacing: 0) {
         if let onBack {
           Button(action: onBack) {
-            Image("arrow_left")
+            Image("icon_previous")
               .resizable()
               .frame(width: 24, height: 24)
           }
@@ -32,7 +32,7 @@ struct AppBar: View {
         }
 
         Spacer()
-          .frame(height: 40)
+        
         if isProgress {
           Text("1/3")
             .font(.custom("Pretendard-Medium", size: 14))
@@ -41,6 +41,7 @@ struct AppBar: View {
             .foregroundColor(Color.gray900)
         }
       }
+      .frame(height: 40)
     }
   }
 }

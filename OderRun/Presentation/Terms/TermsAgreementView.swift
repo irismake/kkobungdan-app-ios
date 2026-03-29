@@ -26,13 +26,13 @@ struct TermsAgreementView: View {
     VStack(spacing: 8) {
       AppBar(title: "약관 동의", onBack: onBack)
 
-        VStack(spacing: 24) {
-          subtitleSection
-          termsListSection
-        }
-        .padding(.horizontal, 24)
+      VStack(spacing: 24) {
+        subtitleSection
+        termsListSection
+      }
+      .padding(.horizontal, 24)
       
-       Spacer()
+      Spacer()
 
       BottomActionBar(title: "동의하고 시작하기", isEnabled: viewModel.canProceed) {
         onComplete?()
