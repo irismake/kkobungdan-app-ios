@@ -9,125 +9,89 @@ import SwiftUI
 
 struct ProposalRequestView: View {
   @State private var viewModel: ProposalRequestViewModel
+  @Environment(\.dismiss) private var dismiss
 
   init(viewModel: ProposalRequestViewModel) {
     _viewModel = State(initialValue: viewModel)
   }
 
+  private var isNextEnabled: Bool {
+    !viewModel.title.isEmpty && !viewModel.content.isEmpty
+  }
+
   var body: some View {
-    ZStack {
-      Color.white
-        .ignoresSafeArea()
+    VStack(spacing: 0) {
+      headerSection
 
-      VStack(spacing: 0) {
-        Spacer()
-          .frame(height: 120) // 상단 여백 (상태바 + 디자인 상단 공간)
+      scrollContent
 
-        brandSection
-
-        Spacer()
-
-        socialButtonsSection
-          .padding(.bottom, 12)
-
-        bottomTermsSection
-          .padding(.bottom, 24)
-      }
-      .frame(maxWidth: .infinity, maxHeight: .infinity)
-      .padding(.horizontal, 24)
+      bottomSection
     }
+    .background(Color.gray000)
+    .navigationBarHidden(true)
   }
 
-  private var brandSection: some View {
-    VStack(alignment: .leading, spacing: 8) {
-      Text("대신 웨이팅 요청하기")
-        .font(.system(size: 24, weight: .bold))
-        .foregroundStyle(Color(UIColor.gray950))
-
-      Text("어디에서, 어떤 웨이팅을 맡길지와 보상을 적어주세요.")
-        .font(.system(size: 14))
-        .foregroundStyle(Color(UIColor.gray700))
-    }
-  }
-
-  private var socialButtonsSection: some View {
-    VStack(spacing: 16) {
-      labeledTextField(
-        title: "제목",
-        placeholder: "예: 강남역 A카페 웨이팅 부탁",
-        text: $viewModel.title
-      )
-
-      labeledTextField(
-        title: "마감 시간",
-        placeholder: "예: 2026-03-11T15:30:00",
-        text: $viewModel.deadline
-      )
-
-      labeledTextField(
-        title: "심부름비 (원)",
-        placeholder: "예: 4000",
-        text: $viewModel.errandFee,
-        keyboard: .numberPad
-      )
+  private var headerSection: some View {
+    VStack(alignment: .leading, spacing: 12) {
+      AppBar(isProgress: true, onBack: {})
 
       VStack(alignment: .leading, spacing: 8) {
-        Text("내용")
-          .font(.system(size: 14, weight: .medium))
-          .foregroundStyle(Color(UIColor.gray900))
+        Text("기본 정보 작성")
+          .font(.custom("Pretendard-SemiBold", size: 18))
+          .kerning(-0.4)
+          .appLineHeight(28, fontName: "Pretendard-SemiBold", fontSize: 18)
+          .foregroundColor(Color.gray900)
+          .padding(.horizontal, 16)
 
-        TextEditor(text: $viewModel.content)
-          .frame(minHeight: 120)
-          .padding(10)
-          .background(Color(UIColor.gray100))
-          .clipShape(RoundedRectangle(cornerRadius: 12))
+        Text("제목과 내용을 입력해주세요")
+          .font(.custom("Pretendard-Regular", size: 14))
+          .kerning(-0.1)
+          .appLineHeight(20, fontName: "Pretendard-Regular", fontSize: 14)
+          .foregroundColor(Color.gray600)
+          .padding(.horizontal, 16)
       }
+    }
+    .padding(.bottom, 32)
+    .overlay(alignment: .bottom) {
+      Divider()
+        .frame(height: 1)
+        .foregroundColor(Color.gray200)
     }
   }
 
-  private func labeledTextField(
-    title: String,
-    placeholder: String,
-    text: Binding<String>,
-    keyboard: UIKeyboardType = .default
-  ) -> some View {
-    VStack(alignment: .leading, spacing: 8) {
-      Text(title)
-        .font(.system(size: 14, weight: .medium))
-        .foregroundStyle(Color(UIColor.gray900))
-
-      TextField(placeholder, text: text)
-        .font(.system(size: 15))
-        .keyboardType(keyboard)
-        .padding(.horizontal, 12)
-        .frame(height: 48)
-        .background(Color(UIColor.gray100))
-        .clipShape(RoundedRectangle(cornerRadius: 12))
+  private var scrollContent: some View {
+    ScrollView {
+      VStack(spacing: 24) {
+        titleField
+        contentField
+      }
+      .padding(16)
     }
   }
 
-  private var bottomTermsSection: some View {
-    Button {
-      Task {
-        await viewModel.createProposal()
-      }
-    } label: {
-      Group {
-        if viewModel.isLoading {
-          ProgressView()
-            .tint(.white)
-        } else {
-          Text("요청 올리기")
-            .font(.system(size: 16, weight: .medium))
-        }
-      }
-      .frame(maxWidth: .infinity)
-      .frame(height: 52)
+  private var titleField: some View {
+    TitleTextField(
+      title: "제목",
+      placeholder: "예: 성수동 OO 베이커리 소금빵 웨이팅",
+      text: $viewModel.title,
+      maxLength: 50,
+      autoFocus: true
+    )
+  }
+
+  private var contentField: some View {
+    ContentTextField(
+      title: "내용",
+      placeholder: "만남 장소를 포함한 요청 내용을 자세히 작성해주세요",
+      text: $viewModel.content,
+      maxLength: 500
+    )
+  }
+
+  private var bottomSection: some View {
+    BottomActionBar(title: "다음", isEnabled: isNextEnabled) {
+      // TODO: 다음 단계로 이동
     }
-    .buttonStyle(.borderedProminent)
-    .tint(Color(UIColor.indigo600))
-    .disabled(viewModel.isLoading)
-    .padding(.top, 8)
   }
 }
 

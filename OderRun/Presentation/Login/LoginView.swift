@@ -15,26 +15,21 @@ struct LoginView: View {
   }
 
   var body: some View {
-    ZStack {
-      Color.white
-        .ignoresSafeArea()
-
+    ScreenContainer {
       VStack(spacing: 0) {
-        Spacer()
-          .frame(height: 120) // 상단 여백 (상태바 + 디자인 상단 공간)
+        Gap.v(150)
 
         brandSection
 
-        Spacer()
+        Gap.v(72)
 
         socialButtonsSection
-          .padding(.bottom, 12)
+
+        Spacer()
 
         bottomTermsSection
-          .padding(.bottom, 24)
+          .padding(.bottom, 23)
       }
-      .frame(maxWidth: .infinity, maxHeight: .infinity)
-      .padding(.horizontal, 24)
     }
   }
 
@@ -42,22 +37,26 @@ struct LoginView: View {
     VStack(spacing: 12) {
       ZStack {
         RoundedRectangle(cornerRadius: 24)
-          .fill(Color(UIColor.gray600)) // #7D889E
+          .fill(Color.gray500)
           .frame(width: 96, height: 96)
 
-        Image(systemName: "figure.run")
-          .font(.system(size: 40, weight: .bold))
-          .foregroundStyle(Color.white)
+        // TODO: 브랜드 로고 추가
       }
 
       VStack(spacing: 8) {
         Text("브랜드명")
-          .font(.system(size: 30, weight: .bold))
-          .foregroundStyle(Color(UIColor.gray950)) // #0F141D
+          .font(.custom("Pretendard-Bold", size: 30))
+          .kerning(0.396)
+          .appLineHeight(36, fontName: "Pretendard-Bold", fontSize: 30)
+          .foregroundColor(Color.gray900)
+          .multilineTextAlignment(.center)
 
         Text("내용")
-          .font(.system(size: 16))
-          .foregroundStyle(Color(UIColor.gray700)) // #5B6579
+          .font(.custom("Inter-Regular", size: 16))
+          .kerning(-0.312)
+          .appLineHeight(24, fontName: "Inter-Regular", fontSize: 16)
+          .foregroundColor(Color.gray600)
+          .multilineTextAlignment(.center)
       }
     }
     .frame(width: 120, height: 176)
@@ -70,17 +69,20 @@ struct LoginView: View {
         // TODO: 카카오 로그인 액션
       } label: {
         HStack(spacing: 6) {
-          Image(systemName: "message.fill")
-            .font(.system(size: 18))
-            .foregroundStyle(Color.black)
+          Image("icon_kakao")
+            .resizable()
+            .frame(width: 24, height: 24)
 
           Text("카카오로 시작하기")
-            .font(.system(size: 16, weight: .medium))
-            .foregroundStyle(Color.black)
+            .font(.custom("Pretendard-Medium", size: 16))
+            .kerning(-0.3)
+            .appLineHeight(24, fontName: "Pretendard-Medium", fontSize: 16)
+            .foregroundColor(.black)
+            .multilineTextAlignment(.center)
         }
         .frame(maxWidth: .infinity)
         .frame(height: 56)
-        .background(Color(red: 0.996, green: 0.898, blue: 0.0)) // #FEE500
+        .background(Color.kakaoBrand)
         .clipShape(RoundedRectangle(cornerRadius: 12))
       }
 
@@ -89,13 +91,16 @@ struct LoginView: View {
         // TODO: 애플 로그인 액션
       } label: {
         HStack(spacing: 6) {
-          Image(systemName: "applelogo")
-            .font(.system(size: 18))
-            .foregroundStyle(Color.white)
+          Image("icon_apple")
+            .resizable()
+            .frame(width: 24, height: 24)
 
           Text("Apple로 시작하기")
-            .font(.system(size: 16, weight: .medium))
-            .foregroundStyle(Color.white)
+            .font(.custom("Pretendard-Medium", size: 16))
+            .kerning(-0.3)
+            .appLineHeight(24, fontName: "Pretendard-Medium", fontSize: 16)
+            .foregroundColor(.white)
+            .multilineTextAlignment(.center)
         }
         .frame(maxWidth: .infinity)
         .frame(height: 56)
@@ -103,6 +108,7 @@ struct LoginView: View {
         .clipShape(RoundedRectangle(cornerRadius: 12))
       }
     }
+    .padding(.horizontal, 4)
     .frame(maxWidth: .infinity)
   }
 
@@ -110,19 +116,36 @@ struct LoginView: View {
     VStack(spacing: 0) {
       HStack(spacing: 2) {
         Text("로그인하면 오더런의")
+          .font(.custom("Pretendard-Regular", size: 12))
+          .kerning(0)
+          .appLineHeight(16, fontName: "Pretendard-Regular", fontSize: 12)
+          .foregroundColor(Color.gray500)
         Text("이용약관")
+          .font(.custom("Pretendard-Regular", size: 12))
+          .kerning(0)
+          .appLineHeight(16, fontName: "Pretendard-Regular", fontSize: 12)
+          .foregroundColor(Color.gray500)
           .underline()
         Text("및")
+          .font(.custom("Pretendard-Regular", size: 12))
+          .kerning(0)
+          .appLineHeight(16, fontName: "Pretendard-Regular", fontSize: 12)
+          .foregroundColor(Color.gray500)
       }
-
       HStack(spacing: 2) {
         Text("개인정보처리방침")
+          .font(.custom("Pretendard-Regular", size: 12))
+          .kerning(0)
+          .appLineHeight(16, fontName: "Pretendard-Regular", fontSize: 12)
+          .foregroundColor(Color.gray500)
           .underline()
         Text("에 동의하게 됩니다")
+          .font(.custom("Pretendard-Regular", size: 12))
+          .kerning(0)
+          .appLineHeight(16, fontName: "Pretendard-Regular", fontSize: 12)
+          .foregroundColor(Color.gray500)
       }
     }
-    .font(.system(size: 12))
-    .foregroundStyle(Color(UIColor.gray600)) // #6A7282
     .multilineTextAlignment(.center)
     .frame(maxWidth: .infinity)
   }
