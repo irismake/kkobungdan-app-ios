@@ -13,41 +13,32 @@ struct RequestDetailView: View {
   let date: String
   let time: String
   let fee: String
-  var badges: [BadgeItem] = []
-  var applicantCount: Int = 0
+  let nickname: String
+  var level: Int = 1
+  var levelGrade: String = ""
   var onBack: () -> Void = {}
+  var onApply: () -> Void = {}
 
   var body: some View {
     VStack(spacing: 0) {
-      AppBar(title: "내 요청 상세", onBack: onBack)
+      AppBar(title: "요청 상세", onBack: onBack)
 
       // Content area
       VStack(spacing: 0) {
         ScrollView {
-          ScreenContainer {
+          VStack(alignment: .leading, spacing: 12) {
+            requesterProfile
             RequestCard(
               title: title,
               description: description,
               date: date,
               time: time,
-              fee: fee,
-              badges: badges
+              fee: fee
             )
           }
+          .padding(.horizontal, Layout.screenHorizontalPadding)
           .padding(.vertical, 12)
         }
-
-        Spacer()
-
-        // 고객센터 안내
-        Text("고객센터 email@gmail")
-          .font(.custom("Pretendard-Regular", size: 14))
-          .kerning(-0.1)
-          .appLineHeight(20, fontName: "Pretendard-Regular", fontSize: 14)
-          .foregroundColor(Color.gray700)
-          .multilineTextAlignment(.center)
-          .frame(maxWidth: .infinity)
-          .padding(.bottom, 32)
       }
       .frame(maxHeight: .infinity)
       .overlay(alignment: .bottom) {
@@ -56,14 +47,10 @@ struct RequestDetailView: View {
           .frame(height: 1)
       }
 
-      // Bottom buttons
-      VStack(spacing: 8) {
-        ConfirmButton(title: "지원 보기(\(applicantCount))") {
-          // TODO: 지원 목록 화면으로 이동
-        }
-
-        CancelButton(title: "요청 취소") {
-          // TODO: 요청 취소 액션
+      // Bottom button
+      VStack(spacing: 0) {
+        ConfirmButton(title: "지원하기") {
+          onApply()
         }
       }
       .padding(.horizontal, Layout.screenHorizontalPadding)
@@ -71,6 +58,47 @@ struct RequestDetailView: View {
       .padding(.bottom, 32)
     }
     .background(Color.gray000)
+  }
+
+  private var requesterProfile: some View {
+    VStack(alignment: .leading, spacing: 4) {
+      Text(nickname)
+        .font(.custom("Pretendard-SemiBold", size: 18))
+        .kerning(-0.4)
+        .foregroundColor(.black)
+
+      Text("웨이팅 레벨")
+        .font(.custom("Pretendard-Regular", size: 12))
+        .kerning(-0.15)
+        .appLineHeight(20, fontName: "Pretendard-Regular", fontSize: 12)
+        .foregroundColor(Color.gray500)
+
+      HStack(spacing: 6) {
+        Image("icon_users")
+          .renderingMode(.template)
+          .resizable()
+          .frame(width: 16, height: 16)
+          .foregroundColor(Color.amber500)
+
+        HStack(spacing: 4) {
+          HStack(spacing: 1) {
+            Text("Lv \(level)")
+              .font(.custom("Pretendard-Medium", size: 14))
+              .kerning(-0.15)
+              .foregroundColor(Color.gray900)
+            Text(":")
+              .font(.custom("Pretendard-Medium", size: 14))
+              .foregroundColor(Color.gray900)
+          }
+          Text(levelGrade)
+            .font(.custom("Pretendard-Medium", size: 14))
+            .kerning(-0.15)
+            .foregroundColor(Color.gray900)
+        }
+        .appLineHeight(20, fontName: "Pretendard-Medium", fontSize: 14)
+      }
+    }
+    .padding(.horizontal, 16)
   }
 }
 
@@ -81,10 +109,8 @@ struct RequestDetailView: View {
     date: "2025년 11월 25일",
     time: "오후 3시",
     fee: "8,000원",
-    badges: [
-      BadgeItem(text: "대기중", textColor: .blue500, bgColor: .blue000),
-      BadgeItem(text: "새로운 지원 도착", textColor: .amber600, bgColor: .amber000)
-    ],
-    applicantCount: 2
+    nickname: "{닉네임}",
+    level: 1,
+    levelGrade: "{등급}"
   )
 }
