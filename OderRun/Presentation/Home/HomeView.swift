@@ -69,6 +69,8 @@ struct HomeView: View {
       .background(Color.gray000)
     case .notifications:
       NotificationView()
+    case .profile:
+      ProfileView()
     default:
       Spacer()
         .background(Color.gray000)
