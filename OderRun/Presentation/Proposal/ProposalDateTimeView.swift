@@ -111,6 +111,7 @@ struct ProposalDateTimeView: View {
         Text(day)
           .font(.custom("Pretendard-Regular", size: 12))
           .kerning(-0.2)
+          .appLineHeight(20, fontName: "Pretendard-Regular", fontSize: 12)
           .foregroundColor(Color.gray600)
           .frame(maxWidth: .infinity)
           .frame(height: 40)
@@ -149,6 +150,7 @@ struct ProposalDateTimeView: View {
       Text("\(calendar.component(.day, from: date))")
         .font(.custom("Pretendard-SemiBold", size: 14))
         .kerning(-0.2)
+        .appLineHeight(20, fontName: "Pretendard-SemiBold", fontSize: 14)
         .foregroundColor(dayTextColor(isSelected: isSelected, isPast: isPast, isToday: isToday))
         .frame(width: 40, height: 40)
         .background(isSelected ? Color.indigo500 : Color.clear)
@@ -193,6 +195,7 @@ struct ProposalDateTimeView: View {
         Text("오전")
           .font(.custom("Pretendard-Medium", size: 16))
           .kerning(-0.2)
+          .appLineHeight(24, fontName: "Pretendard-Medium", fontSize: 16)
           .foregroundColor(isAM ? Color.gray900 : Color.gray500)
           .frame(maxWidth: .infinity)
           .frame(height: 36)
@@ -205,6 +208,7 @@ struct ProposalDateTimeView: View {
         Text("오후")
           .font(.custom("Pretendard-Medium", size: 16))
           .kerning(-0.2)
+          .appLineHeight(24, fontName: "Pretendard-Medium", fontSize: 16)
           .foregroundColor(!isAM ? Color.gray900 : Color.gray500)
           .frame(maxWidth: .infinity)
           .frame(height: 36)
@@ -249,13 +253,14 @@ struct ProposalDateTimeView: View {
         ForEach(-2 ... 2, id: \.self) { offset in
           let idx = (currentIndex + offset + values.count * 100) % values.count
           Text(String(format: format, values[idx]))
+            .font(.custom("Pretendard-Medium", size: 16))
+            .kerning(-0.2)
+            .appLineHeight(24, fontName: "Pretendard-Medium", fontSize: 16)
             .foregroundColor(offset == 0 ? Color.gray900 : Color.gray300)
             .frame(maxWidth: .infinity)
             .padding(.vertical, 6)
         }
       }
-      .font(.custom("Pretendard-Medium", size: 16))
-      .kerning(-0.2)
       .offset(y: dragOffset)
       .animation(.easeOut(duration: 0.15), value: selection)
       .frame(height: 130)
