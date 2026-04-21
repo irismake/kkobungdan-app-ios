@@ -1,5 +1,5 @@
 //
-//  RequestDetailView.swift
+//  ApplyDetailView.swift
 //  OderRun
 //
 //  Created by 김가희 on 3/26/26.
@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-struct RequestDetailView: View {
+struct ApplyDetailView: View {
   let title: String
   let description: String
   let date: String
@@ -17,18 +17,18 @@ struct RequestDetailView: View {
   var level: Int = 1
   var levelGrade: String = ""
   var onBack: () -> Void = {}
-  var onApply: () -> Void = {}
+  var onMet: () -> Void = {}
 
   var body: some View {
     VStack(spacing: 0) {
-      AppBar(title: "요청 상세", onBack: onBack)
+      AppBar(title: "지원 상세", onBack: onBack)
 
       // Content area
       VStack(spacing: 0) {
         ScrollView {
           VStack(alignment: .leading, spacing: 12) {
-            requesterProfile
-            RequestCard(
+            ApplicantProfile
+            ProposalCard(
               title: title,
               description: description,
               date: date,
@@ -39,6 +39,17 @@ struct RequestDetailView: View {
           .padding(.horizontal, Layout.screenHorizontalPadding)
           .padding(.vertical, 12)
         }
+
+        Spacer()
+
+        Text("고객센터 email@gmail")
+          .font(.custom("Pretendard-Regular", size: 14))
+          .kerning(-0.1)
+          .appLineHeight(20, fontName: "Pretendard-Regular", fontSize: 14)
+          .foregroundColor(Color.gray700)
+          .multilineTextAlignment(.center)
+          .frame(maxWidth: .infinity)
+          .padding(.bottom, 32)
       }
       .frame(maxHeight: .infinity)
       .overlay(alignment: .bottom) {
@@ -48,11 +59,19 @@ struct RequestDetailView: View {
       }
 
       // Bottom button
-      VStack(spacing: 0) {
-        ConfirmButton(title: "지원하기") {
-          onApply()
-        }
+      Button(action: onMet) {
+        Text("만났어요!")
+          .font(.custom("Pretendard-SemiBold", size: 16))
+          .kerning(-0.2)
+          .appLineHeight(24, fontName: "Pretendard-SemiBold", fontSize: 16)
+          .foregroundColor(.white)
+          .multilineTextAlignment(.center)
+          .frame(maxWidth: .infinity)
+          .frame(height: 56)
+          .background(Color.emerald500)
+          .clipShape(RoundedRectangle(cornerRadius: 12))
       }
+      .buttonStyle(.plain)
       .padding(.horizontal, Layout.screenHorizontalPadding)
       .padding(.top, 16)
       .padding(.bottom, 32)
@@ -60,7 +79,7 @@ struct RequestDetailView: View {
     .background(Color.gray000)
   }
 
-  private var requesterProfile: some View {
+  private var ApplicantProfile: some View {
     VStack(alignment: .leading, spacing: 4) {
       Text(nickname)
         .font(.custom("Pretendard-SemiBold", size: 18))
@@ -103,7 +122,7 @@ struct RequestDetailView: View {
 }
 
 #Preview {
-  RequestDetailView(
+  ApplyDetailView(
     title: "강남역 곱창전골 웨이팅",
     description: "제가 도착하기 전에 미리 줄 서있어주실 분!\n인원은 3명입니다.",
     date: "2025년 11월 25일",

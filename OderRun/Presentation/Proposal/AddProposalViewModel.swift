@@ -1,5 +1,5 @@
 //
-//  ProposalRequestViewModel.swift
+//  AddProposalViewModel.swift
 //  OderRun
 //
 //  Created by 김가희 on 3/9/26.
@@ -8,7 +8,7 @@
 import Foundation
 
 @Observable
-final class ProposalRequestViewModel {
+final class AddProposalViewModel {
   var title: String = ""
   var content: String = ""
   var deadline: String = ""

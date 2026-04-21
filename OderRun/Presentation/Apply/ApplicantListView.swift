@@ -16,7 +16,7 @@ struct ApplicantItem: Identifiable {
 }
 
 struct ApplicantListView: View {
-  let requestTitle: String
+  let title: String
   let applicants: [ApplicantItem]
   var onBack: () -> Void = {}
 
@@ -28,7 +28,7 @@ struct ApplicantListView: View {
         VStack(alignment: .leading, spacing: 12) {
           // 헤더: 요청 제목 + 지원자 수
           VStack(alignment: .leading, spacing: 4) {
-            Text(requestTitle)
+            Text(title)
               .font(.custom("Pretendard-Medium", size: 14))
               .kerning(-0.15)
               .appLineHeight(20, fontName: "Pretendard-Medium", fontSize: 14)
@@ -75,7 +75,7 @@ struct ApplicantListView: View {
 
 #Preview {
   ApplicantListView(
-    requestTitle: "강남역 곱창전골 웨이팅",
+    title: "강남역 곱창전골 웨이팅",
     applicants: [
       ApplicantItem(nickname: "카야잼", level: 40, grade: "고수", appliedAt: "2026. 1. 22. 오후 10:05:17 지원"),
       ApplicantItem(nickname: "닉네임", level: 10, grade: "초보", appliedAt: "2026. 1. 22. 오후 10:05:17 지원")

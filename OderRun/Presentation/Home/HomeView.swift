@@ -55,7 +55,7 @@ struct HomeView: View {
       ScrollView {
         VStack(spacing: 12) {
           ForEach(proposals) { proposal in
-            RequestCard(
+            ProposalCard(
               title: proposal.title,
               description: proposal.description,
               date: proposal.date,

@@ -1,5 +1,5 @@
 //
-//  ProposalRequestView.swift
+//  AddProposalView.swift
 //  OderRun
 //
 //  Created by 김가희 on 3/4/26.
@@ -7,11 +7,11 @@
 
 import SwiftUI
 
-struct ProposalRequestView: View {
-  @State private var viewModel: ProposalRequestViewModel
+struct AddProposalView: View {
+  @State private var viewModel: AddProposalViewModel
   @Environment(\.dismiss) private var dismiss
 
-  init(viewModel: ProposalRequestViewModel) {
+  init(viewModel: AddProposalViewModel) {
     _viewModel = State(initialValue: viewModel)
   }
 
@@ -96,8 +96,8 @@ struct ProposalRequestView: View {
 }
 
 #Preview {
-  ProposalRequestView(
-    viewModel: ProposalRequestViewModel(
+  AddProposalView(
+    viewModel: AddProposalViewModel(
       createProposalUseCase: CreateProposalUseCase(
         repository: ProposalRepositoryImpl()
       )
