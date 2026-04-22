@@ -8,26 +8,24 @@
 import Foundation
 
 final class AuthRepositoryImpl: AuthRepositoryProtocol, Sendable {
-  func login(email: String, password: String) async throws -> User {
-    // TODO: 실제 API 연동 시 구현
-    try await Task.sleep(nanoseconds: 1_000_000_000)
+  func signup(email _: String, password _: String, name _: String, phone _: String) async throws {
+    // TODO: 실제 API 연동 시 구현 (Step 4 에서 더미 seed 채움)
+    throw RepositoryError.notImplemented
+  }
 
-    if email.isEmpty || password.isEmpty {
-      throw AuthError.invalidCredentials
-    }
+  func login(email _: String, password _: String) async throws -> AuthTokens {
+    // TODO: 실제 API 연동 시 구현 (Step 4 에서 더미 seed 채움)
+    throw RepositoryError.notImplemented
+  }
 
-    // TODO: 실제 서버 응답으로 교체
-    let dto = UserResponseDTO(
-      id: "temp-user-id",
-      email: email,
-      name: "홍길동",
-      phone: "010-1234-5678",
-      createdAt: "2026-01-01T10:00:00",
-      lastLoginAt: "2026-03-10T12:00:00",
-      alarmEnabled: true
-    )
+  func refresh(refreshToken _: String) async throws -> AuthTokens {
+    // TODO: 실제 API 연동 시 구현 (Step 4 에서 더미 seed 채움)
+    throw RepositoryError.notImplemented
+  }
 
-    return dto.toDomain()
+  func logout(refreshToken _: String) async throws {
+    // TODO: 실제 API 연동 시 구현 (Step 4 에서 더미 seed 채움)
+    throw RepositoryError.notImplemented
   }
 }
 
