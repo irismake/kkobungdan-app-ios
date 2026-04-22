@@ -8,12 +8,52 @@
 import SwiftUI
 
 struct ContentView: View {
-  private let loginViewModel = LoginViewModel(
-    loginUseCase: LoginUseCase(authRepository: AuthRepositoryImpl())
-  )
+  private let userRepository: UserRepositoryProtocol = UserRepositoryImpl()
+  private let proposalRepository: ProposalRepositoryProtocol = ProposalRepositoryImpl()
+  private let offerRepository: OfferRepositoryProtocol = OfferRepositoryImpl()
+  private let missionRepository: MissionRepositoryProtocol = MissionRepositoryImpl()
+  private let notificationRepository: NotificationRepositoryProtocol = NotificationRepositoryImpl()
+
+  @State private var loginViewModel: LoginViewModel
+
+  init() {
+    let authRepository = AuthRepositoryImpl()
+    _loginViewModel = State(
+      initialValue: LoginViewModel(loginUseCase: LoginUseCase(authRepository: authRepository))
+    )
+  }
 
   var body: some View {
-    LoginView(viewModel: loginViewModel)
+    if loginViewModel.isLoginSuccess {
+      HomeView(
+        viewModel: makeHomeViewModel(),
+        profileViewModel: makeProfileViewModel(),
+        notificationViewModel: makeNotificationViewModel()
+      )
+    } else {
+      LoginView(viewModel: loginViewModel)
+    }
+  }
+
+  private func makeHomeViewModel() -> HomeViewModel {
+    HomeViewModel(
+      fetchProposalsUseCase: FetchProposalsUseCase(repository: proposalRepository)
+    )
+  }
+
+  private func makeProfileViewModel() -> ProfileViewModel {
+    ProfileViewModel(
+      fetchUserDetailUseCase: FetchUserDetailUseCase(userRepository: userRepository),
+      updateAlarmUseCase: UpdateAlarmUseCase(userRepository: userRepository),
+      userRepository: userRepository
+    )
+  }
+
+  private func makeNotificationViewModel() -> NotificationViewModel {
+    NotificationViewModel(
+      fetchNotificationsUseCase: FetchNotificationsUseCase(repository: notificationRepository),
+      repository: notificationRepository
+    )
   }
 }
 
