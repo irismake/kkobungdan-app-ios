@@ -24,6 +24,16 @@ final class NotificationViewModel {
     self.repository = repository
   }
 
+  static func preview() -> NotificationViewModel {
+    let repo = NotificationRepositoryImpl()
+    let vm = NotificationViewModel(
+      fetchNotificationsUseCase: FetchNotificationsUseCase(repository: repo),
+      repository: repo
+    )
+    vm.notifications = AppNotification.dummyList
+    return vm
+  }
+
   @MainActor
   func load() async {
     isLoading = true

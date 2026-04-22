@@ -19,6 +19,14 @@ final class HomeViewModel {
     self.fetchProposalsUseCase = fetchProposalsUseCase
   }
 
+  static func preview() -> HomeViewModel {
+    let vm = HomeViewModel(
+      fetchProposalsUseCase: FetchProposalsUseCase(repository: ProposalRepositoryImpl())
+    )
+    vm.proposals = Proposal.dummyList
+    return vm
+  }
+
   @MainActor
   func load() async {
     isLoading = true

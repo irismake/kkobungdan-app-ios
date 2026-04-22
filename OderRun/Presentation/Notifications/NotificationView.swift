@@ -121,3 +121,7 @@ struct NotificationItemView: View {
     }
   }
 }
+
+#Preview {
+  NotificationView(viewModel: .preview())
+}

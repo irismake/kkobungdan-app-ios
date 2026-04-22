@@ -83,3 +83,11 @@ struct HomeView: View {
     }
   }
 }
+
+#Preview {
+  HomeView(
+    viewModel: .preview(),
+    profileViewModel: .preview(),
+    notificationViewModel: .preview()
+  )
+}

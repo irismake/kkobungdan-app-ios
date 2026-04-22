@@ -28,6 +28,18 @@ final class ProfileViewModel {
     self.userRepository = userRepository
   }
 
+  static func preview() -> ProfileViewModel {
+    let repo = UserRepositoryImpl()
+    let vm = ProfileViewModel(
+      fetchUserDetailUseCase: FetchUserDetailUseCase(userRepository: repo),
+      updateAlarmUseCase: UpdateAlarmUseCase(userRepository: repo),
+      userRepository: repo
+    )
+    vm.user = .dummy
+    vm.runnerProfile = .dummy
+    return vm
+  }
+
   @MainActor
   func load() async {
     isLoading = true
