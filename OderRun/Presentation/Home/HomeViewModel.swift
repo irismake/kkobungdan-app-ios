@@ -21,7 +21,7 @@ final class HomeViewModel {
 
   static func preview() -> HomeViewModel {
     let vm = HomeViewModel(
-      fetchProposalsUseCase: FetchProposalsUseCase(repository: DIContainer.makeProposalRepository())
+      fetchProposalsUseCase: FetchProposalsUseCase(repository: DIContainer.proposalRepository)
     )
     vm.proposals = Proposal.dummyList
     return vm
