@@ -1,5 +1,5 @@
 //
-//  RequestDetailView.swift
+//  MyProposalDetailView.swift
 //  OderRun
 //
 //  Created by 김가희 on 3/26/26.
@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-struct RequestDetailView: View {
+struct MyProposalDetailView: View {
   let title: String
   let description: String
   let date: String
@@ -25,7 +25,7 @@ struct RequestDetailView: View {
       VStack(spacing: 0) {
         ScrollView {
           ScreenContainer {
-            RequestCard(
+            ProposalCard(
               title: title,
               description: description,
               date: date,
@@ -75,7 +75,7 @@ struct RequestDetailView: View {
 }
 
 #Preview {
-  RequestDetailView(
+  MyProposalDetailView(
     title: "강남역 곱창전골 웨이팅",
     description: "제가 도착하기 전에 미리 줄 서있어주실 분!\n인원은 3명입니다.",
     date: "2025년 11월 25일",

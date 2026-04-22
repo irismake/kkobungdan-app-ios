@@ -62,7 +62,7 @@ struct AccountInfoCard: View {
       .padding(.horizontal, 4)
       .frame(height: 40)
     }
-   }
+  }
 
   private var warningBox: some View {
     HStack(alignment: .top, spacing: 4) {

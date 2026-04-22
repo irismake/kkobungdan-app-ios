@@ -32,10 +32,30 @@ struct HomeView: View {
 
   var body: some View {
     VStack(spacing: 0) {
+      tabContent
+
+      ZStack(alignment: .topTrailing) {
+        BottomNavBar(selectedTab: $selectedTab)
+
+        if selectedTab == .home {
+          FloatingActionButton {
+            // TODO: 의뢰 작성 화면으로 이동
+          }
+          .padding(.trailing, 20)
+          .offset(y: -(56 + 4))
+        }
+      }
+    }
+  }
+
+  @ViewBuilder
+  private var tabContent: some View {
+    switch selectedTab {
+    case .home:
       ScrollView {
         VStack(spacing: 12) {
           ForEach(proposals) { proposal in
-            RequestCard(
+            ProposalCard(
               title: proposal.title,
               description: proposal.description,
               date: proposal.date,
@@ -47,16 +67,13 @@ struct HomeView: View {
         .padding(16)
       }
       .background(Color.gray000)
-
-      ZStack(alignment: .topTrailing) {
-        BottomNavBar(selectedTab: $selectedTab)
-
-        FloatingActionButton {
-          // TODO: 의뢰 작성 화면으로 이동
-        }
-        .padding(.trailing, 20)
-        .offset(y: -(56 + 4))
-      }
+    case .notifications:
+      NotificationView()
+    case .profile:
+      ProfileView()
+    default:
+      Spacer()
+        .background(Color.gray000)
     }
   }
 }

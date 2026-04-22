@@ -1,5 +1,5 @@
 //
-//  RequestCard.swift
+//  ProposalCard.swift
 //  OderRun
 //
 //  Created by 김가희 on 3/26/26.
@@ -13,7 +13,7 @@ struct BadgeItem {
   var bgColor: Color = .rose000
 }
 
-struct RequestCard: View {
+struct ProposalCard: View {
   let title: String
   let description: String
   let date: String
@@ -111,7 +111,7 @@ struct RequestCard: View {
 
 #Preview {
   VStack(spacing: 12) {
-    RequestCard(
+    ProposalCard(
       title: "강남역 곱창전골 웨이팅",
       description: "제가 도착하기 전에 미리 줄 서있어주실 분!\n인원은 3명입니다.",
       date: "2025년 11월 25일",
@@ -122,7 +122,7 @@ struct RequestCard: View {
         BadgeItem(text: "새로운 지원 도착", textColor: .amber600, bgColor: .amber000)
       ]
     )
-    RequestCard(
+    ProposalCard(
       title: "{타이틀}",
       description: "{내용}",
       date: "{날짜}",
