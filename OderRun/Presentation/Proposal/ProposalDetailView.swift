@@ -8,33 +8,29 @@
 import SwiftUI
 
 struct ProposalDetailView: View {
-  let title: String
-  let description: String
-  let date: String
-  let time: String
-  let fee: String
-  let nickname: String
-  var level: Int = 1
-  var levelGrade: String = ""
+  @State private var viewModel: ProposalDetailViewModel
   var onBack: () -> Void = {}
   var onApply: () -> Void = {}
+
+  init(
+    viewModel: ProposalDetailViewModel,
+    onBack: @escaping () -> Void = {},
+    onApply: @escaping () -> Void = {}
+  ) {
+    _viewModel = State(initialValue: viewModel)
+    self.onBack = onBack
+    self.onApply = onApply
+  }
 
   var body: some View {
     VStack(spacing: 0) {
       AppBar(title: "요청 상세", onBack: onBack)
 
-      // Content area
       VStack(spacing: 0) {
         ScrollView {
           VStack(alignment: .leading, spacing: 12) {
-            ApplicantProfile
-            ProposalCard(
-              title: title,
-              description: description,
-              date: date,
-              time: time,
-              fee: fee
-            )
+            applicantProfileSection
+            proposalCardSection
           }
           .padding(.horizontal, Layout.screenHorizontalPadding)
           .padding(.vertical, 12)
@@ -47,10 +43,14 @@ struct ProposalDetailView: View {
           .frame(height: 1)
       }
 
-      // Bottom button
       VStack(spacing: 0) {
-        ConfirmButton(title: "지원하기") {
-          onApply()
+        ConfirmButton(title: viewModel.isApplying ? "지원 중..." : "지원하기") {
+          Task {
+            await viewModel.apply()
+            if viewModel.didApply {
+              onApply()
+            }
+          }
         }
       }
       .padding(.horizontal, Layout.screenHorizontalPadding)
@@ -58,9 +58,38 @@ struct ProposalDetailView: View {
       .padding(.bottom, 32)
     }
     .background(Color.gray000)
+    .task {
+      await viewModel.load()
+    }
   }
 
-  private var ApplicantProfile: some View {
+  @ViewBuilder
+  private var applicantProfileSection: some View {
+    if let profile = viewModel.ordererProfile {
+      applicantProfile(nickname: profile.nickname, level: profile.level, grade: profile.grade)
+    } else if viewModel.isLoading {
+      ProgressView().padding(.horizontal, 16)
+    }
+  }
+
+  @ViewBuilder
+  private var proposalCardSection: some View {
+    if let proposal = viewModel.proposal {
+      ProposalCard(
+        title: proposal.title,
+        description: proposal.content,
+        date: ProposalDisplay.dateString(proposal.deadline),
+        time: ProposalDisplay.timeString(proposal.deadline),
+        fee: ProposalDisplay.feeString(proposal.errandFee)
+      )
+    } else if let errorMessage = viewModel.errorMessage {
+      Text(errorMessage)
+        .foregroundColor(Color.rose500)
+        .padding(.horizontal, 16)
+    }
+  }
+
+  private func applicantProfile(nickname: String, level: Int, grade: String) -> some View {
     VStack(alignment: .leading, spacing: 4) {
       Text(nickname)
         .font(.custom("Pretendard-SemiBold", size: 18))
@@ -90,7 +119,7 @@ struct ProposalDetailView: View {
               .font(.custom("Pretendard-Medium", size: 14))
               .foregroundColor(Color.gray900)
           }
-          Text(levelGrade)
+          Text(grade)
             .font(.custom("Pretendard-Medium", size: 14))
             .kerning(-0.15)
             .foregroundColor(Color.gray900)
@@ -100,17 +129,4 @@ struct ProposalDetailView: View {
     }
     .padding(.horizontal, 16)
   }
-}
-
-#Preview {
-  ProposalDetailView(
-    title: "강남역 곱창전골 웨이팅",
-    description: "제가 도착하기 전에 미리 줄 서있어주실 분!\n인원은 3명입니다.",
-    date: "2025년 11월 25일",
-    time: "오후 3시",
-    fee: "8,000원",
-    nickname: "{닉네임}",
-    level: 1,
-    levelGrade: "{등급}"
-  )
 }

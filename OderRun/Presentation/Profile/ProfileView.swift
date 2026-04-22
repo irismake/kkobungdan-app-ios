@@ -1,12 +1,26 @@
 import SwiftUI
 
 struct ProfileView: View {
-  // TODO: ViewModel에서 실제 데이터로 교체
-  private let nickname = "{닉네임}"
-  private let level = 1
-  private let grade = "{등급}"
+  @State private var viewModel: ProfileViewModel
+
   private let appVersion = "v1.0.0"
   private let supportEmail = "email@gmail"
+
+  init(viewModel: ProfileViewModel) {
+    _viewModel = State(initialValue: viewModel)
+  }
+
+  private var nickname: String {
+    viewModel.runnerProfile?.nickname ?? viewModel.user?.name ?? "{닉네임}"
+  }
+
+  private var level: Int {
+    viewModel.runnerProfile?.level ?? 1
+  }
+
+  private var grade: String {
+    viewModel.runnerProfile?.grade ?? "{등급}"
+  }
 
   var body: some View {
     VStack(spacing: 0) {
@@ -42,6 +56,9 @@ struct ProfileView: View {
       .background(Color.gray000)
       .frame(maxHeight: .infinity)
     }
+    .task {
+      await viewModel.load()
+    }
   }
 
   // MARK: - Header
@@ -75,7 +92,7 @@ struct ProfileView: View {
 
       VStack(alignment: .leading, spacing: 2) {
         Text("웨이팅 레벨")
-          .font(.custom("Pretㅌendard-Regular", size: 12))
+          .font(.custom("Pretendard-Regular", size: 12))
           .kerning(-0.15)
           .appLineHeight(20, fontName: "Pretendard-Regular", fontSize: 12)
           .foregroundColor(Color.gray500)
@@ -234,8 +251,4 @@ struct ProfileView: View {
       Rectangle().fill(Color.gray200).frame(height: 1)
     }
   }
-}
-
-#Preview {
-  ProfileView()
 }
