@@ -7,11 +7,11 @@
 
 import Foundation
 
-struct Proposal: Equatable {
-  let id: String
+struct Proposal: Equatable, Identifiable {
+  let id: Int64
   let title: String
   let content: String
-  let deadline: String
-  let errandFee: String
+  let deadline: Date
+  let errandFee: Int
   let status: ProposalStatus
 }

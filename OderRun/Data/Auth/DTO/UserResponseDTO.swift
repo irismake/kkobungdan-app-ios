@@ -7,17 +7,19 @@ struct UserResponseDTO: Decodable {
   let phone: String
   let createdAt: String
   let lastLoginAt: String
+  let alarmEnabled: Bool
 }
 
 extension UserResponseDTO {
-  func toDomain(dateFormatter: ISO8601DateFormatter = ISO8601DateFormatter()) -> User {
+  func toDomain() -> User {
     User(
       id: id,
       email: email,
       name: name,
       phone: phone,
-      createdAt: dateFormatter.date(from: createdAt) ?? Date(),
-      lastLoginAt: dateFormatter.date(from: lastLoginAt) ?? Date()
+      createdAt: DateFormatters.parse(createdAt),
+      lastLoginAt: DateFormatters.parse(lastLoginAt),
+      alarmEnabled: alarmEnabled
     )
   }
 }

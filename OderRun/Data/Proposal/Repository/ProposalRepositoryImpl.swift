@@ -18,12 +18,12 @@ final class ProposalRepositoryImpl: ProposalRepositoryProtocol, Sendable {
     try await Task.sleep(nanoseconds: 1_000_000_000)
 
     return Proposal(
-      id: UUID().uuidString,
+      id: Int64.random(in: 1 ... 9_999_999),
       title: title,
       content: content,
-      deadline: deadline,
-      errandFee: errandFee,
-      status: ProposalStatus.posted
+      deadline: DateFormatters.parse(deadline),
+      errandFee: Int(errandFee) ?? 0,
+      status: .posted
     )
   }
 }

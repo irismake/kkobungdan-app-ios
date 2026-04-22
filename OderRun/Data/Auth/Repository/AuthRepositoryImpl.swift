@@ -23,7 +23,8 @@ final class AuthRepositoryImpl: AuthRepositoryProtocol, Sendable {
       name: "홍길동",
       phone: "010-1234-5678",
       createdAt: "2026-01-01T10:00:00",
-      lastLoginAt: "2026-03-10T12:00:00"
+      lastLoginAt: "2026-03-10T12:00:00",
+      alarmEnabled: true
     )
 
     return dto.toDomain()
