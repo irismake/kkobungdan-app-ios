@@ -1,0 +1,73 @@
+//
+//  AuthRepository.swift
+//  OderRun
+//
+//  Created by 김가희 on 4/22/26.
+//
+
+import Foundation
+
+private struct LoginRequestBody: Encodable {
+  let email: String
+  let password: String
+}
+
+private struct SignupRequestBody: Encodable {
+  let email: String
+  let password: String
+  let name: String
+  let phone: String
+}
+
+private struct RefreshRequestBody: Encodable {
+  let refreshToken: String
+}
+
+private struct LogoutRequestBody: Encodable {
+  let refreshToken: String
+}
+
+final class AuthRepository: AuthRepositoryProtocol {
+  private let client: HTTPClient
+  private let tokenStorage: TokenStorage
+
+  init(client: HTTPClient = .shared, tokenStorage: TokenStorage = .shared) {
+    self.client = client
+    self.tokenStorage = tokenStorage
+  }
+
+  func signup(email: String, password: String, name: String, phone: String) async throws {
+    let _: ApiResponseDTO<String> = try await client.post(
+      "/v1/auth/signup",
+      body: SignupRequestBody(email: email, password: password, name: name, phone: phone)
+    )
+  }
+
+  func login(email: String, password: String) async throws -> AuthTokens {
+    let response: LoginResponseDTO = try await client.post(
+      "/v1/auth/login",
+      body: LoginRequestBody(email: email, password: password)
+    )
+    tokenStorage.accessToken = response.accessToken
+    tokenStorage.refreshToken = response.refreshToken
+    return response.toDomain()
+  }
+
+  func refresh(refreshToken: String) async throws -> AuthTokens {
+    let response: LoginResponseDTO = try await client.post(
+      "/v1/auth/refresh",
+      body: RefreshRequestBody(refreshToken: refreshToken)
+    )
+    tokenStorage.accessToken = response.accessToken
+    tokenStorage.refreshToken = response.refreshToken
+    return response.toDomain()
+  }
+
+  func logout(refreshToken: String) async throws {
+    let _: ApiResponseDTO<String> = try await client.post(
+      "/v1/auth/logout",
+      body: LogoutRequestBody(refreshToken: refreshToken)
+    )
+    tokenStorage.clear()
+  }
+}

@@ -1,5 +1,5 @@
 //
-//  OfferRepositoryImpl.swift
+//  TestOfferRepositoryImpl.swift
 //  OderRun
 //
 //  Created by 김가희 on 4/22/26.
@@ -7,7 +7,7 @@
 
 import Foundation
 
-actor OfferRepositoryImpl: OfferRepositoryProtocol {
+actor TestOfferRepositoryImpl: OfferRepositoryProtocol {
   private static let simulatedLatency: UInt64 = 700_000_000
 
   private var offers: [Offer] = Offer.dummyList

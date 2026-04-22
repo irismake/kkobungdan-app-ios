@@ -1,5 +1,5 @@
 //
-//  ProposalRepositoryImpl.swift
+//  TestProposalRepositoryImpl.swift
 //  OderRun
 //
 //  Created by 김가희 on 3/9/26.
@@ -7,7 +7,7 @@
 
 import Foundation
 
-actor ProposalRepositoryImpl: ProposalRepositoryProtocol {
+actor TestProposalRepositoryImpl: ProposalRepositoryProtocol {
   private static let simulatedLatency: UInt64 = 700_000_000
 
   private var proposals: [Proposal] = Proposal.dummyList

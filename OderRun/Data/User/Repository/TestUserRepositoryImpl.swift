@@ -1,5 +1,5 @@
 //
-//  UserRepositoryImpl.swift
+//  TestUserRepositoryImpl.swift
 //  OderRun
 //
 //  Created by 김가희 on 4/22/26.
@@ -7,7 +7,7 @@
 
 import Foundation
 
-actor UserRepositoryImpl: UserRepositoryProtocol {
+actor TestUserRepositoryImpl: UserRepositoryProtocol {
   private static let simulatedLatency: UInt64 = 600_000_000
 
   private var currentUser: User = .dummy

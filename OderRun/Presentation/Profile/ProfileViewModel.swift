@@ -29,14 +29,14 @@ final class ProfileViewModel {
   }
 
   static func preview() -> ProfileViewModel {
-    let repo = UserRepositoryImpl()
+    let repo = DIContainer.makeUserRepository()
     let vm = ProfileViewModel(
       fetchUserDetailUseCase: FetchUserDetailUseCase(userRepository: repo),
       updateAlarmUseCase: UpdateAlarmUseCase(userRepository: repo),
       userRepository: repo
     )
-    vm.user = .dummy
-    vm.runnerProfile = .dummy
+    vm.user = User.dummy
+    vm.runnerProfile = RunnerProfile.dummy
     return vm
   }
 

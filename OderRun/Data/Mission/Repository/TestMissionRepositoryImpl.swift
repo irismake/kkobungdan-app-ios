@@ -1,5 +1,5 @@
 //
-//  MissionRepositoryImpl.swift
+//  TestMissionRepositoryImpl.swift
 //  OderRun
 //
 //  Created by 김가희 on 4/22/26.
@@ -7,7 +7,7 @@
 
 import Foundation
 
-actor MissionRepositoryImpl: MissionRepositoryProtocol {
+actor TestMissionRepositoryImpl: MissionRepositoryProtocol {
   private static let simulatedLatency: UInt64 = 700_000_000
 
   private var missions: [Mission] = Mission.dummyList

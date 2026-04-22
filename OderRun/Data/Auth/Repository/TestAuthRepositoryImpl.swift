@@ -1,5 +1,5 @@
 //
-//  AuthRepositoryImpl.swift
+//  TestAuthRepositoryImpl.swift
 //  OderRun
 //
 //  Created by 김가희 on 3/4/26.
@@ -7,7 +7,7 @@
 
 import Foundation
 
-actor AuthRepositoryImpl: AuthRepositoryProtocol {
+actor TestAuthRepositoryImpl: AuthRepositoryProtocol {
   private static let simulatedLatency: UInt64 = 800_000_000
 
   func signup(email: String, password: String, name: String, phone: String) async throws {

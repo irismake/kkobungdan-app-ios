@@ -8,18 +8,18 @@
 import SwiftUI
 
 struct ContentView: View {
-  private let userRepository: UserRepositoryProtocol = UserRepositoryImpl()
-  private let proposalRepository: ProposalRepositoryProtocol = ProposalRepositoryImpl()
-  private let offerRepository: OfferRepositoryProtocol = OfferRepositoryImpl()
-  private let missionRepository: MissionRepositoryProtocol = MissionRepositoryImpl()
-  private let notificationRepository: NotificationRepositoryProtocol = NotificationRepositoryImpl()
+  private let userRepository = DIContainer.makeUserRepository()
+  private let proposalRepository = DIContainer.makeProposalRepository()
+  private let offerRepository = DIContainer.makeOfferRepository()
+  private let notificationRepository = DIContainer.makeNotificationRepository()
 
   @State private var loginViewModel: LoginViewModel
 
   init() {
-    let authRepository = AuthRepositoryImpl()
     _loginViewModel = State(
-      initialValue: LoginViewModel(loginUseCase: LoginUseCase(authRepository: authRepository))
+      initialValue: LoginViewModel(
+        loginUseCase: LoginUseCase(authRepository: DIContainer.makeAuthRepository())
+      )
     )
   }
 
