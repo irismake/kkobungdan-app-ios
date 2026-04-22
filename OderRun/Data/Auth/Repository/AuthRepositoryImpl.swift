@@ -7,29 +7,44 @@
 
 import Foundation
 
-final class AuthRepositoryImpl: AuthRepositoryProtocol, Sendable {
-  func signup(email _: String, password _: String, name _: String, phone _: String) async throws {
-    // TODO: 실제 API 연동 시 구현 (Step 4 에서 더미 seed 채움)
-    throw RepositoryError.notImplemented
+actor AuthRepositoryImpl: AuthRepositoryProtocol {
+  private static let simulatedLatency: UInt64 = 800_000_000
+
+  func signup(email: String, password: String, name: String, phone: String) async throws {
+    try await Task.sleep(nanoseconds: Self.simulatedLatency)
+    guard !email.isEmpty, !password.isEmpty, !name.isEmpty, !phone.isEmpty else {
+      throw RepositoryError.unauthorized
+    }
+    if email == "conflict@test.com" {
+      throw RepositoryError.conflict
+    }
   }
 
-  func login(email _: String, password _: String) async throws -> AuthTokens {
-    // TODO: 실제 API 연동 시 구현 (Step 4 에서 더미 seed 채움)
-    throw RepositoryError.notImplemented
+  func login(email: String, password: String) async throws -> AuthTokens {
+    try await Task.sleep(nanoseconds: Self.simulatedLatency)
+    guard !email.isEmpty, !password.isEmpty, email != "fail@test.com" else {
+      throw RepositoryError.unauthorized
+    }
+    let dto = LoginResponseDTO(
+      accessToken: DummySession.accessToken,
+      refreshToken: DummySession.refreshToken
+    )
+    return dto.toDomain()
   }
 
-  func refresh(refreshToken _: String) async throws -> AuthTokens {
-    // TODO: 실제 API 연동 시 구현 (Step 4 에서 더미 seed 채움)
-    throw RepositoryError.notImplemented
+  func refresh(refreshToken: String) async throws -> AuthTokens {
+    try await Task.sleep(nanoseconds: Self.simulatedLatency)
+    guard refreshToken == DummySession.refreshToken else {
+      throw RepositoryError.unauthorized
+    }
+    let dto = LoginResponseDTO(
+      accessToken: DummySession.accessToken,
+      refreshToken: DummySession.refreshToken
+    )
+    return dto.toDomain()
   }
 
   func logout(refreshToken _: String) async throws {
-    // TODO: 실제 API 연동 시 구현 (Step 4 에서 더미 seed 채움)
-    throw RepositoryError.notImplemented
+    try await Task.sleep(nanoseconds: Self.simulatedLatency)
   }
-}
-
-enum AuthError: Error {
-  case invalidCredentials
-  case networkError
 }

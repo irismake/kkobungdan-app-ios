@@ -1,6 +1,13 @@
+//
+//  UserDetailResponseDTO.swift
+//  OderRun
+//
+//  Created by 김가희 on 4/22/26.
+//
+
 import Foundation
 
-struct UserResponseDTO: Decodable {
+struct UserDetailResponseDTO: Decodable {
   let id: String
   let email: String
   let name: String
@@ -10,7 +17,7 @@ struct UserResponseDTO: Decodable {
   let alarmEnabled: Bool
 }
 
-extension UserResponseDTO {
+extension UserDetailResponseDTO {
   func toDomain() -> User {
     User(
       id: id,
