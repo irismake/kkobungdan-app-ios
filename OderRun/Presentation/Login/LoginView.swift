@@ -154,7 +154,7 @@ struct LoginView: View {
 #Preview {
   LoginView(
     viewModel: LoginViewModel(
-      loginUseCase: LoginUseCase(authRepository: AuthRepositoryImpl())
+      loginUseCase: LoginUseCase(authRepository: DIContainer.authRepository)
     )
   )
 }

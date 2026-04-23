@@ -14,7 +14,7 @@ struct LoginUseCase {
     self.authRepository = authRepository
   }
 
-  func execute(email: String, password: String) async throws -> User {
+  func execute(email: String, password: String) async throws -> AuthTokens {
     try await authRepository.login(email: email, password: password)
   }
 }

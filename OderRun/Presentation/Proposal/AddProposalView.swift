@@ -99,7 +99,7 @@ struct AddProposalView: View {
   AddProposalView(
     viewModel: AddProposalViewModel(
       createProposalUseCase: CreateProposalUseCase(
-        repository: ProposalRepositoryImpl()
+        repository: DIContainer.proposalRepository
       )
     )
   )

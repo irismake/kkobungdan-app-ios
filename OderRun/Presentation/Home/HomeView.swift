@@ -7,28 +7,22 @@
 
 import SwiftUI
 
-struct HomeProposalItem: Identifiable {
-  let id: UUID = .init()
-  let title: String
-  let description: String
-  let date: String
-  let time: String
-  let fee: String
-}
-
 struct HomeView: View {
+  @State private var viewModel: HomeViewModel
   @State private var selectedTab: HomeTab = .home
 
-  // TODO: ViewModel에서 실제 데이터로 교체
-  private let proposals: [HomeProposalItem] = [
-    HomeProposalItem(
-      title: "강남역 곱창전골 웨이팅",
-      description: "제가 도착하기 전에 미리 줄 서있어주실 분!\n인원은 3명입니다.",
-      date: "2025년 11월 25일",
-      time: "오후 3시",
-      fee: "8,000원"
-    )
-  ]
+  private let profileViewModel: ProfileViewModel
+  private let notificationViewModel: NotificationViewModel
+
+  init(
+    viewModel: HomeViewModel,
+    profileViewModel: ProfileViewModel,
+    notificationViewModel: NotificationViewModel
+  ) {
+    _viewModel = State(initialValue: viewModel)
+    self.profileViewModel = profileViewModel
+    self.notificationViewModel = notificationViewModel
+  }
 
   var body: some View {
     VStack(spacing: 0) {
@@ -46,38 +40,60 @@ struct HomeView: View {
         }
       }
     }
+    .task {
+      await viewModel.load()
+    }
   }
 
   @ViewBuilder
   private var tabContent: some View {
     switch selectedTab {
     case .home:
-      ScrollView {
-        VStack(spacing: 12) {
-          ForEach(proposals) { proposal in
-            ProposalCard(
-              title: proposal.title,
-              description: proposal.description,
-              date: proposal.date,
-              time: proposal.time,
-              fee: proposal.fee
-            )
+      VStack(spacing: 0) {
+        TabPageHeader(title: "홈")
+        ScrollView {
+          VStack(spacing: 12) {
+            if viewModel.isLoading, viewModel.proposals.isEmpty {
+              ProgressView()
+                .padding(.top, 40)
+            } else if let errorMessage = viewModel.errorMessage, viewModel.proposals.isEmpty {
+              Text(errorMessage)
+                .foregroundColor(Color.rose500)
+                .padding(.top, 40)
+            } else {
+              ForEach(viewModel.proposals) { proposal in
+                ProposalCard(
+                  title: proposal.title,
+                  description: proposal.content,
+                  date: ProposalDisplay.dateString(proposal.deadline),
+                  time: ProposalDisplay.timeString(proposal.deadline),
+                  fee: ProposalDisplay.feeString(proposal.errandFee)
+                )
+              }
+            }
           }
+          .padding(16)
         }
-        .padding(16)
-      }
-      .background(Color.gray000)
-    case .notifications:
-      NotificationView()
-    case .profile:
-      ProfileView()
-    default:
-      Spacer()
         .background(Color.gray000)
+      }
+    case .activity:
+      VStack(spacing: 0) {
+        TabPageHeader(title: "내 활동")
+        Spacer()
+          .background(Color.gray000)
+      }
+    case .notifications:
+      NotificationView(viewModel: notificationViewModel)
+    case .profile:
+      ProfileView(viewModel: profileViewModel)
     }
   }
 }
 
 #Preview {
-  HomeView()
+  HomeView(
+    viewModel: .preview(),
+    profileViewModel: .preview(),
+    notificationViewModel: .preview()
+  )
 }

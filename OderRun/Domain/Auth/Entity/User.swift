@@ -14,4 +14,5 @@ struct User: Equatable {
   let phone: String
   let createdAt: Date
   let lastLoginAt: Date
+  let alarmEnabled: Bool
 }

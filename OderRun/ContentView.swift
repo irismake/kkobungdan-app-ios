@@ -8,12 +8,29 @@
 import SwiftUI
 
 struct ContentView: View {
-  private let loginViewModel = LoginViewModel(
-    loginUseCase: LoginUseCase(authRepository: AuthRepositoryImpl())
+  @State private var loginViewModel = LoginViewModel(
+    loginUseCase: LoginUseCase(authRepository: DIContainer.authRepository)
   )
 
   var body: some View {
-    LoginView(viewModel: loginViewModel)
+    if loginViewModel.isLoginSuccess {
+      HomeView(
+        viewModel: HomeViewModel(
+          fetchProposalsUseCase: FetchProposalsUseCase(repository: DIContainer.proposalRepository)
+        ),
+        profileViewModel: ProfileViewModel(
+          fetchUserDetailUseCase: FetchUserDetailUseCase(userRepository: DIContainer.userRepository),
+          updateAlarmUseCase: UpdateAlarmUseCase(userRepository: DIContainer.userRepository),
+          userRepository: DIContainer.userRepository
+        ),
+        notificationViewModel: NotificationViewModel(
+          fetchNotificationsUseCase: FetchNotificationsUseCase(repository: DIContainer.notificationRepository),
+          repository: DIContainer.notificationRepository
+        )
+      )
+    } else {
+      LoginView(viewModel: loginViewModel)
+    }
   }
 }
 

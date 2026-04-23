@@ -7,9 +7,9 @@
 
 import Foundation
 
-enum ProposalStatus {
-  case posted
-  case waiting
-  case accepted
-  case canceled
+enum ProposalStatus: String {
+  case posted = "POSTED"
+  case offered = "OFFERED"
+  case matched = "MATCHED"
+  case cancelled = "CANCELLED"
 }

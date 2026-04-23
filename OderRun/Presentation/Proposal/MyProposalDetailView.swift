@@ -8,38 +8,50 @@
 import SwiftUI
 
 struct MyProposalDetailView: View {
-  let title: String
-  let description: String
-  let date: String
-  let time: String
-  let fee: String
-  var badges: [BadgeItem] = []
-  var applicantCount: Int = 0
+  @State private var viewModel: MyProposalDetailViewModel
   var onBack: () -> Void = {}
+  var onShowApplicants: () -> Void = {}
+
+  init(
+    viewModel: MyProposalDetailViewModel,
+    onBack: @escaping () -> Void = {},
+    onShowApplicants: @escaping () -> Void = {}
+  ) {
+    _viewModel = State(initialValue: viewModel)
+    self.onBack = onBack
+    self.onShowApplicants = onShowApplicants
+  }
+
+  private var statusBadge: BadgeItem? {
+    guard let status = viewModel.proposal?.status else {
+      return nil
+    }
+    switch status {
+    case .posted:
+      return BadgeItem(text: "대기중", textColor: .blue500, bgColor: .blue000)
+    case .offered:
+      return BadgeItem(text: "지원 도착", textColor: .amber600, bgColor: .amber000)
+    case .matched:
+      return BadgeItem(text: "매칭 완료", textColor: .emerald500, bgColor: .emerald000)
+    case .cancelled:
+      return BadgeItem(text: "취소됨", textColor: .gray500, bgColor: .gray100)
+    }
+  }
 
   var body: some View {
     VStack(spacing: 0) {
       AppBar(title: "내 요청 상세", onBack: onBack)
 
-      // Content area
       VStack(spacing: 0) {
         ScrollView {
           ScreenContainer {
-            ProposalCard(
-              title: title,
-              description: description,
-              date: date,
-              time: time,
-              fee: fee,
-              badges: badges
-            )
+            proposalCardSection
           }
           .padding(.vertical, 12)
         }
 
         Spacer()
 
-        // 고객센터 안내
         Text("고객센터 email@gmail")
           .font(.custom("Pretendard-Regular", size: 14))
           .kerning(-0.1)
@@ -56,14 +68,13 @@ struct MyProposalDetailView: View {
           .frame(height: 1)
       }
 
-      // Bottom buttons
       VStack(spacing: 8) {
-        ConfirmButton(title: "지원 보기(\(applicantCount))") {
-          // TODO: 지원 목록 화면으로 이동
+        ConfirmButton(title: "지원 보기(\(viewModel.applicantCount))") {
+          onShowApplicants()
         }
 
-        CancelButton(title: "요청 취소") {
-          // TODO: 요청 취소 액션
+        CancelButton(title: viewModel.isCancelling ? "취소 중..." : "요청 취소") {
+          Task { await viewModel.cancelProposal() }
         }
       }
       .padding(.horizontal, Layout.screenHorizontalPadding)
@@ -71,20 +82,26 @@ struct MyProposalDetailView: View {
       .padding(.bottom, 32)
     }
     .background(Color.gray000)
+    .task {
+      await viewModel.load()
+    }
   }
-}
 
-#Preview {
-  MyProposalDetailView(
-    title: "강남역 곱창전골 웨이팅",
-    description: "제가 도착하기 전에 미리 줄 서있어주실 분!\n인원은 3명입니다.",
-    date: "2025년 11월 25일",
-    time: "오후 3시",
-    fee: "8,000원",
-    badges: [
-      BadgeItem(text: "대기중", textColor: .blue500, bgColor: .blue000),
-      BadgeItem(text: "새로운 지원 도착", textColor: .amber600, bgColor: .amber000)
-    ],
-    applicantCount: 2
-  )
+  @ViewBuilder
+  private var proposalCardSection: some View {
+    if let proposal = viewModel.proposal {
+      ProposalCard(
+        title: proposal.title,
+        description: proposal.content,
+        date: ProposalDisplay.dateString(proposal.deadline),
+        time: ProposalDisplay.timeString(proposal.deadline),
+        fee: ProposalDisplay.feeString(proposal.errandFee),
+        badges: statusBadge.map { [$0] } ?? []
+      )
+    } else if viewModel.isLoading {
+      ProgressView()
+    } else if let errorMessage = viewModel.errorMessage {
+      Text(errorMessage).foregroundColor(Color.rose500)
+    }
+  }
 }
