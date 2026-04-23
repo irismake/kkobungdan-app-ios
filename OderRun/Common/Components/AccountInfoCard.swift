@@ -30,13 +30,11 @@ struct AccountInfoCard: View {
     HStack(spacing: 0) {
       VStack(alignment: .leading, spacing: 2) {
         Text(bankName)
-          .font(.custom("Pretendard-Medium", size: 14))
-          .kerning(-0.2)
+          .textStyle(.accountBody2)
           .foregroundColor(Color.gray800)
               
         Text(accountNumber)
-          .font(.custom("Pretendard-Medium", size: 16))
-          .kerning(-0.2)
+          .textStyle(.accountBody1)
           .foregroundColor(Color.gray900)
       }
           

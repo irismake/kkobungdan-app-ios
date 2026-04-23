@@ -99,7 +99,9 @@ struct MyProposalDetailView: View {
     } else if viewModel.isLoading {
       ProgressView()
     } else if let errorMessage = viewModel.errorMessage {
-      Text(errorMessage).foregroundColor(Color.rose500)
+      Text(errorMessage)
+        .textStyle(.body3)
+        .foregroundColor(Color.rose500)
     }
   }
 }

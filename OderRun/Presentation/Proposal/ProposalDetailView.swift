@@ -84,6 +84,7 @@ struct ProposalDetailView: View {
       )
     } else if let errorMessage = viewModel.errorMessage {
       Text(errorMessage)
+        .textStyle(.body3)
         .foregroundColor(Color.rose500)
         .padding(.horizontal, 16)
     }

@@ -33,7 +33,9 @@ struct ApplicantListView: View {
           if viewModel.isLoading, viewModel.entries.isEmpty {
             ProgressView().padding(.top, 20)
           } else if let errorMessage = viewModel.errorMessage, viewModel.entries.isEmpty {
-            Text(errorMessage).foregroundColor(Color.rose500)
+            Text(errorMessage)
+              .textStyle(.body3)
+              .foregroundColor(Color.rose500)
           } else {
             ForEach(viewModel.entries) { entry in
               ApplicantCard(

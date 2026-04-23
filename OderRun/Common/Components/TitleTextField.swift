@@ -23,8 +23,7 @@ struct TitleTextField: View {
         .foregroundColor(Color.gray800)
 
       TextField(placeholder, text: $text)
-        .font(.custom("Pretendard-Regular", size: 16))
-        .kerning(-0.2)
+        .textStyle(.inputBody1)
         .foregroundColor(Color.gray900)
         .focused($isFocused)
         .onChange(of: text) { _, new in

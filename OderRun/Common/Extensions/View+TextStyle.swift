@@ -34,6 +34,9 @@ enum TextStyle {
   case caption3 // SemiBold 12/16/-0.4
   case caption4 // Regular 12/16/0
   case caption4Compact // Regular 12/14/-0.1
+  case inputBody1 // Pretendard-Regular 16/20/-0.2
+  case accountBody2 // Pretendard-Medium 14/17/-0.2
+  case accountBody1 // Pretendard-Medium 16/19/-0.2
 
   case interHeading1 // Medium 16/24/-0.312
   case interBody1 // Regular 16/24/-0.312
@@ -46,7 +49,11 @@ enum TextStyle {
       return "Pretendard-SemiBold"
     case .body1, .body2, .caption1, .caption1Tight:
       return "Pretendard-Medium"
+    case .accountBody2, .accountBody1:
+      return "Pretendard-Medium"
     case .body3, .caption2, .caption4, .caption4Compact:
+      return "Pretendard-Regular"
+    case .inputBody1:
       return "Pretendard-Regular"
     case .interHeading1:
       return "Inter-Medium"
@@ -60,8 +67,9 @@ enum TextStyle {
     case .display: return 30
     case .heading1, .heading1Compact: return 24
     case .heading2, .title1: return 18
-    case .heading3, .body1, .interHeading1, .interBody1: return 16
+    case .heading3, .body1, .interHeading1, .interBody1, .inputBody1, .accountBody1: return 16
     case .title2, .title3, .body2, .body3: return 14
+    case .accountBody2: return 14
     case .caption1, .caption1Tight, .caption2, .caption3, .caption4, .caption4Compact: return 12
     }
   }
@@ -85,6 +93,9 @@ enum TextStyle {
     case .caption3: return 16
     case .caption4: return 16
     case .caption4Compact: return 14
+    case .inputBody1: return 20
+    case .accountBody2: return 17
+    case .accountBody1: return 19
     case .interHeading1, .interBody1: return 24
     }
   }
@@ -101,6 +112,7 @@ enum TextStyle {
     case .caption4: return 0
     case .caption4Compact: return -0.1
     case .interHeading1, .interBody1: return -0.312
+    case .inputBody1, .accountBody2, .accountBody1: return -0.2
     }
   }
 }
@@ -115,7 +127,6 @@ extension View {
     let fontName = weight?.fontName ?? style.fontName
     let kerning = kerning ?? style.kerning
     let lineHeight = lineHeight ?? style.lineHeight
-
     return font(.custom(fontName, size: style.fontSize))
       .kerning(kerning)
       .appLineHeight(lineHeight, fontName: fontName, fontSize: style.fontSize)

@@ -24,16 +24,14 @@ struct ContentTextField: View {
       ZStack(alignment: .topLeading) {
         if text.isEmpty {
           Text(placeholder)
-            .font(.custom("Pretendard-Regular", size: 16))
-            .kerning(-0.2)
+            .textStyle(.inputBody1)
             .foregroundColor(Color.gray500)
             .padding(.horizontal, 16)
             .padding(.vertical, 12)
         }
 
         TextEditor(text: $text)
-          .font(.custom("Pretendard-Regular", size: 16))
-          .kerning(-0.2)
+          .textStyle(.inputBody1)
           .foregroundColor(Color.gray900)
           .focused($isFocused)
           .scrollContentBackground(.hidden)
