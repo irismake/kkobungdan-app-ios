@@ -9,7 +9,7 @@ struct NotificationView: View {
 
   var body: some View {
     VStack(spacing: 0) {
-      header
+      TabPageHeader(title: "알림")
       ScrollView {
         LazyVStack(spacing: 0) {
           if viewModel.isLoading, viewModel.notifications.isEmpty {
@@ -42,25 +42,6 @@ struct NotificationView: View {
     .background(Color.gray000)
     .task {
       await viewModel.load()
-    }
-  }
-
-  private var header: some View {
-    HStack {
-      Text("알림")
-        .font(.custom("Pretendard-SemiBold", size: 24))
-        .kerning(-0.4)
-        .appLineHeight(28, fontName: "Pretendard-SemiBold", fontSize: 24)
-        .foregroundColor(Color.gray900)
-      Spacer()
-    }
-    .padding(.horizontal, 24)
-    .padding(.vertical, 12)
-    .background(Color.white)
-    .overlay(alignment: .bottom) {
-      Rectangle()
-        .fill(Color.gray200)
-        .frame(height: 1)
     }
   }
 }

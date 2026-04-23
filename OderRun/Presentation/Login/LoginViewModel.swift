@@ -13,7 +13,7 @@ final class LoginViewModel {
   var password: String = ""
   var isLoading: Bool = false
   var errorMessage: String?
-  var isLoginSuccess: Bool = false
+  var isLoginSuccess: Bool = true
 
   private let loginUseCase: LoginUseCase
 

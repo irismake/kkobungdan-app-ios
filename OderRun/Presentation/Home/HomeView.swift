@@ -49,37 +49,43 @@ struct HomeView: View {
   private var tabContent: some View {
     switch selectedTab {
     case .home:
-      ScrollView {
-        VStack(spacing: 12) {
-          if viewModel.isLoading, viewModel.proposals.isEmpty {
-            ProgressView()
-              .padding(.top, 40)
-          } else if let errorMessage = viewModel.errorMessage, viewModel.proposals.isEmpty {
-            Text(errorMessage)
-              .foregroundColor(Color.rose500)
-              .padding(.top, 40)
-          } else {
-            ForEach(viewModel.proposals) { proposal in
-              ProposalCard(
-                title: proposal.title,
-                description: proposal.content,
-                date: ProposalDisplay.dateString(proposal.deadline),
-                time: ProposalDisplay.timeString(proposal.deadline),
-                fee: ProposalDisplay.feeString(proposal.errandFee)
-              )
+      VStack(spacing: 0) {
+        TabPageHeader(title: "홈")
+        ScrollView {
+          VStack(spacing: 12) {
+            if viewModel.isLoading, viewModel.proposals.isEmpty {
+              ProgressView()
+                .padding(.top, 40)
+            } else if let errorMessage = viewModel.errorMessage, viewModel.proposals.isEmpty {
+              Text(errorMessage)
+                .foregroundColor(Color.rose500)
+                .padding(.top, 40)
+            } else {
+              ForEach(viewModel.proposals) { proposal in
+                ProposalCard(
+                  title: proposal.title,
+                  description: proposal.content,
+                  date: ProposalDisplay.dateString(proposal.deadline),
+                  time: ProposalDisplay.timeString(proposal.deadline),
+                  fee: ProposalDisplay.feeString(proposal.errandFee)
+                )
+              }
             }
           }
+          .padding(16)
         }
-        .padding(16)
+        .background(Color.gray000)
       }
-      .background(Color.gray000)
+    case .activity:
+      VStack(spacing: 0) {
+        TabPageHeader(title: "내 활동")
+        Spacer()
+          .background(Color.gray000)
+      }
     case .notifications:
       NotificationView(viewModel: notificationViewModel)
     case .profile:
       ProfileView(viewModel: profileViewModel)
-    default:
-      Spacer()
-        .background(Color.gray000)
     }
   }
 }

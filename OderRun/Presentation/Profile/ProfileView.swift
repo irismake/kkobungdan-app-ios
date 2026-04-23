@@ -24,7 +24,7 @@ struct ProfileView: View {
 
   var body: some View {
     VStack(spacing: 0) {
-      header
+      TabPageHeader(title: "프로필")
 
       VStack(spacing: 12) {
         profileCard
@@ -58,25 +58,6 @@ struct ProfileView: View {
     }
     .task {
       await viewModel.load()
-    }
-  }
-
-  // MARK: - Header
-
-  private var header: some View {
-    HStack {
-      Text("프로필")
-        .font(.custom("Pretendard-SemiBold", size: 24))
-        .kerning(-0.4)
-        .appLineHeight(28, fontName: "Pretendard-SemiBold", fontSize: 24)
-        .foregroundColor(Color.gray900)
-      Spacer()
-    }
-    .padding(.horizontal, 24)
-    .padding(.vertical, 12)
-    .background(Color.white)
-    .overlay(alignment: .bottom) {
-      Rectangle().fill(Color.gray200).frame(height: 1)
     }
   }
 
