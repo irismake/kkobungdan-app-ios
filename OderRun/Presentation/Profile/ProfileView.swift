@@ -72,7 +72,6 @@ struct ProfileView: View {
       VStack(alignment: .leading, spacing: 2) {
         Text("웨이팅 레벨")
           .textStyle(.caption2)
-          .kerning(-0.15)
           .foregroundColor(Color.gray500)
 
         HStack(spacing: 6) {

@@ -84,6 +84,7 @@ struct NotificationItemView: View {
 
         Text(timeString)
           .textStyle(.caption2)
+          .kerning(-0.1)
           .foregroundColor(Color.gray500)
       }
     }
