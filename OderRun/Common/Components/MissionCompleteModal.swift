@@ -78,9 +78,7 @@ struct MissionCompleteModal: View {
         HStack(spacing: 8) {
           Button(action: onCancel) {
             Text("취소")
-              .font(.custom("Inter-Medium", size: 16))
-              .kerning(-0.312)
-              .appLineHeight(24, fontName: "Inter-Medium", fontSize: 16)
+              .textStyle(.interHeading1)
               .foregroundColor(Color.gray700)
               .multilineTextAlignment(.center)
               .frame(maxWidth: .infinity)
@@ -96,9 +94,7 @@ struct MissionCompleteModal: View {
 
           Button(action: onConfirm) {
             Text("확인")
-              .font(.custom("Inter-Medium", size: 16))
-              .kerning(-0.312)
-              .appLineHeight(24, fontName: "Inter-Medium", fontSize: 16)
+              .textStyle(.interHeading1)
               .foregroundColor(.white)
               .multilineTextAlignment(.center)
               .frame(maxWidth: .infinity)

@@ -50,9 +50,7 @@ struct LoginView: View {
           .multilineTextAlignment(.center)
 
         Text("내용")
-          .font(.custom("Inter-Regular", size: 16))
-          .kerning(-0.312)
-          .appLineHeight(24, fontName: "Inter-Regular", fontSize: 16)
+          .textStyle(.interBody1)
           .foregroundColor(Color.gray600)
           .multilineTextAlignment(.center)
       }

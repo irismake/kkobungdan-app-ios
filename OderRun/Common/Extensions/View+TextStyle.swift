@@ -35,6 +35,9 @@ enum TextStyle {
   case caption4 // Regular 12/16/0
   case caption4Compact // Regular 12/14/-0.1
 
+  case interHeading1 // Medium 16/24/-0.312
+  case interBody1 // Regular 16/24/-0.312
+
   var fontName: String {
     switch self {
     case .display:
@@ -45,6 +48,10 @@ enum TextStyle {
       return "Pretendard-Medium"
     case .body3, .caption2, .caption4, .caption4Compact:
       return "Pretendard-Regular"
+    case .interHeading1:
+      return "Inter-Medium"
+    case .interBody1:
+      return "Inter-Regular"
     }
   }
 
@@ -53,7 +60,7 @@ enum TextStyle {
     case .display: return 30
     case .heading1, .heading1Compact: return 24
     case .heading2, .title1: return 18
-    case .heading3, .body1: return 16
+    case .heading3, .body1, .interHeading1, .interBody1: return 16
     case .title2, .title3, .body2, .body3: return 14
     case .caption1, .caption1Tight, .caption2, .caption3, .caption4, .caption4Compact: return 12
     }
@@ -78,6 +85,7 @@ enum TextStyle {
     case .caption3: return 16
     case .caption4: return 16
     case .caption4Compact: return 14
+    case .interHeading1, .interBody1: return 24
     }
   }
 
@@ -92,6 +100,7 @@ enum TextStyle {
     case .caption1Tight: return 0
     case .caption4: return 0
     case .caption4Compact: return -0.1
+    case .interHeading1, .interBody1: return -0.312
     }
   }
 }
