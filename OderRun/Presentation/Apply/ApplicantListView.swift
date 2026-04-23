@@ -67,7 +67,7 @@ struct ApplicantListView: View {
 
       HStack(spacing: 0) {
         Text("\(viewModel.entries.count)명")
-          .textStyle(.heading2)
+          .textStyle(.heading2, weight: .bold)
           .foregroundColor(Color.indigo500)
 
         Text("이 웨이팅을 지원했습니다")

@@ -169,7 +169,7 @@ struct ProposalDateTimeView: View {
   private var timeSection: some View {
     VStack(alignment: .leading, spacing: 0) {
       Text("시간")
-        .textStyle(.body2)
+        .textStyle(.body2, weight: .bold)
         .foregroundColor(Color.gray800)
         .padding(.horizontal, 8)
         .padding(.bottom, 10)

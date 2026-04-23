@@ -1,5 +1,21 @@
 import SwiftUI
 
+enum AppFontWeight {
+  case regular
+  case medium
+  case semiBold
+  case bold
+
+  var fontName: String {
+    switch self {
+    case .regular: return "Pretendard-Regular"
+    case .medium: return "Pretendard-Medium"
+    case .semiBold: return "Pretendard-SemiBold"
+    case .bold: return "Pretendard-Bold"
+    }
+  }
+}
+
 enum TextStyle {
   case display // Bold 30/36/+0.396
   case heading1 // SemiBold 24/28/-0.4
@@ -13,11 +29,11 @@ enum TextStyle {
   case body2 // Medium 14/20/-0.1
   case body3 // Regular 14/20/-0.1
   case caption1 // Medium 12/20/-0.1
-  case caption1Tight // Medium 12/16/-0.1
+  case caption1Tight // Medium 12/16/0
   case caption2 // Regular 12/20/-0.1
   case caption3 // SemiBold 12/16/-0.4
   case caption4 // Regular 12/16/0
-  case caption4Compact // Regular 12/14/+0.1
+  case caption4Compact // Regular 12/14/-0.1
 
   var fontName: String {
     switch self {
@@ -72,17 +88,27 @@ enum TextStyle {
       return -0.4
     case .heading3: return -0.2
     case .body1: return -0.3
-    case .body2, .body3, .caption1, .caption1Tight, .caption2: return -0.1
+    case .body2, .body3, .caption1, .caption2: return -0.1
+    case .caption1Tight: return 0
     case .caption4: return 0
-    case .caption4Compact: return 0.1
+    case .caption4Compact: return -0.1
     }
   }
 }
 
 extension View {
-  func textStyle(_ style: TextStyle) -> some View {
-    font(.custom(style.fontName, size: style.fontSize))
-      .kerning(style.kerning)
-      .appLineHeight(style.lineHeight, fontName: style.fontName, fontSize: style.fontSize)
+  func textStyle(
+    _ style: TextStyle,
+    weight: AppFontWeight? = nil,
+    kerning: CGFloat? = nil,
+    lineHeight: CGFloat? = nil
+  ) -> some View {
+    let fontName = weight?.fontName ?? style.fontName
+    let kerning = kerning ?? style.kerning
+    let lineHeight = lineHeight ?? style.lineHeight
+
+    return font(.custom(fontName, size: style.fontSize))
+      .kerning(kerning)
+      .appLineHeight(lineHeight, fontName: fontName, fontSize: style.fontSize)
   }
 }

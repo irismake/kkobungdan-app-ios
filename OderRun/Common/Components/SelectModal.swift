@@ -37,7 +37,7 @@ struct SelectModal: View {
 
         VStack(spacing: 4) {
           Text(title)
-            .textStyle(.heading2)
+            .textStyle(.heading2, weight: .bold)
             .foregroundColor(Color.gray900)
             .multilineTextAlignment(.center)
 
