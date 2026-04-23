@@ -34,17 +34,14 @@ struct ApplyCompleteView: View {
         // Text
         VStack(spacing: 8) {
           Text("지원 완료")
-            .font(.custom("Pretendard-SemiBold", size: 24))
-            .kerning(-0.4)
-            .appLineHeight(24, fontName: "Pretendard-SemiBold", fontSize: 24)
+            .textStyle(.heading1Compact)
             .foregroundColor(Color.gray900)
             .multilineTextAlignment(.center)
             .frame(maxWidth: .infinity)
 
           Text("요청자가 검토 중이에요.\n선택되면 알림으로 알려드릴게요.")
-            .font(.custom("Pretendard-Regular", size: 14))
+            .textStyle(.body3)
             .kerning(-0.4)
-            .appLineHeight(20, fontName: "Pretendard-Regular", fontSize: 14)
             .foregroundColor(Color.gray600)
             .multilineTextAlignment(.center)
             .frame(maxWidth: .infinity)

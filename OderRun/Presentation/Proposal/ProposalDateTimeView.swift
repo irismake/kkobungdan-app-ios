@@ -38,16 +38,12 @@ struct ProposalDateTimeView: View {
 
       VStack(alignment: .leading, spacing: 8) {
         Text("날짜 / 시간 설정")
-          .font(.custom("Pretendard-SemiBold", size: 18))
-          .kerning(-0.4)
-          .appLineHeight(28, fontName: "Pretendard-SemiBold", fontSize: 18)
+          .textStyle(.heading2)
           .foregroundColor(Color.gray900)
           .padding(.horizontal, 16)
 
         Text("채팅을 통해 날짜와 시간을 조정할 수 있어요")
-          .font(.custom("Pretendard-Regular", size: 14))
-          .kerning(-0.1)
-          .appLineHeight(20, fontName: "Pretendard-Regular", fontSize: 14)
+          .textStyle(.body3)
           .foregroundColor(Color.gray600)
           .padding(.horizontal, 16)
       }
@@ -85,9 +81,8 @@ struct ProposalDateTimeView: View {
       .padding(10)
 
       Text(monthYearString)
-        .font(.custom("Pretendard-SemiBold", size: 14))
+        .textStyle(.title2)
         .kerning(-0.1)
-        .appLineHeight(20, fontName: "Pretendard-SemiBold", fontSize: 14)
         .foregroundColor(Color.gray900)
 
       Button {
@@ -109,9 +104,8 @@ struct ProposalDateTimeView: View {
     HStack(spacing: 8) {
       ForEach(weekdays, id: \.self) { day in
         Text(day)
-          .font(.custom("Pretendard-Regular", size: 12))
+          .textStyle(.caption2)
           .kerning(-0.2)
-          .appLineHeight(20, fontName: "Pretendard-Regular", fontSize: 12)
           .foregroundColor(Color.gray600)
           .frame(maxWidth: .infinity)
           .frame(height: 40)
@@ -148,9 +142,8 @@ struct ProposalDateTimeView: View {
       }
     } label: {
       Text("\(calendar.component(.day, from: date))")
-        .font(.custom("Pretendard-SemiBold", size: 14))
+        .textStyle(.title2)
         .kerning(-0.2)
-        .appLineHeight(20, fontName: "Pretendard-SemiBold", fontSize: 14)
         .foregroundColor(dayTextColor(isSelected: isSelected, isPast: isPast, isToday: isToday))
         .frame(width: 40, height: 40)
         .background(isSelected ? Color.indigo500 : Color.clear)
@@ -176,9 +169,7 @@ struct ProposalDateTimeView: View {
   private var timeSection: some View {
     VStack(alignment: .leading, spacing: 0) {
       Text("시간")
-        .font(.custom("Pretendard-Bold", size: 14))
-        .kerning(-0.1)
-        .appLineHeight(20, fontName: "Pretendard-Bold", fontSize: 14)
+        .textStyle(.body2)
         .foregroundColor(Color.gray800)
         .padding(.horizontal, 8)
         .padding(.bottom, 10)
@@ -193,9 +184,8 @@ struct ProposalDateTimeView: View {
     HStack(spacing: 0) {
       Button { isAM = true } label: {
         Text("오전")
-          .font(.custom("Pretendard-Medium", size: 16))
+          .textStyle(.body1)
           .kerning(-0.2)
-          .appLineHeight(24, fontName: "Pretendard-Medium", fontSize: 16)
           .foregroundColor(isAM ? Color.gray900 : Color.gray500)
           .frame(maxWidth: .infinity)
           .frame(height: 36)
@@ -206,9 +196,8 @@ struct ProposalDateTimeView: View {
 
       Button { isAM = false } label: {
         Text("오후")
-          .font(.custom("Pretendard-Medium", size: 16))
+          .textStyle(.body1)
           .kerning(-0.2)
-          .appLineHeight(24, fontName: "Pretendard-Medium", fontSize: 16)
           .foregroundColor(!isAM ? Color.gray900 : Color.gray500)
           .frame(maxWidth: .infinity)
           .frame(height: 36)
@@ -253,9 +242,8 @@ struct ProposalDateTimeView: View {
         ForEach(-2 ... 2, id: \.self) { offset in
           let idx = (currentIndex + offset + values.count * 100) % values.count
           Text(String(format: format, values[idx]))
-            .font(.custom("Pretendard-Medium", size: 16))
+            .textStyle(.body1)
             .kerning(-0.2)
-            .appLineHeight(24, fontName: "Pretendard-Medium", fontSize: 16)
             .foregroundColor(offset == 0 ? Color.gray900 : Color.gray300)
             .frame(maxWidth: .infinity)
             .padding(.vertical, 6)

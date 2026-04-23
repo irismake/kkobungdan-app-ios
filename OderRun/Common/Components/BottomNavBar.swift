@@ -49,8 +49,7 @@ struct BottomNavBar: View {
           .foregroundColor(color)
 
         Text(label)
-          .font(.custom("Pretendard-Medium", size: 12))
-          .appLineHeight(16, fontName: "Pretendard-Medium", fontSize: 12)
+          .textStyle(.caption1Tight)
           .foregroundColor(color)
           .multilineTextAlignment(.center)
       }

@@ -14,9 +14,7 @@ struct CancelButton: View {
   var body: some View {
     Button(action: action) {
       Text(title)
-        .font(.custom("Pretendard-SemiBold", size: 16))
-        .kerning(-0.2)
-        .appLineHeight(24, fontName: "Pretendard-SemiBold", fontSize: 16)
+        .textStyle(.heading3)
         .foregroundColor(Color.gray700)
         .multilineTextAlignment(.center)
         .frame(maxWidth: .infinity)

@@ -19,9 +19,7 @@ struct TitleTextField: View {
   var body: some View {
     VStack(alignment: .leading, spacing: 8) {
       Text(title)
-        .font(.custom("Pretendard-Medium", size: 14))
-        .kerning(-0.1)
-        .appLineHeight(20, fontName: "Pretendard-Medium", fontSize: 14)
+        .textStyle(.body2)
         .foregroundColor(Color.gray800)
 
       TextField(placeholder, text: $text)
@@ -47,8 +45,7 @@ struct TitleTextField: View {
         HStack {
           Spacer()
           Text("\(text.count)/\(maxLength)")
-            .font(.custom("Pretendard-Regular", size: 12))
-            .appLineHeight(16, fontName: "Pretendard-Regular", fontSize: 12)
+            .textStyle(.caption4)
             .foregroundColor(Color.gray500)
         }
       }

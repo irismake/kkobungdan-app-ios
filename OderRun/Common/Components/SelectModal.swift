@@ -37,31 +37,26 @@ struct SelectModal: View {
 
         VStack(spacing: 4) {
           Text(title)
-            .font(.custom("Pretendard-Bold", size: 18))
-            .kerning(-0.4)
-            .appLineHeight(28, fontName: "Pretendard-Bold", fontSize: 18)
+            .textStyle(.heading2)
             .foregroundColor(Color.gray900)
             .multilineTextAlignment(.center)
 
           Text(description)
-            .font(.custom("Pretendard-Regular", size: 14))
-            .kerning(-0.1)
-            .appLineHeight(20, fontName: "Pretendard-Regular", fontSize: 14)
+            .textStyle(.body3)
             .foregroundColor(Color.gray600)
             .multilineTextAlignment(.center)
         }
 
         VStack(alignment: .leading, spacing: 8) {
           Text(infoTitle)
-            .font(.custom("Pretendard-SemiBold", size: 12))
-            .appLineHeight(16, fontName: "Pretendard-SemiBold", fontSize: 12)
+            .textStyle(.caption3)
+            .kerning(0)
             .foregroundColor(Color.blue900)
-                  
+
           VStack(alignment: .leading, spacing: 0) {
             ForEach(Array(infoItems.enumerated()), id: \.offset) { index, item in
               Text("\(index + 1). \(item)")
-                .font(.custom("Pretendard-Regular", size: 12))
-                .appLineHeight(16, fontName: "Pretendard-Regular", fontSize: 12)
+                .textStyle(.caption4)
                 .foregroundColor(Color.blue800)
             }
           }

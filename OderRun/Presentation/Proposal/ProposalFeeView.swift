@@ -46,16 +46,12 @@ struct ProposalFeeView: View {
 
       VStack(alignment: .leading, spacing: 8) {
         Text("웨이팅비 입력")
-          .font(.custom("Pretendard-SemiBold", size: 18))
-          .kerning(-0.4)
-          .appLineHeight(28, fontName: "Pretendard-SemiBold", fontSize: 18)
+          .textStyle(.heading2)
           .foregroundColor(Color.gray900)
           .padding(.horizontal, 16)
 
         Text("원하는 웨이팅비를 제시해 주세요")
-          .font(.custom("Pretendard-Regular", size: 14))
-          .kerning(-0.1)
-          .appLineHeight(20, fontName: "Pretendard-Regular", fontSize: 14)
+          .textStyle(.body3)
           .foregroundColor(Color.gray600)
           .padding(.horizontal, 16)
       }

@@ -36,16 +36,12 @@ struct MissionCompleteModal: View {
 
         VStack(spacing: 4) {
           Text(title)
-            .font(.custom("Pretendard-Bold", size: 18))
-            .kerning(-0.4)
-            .appLineHeight(28, fontName: "Pretendard-Bold", fontSize: 18)
+            .textStyle(.heading2)
             .foregroundColor(Color.gray900)
             .multilineTextAlignment(.center)
 
           Text(description)
-            .font(.custom("Pretendard-Regular", size: 14))
-            .kerning(-0.1)
-            .appLineHeight(20, fontName: "Pretendard-Regular", fontSize: 14)
+            .textStyle(.body3)
             .foregroundColor(Color.gray600)
             .multilineTextAlignment(.center)
         }
@@ -60,15 +56,12 @@ struct MissionCompleteModal: View {
 
           VStack(alignment: .leading, spacing: 8) {
             Text(infoTitle)
-              .font(.custom("Pretendard-SemiBold", size: 12))
-              .kerning(-0.4)
-              .appLineHeight(16, fontName: "Pretendard-SemiBold", fontSize: 12)
+              .textStyle(.caption3)
               .foregroundColor(Color.amber800)
-                  
+
             Text(infoContent)
-              .font(.custom("Pretendard-Regular", size: 12))
+              .textStyle(.caption4)
               .kerning(-0.1)
-              .appLineHeight(16, fontName: "Pretendard-Regular", fontSize: 12)
               .foregroundColor(Color.amber800)
           }
         }

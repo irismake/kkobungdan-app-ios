@@ -1,0 +1,88 @@
+import SwiftUI
+
+enum TextStyle {
+  case display // Bold 30/36/+0.396
+  case heading1 // SemiBold 24/28/-0.4
+  case heading1Compact // SemiBold 24/24/-0.4
+  case heading2 // SemiBold 18/28/-0.4
+  case heading3 // SemiBold 16/24/-0.2
+  case title1 // SemiBold 18/18/-0.4 (compact)
+  case title2 // SemiBold 14/20/-0.4
+  case title3 // SemiBold 14/14/-0.4 (tight menu labels)
+  case body1 // Medium 16/24/-0.3
+  case body2 // Medium 14/20/-0.1
+  case body3 // Regular 14/20/-0.1
+  case caption1 // Medium 12/20/-0.1
+  case caption1Tight // Medium 12/16/-0.1
+  case caption2 // Regular 12/20/-0.1
+  case caption3 // SemiBold 12/16/-0.4
+  case caption4 // Regular 12/16/0
+  case caption4Compact // Regular 12/14/+0.1
+
+  var fontName: String {
+    switch self {
+    case .display:
+      return "Pretendard-Bold"
+    case .heading1, .heading1Compact, .heading2, .heading3, .title1, .title2, .title3, .caption3:
+      return "Pretendard-SemiBold"
+    case .body1, .body2, .caption1, .caption1Tight:
+      return "Pretendard-Medium"
+    case .body3, .caption2, .caption4, .caption4Compact:
+      return "Pretendard-Regular"
+    }
+  }
+
+  var fontSize: CGFloat {
+    switch self {
+    case .display: return 30
+    case .heading1, .heading1Compact: return 24
+    case .heading2, .title1: return 18
+    case .heading3, .body1: return 16
+    case .title2, .title3, .body2, .body3: return 14
+    case .caption1, .caption1Tight, .caption2, .caption3, .caption4, .caption4Compact: return 12
+    }
+  }
+
+  var lineHeight: CGFloat {
+    switch self {
+    case .display: return 36
+    case .heading1: return 28
+    case .heading1Compact: return 24
+    case .heading2: return 28
+    case .heading3: return 24
+    case .title1: return 18
+    case .title2: return 20
+    case .title3: return 14
+    case .body1: return 24
+    case .body2: return 20
+    case .body3: return 20
+    case .caption1: return 20
+    case .caption1Tight: return 16
+    case .caption2: return 20
+    case .caption3: return 16
+    case .caption4: return 16
+    case .caption4Compact: return 14
+    }
+  }
+
+  var kerning: CGFloat {
+    switch self {
+    case .display: return 0.396
+    case .heading1, .heading1Compact, .heading2, .title1, .title2, .title3, .caption3:
+      return -0.4
+    case .heading3: return -0.2
+    case .body1: return -0.3
+    case .body2, .body3, .caption1, .caption1Tight, .caption2: return -0.1
+    case .caption4: return 0
+    case .caption4Compact: return 0.1
+    }
+  }
+}
+
+extension View {
+  func textStyle(_ style: TextStyle) -> some View {
+    font(.custom(style.fontName, size: style.fontSize))
+      .kerning(style.kerning)
+      .appLineHeight(style.lineHeight, fontName: style.fontName, fontSize: style.fontSize)
+  }
+}

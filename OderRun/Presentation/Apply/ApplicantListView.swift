@@ -61,25 +61,17 @@ struct ApplicantListView: View {
   private var headerSection: some View {
     VStack(alignment: .leading, spacing: 4) {
       Text(viewModel.proposal?.title ?? "")
-        .font(.custom("Pretendard-Medium", size: 14))
+        .textStyle(.body2)
         .kerning(-0.15)
-        .appLineHeight(20, fontName: "Pretendard-Medium", fontSize: 14)
         .foregroundColor(Color.gray600)
 
       HStack(spacing: 0) {
         Text("\(viewModel.entries.count)명")
-          .font(.custom("Pretendard-Bold", size: 18))
-          .kerning(-0.4)
-          .appLineHeight(28, fontName: "Pretendard-Bold", fontSize: 18)
+          .textStyle(.heading2)
           .foregroundColor(Color.indigo500)
 
         Text("이 웨이팅을 지원했습니다")
-          .font(
-            Font.custom("Pretendard", size: 18)
-              .weight(.semibold)
-          )
-          .kerning(-0.4)
-          .appLineHeight(28, fontName: "Pretendard-SemiBold", fontSize: 18)
+          .textStyle(.heading2)
           .foregroundColor(Color.gray700)
       }
     }

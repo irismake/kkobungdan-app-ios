@@ -45,9 +45,8 @@ struct TermsAgreementView: View {
 
   private var subtitleSection: some View {
     Text("서비스 이용을 위해 아래 약관에 동의해 주세요.")
-      .font(.custom("Pretendard-Regular", size: 14))
+      .textStyle(.body3)
       .kerning(-0.15)
-      .appLineHeight(20, fontName: "Pretendard-Regular", fontSize: 14)
       .foregroundColor(Color.gray500)
       .frame(maxWidth: .infinity, alignment: .leading)
   }
@@ -96,9 +95,7 @@ struct TermsAgreementView: View {
         checkboxIcon(isChecked: viewModel.isAllAgreed, size: 24)
 
         Text("전체 동의")
-          .font(.custom("Pretendard-Medium", size: 16))
-          .kerning(-0.3)
-          .appLineHeight(24, fontName: "Pretendard-Medium", fontSize: 16)
+          .textStyle(.body1)
           .foregroundColor(Color.gray900)
 
         Spacer()
@@ -126,9 +123,7 @@ struct TermsAgreementView: View {
       .buttonStyle(.plain)
 
       Text(title)
-        .font(.custom("Pretendard-Medium", size: 16))
-        .kerning(-0.3)
-        .lineSpacing(24)
+        .textStyle(.body1)
         .foregroundColor(Color.gray900)
 
       if isRequired {
@@ -139,9 +134,8 @@ struct TermsAgreementView: View {
 
       Button(action: onView) {
         Text("보기")
-          .font(.custom("Pretendard-Medium", size: 14))
+          .textStyle(.body2)
           .kerning(-0.14)
-          .lineSpacing(20)
           .foregroundColor(Color.gray700)
           .underline()
       }

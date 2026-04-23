@@ -45,9 +45,7 @@ struct LoginView: View {
 
       VStack(spacing: 8) {
         Text("브랜드명")
-          .font(.custom("Pretendard-Bold", size: 30))
-          .kerning(0.396)
-          .appLineHeight(36, fontName: "Pretendard-Bold", fontSize: 30)
+          .textStyle(.display)
           .foregroundColor(Color.gray900)
           .multilineTextAlignment(.center)
 
@@ -74,9 +72,7 @@ struct LoginView: View {
             .frame(width: 24, height: 24)
 
           Text("카카오로 시작하기")
-            .font(.custom("Pretendard-Medium", size: 16))
-            .kerning(-0.3)
-            .appLineHeight(24, fontName: "Pretendard-Medium", fontSize: 16)
+            .textStyle(.body1)
             .foregroundColor(.black)
             .multilineTextAlignment(.center)
         }
@@ -96,9 +92,7 @@ struct LoginView: View {
             .frame(width: 24, height: 24)
 
           Text("Apple로 시작하기")
-            .font(.custom("Pretendard-Medium", size: 16))
-            .kerning(-0.3)
-            .appLineHeight(24, fontName: "Pretendard-Medium", fontSize: 16)
+            .textStyle(.body1)
             .foregroundColor(.white)
             .multilineTextAlignment(.center)
         }
@@ -116,33 +110,23 @@ struct LoginView: View {
     VStack(spacing: 0) {
       HStack(spacing: 2) {
         Text("로그인하면 오더런의")
-          .font(.custom("Pretendard-Regular", size: 12))
-          .kerning(0)
-          .appLineHeight(16, fontName: "Pretendard-Regular", fontSize: 12)
+          .textStyle(.caption4)
           .foregroundColor(Color.gray500)
         Text("이용약관")
-          .font(.custom("Pretendard-Regular", size: 12))
-          .kerning(0)
-          .appLineHeight(16, fontName: "Pretendard-Regular", fontSize: 12)
+          .textStyle(.caption4)
           .foregroundColor(Color.gray500)
           .underline()
         Text("및")
-          .font(.custom("Pretendard-Regular", size: 12))
-          .kerning(0)
-          .appLineHeight(16, fontName: "Pretendard-Regular", fontSize: 12)
+          .textStyle(.caption4)
           .foregroundColor(Color.gray500)
       }
       HStack(spacing: 2) {
         Text("개인정보처리방침")
-          .font(.custom("Pretendard-Regular", size: 12))
-          .kerning(0)
-          .appLineHeight(16, fontName: "Pretendard-Regular", fontSize: 12)
+          .textStyle(.caption4)
           .foregroundColor(Color.gray500)
           .underline()
         Text("에 동의하게 됩니다")
-          .font(.custom("Pretendard-Regular", size: 12))
-          .kerning(0)
-          .appLineHeight(16, fontName: "Pretendard-Regular", fontSize: 12)
+          .textStyle(.caption4)
           .foregroundColor(Color.gray500)
       }
     }

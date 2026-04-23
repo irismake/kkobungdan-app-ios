@@ -39,9 +39,7 @@ struct ApplyDetailView: View {
         Spacer()
 
         Text("고객센터 email@gmail")
-          .font(.custom("Pretendard-Regular", size: 14))
-          .kerning(-0.1)
-          .appLineHeight(20, fontName: "Pretendard-Regular", fontSize: 14)
+          .textStyle(.body3)
           .foregroundColor(Color.gray700)
           .multilineTextAlignment(.center)
           .frame(maxWidth: .infinity)
@@ -56,9 +54,7 @@ struct ApplyDetailView: View {
 
       Button(action: onMet) {
         Text("만났어요!")
-          .font(.custom("Pretendard-SemiBold", size: 16))
-          .kerning(-0.2)
-          .appLineHeight(24, fontName: "Pretendard-SemiBold", fontSize: 16)
+          .textStyle(.heading3)
           .foregroundColor(.white)
           .multilineTextAlignment(.center)
           .frame(maxWidth: .infinity)
@@ -106,14 +102,12 @@ struct ApplyDetailView: View {
   private func applicantProfile(nickname: String, level: Int, grade: String) -> some View {
     VStack(alignment: .leading, spacing: 4) {
       Text(nickname)
-        .font(.custom("Pretendard-SemiBold", size: 18))
-        .kerning(-0.4)
+        .textStyle(.title1)
         .foregroundColor(.black)
 
       Text("웨이팅 레벨")
-        .font(.custom("Pretendard-Regular", size: 12))
+        .textStyle(.caption2)
         .kerning(-0.15)
-        .appLineHeight(20, fontName: "Pretendard-Regular", fontSize: 12)
         .foregroundColor(Color.gray500)
 
       HStack(spacing: 6) {
@@ -126,19 +120,13 @@ struct ApplyDetailView: View {
         HStack(spacing: 4) {
           HStack(spacing: 1) {
             Text("Lv \(level)")
-              .font(.custom("Pretendard-Medium", size: 14))
-              .kerning(-0.15)
-              .foregroundColor(Color.gray900)
             Text(":")
-              .font(.custom("Pretendard-Medium", size: 14))
-              .foregroundColor(Color.gray900)
           }
           Text(grade)
-            .font(.custom("Pretendard-Medium", size: 14))
-            .kerning(-0.15)
-            .foregroundColor(Color.gray900)
         }
-        .appLineHeight(20, fontName: "Pretendard-Medium", fontSize: 14)
+        .textStyle(.body2)
+        .kerning(-0.15)
+        .foregroundColor(Color.gray900)
       }
     }
     .padding(.horizontal, 16)
