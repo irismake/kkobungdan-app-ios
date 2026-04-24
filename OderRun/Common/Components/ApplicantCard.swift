@@ -21,18 +21,14 @@ struct ApplicantCard: View {
         // 닉네임 + 레벨 정보
         VStack(alignment: .leading, spacing: 4) {
           Text(nickname)
-            .font(.custom("Pretendard-SemiBold", size: 18))
-            .kerning(-0.4)
-            .appLineHeight(18, fontName: "Pretendard-SemiBold", fontSize: 18)
+            .textStyle(.title1)
             .foregroundColor(.black)
             .frame(width: 163, alignment: .topLeading)
 
           // 웨이팅 레벨 컨테이너
           VStack(alignment: .leading, spacing: 0) {
             Text("웨이팅 레벨")
-              .font(.custom("Pretendard-Regular", size: 12))
-              .kerning(-0.15)
-              .appLineHeight(20, fontName: "Pretendard-Regular", fontSize: 12)
+              .textStyle(.caption2)
               .foregroundColor(Color.gray500)
 
             HStack(spacing: 6) {
@@ -50,9 +46,8 @@ struct ApplicantCard: View {
                 }
                 Text(grade)
               }
-              .font(.custom("Pretendard-Medium", size: 14))
+              .textStyle(.body2)
               .kerning(-0.15)
-              .appLineHeight(20, fontName: "Pretendard-Medium", fontSize: 14)
               .foregroundColor(Color.gray900)
             }
           }
@@ -61,8 +56,7 @@ struct ApplicantCard: View {
 
         // 지원 일시
         Text(appliedAt)
-          .font(.custom("Pretendard-Regular", size: 12))
-          .appLineHeight(16, fontName: "Pretendard-Regular", fontSize: 12)
+          .textStyle(.caption5)
           .foregroundColor(Color.gray600)
           .padding(.horizontal, 2)
       }
@@ -70,9 +64,7 @@ struct ApplicantCard: View {
       // 지원자 선택 버튼
       Button(action: onSelect) {
         Text("지원자 선택")
-          .font(.custom("Pretendard-SemiBold", size: 16))
-          .kerning(-0.2)
-          .appLineHeight(24, fontName: "Pretendard-SemiBold", fontSize: 16)
+          .textStyle(.heading4)
           .foregroundColor(.white)
           .multilineTextAlignment(.center)
           .frame(maxWidth: .infinity, alignment: .center)

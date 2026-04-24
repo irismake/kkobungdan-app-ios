@@ -66,16 +66,12 @@ struct ProfileView: View {
   private var profileCard: some View {
     VStack(alignment: .leading, spacing: 24) {
       Text(nickname)
-        .font(.custom("Pretendard-SemiBold", size: 18))
-        .kerning(-0.4)
-        .appLineHeight(18, fontName: "Pretendard-SemiBold", fontSize: 18)
+        .textStyle(.title1)
         .foregroundColor(Color.black)
 
       VStack(alignment: .leading, spacing: 2) {
         Text("웨이팅 레벨")
-          .font(.custom("Pretendard-Regular", size: 12))
-          .kerning(-0.15)
-          .appLineHeight(20, fontName: "Pretendard-Regular", fontSize: 12)
+          .textStyle(.caption2)
           .foregroundColor(Color.gray500)
 
         HStack(spacing: 6) {
@@ -87,9 +83,8 @@ struct ProfileView: View {
             .foregroundColor(Color.amber500)
 
           Text("Lv \(level): \(grade)")
-            .font(.custom("Pretendard-Medium", size: 14))
+            .textStyle(.body2)
             .kerning(-0.15)
-            .appLineHeight(20, fontName: "Pretendard-Medium", fontSize: 14)
             .foregroundColor(Color.gray900)
         }
       }
@@ -118,9 +113,7 @@ struct ProfileView: View {
           .foregroundColor(Color.gray900)
 
         Text("약관 및 정책")
-          .font(.custom("Pretendard-SemiBold", size: 14))
-          .kerning(-0.4)
-          .appLineHeight(14, fontName: "Pretendard-SemiBold", fontSize: 14)
+          .textStyle(.title3)
           .foregroundColor(Color.gray900)
 
         Spacer()
@@ -152,18 +145,14 @@ struct ProfileView: View {
           .foregroundColor(Color.gray900)
 
         Text("버전 정보")
-          .font(.custom("Pretendard-SemiBold", size: 14))
-          .kerning(-0.4)
-          .appLineHeight(14, fontName: "Pretendard-SemiBold", fontSize: 14)
+          .textStyle(.title3)
           .foregroundColor(Color.gray900)
 
         Spacer()
       }
 
       Text(appVersion)
-        .font(.custom("Pretendard-Medium", size: 14))
-        .kerning(-0.1)
-        .appLineHeight(20, fontName: "Pretendard-Medium", fontSize: 14)
+        .textStyle(.body2)
         .foregroundColor(Color.gray600)
     }
     .padding(.horizontal, 24)
@@ -183,9 +172,7 @@ struct ProfileView: View {
         .foregroundColor(Color.rose500)
 
       Text("로그아웃")
-        .font(.custom("Pretendard-SemiBold", size: 14))
-        .kerning(-0.4)
-        .appLineHeight(14, fontName: "Pretendard-SemiBold", fontSize: 14)
+        .textStyle(.title3)
         .foregroundColor(Color.rose500)
 
       Spacer()
@@ -207,22 +194,16 @@ struct ProfileView: View {
     VStack(alignment: .leading, spacing: 10) {
       VStack(alignment: .leading, spacing: 2) {
         Text("고객 센터")
-          .font(.custom("Pretendard-SemiBold", size: 14))
-          .kerning(-0.4)
-          .appLineHeight(14, fontName: "Pretendard-SemiBold", fontSize: 14)
+          .textStyle(.title3)
           .foregroundColor(Color.gray900)
 
         Text("아래 이메일로 문의 부탁드립니다.")
-          .font(.custom("Pretendard-Regular", size: 12))
-          .kerning(-0.1)
-          .appLineHeight(14, fontName: "Pretendard-Regular", fontSize: 12)
+          .textStyle(.caption6)
           .foregroundColor(Color.gray600)
       }
 
       Text(supportEmail)
-        .font(.custom("Pretendard-Regular", size: 14))
-        .kerning(-0.1)
-        .appLineHeight(20, fontName: "Pretendard-Regular", fontSize: 14)
+        .textStyle(.body3)
         .foregroundColor(Color.gray700)
     }
     .frame(maxWidth: .infinity, alignment: .leading)

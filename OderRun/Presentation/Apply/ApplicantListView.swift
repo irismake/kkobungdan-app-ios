@@ -33,7 +33,9 @@ struct ApplicantListView: View {
           if viewModel.isLoading, viewModel.entries.isEmpty {
             ProgressView().padding(.top, 20)
           } else if let errorMessage = viewModel.errorMessage, viewModel.entries.isEmpty {
-            Text(errorMessage).foregroundColor(Color.rose500)
+            Text(errorMessage)
+              .textStyle(.body3)
+              .foregroundColor(Color.rose500)
           } else {
             ForEach(viewModel.entries) { entry in
               ApplicantCard(
@@ -61,25 +63,17 @@ struct ApplicantListView: View {
   private var headerSection: some View {
     VStack(alignment: .leading, spacing: 4) {
       Text(viewModel.proposal?.title ?? "")
-        .font(.custom("Pretendard-Medium", size: 14))
+        .textStyle(.body2)
         .kerning(-0.15)
-        .appLineHeight(20, fontName: "Pretendard-Medium", fontSize: 14)
         .foregroundColor(Color.gray600)
 
       HStack(spacing: 0) {
         Text("\(viewModel.entries.count)명")
-          .font(.custom("Pretendard-Bold", size: 18))
-          .kerning(-0.4)
-          .appLineHeight(28, fontName: "Pretendard-Bold", fontSize: 18)
+          .textStyle(.heading3, weight: .bold)
           .foregroundColor(Color.indigo500)
 
         Text("이 웨이팅을 지원했습니다")
-          .font(
-            Font.custom("Pretendard", size: 18)
-              .weight(.semibold)
-          )
-          .kerning(-0.4)
-          .appLineHeight(28, fontName: "Pretendard-SemiBold", fontSize: 18)
+          .textStyle(.heading3)
           .foregroundColor(Color.gray700)
       }
     }

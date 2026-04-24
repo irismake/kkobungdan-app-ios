@@ -18,24 +18,20 @@ struct ContentTextField: View {
   var body: some View {
     VStack(alignment: .leading, spacing: 8) {
       Text(title)
-        .font(.custom("Pretendard-Medium", size: 14))
-        .kerning(-0.1)
-        .appLineHeight(20, fontName: "Pretendard-Medium", fontSize: 14)
+        .textStyle(.body2)
         .foregroundColor(Color.gray800)
 
       ZStack(alignment: .topLeading) {
         if text.isEmpty {
           Text(placeholder)
-            .font(.custom("Pretendard-Regular", size: 16))
-            .kerning(-0.2)
+            .textStyle(.inputBody1)
             .foregroundColor(Color.gray500)
             .padding(.horizontal, 16)
             .padding(.vertical, 12)
         }
 
         TextEditor(text: $text)
-          .font(.custom("Pretendard-Regular", size: 16))
-          .kerning(-0.2)
+          .textStyle(.inputBody1)
           .foregroundColor(Color.gray900)
           .focused($isFocused)
           .scrollContentBackground(.hidden)
@@ -58,8 +54,7 @@ struct ContentTextField: View {
       HStack {
         Spacer()
         Text("\(text.count)/\(maxLength)")
-          .font(.custom("Pretendard-Regular", size: 12))
-          .appLineHeight(16, fontName: "Pretendard-Regular", fontSize: 12)
+          .textStyle(.caption5)
           .foregroundColor(Color.gray500)
       }
     }

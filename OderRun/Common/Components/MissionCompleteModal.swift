@@ -36,16 +36,12 @@ struct MissionCompleteModal: View {
 
         VStack(spacing: 4) {
           Text(title)
-            .font(.custom("Pretendard-Bold", size: 18))
-            .kerning(-0.4)
-            .appLineHeight(28, fontName: "Pretendard-Bold", fontSize: 18)
+            .textStyle(.heading3, weight: .bold)
             .foregroundColor(Color.gray900)
             .multilineTextAlignment(.center)
 
           Text(description)
-            .font(.custom("Pretendard-Regular", size: 14))
-            .kerning(-0.1)
-            .appLineHeight(20, fontName: "Pretendard-Regular", fontSize: 14)
+            .textStyle(.body3)
             .foregroundColor(Color.gray600)
             .multilineTextAlignment(.center)
         }
@@ -60,15 +56,12 @@ struct MissionCompleteModal: View {
 
           VStack(alignment: .leading, spacing: 8) {
             Text(infoTitle)
-              .font(.custom("Pretendard-SemiBold", size: 12))
-              .kerning(-0.4)
-              .appLineHeight(16, fontName: "Pretendard-SemiBold", fontSize: 12)
+              .textStyle(.caption4)
               .foregroundColor(Color.amber800)
-                  
+
             Text(infoContent)
-              .font(.custom("Pretendard-Regular", size: 12))
+              .textStyle(.caption5)
               .kerning(-0.1)
-              .appLineHeight(16, fontName: "Pretendard-Regular", fontSize: 12)
               .foregroundColor(Color.amber800)
           }
         }
@@ -85,9 +78,7 @@ struct MissionCompleteModal: View {
         HStack(spacing: 8) {
           Button(action: onCancel) {
             Text("취소")
-              .font(.custom("Inter-Medium", size: 16))
-              .kerning(-0.312)
-              .appLineHeight(24, fontName: "Inter-Medium", fontSize: 16)
+              .textStyle(.interHeading1)
               .foregroundColor(Color.gray700)
               .multilineTextAlignment(.center)
               .frame(maxWidth: .infinity)
@@ -103,9 +94,7 @@ struct MissionCompleteModal: View {
 
           Button(action: onConfirm) {
             Text("확인")
-              .font(.custom("Inter-Medium", size: 16))
-              .kerning(-0.312)
-              .appLineHeight(24, fontName: "Inter-Medium", fontSize: 16)
+              .textStyle(.interHeading1)
               .foregroundColor(.white)
               .multilineTextAlignment(.center)
               .frame(maxWidth: .infinity)

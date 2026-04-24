@@ -6,9 +6,7 @@ struct TabPageHeader: View {
   var body: some View {
     HStack {
       Text(title)
-        .font(.custom("Pretendard-SemiBold", size: 24))
-        .kerning(-0.4)
-        .appLineHeight(28, fontName: "Pretendard-SemiBold", fontSize: 24)
+        .textStyle(.heading1)
         .foregroundColor(Color.gray900)
       Spacer()
     }

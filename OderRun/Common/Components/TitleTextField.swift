@@ -19,14 +19,11 @@ struct TitleTextField: View {
   var body: some View {
     VStack(alignment: .leading, spacing: 8) {
       Text(title)
-        .font(.custom("Pretendard-Medium", size: 14))
-        .kerning(-0.1)
-        .appLineHeight(20, fontName: "Pretendard-Medium", fontSize: 14)
+        .textStyle(.body2)
         .foregroundColor(Color.gray800)
 
       TextField(placeholder, text: $text)
-        .font(.custom("Pretendard-Regular", size: 16))
-        .kerning(-0.2)
+        .textStyle(.inputBody1)
         .foregroundColor(Color.gray900)
         .focused($isFocused)
         .onChange(of: text) { _, new in
@@ -47,8 +44,7 @@ struct TitleTextField: View {
         HStack {
           Spacer()
           Text("\(text.count)/\(maxLength)")
-            .font(.custom("Pretendard-Regular", size: 12))
-            .appLineHeight(16, fontName: "Pretendard-Regular", fontSize: 12)
+            .textStyle(.caption5)
             .foregroundColor(Color.gray500)
         }
       }

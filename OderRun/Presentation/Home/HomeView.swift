@@ -58,6 +58,7 @@ struct HomeView: View {
                 .padding(.top, 40)
             } else if let errorMessage = viewModel.errorMessage, viewModel.proposals.isEmpty {
               Text(errorMessage)
+                .textStyle(.body3)
                 .foregroundColor(Color.rose500)
                 .padding(.top, 40)
             } else {

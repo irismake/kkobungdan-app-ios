@@ -17,6 +17,7 @@ struct NotificationView: View {
               .padding(.top, 40)
           } else if let errorMessage = viewModel.errorMessage, viewModel.notifications.isEmpty {
             Text(errorMessage)
+              .textStyle(.body3)
               .foregroundColor(Color.rose500)
               .padding(.top, 40)
           } else {
@@ -64,9 +65,7 @@ struct NotificationItemView: View {
     VStack(alignment: .leading, spacing: 10) {
       HStack(spacing: 10) {
         Text(title)
-          .font(.custom("Pretendard-SemiBold", size: 14))
-          .kerning(-0.4)
-          .appLineHeight(20, fontName: "Pretendard-SemiBold", fontSize: 14)
+          .textStyle(.title2)
           .foregroundColor(Color.gray900)
           .frame(maxWidth: .infinity, alignment: .leading)
 
@@ -79,16 +78,13 @@ struct NotificationItemView: View {
 
       VStack(alignment: .leading, spacing: 4) {
         Text(message)
-          .font(.custom("Pretendard-Regular", size: 14))
-          .kerning(-0.1)
-          .appLineHeight(20, fontName: "Pretendard-Regular", fontSize: 14)
+          .textStyle(.body3)
           .foregroundColor(Color.gray700)
           .fixedSize(horizontal: false, vertical: true)
 
         Text(timeString)
-          .font(.custom("Pretendard-Regular", size: 12))
+          .textStyle(.caption2)
           .kerning(-0.1)
-          .appLineHeight(20, fontName: "Pretendard-Regular", fontSize: 12)
           .foregroundColor(Color.gray500)
       }
     }

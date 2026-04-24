@@ -25,9 +25,7 @@ struct AppBar: View {
         if let title, !title.isEmpty {
           Gap.h(8)
           Text(title)
-            .font(.custom("Pretendard-SemiBold", size: 18))
-            .kerning(-0.4)
-            .appLineHeight(28, fontName: "Pretendard-SemiBold", fontSize: 18)
+            .textStyle(.heading3)
             .foregroundColor(Color.gray900)
         }
 
@@ -35,9 +33,7 @@ struct AppBar: View {
         
         if isProgress {
           Text("1/3")
-            .font(.custom("Pretendard-Medium", size: 14))
-            .kerning(-0.1)
-            .appLineHeight(20, fontName: "Pretendard-Medium", fontSize: 14)
+            .textStyle(.body2)
             .foregroundColor(Color.gray900)
         }
       }

@@ -55,16 +55,12 @@ struct ProposalCard: View {
   private var contentSection: some View {
     VStack(alignment: .leading, spacing: 12) {
       Text(title)
-        .font(.custom("Pretendard-SemiBold", size: 18))
-        .kerning(-0.4)
-        .appLineHeight(18, fontName: "Pretendard-SemiBold", fontSize: 18)
+        .textStyle(.title1)
         .foregroundColor(Color.gray900)
         .frame(maxWidth: .infinity, alignment: .leading)
 
       Text(description)
-        .font(.custom("Pretendard-Regular", size: 14))
-        .kerning(-0.1)
-        .appLineHeight(20, fontName: "Pretendard-Regular", fontSize: 14)
+        .textStyle(.body3)
         .foregroundColor(Color.gray700)
         .frame(maxWidth: .infinity, alignment: .leading)
 
@@ -84,9 +80,8 @@ struct ProposalCard: View {
         .foregroundColor(Color.gray800)
 
       Text(text)
-        .font(.custom("Pretendard-Medium", size: 14))
+        .textStyle(.body2)
         .kerning(-0.15)
-        .appLineHeight(20, fontName: "Pretendard-Medium", fontSize: 14)
         .foregroundColor(Color.gray700)
     }
   }
@@ -100,9 +95,7 @@ struct ProposalCard: View {
         .foregroundColor(Color.indigo500)
         
       Text(fee)
-        .font(.custom("Pretendard-SemiBold", size: 16))
-        .kerning(-0.2)
-        .appLineHeight(24, fontName: "Pretendard-SemiBold", fontSize: 16)
+        .textStyle(.heading4)
         .foregroundColor(Color.indigo500)
     }
     .frame(maxWidth: .infinity, alignment: .leading)

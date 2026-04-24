@@ -15,9 +15,7 @@ struct AccountInfoCard: View {
   var body: some View {
     VStack(alignment: .leading, spacing: 15.5) {
       Text("계좌번호 안내")
-        .font(.custom("Pretendard-Medium", size: 14))
-        .kerning(-0.1)
-        .appLineHeight(20, fontName: "Pretendard-Medium", fontSize: 14)
+        .textStyle(.body2)
         .foregroundColor(Color.gray800)
 
       VStack(spacing: 10) {
@@ -32,13 +30,11 @@ struct AccountInfoCard: View {
     HStack(spacing: 0) {
       VStack(alignment: .leading, spacing: 2) {
         Text(bankName)
-          .font(.custom("Pretendard-Medium", size: 14))
-          .kerning(-0.2)
+          .textStyle(.inputBody2)
           .foregroundColor(Color.gray800)
               
         Text(accountNumber)
-          .font(.custom("Pretendard-Medium", size: 16))
-          .kerning(-0.2)
+          .textStyle(.inputBody3)
           .foregroundColor(Color.gray900)
       }
           
@@ -72,9 +68,7 @@ struct AccountInfoCard: View {
         .padding(.top, 2)
 
       Text("24시간 이내로 미입금 시 게시물이 업로드되지 않고 취소됩니다.")
-        .font(.custom("Pretendard-Regular", size: 14))
-        .kerning(-0.1)
-        .appLineHeight(20, fontName: "Pretendard-Regular", fontSize: 14)
+        .textStyle(.body3)
         .foregroundColor(Color.amber900)
     }
     .padding(.horizontal, 16)

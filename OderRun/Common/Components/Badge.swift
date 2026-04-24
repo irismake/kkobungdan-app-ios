@@ -14,9 +14,7 @@ struct Badge: View {
 
   var body: some View {
     Text(text)
-      .font(.custom("Pretendard-Medium", size: 12))
-      .kerning(-0.1)
-      .appLineHeight(20, fontName: "Pretendard-Medium", fontSize: 12)
+      .textStyle(.caption1)
       .foregroundColor(textColor)
       .multilineTextAlignment(.center)
       .padding(.horizontal, 8)

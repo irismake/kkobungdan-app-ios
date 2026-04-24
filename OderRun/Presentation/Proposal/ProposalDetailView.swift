@@ -84,6 +84,7 @@ struct ProposalDetailView: View {
       )
     } else if let errorMessage = viewModel.errorMessage {
       Text(errorMessage)
+        .textStyle(.body3)
         .foregroundColor(Color.rose500)
         .padding(.horizontal, 16)
     }
@@ -92,14 +93,11 @@ struct ProposalDetailView: View {
   private func applicantProfile(nickname: String, level: Int, grade: String) -> some View {
     VStack(alignment: .leading, spacing: 4) {
       Text(nickname)
-        .font(.custom("Pretendard-SemiBold", size: 18))
-        .kerning(-0.4)
+        .textStyle(.title1)
         .foregroundColor(.black)
 
       Text("웨이팅 레벨")
-        .font(.custom("Pretendard-Regular", size: 12))
-        .kerning(-0.15)
-        .appLineHeight(20, fontName: "Pretendard-Regular", fontSize: 12)
+        .textStyle(.caption2)
         .foregroundColor(Color.gray500)
 
       HStack(spacing: 6) {
@@ -112,19 +110,13 @@ struct ProposalDetailView: View {
         HStack(spacing: 4) {
           HStack(spacing: 1) {
             Text("Lv \(level)")
-              .font(.custom("Pretendard-Medium", size: 14))
-              .kerning(-0.15)
-              .foregroundColor(Color.gray900)
             Text(":")
-              .font(.custom("Pretendard-Medium", size: 14))
-              .foregroundColor(Color.gray900)
           }
           Text(grade)
-            .font(.custom("Pretendard-Medium", size: 14))
-            .kerning(-0.15)
-            .foregroundColor(Color.gray900)
         }
-        .appLineHeight(20, fontName: "Pretendard-Medium", fontSize: 14)
+        .textStyle(.body2)
+        .kerning(-0.15)
+        .foregroundColor(Color.gray900)
       }
     }
     .padding(.horizontal, 16)
