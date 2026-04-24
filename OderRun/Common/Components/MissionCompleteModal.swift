@@ -36,7 +36,7 @@ struct MissionCompleteModal: View {
 
         VStack(spacing: 4) {
           Text(title)
-            .textStyle(.heading2, weight: .bold)
+            .textStyle(.heading3, weight: .bold)
             .foregroundColor(Color.gray900)
             .multilineTextAlignment(.center)
 
@@ -56,11 +56,11 @@ struct MissionCompleteModal: View {
 
           VStack(alignment: .leading, spacing: 8) {
             Text(infoTitle)
-              .textStyle(.caption3)
+              .textStyle(.caption4)
               .foregroundColor(Color.amber800)
 
             Text(infoContent)
-              .textStyle(.caption4)
+              .textStyle(.caption5)
               .kerning(-0.1)
               .foregroundColor(Color.amber800)
           }

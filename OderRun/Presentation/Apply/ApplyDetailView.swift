@@ -54,7 +54,7 @@ struct ApplyDetailView: View {
 
       Button(action: onMet) {
         Text("만났어요!")
-          .textStyle(.heading3)
+          .textStyle(.heading4)
           .foregroundColor(.white)
           .multilineTextAlignment(.center)
           .frame(maxWidth: .infinity)

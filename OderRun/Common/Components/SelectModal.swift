@@ -37,7 +37,7 @@ struct SelectModal: View {
 
         VStack(spacing: 4) {
           Text(title)
-            .textStyle(.heading2, weight: .bold)
+            .textStyle(.heading3, weight: .bold)
             .foregroundColor(Color.gray900)
             .multilineTextAlignment(.center)
 
@@ -49,14 +49,14 @@ struct SelectModal: View {
 
         VStack(alignment: .leading, spacing: 8) {
           Text(infoTitle)
-            .textStyle(.caption3)
+            .textStyle(.caption4)
             .kerning(0)
             .foregroundColor(Color.blue900)
 
           VStack(alignment: .leading, spacing: 0) {
             ForEach(Array(infoItems.enumerated()), id: \.offset) { index, item in
               Text("\(index + 1). \(item)")
-                .textStyle(.caption4)
+                .textStyle(.caption5)
                 .foregroundColor(Color.blue800)
             }
           }

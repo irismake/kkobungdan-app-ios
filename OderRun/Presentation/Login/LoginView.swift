@@ -108,23 +108,23 @@ struct LoginView: View {
     VStack(spacing: 0) {
       HStack(spacing: 2) {
         Text("로그인하면 오더런의")
-          .textStyle(.caption4)
+          .textStyle(.caption5)
           .foregroundColor(Color.gray500)
         Text("이용약관")
-          .textStyle(.caption4)
+          .textStyle(.caption5)
           .foregroundColor(Color.gray500)
           .underline()
         Text("및")
-          .textStyle(.caption4)
+          .textStyle(.caption5)
           .foregroundColor(Color.gray500)
       }
       HStack(spacing: 2) {
         Text("개인정보처리방침")
-          .textStyle(.caption4)
+          .textStyle(.caption5)
           .foregroundColor(Color.gray500)
           .underline()
         Text("에 동의하게 됩니다")
-          .textStyle(.caption4)
+          .textStyle(.caption5)
           .foregroundColor(Color.gray500)
       }
     }

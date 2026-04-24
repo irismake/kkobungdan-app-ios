@@ -198,7 +198,7 @@ struct ProfileView: View {
           .foregroundColor(Color.gray900)
 
         Text("아래 이메일로 문의 부탁드립니다.")
-          .textStyle(.caption4Compact)
+          .textStyle(.caption6)
           .foregroundColor(Color.gray600)
       }
 

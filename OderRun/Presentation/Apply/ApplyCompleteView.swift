@@ -34,7 +34,7 @@ struct ApplyCompleteView: View {
         // Text
         VStack(spacing: 8) {
           Text("지원 완료")
-            .textStyle(.heading1Compact)
+            .textStyle(.heading2)
             .foregroundColor(Color.gray900)
             .multilineTextAlignment(.center)
             .frame(maxWidth: .infinity)

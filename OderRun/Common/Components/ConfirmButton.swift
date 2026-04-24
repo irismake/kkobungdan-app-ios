@@ -17,7 +17,7 @@ struct ConfirmButton: View {
       action()
     } }) {
       Text(title)
-        .textStyle(.heading3)
+        .textStyle(.heading4)
         .foregroundColor(isEnabled ? .white : .gray400)
         .multilineTextAlignment(.center)
         .frame(maxWidth: .infinity)

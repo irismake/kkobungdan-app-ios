@@ -56,7 +56,7 @@ struct ApplicantCard: View {
 
         // 지원 일시
         Text(appliedAt)
-          .textStyle(.caption4)
+          .textStyle(.caption5)
           .foregroundColor(Color.gray600)
           .padding(.horizontal, 2)
       }
@@ -64,7 +64,7 @@ struct ApplicantCard: View {
       // 지원자 선택 버튼
       Button(action: onSelect) {
         Text("지원자 선택")
-          .textStyle(.heading3)
+          .textStyle(.heading4)
           .foregroundColor(.white)
           .multilineTextAlignment(.center)
           .frame(maxWidth: .infinity, alignment: .center)

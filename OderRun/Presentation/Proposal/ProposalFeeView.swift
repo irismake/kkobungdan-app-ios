@@ -46,7 +46,7 @@ struct ProposalFeeView: View {
 
       VStack(alignment: .leading, spacing: 8) {
         Text("웨이팅비 입력")
-          .textStyle(.heading2)
+          .textStyle(.heading3)
           .foregroundColor(Color.gray900)
           .padding(.horizontal, 16)
 

@@ -49,7 +49,7 @@ struct BottomNavBar: View {
           .foregroundColor(color)
 
         Text(label)
-          .textStyle(.caption1Tight)
+          .textStyle(.caption3)
           .foregroundColor(color)
           .multilineTextAlignment(.center)
       }

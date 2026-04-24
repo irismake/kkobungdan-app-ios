@@ -37,7 +37,7 @@ struct AddProposalView: View {
 
       VStack(alignment: .leading, spacing: 8) {
         Text("기본 정보 작성")
-          .textStyle(.heading2)
+          .textStyle(.heading3)
           .foregroundColor(Color.gray900)
           .padding(.horizontal, 16)
 

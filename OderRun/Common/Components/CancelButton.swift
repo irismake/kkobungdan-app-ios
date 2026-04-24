@@ -14,7 +14,7 @@ struct CancelButton: View {
   var body: some View {
     Button(action: action) {
       Text(title)
-        .textStyle(.heading3)
+        .textStyle(.heading4)
         .foregroundColor(Color.gray700)
         .multilineTextAlignment(.center)
         .frame(maxWidth: .infinity)

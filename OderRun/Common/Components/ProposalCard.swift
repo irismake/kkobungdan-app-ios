@@ -95,7 +95,7 @@ struct ProposalCard: View {
         .foregroundColor(Color.indigo500)
         
       Text(fee)
-        .textStyle(.heading3)
+        .textStyle(.heading4)
         .foregroundColor(Color.indigo500)
     }
     .frame(maxWidth: .infinity, alignment: .leading)

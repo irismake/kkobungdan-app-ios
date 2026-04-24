@@ -25,7 +25,7 @@ struct AppBar: View {
         if let title, !title.isEmpty {
           Gap.h(8)
           Text(title)
-            .textStyle(.heading2)
+            .textStyle(.heading3)
             .foregroundColor(Color.gray900)
         }
 

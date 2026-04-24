@@ -44,7 +44,7 @@ struct TitleTextField: View {
         HStack {
           Spacer()
           Text("\(text.count)/\(maxLength)")
-            .textStyle(.caption4)
+            .textStyle(.caption5)
             .foregroundColor(Color.gray500)
         }
       }

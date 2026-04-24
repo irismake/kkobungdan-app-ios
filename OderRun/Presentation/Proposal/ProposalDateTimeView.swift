@@ -38,7 +38,7 @@ struct ProposalDateTimeView: View {
 
       VStack(alignment: .leading, spacing: 8) {
         Text("날짜 / 시간 설정")
-          .textStyle(.heading2)
+          .textStyle(.heading3)
           .foregroundColor(Color.gray900)
           .padding(.horizontal, 16)
 
