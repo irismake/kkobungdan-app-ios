@@ -45,7 +45,11 @@ struct MyProposalDetailView: View {
       VStack(spacing: 0) {
         ScrollView {
           ScreenContainer {
-            proposalCardSection
+            VStack(spacing: 12) {
+              proposalCardSection
+
+              MissionStatusSection(viewModel: viewModel.missionViewModel)
+            }
           }
           .padding(.vertical, 12)
         }
@@ -81,6 +85,9 @@ struct MyProposalDetailView: View {
     }
     .background(Color.gray000)
     .task {
+      await viewModel.load()
+    }
+    .refreshable {
       await viewModel.load()
     }
   }

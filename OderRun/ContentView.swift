@@ -18,6 +18,10 @@ struct ContentView: View {
         viewModel: HomeViewModel(
           fetchProposalsUseCase: FetchProposalsUseCase(repository: DIContainer.proposalRepository)
         ),
+        activityViewModel: ActivityViewModel(
+          fetchMyMissionsUseCase: FetchMyMissionsUseCase(repository: DIContainer.missionRepository),
+          proposalRepository: DIContainer.proposalRepository
+        ),
         profileViewModel: ProfileViewModel(
           fetchUserDetailUseCase: FetchUserDetailUseCase(userRepository: DIContainer.userRepository),
           updateAlarmUseCase: UpdateAlarmUseCase(userRepository: DIContainer.userRepository),

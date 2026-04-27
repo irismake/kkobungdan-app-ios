@@ -10,27 +10,43 @@ import SwiftUI
 struct ApplyDetailView: View {
   @State private var viewModel: ApplyDetailViewModel
   var onBack: () -> Void = {}
-  var onMet: () -> Void = {}
+  var onAccepted: (Mission) -> Void = { _ in }
 
   init(
     viewModel: ApplyDetailViewModel,
     onBack: @escaping () -> Void = {},
-    onMet: @escaping () -> Void = {}
+    onAccepted: @escaping (Mission) -> Void = { _ in }
   ) {
     _viewModel = State(initialValue: viewModel)
     self.onBack = onBack
-    self.onMet = onMet
+    self.onAccepted = onAccepted
+  }
+
+  /// offerID 가 주어지면 의뢰자(orderer)가 지원자를 검토하는 모드.
+  private var isAcceptMode: Bool {
+    viewModel.offerID != nil
   }
 
   var body: some View {
     VStack(spacing: 0) {
-      AppBar(title: "지원 상세", onBack: onBack)
+      AppBar(title: isAcceptMode ? "지원자 상세" : "지원 상세", onBack: onBack)
 
       VStack(spacing: 0) {
         ScrollView {
           VStack(alignment: .leading, spacing: 12) {
             applicantProfileSection
             proposalCardSection
+
+            if let missionViewModel = viewModel.missionViewModel {
+              MissionStatusSection(viewModel: missionViewModel)
+            }
+
+            if let errorMessage = viewModel.errorMessage {
+              Text(errorMessage)
+                .textStyle(.body3)
+                .foregroundColor(Color.rose500)
+                .padding(.horizontal, 16)
+            }
           }
           .padding(.horizontal, Layout.screenHorizontalPadding)
           .padding(.vertical, 12)
@@ -52,7 +68,33 @@ struct ApplyDetailView: View {
           .frame(height: 1)
       }
 
-      Button(action: onMet) {
+      bottomActionSection
+        .padding(.horizontal, Layout.screenHorizontalPadding)
+        .padding(.top, 16)
+        .padding(.bottom, 32)
+    }
+    .background(Color.gray000)
+    .task {
+      await viewModel.load()
+    }
+    .onChange(of: viewModel.didAcceptOffer) { _, didAccept in
+      if didAccept, let mission = viewModel.acceptedMission {
+        onAccepted(mission)
+      }
+    }
+  }
+
+  @ViewBuilder
+  private var bottomActionSection: some View {
+    if isAcceptMode {
+      ConfirmButton(
+        title: viewModel.isAccepting ? "수락 중..." : "수락",
+        isEnabled: !viewModel.isAccepting
+      ) {
+        Task { await viewModel.acceptOffer() }
+      }
+    } else {
+      Button(action: {}) {
         Text("만났어요!")
           .textStyle(.heading4)
           .foregroundColor(.white)
@@ -63,19 +105,12 @@ struct ApplyDetailView: View {
           .clipShape(RoundedRectangle(cornerRadius: 12))
       }
       .buttonStyle(.plain)
-      .padding(.horizontal, Layout.screenHorizontalPadding)
-      .padding(.top, 16)
-      .padding(.bottom, 32)
-    }
-    .background(Color.gray000)
-    .task {
-      await viewModel.load()
     }
   }
 
   @ViewBuilder
   private var applicantProfileSection: some View {
-    if let profile = viewModel.ordererProfile {
+    if let profile = viewModel.counterpartProfile {
       applicantProfile(nickname: profile.nickname, level: profile.level, grade: profile.grade)
     } else if viewModel.isLoading {
       ProgressView().padding(.horizontal, 16)

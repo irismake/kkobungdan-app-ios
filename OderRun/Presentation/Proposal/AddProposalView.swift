@@ -9,14 +9,15 @@ import SwiftUI
 
 struct AddProposalView: View {
   @State private var viewModel: AddProposalViewModel
-  @Environment(\.dismiss) private var dismiss
+  var onBack: () -> Void = {}
 
-  init(viewModel: AddProposalViewModel) {
+  init(viewModel: AddProposalViewModel, onBack: @escaping () -> Void = {}) {
     _viewModel = State(initialValue: viewModel)
+    self.onBack = onBack
   }
 
   private var isNextEnabled: Bool {
-    !viewModel.title.isEmpty && !viewModel.content.isEmpty
+    !viewModel.title.isEmpty && !viewModel.content.isEmpty && !viewModel.isLoading
   }
 
   var body: some View {
@@ -29,11 +30,16 @@ struct AddProposalView: View {
     }
     .background(Color.gray000)
     .navigationBarHidden(true)
+    .onChange(of: viewModel.didCreate) { _, didCreate in
+      if didCreate {
+        onBack()
+      }
+    }
   }
 
   private var headerSection: some View {
     VStack(alignment: .leading, spacing: 12) {
-      AppBar(isProgress: true, onBack: {})
+      AppBar(isProgress: true, onBack: onBack)
 
       VStack(alignment: .leading, spacing: 8) {
         Text("기본 정보 작성")
@@ -60,6 +66,13 @@ struct AddProposalView: View {
       VStack(spacing: 24) {
         titleField
         contentField
+
+        if let errorMessage = viewModel.errorMessage {
+          Text(errorMessage)
+            .textStyle(.body3)
+            .foregroundColor(Color.rose500)
+            .frame(maxWidth: .infinity, alignment: .leading)
+        }
       }
       .padding(16)
     }
@@ -85,8 +98,11 @@ struct AddProposalView: View {
   }
 
   private var bottomSection: some View {
-    BottomActionBar(title: "다음", isEnabled: isNextEnabled) {
-      // TODO: 다음 단계로 이동
+    BottomActionBar(
+      title: viewModel.isLoading ? "등록 중..." : "등록하기",
+      isEnabled: isNextEnabled
+    ) {
+      Task { await viewModel.createProposal() }
     }
   }
 }

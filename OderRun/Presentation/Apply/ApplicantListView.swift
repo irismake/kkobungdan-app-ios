@@ -10,12 +10,12 @@ import SwiftUI
 struct ApplicantListView: View {
   @State private var viewModel: ApplicantListViewModel
   var onBack: () -> Void = {}
-  var onSelectApplicant: (Int64) -> Void = { _ in }
+  var onSelectApplicant: (_ proposalID: Int64, _ offerID: Int64) -> Void = { _, _ in }
 
   init(
     viewModel: ApplicantListViewModel,
     onBack: @escaping () -> Void = {},
-    onSelectApplicant: @escaping (Int64) -> Void = { _ in }
+    onSelectApplicant: @escaping (_ proposalID: Int64, _ offerID: Int64) -> Void = { _, _ in }
   ) {
     _viewModel = State(initialValue: viewModel)
     self.onBack = onBack
@@ -38,15 +38,7 @@ struct ApplicantListView: View {
               .foregroundColor(Color.rose500)
           } else {
             ForEach(viewModel.entries) { entry in
-              ApplicantCard(
-                nickname: entry.profile.nickname,
-                level: entry.profile.level,
-                grade: entry.profile.grade,
-                appliedAt: ProposalDisplay.appliedAtString(entry.offer.createdAt),
-                onSelect: {
-                  onSelectApplicant(entry.offer.id)
-                }
-              )
+              applicantEntryCard(entry: entry)
             }
           }
         }
@@ -57,6 +49,41 @@ struct ApplicantListView: View {
     .background(Color.gray000)
     .task {
       await viewModel.load()
+    }
+    .refreshable {
+      await viewModel.load()
+    }
+  }
+
+  private func applicantEntryCard(entry: ApplicantListEntry) -> some View {
+    VStack(spacing: 8) {
+      ApplicantCard(
+        nickname: entry.profile.nickname,
+        level: entry.profile.level,
+        grade: entry.profile.grade,
+        appliedAt: ProposalDisplay.appliedAtString(entry.offer.createdAt),
+        onSelect: {
+          onSelectApplicant(viewModel.proposalID, entry.offer.id)
+        }
+      )
+
+      Button {
+        Task { await viewModel.rejectOffer(offerID: entry.offer.id) }
+      } label: {
+        Text(viewModel.isRejecting ? "처리 중..." : "거절")
+          .textStyle(.body2)
+          .foregroundColor(Color.rose500)
+          .frame(maxWidth: .infinity)
+          .frame(height: 36)
+          .background(Color.white)
+          .clipShape(RoundedRectangle(cornerRadius: 8))
+          .overlay(
+            RoundedRectangle(cornerRadius: 8)
+              .stroke(Color.rose200, lineWidth: 1)
+          )
+      }
+      .buttonStyle(.plain)
+      .disabled(viewModel.isRejecting)
     }
   }
 

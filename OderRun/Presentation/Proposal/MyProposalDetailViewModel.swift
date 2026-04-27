@@ -18,6 +18,9 @@ final class MyProposalDetailViewModel {
   var isCancelling: Bool = false
   var didCancel: Bool = false
 
+  /// 의뢰자 입장에서의 미션 상태/액션을 다룬다.
+  let missionViewModel: MissionDetailViewModel
+
   var applicantCount: Int {
     offers.filter { $0.status == .waiting || $0.status == .accepted }.count
   }
@@ -30,12 +33,14 @@ final class MyProposalDetailViewModel {
     proposalID: Int64,
     fetchDetailUseCase: FetchProposalDetailUseCase,
     fetchOffersUseCase: FetchOffersByProposalUseCase,
-    cancelProposalUseCase: CancelProposalUseCase
+    cancelProposalUseCase: CancelProposalUseCase,
+    missionViewModel: MissionDetailViewModel
   ) {
     self.proposalID = proposalID
     self.fetchDetailUseCase = fetchDetailUseCase
     self.fetchOffersUseCase = fetchOffersUseCase
     self.cancelProposalUseCase = cancelProposalUseCase
+    self.missionViewModel = missionViewModel
   }
 
   @MainActor
@@ -51,6 +56,7 @@ final class MyProposalDetailViewModel {
       errorMessage = "내 요청 상세를 불러오지 못했어요."
     }
     isLoading = false
+    await missionViewModel.load()
   }
 
   @MainActor
