@@ -85,7 +85,8 @@ enum AppRouteFactory {
       fetchDetailUseCase: FetchProposalDetailUseCase(repository: DIContainer.proposalRepository),
       fetchOffersUseCase: FetchOffersByProposalUseCase(repository: DIContainer.offerRepository),
       cancelOfferUseCase: CancelOfferUseCase(repository: DIContainer.offerRepository),
-      userRepository: DIContainer.userRepository
+      userRepository: DIContainer.userRepository,
+      createMissionUseCase: CreateMissionUseCase(repository: DIContainer.missionRepository)
     )
   }
 

@@ -8,8 +8,12 @@
 import Foundation
 
 enum OfferStatus: String {
+  /// 선택 기다리는중
   case waiting = "WAITING"
+  /// 선택 받음
   case accepted = "ACCEPTED"
+  /// 다른 지원자가 선택됨 / 요청 자체가 취소됨
   case rejected = "REJECTED"
+  /// 요청 취소함
   case cancelled = "CANCELLED"
 }

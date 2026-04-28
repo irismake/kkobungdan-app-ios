@@ -11,15 +11,18 @@ struct MyProposalDetailView: View {
   @State private var viewModel: MyProposalDetailViewModel
   var onBack: () -> Void = {}
   var onShowApplicants: () -> Void = {}
+  var onAccepted: () -> Void = {}
 
   init(
     viewModel: MyProposalDetailViewModel,
     onBack: @escaping () -> Void = {},
-    onShowApplicants: @escaping () -> Void = {}
+    onShowApplicants: @escaping () -> Void = {},
+    onAccepted: @escaping () -> Void = {}
   ) {
     _viewModel = State(initialValue: viewModel)
     self.onBack = onBack
     self.onShowApplicants = onShowApplicants
+    self.onAccepted = onAccepted
   }
 
   private var statusBadge: BadgeItem? {
@@ -70,6 +73,35 @@ struct MyProposalDetailView: View {
           .frame(height: 1)
       }
 
+      bottomActionSection
+        .padding(.horizontal, Layout.screenHorizontalPadding)
+        .padding(.top, 16)
+        .padding(.bottom, 32)
+    }
+    .background(Color.gray000)
+    .task {
+      await viewModel.load()
+    }
+    .refreshable {
+      await viewModel.load()
+    }
+  }
+
+  @ViewBuilder
+  private var bottomActionSection: some View {
+    if viewModel.proposal?.status == .matched {
+      Button(action: onAccepted) {
+        Text("만났어요!")
+          .textStyle(.heading4)
+          .foregroundColor(.white)
+          .multilineTextAlignment(.center)
+          .frame(maxWidth: .infinity)
+          .frame(height: 56)
+          .background(Color.emerald500)
+          .clipShape(RoundedRectangle(cornerRadius: 12))
+      }
+      .buttonStyle(.plain)
+    } else {
       VStack(spacing: 8) {
         ConfirmButton(
           title: "지원 보기(\(viewModel.applicantCount))",
@@ -82,16 +114,6 @@ struct MyProposalDetailView: View {
           Task { await viewModel.cancelProposal() }
         }
       }
-      .padding(.horizontal, Layout.screenHorizontalPadding)
-      .padding(.top, 16)
-      .padding(.bottom, 32)
-    }
-    .background(Color.gray000)
-    .task {
-      await viewModel.load()
-    }
-    .refreshable {
-      await viewModel.load()
     }
   }
 

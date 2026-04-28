@@ -210,6 +210,9 @@ struct HomeView: View {
       ApplicantListView(
         viewModel: AppRouteFactory.makeApplicantListViewModel(proposalID: proposalID),
         onBack: { popLast(path: path) },
+        onAccepted: { _ in
+          path.wrappedValue = [.myProposalDetail(proposalID: proposalID)]
+        },
         onSelectApplicant: { proposalID, offerID in
           path.wrappedValue.append(.applicantOfferDetail(proposalID: proposalID, offerID: offerID))
         }

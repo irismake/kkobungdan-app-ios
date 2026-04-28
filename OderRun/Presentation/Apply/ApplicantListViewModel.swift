@@ -25,24 +25,30 @@ final class ApplicantListViewModel {
   var isLoading: Bool = false
   var errorMessage: String?
   var isRejecting: Bool = false
+  var isAccepting: Bool = false
+  var didAcceptOffer: Bool = false
+  var acceptedMission: Mission?
 
   private let fetchDetailUseCase: FetchProposalDetailUseCase
   private let fetchOffersUseCase: FetchOffersByProposalUseCase
   private let cancelOfferUseCase: CancelOfferUseCase
   private let userRepository: UserRepositoryProtocol
+  private let createMissionUseCase: CreateMissionUseCase
 
   init(
     proposalID: Int64,
     fetchDetailUseCase: FetchProposalDetailUseCase,
     fetchOffersUseCase: FetchOffersByProposalUseCase,
     cancelOfferUseCase: CancelOfferUseCase,
-    userRepository: UserRepositoryProtocol
+    userRepository: UserRepositoryProtocol,
+    createMissionUseCase: CreateMissionUseCase
   ) {
     self.proposalID = proposalID
     self.fetchDetailUseCase = fetchDetailUseCase
     self.fetchOffersUseCase = fetchOffersUseCase
     self.cancelOfferUseCase = cancelOfferUseCase
     self.userRepository = userRepository
+    self.createMissionUseCase = createMissionUseCase
   }
 
   @MainActor
@@ -82,5 +88,30 @@ final class ApplicantListViewModel {
       errorMessage = "지원자를 거절하지 못했어요."
     }
     isRejecting = false
+  }
+
+  /// 의뢰자가 지원자를 선택(수락)하면 미션을 생성한다.
+  /// runFee/itemPrice 는 추후 의뢰자가 입력할 값이지만 현재는 proposal 의 errandFee 로 기본값 처리.
+  @MainActor
+  func acceptOffer(offerID: Int64, runFee: Int? = nil, itemPrice: Int = 0) async {
+    guard !isAccepting else {
+      return
+    }
+    isAccepting = true
+    didAcceptOffer = false
+    errorMessage = nil
+    do {
+      let resolvedFee = runFee ?? proposal?.errandFee ?? 0
+      let mission = try await createMissionUseCase.execute(
+        offerID: offerID,
+        runFee: resolvedFee,
+        itemPrice: itemPrice
+      )
+      acceptedMission = mission
+      didAcceptOffer = true
+    } catch {
+      errorMessage = "지원자 수락에 실패했어요. 잠시 후 다시 시도해주세요."
+    }
+    isAccepting = false
   }
 }

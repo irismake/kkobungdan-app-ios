@@ -18,11 +18,14 @@ actor TestMissionRepositoryImpl: MissionRepositoryProtocol {
     if missions.contains(where: { $0.offerID == offerID }) {
       throw RepositoryError.conflict
     }
+    guard let (offer, proposal) = try await resolveOfferAndProposal(offerID: offerID) else {
+      throw RepositoryError.notFound
+    }
     let newID = nextID
     nextID += 1
     let mission = Mission(
-      id: newID, offerID: offerID, proposalID: 0,
-      ordererID: DummySession.currentUserID, runnerID: "user-r001",
+      id: newID, offerID: offerID, proposalID: offer.proposalID,
+      ordererID: proposal.ordererID, runnerID: offer.runnerID,
       status: .created, runFee: runFee, itemPrice: itemPrice,
       proofImageURL: nil, createdAt: Date()
     )
@@ -92,5 +95,16 @@ actor TestMissionRepositoryImpl: MissionRepositoryProtocol {
     )
     missions[index] = updated
     return updated
+  }
+
+  private func resolveOfferAndProposal(offerID: Int64) async throws -> (Offer, Proposal)? {
+    let proposals = try await DIContainer.proposalRepository.fetchProposals(page: 0, size: 1000)
+    for proposal in proposals {
+      let offers = try await DIContainer.offerRepository.fetchOffersByProposal(proposalID: proposal.id)
+      if let offer = offers.first(where: { $0.id == offerID }) {
+        return (offer, proposal)
+      }
+    }
+    return nil
   }
 }
