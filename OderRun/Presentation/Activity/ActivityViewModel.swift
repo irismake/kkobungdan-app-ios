@@ -60,7 +60,6 @@ final class ActivityViewModel {
     isLoading = false
   }
 
-  /// 더미 모드에서는 proposalID 가 0/999 같이 매칭 안되는 케이스가 있어 nil 허용
   private static func attachProposals(
     to missions: [Mission],
     repository: ProposalRepositoryProtocol

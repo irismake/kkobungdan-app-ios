@@ -66,24 +66,6 @@ struct ApplicantListView: View {
           onSelectApplicant(viewModel.proposalID, entry.offer.id)
         }
       )
-
-      Button {
-        Task { await viewModel.rejectOffer(offerID: entry.offer.id) }
-      } label: {
-        Text(viewModel.isRejecting ? "처리 중..." : "거절")
-          .textStyle(.body2)
-          .foregroundColor(Color.rose500)
-          .frame(maxWidth: .infinity)
-          .frame(height: 36)
-          .background(Color.white)
-          .clipShape(RoundedRectangle(cornerRadius: 8))
-          .overlay(
-            RoundedRectangle(cornerRadius: 8)
-              .stroke(Color.rose200, lineWidth: 1)
-          )
-      }
-      .buttonStyle(.plain)
-      .disabled(viewModel.isRejecting)
     }
   }
 
