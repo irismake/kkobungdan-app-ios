@@ -19,6 +19,8 @@ struct ContentView: View {
           fetchProposalsUseCase: FetchProposalsUseCase(repository: DIContainer.proposalRepository)
         ),
         activityViewModel: ActivityViewModel(
+          fetchProposalsUseCase: FetchProposalsUseCase(repository: DIContainer.proposalRepository),
+          fetchMyOffersUseCase: FetchMyOffersUseCase(repository: DIContainer.offerRepository),
           fetchMyMissionsUseCase: FetchMyMissionsUseCase(repository: DIContainer.missionRepository),
           proposalRepository: DIContainer.proposalRepository
         ),

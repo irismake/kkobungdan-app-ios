@@ -54,7 +54,10 @@ struct HomeView: View {
       }
       .onChange(of: homePath) { _, newPath in
         if newPath.isEmpty {
-          Task { await viewModel.load() }
+          Task {
+            await viewModel.load()
+            await activityViewModel.load()
+          }
         }
       }
     case .activity:
@@ -65,8 +68,12 @@ struct HomeView: View {
             onSelectOrdererProposal: { proposalID in
               activityPath.append(.myProposalDetail(proposalID: proposalID))
             },
-            onSelectRunnerProposal: { proposalID, _ in
-              activityPath.append(.runnerApplyDetail(proposalID: proposalID))
+            onSelectRunnerItem: { proposalID, hasMission in
+              if hasMission {
+                activityPath.append(.runnerApplyDetail(proposalID: proposalID))
+              } else {
+                activityPath.append(.proposalDetail(proposalID: proposalID))
+              }
             }
           )
           bottomBar

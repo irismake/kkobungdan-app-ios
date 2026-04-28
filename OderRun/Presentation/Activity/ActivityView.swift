@@ -21,20 +21,18 @@ enum ActivitySegment: String, CaseIterable {
 
 enum ActivityFilter: String, CaseIterable {
   case all = "전체"
-  case unpaid = "미입금"
   case waiting = "대기중"
   case inProgress = "진행중"
   case completed = "완료"
-  case cancelled = "취소 / 환불"
+  case cancelled = "취소"
 
-  func matches(_ status: MissionStatus) -> Bool {
+  func matches(_ stage: ActivityStage) -> Bool {
     switch self {
     case .all: return true
-    case .unpaid: return status == .created
-    case .waiting: return status == .inProgress
-    case .inProgress: return status == .deliveryCompleted
-    case .completed: return status == .receivedConfirmed || status == .settled
-    case .cancelled: return status == .disputed || status == .refunded
+    case .waiting: return stage == .waiting
+    case .inProgress: return stage == .inProgress
+    case .completed: return stage == .completed
+    case .cancelled: return stage == .cancelled
     }
   }
 }
@@ -45,7 +43,7 @@ struct ActivityView: View {
   @State private var filter: ActivityFilter = .all
 
   var onSelectOrdererProposal: (Int64) -> Void = { _ in }
-  var onSelectRunnerProposal: (Int64, Int64) -> Void = { _, _ in }
+  var onSelectRunnerItem: (_ proposalID: Int64, _ hasMission: Bool) -> Void = { _, _ in }
 
   private struct SegmentAnchorPreferenceKey: PreferenceKey {
     static var defaultValue: [ActivitySegment: Anchor<CGRect>] = [:]
@@ -61,11 +59,11 @@ struct ActivityView: View {
   init(
     viewModel: ActivityViewModel,
     onSelectOrdererProposal: @escaping (Int64) -> Void = { _ in },
-    onSelectRunnerProposal: @escaping (Int64, Int64) -> Void = { _, _ in }
+    onSelectRunnerItem: @escaping (_ proposalID: Int64, _ hasMission: Bool) -> Void = { _, _ in }
   ) {
     _viewModel = State(initialValue: viewModel)
     self.onSelectOrdererProposal = onSelectOrdererProposal
-    self.onSelectRunnerProposal = onSelectRunnerProposal
+    self.onSelectRunnerItem = onSelectRunnerItem
   }
 
   var body: some View {
@@ -114,21 +112,21 @@ struct ActivityView: View {
     }
   }
 
-  private var currentItems: [ActivityMissionItem] {
+  private var currentItems: [ActivityItem] {
     switch segment {
-    case .orderer: return viewModel.ordererMissions
-    case .runner: return viewModel.runnerMissions
+    case .orderer: return viewModel.ordererItems
+    case .runner: return viewModel.runnerItems
     }
   }
 
-  private var filteredItems: [ActivityMissionItem] {
-    currentItems.filter { filter.matches($0.mission.status) }
+  private var filteredItems: [ActivityItem] {
+    currentItems.filter { filter.matches($0.stage) }
   }
 
   private var emptyMessage: String {
     switch segment {
-    case .orderer: return "아직 진행 중인 의뢰가 없어요."
-    case .runner: return "아직 진행 중인 지원이 없어요."
+    case .orderer: return "아직 등록한 의뢰가 없어요."
+    case .runner: return "아직 지원한 의뢰가 없어요."
     }
   }
 
@@ -199,35 +197,60 @@ struct ActivityView: View {
     .background(Color.gray000)
   }
 
-  @ViewBuilder
-  private func activityCard(for item: ActivityMissionItem) -> some View {
-    if let proposal = item.proposal {
-      ProposalCard(
-        title: proposal.title,
-        description: proposal.content,
-        date: ProposalDisplay.dateString(proposal.deadline),
-        time: ProposalDisplay.timeString(proposal.deadline),
-        fee: ProposalDisplay.feeString(proposal.errandFee),
-        badges: [MissionDisplay.statusBadge(item.mission.status)]
-      )
-    } else {
-      ProposalCard(
-        title: "Proposal #\(item.mission.proposalID)",
-        description: "더미 데이터: 매칭된 의뢰 정보를 찾을 수 없어요.",
-        date: "-",
-        time: "-",
-        fee: ProposalDisplay.feeString(item.mission.runFee + item.mission.itemPrice),
-        badges: [MissionDisplay.statusBadge(item.mission.status)]
-      )
+  private func activityCard(for item: ActivityItem) -> some View {
+    let proposal = item.proposal
+    return ProposalCard(
+      title: proposal.title,
+      description: proposal.content,
+      date: ProposalDisplay.dateString(proposal.deadline),
+      time: ProposalDisplay.timeString(proposal.deadline),
+      fee: ProposalDisplay.feeString(proposal.errandFee),
+      badges: badges(for: item)
+    )
+  }
+
+  private func badges(for item: ActivityItem) -> [BadgeItem] {
+    if let mission = item.mission {
+      return [MissionDisplay.statusBadge(mission.status)]
+    }
+    if let offer = item.offer {
+      return [offerStatusBadge(offer.status)]
+    }
+    return [proposalStatusBadge(item.proposal.status)]
+  }
+
+  private func proposalStatusBadge(_ status: ProposalStatus) -> BadgeItem {
+    switch status {
+    case .posted:
+      return BadgeItem(text: "대기중", textColor: .blue500, bgColor: .blue000)
+    case .offered:
+      return BadgeItem(text: "지원 도착", textColor: .amber600, bgColor: .amber000)
+    case .matched:
+      return BadgeItem(text: "매칭 완료", textColor: .emerald500, bgColor: .emerald000)
+    case .cancelled:
+      return BadgeItem(text: "취소됨", textColor: .gray500, bgColor: .gray100)
     }
   }
 
-  private func handleSelection(_ item: ActivityMissionItem) {
+  private func offerStatusBadge(_ status: OfferStatus) -> BadgeItem {
+    switch status {
+    case .waiting:
+      return BadgeItem(text: "검토 대기중", textColor: .blue500, bgColor: .blue000)
+    case .accepted:
+      return BadgeItem(text: "수락됨", textColor: .emerald500, bgColor: .emerald000)
+    case .rejected:
+      return BadgeItem(text: "거절됨", textColor: .gray500, bgColor: .gray100)
+    case .cancelled:
+      return BadgeItem(text: "취소됨", textColor: .gray500, bgColor: .gray100)
+    }
+  }
+
+  private func handleSelection(_ item: ActivityItem) {
     switch segment {
     case .orderer:
-      onSelectOrdererProposal(item.mission.proposalID)
+      onSelectOrdererProposal(item.proposal.id)
     case .runner:
-      onSelectRunnerProposal(item.mission.proposalID, item.mission.offerID)
+      onSelectRunnerItem(item.proposal.id, item.mission != nil)
     }
   }
 }
