@@ -21,6 +21,8 @@ enum AppRoute: Hashable {
   case applicantOfferDetail(proposalID: Int64, offerID: Int64)
   /// 의뢰자가 자기 의뢰의 지원자 리스트를 보는 화면
   case applicantList(proposalID: Int64)
+  /// 지원하기 성공 직후 안내 화면
+  case applyComplete(proposalID: Int64)
   /// 새 의뢰 작성
   case addProposal
 }
@@ -33,6 +35,7 @@ enum AppRouteFactory {
       proposalID: proposalID,
       fetchDetailUseCase: FetchProposalDetailUseCase(repository: DIContainer.proposalRepository),
       createOfferUseCase: CreateOfferUseCase(repository: DIContainer.offerRepository),
+      fetchMyOffersUseCase: FetchMyOffersUseCase(repository: DIContainer.offerRepository),
       userRepository: DIContainer.userRepository
     )
   }

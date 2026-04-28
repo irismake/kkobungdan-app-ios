@@ -154,7 +154,19 @@ struct HomeView: View {
       ProposalDetailView(
         viewModel: AppRouteFactory.makeProposalDetailViewModel(proposalID: proposalID),
         onBack: { popLast(path: path) },
-        onApply: { popLast(path: path) }
+        onApply: {
+          path.wrappedValue.append(.applyComplete(proposalID: proposalID))
+        }
+      )
+      .navigationBarBackButtonHidden(true)
+    case let .applyComplete(proposalID):
+      ApplyCompleteView(
+        onConfirm: {
+          path.wrappedValue.removeAll()
+        },
+        onViewHistory: {
+          path.wrappedValue = [.runnerApplyDetail(proposalID: proposalID)]
+        }
       )
       .navigationBarBackButtonHidden(true)
     case let .myProposalDetail(proposalID):

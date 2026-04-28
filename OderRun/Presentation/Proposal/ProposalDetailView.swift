@@ -44,10 +44,13 @@ struct ProposalDetailView: View {
       }
 
       VStack(spacing: 0) {
-        ConfirmButton(title: viewModel.isApplying ? "지원 중..." : "지원하기") {
+        ConfirmButton(
+          title: applyButtonTitle,
+          isEnabled: !viewModel.hasApplied && !viewModel.isApplying
+        ) {
           Task {
-            await viewModel.apply()
-            if viewModel.didApply {
+            let success = await viewModel.apply()
+            if success {
               onApply()
             }
           }
@@ -61,6 +64,13 @@ struct ProposalDetailView: View {
     .task {
       await viewModel.load()
     }
+  }
+
+  private var applyButtonTitle: String {
+    if viewModel.hasApplied {
+      return "지원 완료"
+    }
+    return viewModel.isApplying ? "지원 중..." : "지원하기"
   }
 
   @ViewBuilder
