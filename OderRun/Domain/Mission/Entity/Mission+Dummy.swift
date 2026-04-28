@@ -28,7 +28,7 @@ extension Mission {
       ),
       // 내가 ORDERER — 완료
       Mission(
-        id: 102, offerID: 9001, proposalID: 998,
+        id: 102, offerID: 60, proposalID: 8,
         ordererID: DummySession.currentUserID, runnerID: "user-r001",
         status: .receivedConfirmed, runFee: 5000, itemPrice: 15000,
         proofImageURL: "https://cdn.orderrun.com/proofs/mission-102.jpg",
@@ -36,7 +36,7 @@ extension Mission {
       ),
       // 내가 RUNNER — 분쟁
       Mission(
-        id: 103, offerID: 9002, proposalID: 999,
+        id: 103, offerID: 70, proposalID: 9,
         ordererID: "user-a002", runnerID: DummySession.currentUserID,
         status: .disputed, runFee: 3000, itemPrice: 0,
         proofImageURL: nil, createdAt: now.addingTimeInterval(-7 * 86400)
