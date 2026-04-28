@@ -71,7 +71,10 @@ struct MyProposalDetailView: View {
       }
 
       VStack(spacing: 8) {
-        ConfirmButton(title: "지원 보기(\(viewModel.applicantCount))") {
+        ConfirmButton(
+          title: "지원 보기(\(viewModel.applicantCount))",
+          isEnabled: viewModel.applicantCount > 0
+        ) {
           onShowApplicants()
         }
 

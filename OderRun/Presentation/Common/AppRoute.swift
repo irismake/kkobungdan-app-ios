@@ -23,8 +23,12 @@ enum AppRoute: Hashable {
   case applicantList(proposalID: Int64)
   /// 지원하기 성공 직후 안내 화면
   case applyComplete(proposalID: Int64)
-  /// 새 의뢰 작성
-  case addProposal
+  /// 새 의뢰 작성 — 1단계: 제목/내용
+  case addProposalDraft
+  /// 새 의뢰 작성 — 2단계: 날짜/시간
+  case addProposalDateTime(draft: AddProposalDraft)
+  /// 새 의뢰 작성 — 3단계: 웨이팅비 입력 + 등록
+  case addProposalFee(draft: AddProposalDraft)
 }
 
 enum AppRouteFactory {
@@ -85,7 +89,7 @@ enum AppRouteFactory {
     )
   }
 
-  // MARK: - Add Proposal
+  // MARK: - Add Proposal (Fee 단계에서 실제 등록 API 호출)
 
   static func makeAddProposalViewModel() -> AddProposalViewModel {
     AddProposalViewModel(

@@ -45,8 +45,10 @@ final class ProposalDetailViewModel {
       let proposal = try await fetchDetailUseCase.execute(id: proposalID)
       self.proposal = proposal
       ordererProfile = try await userRepository.fetchRunnerProfile(userID: proposal.ordererID)
-      let myOffers = try await fetchMyOffersUseCase.execute(status: .waiting)
-      hasApplied = myOffers.contains { $0.proposalID == proposalID }
+      let myOffers = try await fetchMyOffersUseCase.execute()
+      hasApplied = myOffers.contains {
+        $0.proposalID == proposalID && ($0.status == .waiting || $0.status == .accepted)
+      }
     } catch {
       errorMessage = "요청 상세를 불러오지 못했어요."
     }

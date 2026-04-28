@@ -131,13 +131,23 @@ final class ActivityViewModel {
     isLoading = false
   }
 
+  /// 같은 proposalID 에 여러 offer 가 쌓일 수 있음(취소/거절 후 재지원 등). 화면에는 가장
+  /// 최근 offer 한 건만 노출한다.
   private static func makeRunnerItems(
     offers: [Offer],
     missions: [Mission],
     repository: ProposalRepositoryProtocol
   ) async -> [ActivityItem] {
-    var items: [ActivityItem] = []
+    var latestOfferByProposal: [Int64: Offer] = [:]
     for offer in offers {
+      if let existing = latestOfferByProposal[offer.proposalID], existing.createdAt >= offer.createdAt {
+        continue
+      }
+      latestOfferByProposal[offer.proposalID] = offer
+    }
+
+    var items: [ActivityItem] = []
+    for offer in latestOfferByProposal.values {
       guard let proposal = try? await repository.fetchProposal(id: offer.proposalID) else {
         continue
       }

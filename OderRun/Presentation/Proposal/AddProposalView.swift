@@ -8,16 +8,27 @@
 import SwiftUI
 
 struct AddProposalView: View {
-  @State private var viewModel: AddProposalViewModel
-  var onBack: () -> Void = {}
+  @State private var title: String
+  @State private var content: String
 
-  init(viewModel: AddProposalViewModel, onBack: @escaping () -> Void = {}) {
-    _viewModel = State(initialValue: viewModel)
+  private let initialDraft: AddProposalDraft
+  let onBack: () -> Void
+  let onNext: (AddProposalDraft) -> Void
+
+  init(
+    draft: AddProposalDraft = AddProposalDraft(),
+    onBack: @escaping () -> Void = {},
+    onNext: @escaping (AddProposalDraft) -> Void = { _ in }
+  ) {
+    initialDraft = draft
+    _title = State(initialValue: draft.title)
+    _content = State(initialValue: draft.content)
     self.onBack = onBack
+    self.onNext = onNext
   }
 
   private var isNextEnabled: Bool {
-    !viewModel.title.isEmpty && !viewModel.content.isEmpty && !viewModel.isLoading
+    !title.isEmpty && !content.isEmpty
   }
 
   var body: some View {
@@ -30,11 +41,6 @@ struct AddProposalView: View {
     }
     .background(Color.gray000)
     .navigationBarHidden(true)
-    .onChange(of: viewModel.didCreate) { _, didCreate in
-      if didCreate {
-        onBack()
-      }
-    }
   }
 
   private var headerSection: some View {
@@ -66,13 +72,6 @@ struct AddProposalView: View {
       VStack(spacing: 24) {
         titleField
         contentField
-
-        if let errorMessage = viewModel.errorMessage {
-          Text(errorMessage)
-            .textStyle(.body3)
-            .foregroundColor(Color.rose500)
-            .frame(maxWidth: .infinity, alignment: .leading)
-        }
       }
       .padding(16)
     }
@@ -82,7 +81,7 @@ struct AddProposalView: View {
     TitleTextField(
       title: "제목",
       placeholder: "예: 성수동 OO 베이커리 소금빵 웨이팅",
-      text: $viewModel.title,
+      text: $title,
       maxLength: 50,
       autoFocus: true
     )
@@ -92,27 +91,21 @@ struct AddProposalView: View {
     ContentTextField(
       title: "내용",
       placeholder: "만남 장소를 포함한 요청 내용을 자세히 작성해주세요",
-      text: $viewModel.content,
+      text: $content,
       maxLength: 500
     )
   }
 
   private var bottomSection: some View {
-    BottomActionBar(
-      title: viewModel.isLoading ? "등록 중..." : "등록하기",
-      isEnabled: isNextEnabled
-    ) {
-      Task { await viewModel.createProposal() }
+    BottomActionBar(title: "다음", isEnabled: isNextEnabled) {
+      var updated = initialDraft
+      updated.title = title
+      updated.content = content
+      onNext(updated)
     }
   }
 }
 
 #Preview {
-  AddProposalView(
-    viewModel: AddProposalViewModel(
-      createProposalUseCase: CreateProposalUseCase(
-        repository: DIContainer.proposalRepository
-      )
-    )
-  )
+  AddProposalView()
 }

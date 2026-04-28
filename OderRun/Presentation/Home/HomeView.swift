@@ -106,7 +106,7 @@ struct HomeView: View {
 
       if selectedTab == .home {
         FloatingActionButton {
-          homePath.append(.addProposal)
+          homePath.append(.addProposalDraft)
         }
         .padding(.trailing, 20)
         .offset(y: -(56 + 4))
@@ -215,11 +215,30 @@ struct HomeView: View {
         }
       )
       .navigationBarBackButtonHidden(true)
-    case .addProposal:
+    case .addProposalDraft:
       AddProposalView(
+        onBack: { popLast(path: path) },
+        onNext: { draft in
+          path.wrappedValue.append(.addProposalDateTime(draft: draft))
+        }
+      )
+      .navigationBarBackButtonHidden(true)
+    case let .addProposalDateTime(draft):
+      AddProposalDateTimeView(
+        draft: draft,
+        onBack: { popLast(path: path) },
+        onNext: { updated in
+          path.wrappedValue.append(.addProposalFee(draft: updated))
+        }
+      )
+      .navigationBarBackButtonHidden(true)
+    case let .addProposalFee(draft):
+      AddProposalFeeView(
+        draft: draft,
         viewModel: AppRouteFactory.makeAddProposalViewModel(),
-        onBack: {
-          popLast(path: path)
+        onBack: { popLast(path: path) },
+        onCreated: { proposal in
+          path.wrappedValue = [.myProposalDetail(proposalID: proposal.id)]
           Task {
             await viewModel.load()
             await activityViewModel.load()

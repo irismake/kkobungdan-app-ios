@@ -18,7 +18,7 @@ actor TestOfferRepositoryImpl: OfferRepositoryProtocol {
     let duplicated = offers.contains {
       $0.proposalID == proposalID
         && $0.runnerID == DummySession.currentUserID
-        && $0.status == .waiting
+        && ($0.status == .waiting || $0.status == .accepted)
     }
     if duplicated {
       throw RepositoryError.conflict
