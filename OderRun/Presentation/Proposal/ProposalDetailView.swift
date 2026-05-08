@@ -90,7 +90,11 @@ struct ProposalDetailView: View {
         description: proposal.content,
         date: ProposalDisplay.dateString(proposal.deadline),
         time: ProposalDisplay.timeString(proposal.deadline),
-        fee: ProposalDisplay.feeString(proposal.errandFee)
+        fee: ProposalDisplay.feeString(proposal.errandFee),
+        badges: ProposalDisplay.badges(
+          proposal: proposal,
+          mission: nil
+        )
       )
     } else if let errorMessage = viewModel.errorMessage {
       Text(errorMessage)

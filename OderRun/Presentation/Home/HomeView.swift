@@ -134,7 +134,11 @@ struct HomeView: View {
                 description: proposal.content,
                 date: ProposalDisplay.dateString(proposal.deadline),
                 time: ProposalDisplay.timeString(proposal.deadline),
-                fee: ProposalDisplay.feeString(proposal.errandFee)
+                fee: ProposalDisplay.feeString(proposal.errandFee),
+                badges: ProposalDisplay.badges(
+                  proposal: proposal,
+                  mission: nil
+                )
               )
               .contentShape(Rectangle())
               .onTapGesture {

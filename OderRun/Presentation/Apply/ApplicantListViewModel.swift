@@ -31,7 +31,6 @@ final class ApplicantListViewModel {
 
   private let fetchDetailUseCase: FetchProposalDetailUseCase
   private let fetchOffersUseCase: FetchOffersByProposalUseCase
-  private let cancelOfferUseCase: CancelOfferUseCase
   private let userRepository: UserRepositoryProtocol
   private let createMissionUseCase: CreateMissionUseCase
 
@@ -39,14 +38,12 @@ final class ApplicantListViewModel {
     proposalID: Int64,
     fetchDetailUseCase: FetchProposalDetailUseCase,
     fetchOffersUseCase: FetchOffersByProposalUseCase,
-    cancelOfferUseCase: CancelOfferUseCase,
     userRepository: UserRepositoryProtocol,
     createMissionUseCase: CreateMissionUseCase
   ) {
     self.proposalID = proposalID
     self.fetchDetailUseCase = fetchDetailUseCase
     self.fetchOffersUseCase = fetchOffersUseCase
-    self.cancelOfferUseCase = cancelOfferUseCase
     self.userRepository = userRepository
     self.createMissionUseCase = createMissionUseCase
   }
@@ -71,23 +68,6 @@ final class ApplicantListViewModel {
       errorMessage = "지원자 목록을 불러오지 못했어요."
     }
     isLoading = false
-  }
-
-  /// 의뢰자가 지원자를 거절한다. 더미 환경에서는 CancelOfferUseCase 가 status 를 .cancelled 로 변경한다.
-  @MainActor
-  func rejectOffer(offerID: Int64) async {
-    guard !isRejecting else {
-      return
-    }
-    isRejecting = true
-    errorMessage = nil
-    do {
-      try await cancelOfferUseCase.execute(offerID: offerID)
-      entries.removeAll { $0.offer.id == offerID }
-    } catch {
-      errorMessage = "지원자를 거절하지 못했어요."
-    }
-    isRejecting = false
   }
 
   /// 의뢰자가 지원자를 선택(수락)하면 미션을 생성한다.

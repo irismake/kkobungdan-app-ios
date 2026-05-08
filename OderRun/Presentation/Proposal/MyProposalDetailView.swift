@@ -25,20 +25,14 @@ struct MyProposalDetailView: View {
     self.onAccepted = onAccepted
   }
 
-  private var statusBadge: BadgeItem? {
-    guard let status = viewModel.proposal?.status else {
-      return nil
+  private var statusBadges: [BadgeItem] {
+    guard let proposal = viewModel.proposal else {
+      return []
     }
-    switch status {
-    case .posted:
-      return BadgeItem(text: "대기중", textColor: .blue500, bgColor: .blue000)
-    case .offered:
-      return BadgeItem(text: "지원 도착", textColor: .amber600, bgColor: .amber000)
-    case .matched:
-      return BadgeItem(text: "매칭 완료", textColor: .emerald500, bgColor: .emerald000)
-    case .cancelled:
-      return BadgeItem(text: "취소됨", textColor: .gray500, bgColor: .gray100)
-    }
+    return ProposalDisplay.badges(
+      proposal: proposal,
+      mission: viewModel.missionViewModel.mission
+    )
   }
 
   var body: some View {
@@ -134,7 +128,7 @@ struct MyProposalDetailView: View {
         date: ProposalDisplay.dateString(proposal.deadline),
         time: ProposalDisplay.timeString(proposal.deadline),
         fee: ProposalDisplay.feeString(proposal.errandFee),
-        badges: statusBadge.map { [$0] } ?? []
+        badges: statusBadges
       )
     } else if viewModel.isLoading {
       ProgressView()

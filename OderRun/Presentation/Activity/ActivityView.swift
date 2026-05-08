@@ -264,39 +264,11 @@ struct ActivityView: View {
   }
 
   private func badges(for item: ActivityItem) -> [BadgeItem] {
-    if let mission = item.mission {
-      return [MissionDisplay.statusBadge(mission.status)]
-    }
-    if let offer = item.offer {
-      return [offerStatusBadge(offer.status)]
-    }
-    return [proposalStatusBadge(item.proposal.status)]
-  }
-
-  private func proposalStatusBadge(_ status: ProposalStatus) -> BadgeItem {
-    switch status {
-    case .posted:
-      return BadgeItem(text: "대기중", textColor: .blue500, bgColor: .blue000)
-    case .offered:
-      return BadgeItem(text: "지원 도착", textColor: .amber600, bgColor: .amber000)
-    case .matched:
-      return BadgeItem(text: "매칭 완료", textColor: .emerald500, bgColor: .emerald000)
-    case .cancelled:
-      return BadgeItem(text: "취소됨", textColor: .gray500, bgColor: .gray100)
-    }
-  }
-
-  private func offerStatusBadge(_ status: OfferStatus) -> BadgeItem {
-    switch status {
-    case .waiting:
-      return BadgeItem(text: "검토 대기중", textColor: .blue500, bgColor: .blue000)
-    case .accepted:
-      return BadgeItem(text: "수락됨", textColor: .emerald500, bgColor: .emerald000)
-    case .rejected:
-      return BadgeItem(text: "거절됨", textColor: .gray500, bgColor: .gray100)
-    case .cancelled:
-      return BadgeItem(text: "취소됨", textColor: .gray500, bgColor: .gray100)
-    }
+    ProposalDisplay.badges(
+      proposal: item.proposal,
+      mission: item.mission,
+      myOfferStatus: item.offer?.status
+    )
   }
 
   private func handleSelection(_ item: ActivityItem) {
