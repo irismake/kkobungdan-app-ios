@@ -85,11 +85,17 @@ struct MyProposalDetailView: View {
     .refreshable {
       await viewModel.load()
     }
+    .onChange(of: viewModel.didCancel) { _, didCancel in
+      if didCancel {
+        onBack()
+      }
+    }
   }
 
   @ViewBuilder
   private var bottomActionSection: some View {
-    if viewModel.proposal?.status == .matched {
+    switch viewModel.proposal?.status {
+    case .matched:
       Button(action: onAccepted) {
         Text("만났어요!")
           .textStyle(.heading4)
@@ -101,7 +107,9 @@ struct MyProposalDetailView: View {
           .clipShape(RoundedRectangle(cornerRadius: 12))
       }
       .buttonStyle(.plain)
-    } else {
+    case .cancelled:
+      EmptyView()
+    default:
       VStack(spacing: 8) {
         ConfirmButton(
           title: "지원 보기(\(viewModel.applicantCount))",

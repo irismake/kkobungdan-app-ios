@@ -101,4 +101,46 @@ actor TestProposalRepositoryImpl: ProposalRepositoryProtocol {
     proposals[index] = updated
     return updated
   }
+
+  /// 더미 환경에서 미션 생성 시 백엔드 cascade 를 흉내내기 위한 헬퍼.
+  /// 해당 proposal 을 MATCHED 로 전환한다.
+  func markMatched(id: Int64) {
+    guard let index = proposals.firstIndex(where: { $0.id == id }) else {
+      return
+    }
+    let existing = proposals[index]
+    proposals[index] = Proposal(
+      id: existing.id,
+      ordererID: existing.ordererID,
+      title: existing.title,
+      content: existing.content,
+      deadline: existing.deadline,
+      errandFee: existing.errandFee,
+      status: .matched
+    )
+  }
+
+  /// offer 가 처음 등록되면 POSTED → OFFERED 로 전이시킨다 (이미 OFFERED 라면 변화 없음).
+  func markOfferedIfPosted(id: Int64) {
+    guard let index = proposals.firstIndex(where: { $0.id == id }) else {
+      return
+    }
+    let existing = proposals[index]
+    guard existing.status == .posted else {
+      return
+    }
+    proposals[index] = Proposal(
+      id: existing.id,
+      ordererID: existing.ordererID,
+      title: existing.title,
+      content: existing.content,
+      deadline: existing.deadline,
+      errandFee: existing.errandFee,
+      status: .offered
+    )
+  }
+
+  func proposalStatus(id: Int64) -> ProposalStatus? {
+    proposals.first(where: { $0.id == id })?.status
+  }
 }

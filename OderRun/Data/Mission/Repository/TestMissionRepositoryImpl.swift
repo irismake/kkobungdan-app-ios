@@ -21,6 +21,12 @@ actor TestMissionRepositoryImpl: MissionRepositoryProtocol {
     guard let (offer, proposal) = try await resolveOfferAndProposal(offerID: offerID) else {
       throw RepositoryError.notFound
     }
+    guard offer.status == .waiting else {
+      throw RepositoryError.conflict
+    }
+    guard proposal.status == .offered else {
+      throw RepositoryError.conflict
+    }
     let newID = nextID
     nextID += 1
     let mission = Mission(
@@ -30,6 +36,17 @@ actor TestMissionRepositoryImpl: MissionRepositoryProtocol {
       proofImageURL: nil, createdAt: Date()
     )
     missions.append(mission)
+
+    // 백엔드 cascade 를 흉내낸다: 선택 offer ACCEPTED, 나머지 WAITING offer REJECTED, proposal MATCHED.
+    if let testOfferRepo = DIContainer.offerRepository as? TestOfferRepositoryImpl {
+      await testOfferRepo.applyMissionCreationCascade(
+        acceptedOfferID: offerID,
+        proposalID: offer.proposalID
+      )
+    }
+    if let testProposalRepo = DIContainer.proposalRepository as? TestProposalRepositoryImpl {
+      await testProposalRepo.markMatched(id: offer.proposalID)
+    }
     return mission
   }
 

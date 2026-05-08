@@ -72,21 +72,25 @@ final class ActivityViewModel {
   var runnerItems: [ActivityItem] = []
   var isLoading: Bool = false
   var errorMessage: String?
+  var isCancellingOfferID: Int64?
 
   private let fetchProposalsUseCase: FetchProposalsUseCase
   private let fetchMyOffersUseCase: FetchMyOffersUseCase
   private let fetchMyMissionsUseCase: FetchMyMissionsUseCase
+  private let cancelOfferUseCase: CancelOfferUseCase
   private let proposalRepository: ProposalRepositoryProtocol
 
   init(
     fetchProposalsUseCase: FetchProposalsUseCase,
     fetchMyOffersUseCase: FetchMyOffersUseCase,
     fetchMyMissionsUseCase: FetchMyMissionsUseCase,
+    cancelOfferUseCase: CancelOfferUseCase,
     proposalRepository: ProposalRepositoryProtocol
   ) {
     self.fetchProposalsUseCase = fetchProposalsUseCase
     self.fetchMyOffersUseCase = fetchMyOffersUseCase
     self.fetchMyMissionsUseCase = fetchMyMissionsUseCase
+    self.cancelOfferUseCase = cancelOfferUseCase
     self.proposalRepository = proposalRepository
   }
 
@@ -95,6 +99,7 @@ final class ActivityViewModel {
       fetchProposalsUseCase: FetchProposalsUseCase(repository: DIContainer.proposalRepository),
       fetchMyOffersUseCase: FetchMyOffersUseCase(repository: DIContainer.offerRepository),
       fetchMyMissionsUseCase: FetchMyMissionsUseCase(repository: DIContainer.missionRepository),
+      cancelOfferUseCase: CancelOfferUseCase(repository: DIContainer.offerRepository),
       proposalRepository: DIContainer.proposalRepository
     )
   }
@@ -129,6 +134,23 @@ final class ActivityViewModel {
       errorMessage = "내 활동을 불러오지 못했어요."
     }
     isLoading = false
+  }
+
+  /// 러너가 본인이 제출한 지원(WAITING)을 취소한다. 성공 시 활동 목록을 다시 로드한다.
+  @MainActor
+  func cancelMyOffer(offerID: Int64) async {
+    guard isCancellingOfferID == nil else {
+      return
+    }
+    isCancellingOfferID = offerID
+    errorMessage = nil
+    do {
+      try await cancelOfferUseCase.execute(offerID: offerID)
+      await load()
+    } catch {
+      errorMessage = "지원을 취소하지 못했어요."
+    }
+    isCancellingOfferID = nil
   }
 
   /// 같은 proposalID 에 여러 offer 가 쌓일 수 있음(취소/거절 후 재지원 등). 화면에는 가장

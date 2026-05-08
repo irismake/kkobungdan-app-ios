@@ -41,6 +41,7 @@ struct ActivityView: View {
   @State private var viewModel: ActivityViewModel
   @State private var segment: ActivitySegment = .orderer
   @State private var filter: ActivityFilter = .all
+  @State private var pendingCancelEntry: ActivityItem?
 
   var onSelectOrdererProposal: (Int64) -> Void = { _ in }
   var onSelectRunnerItem: (_ proposalID: Int64, _ hasMission: Bool) -> Void = { _, _ in }
@@ -91,11 +92,17 @@ struct ActivityView: View {
               .padding(.top, 40)
           } else {
             ForEach(filteredItems) { item in
-              activityCard(for: item)
-                .contentShape(Rectangle())
-                .onTapGesture {
-                  handleSelection(item)
+              VStack(spacing: 8) {
+                activityCard(for: item)
+                  .contentShape(Rectangle())
+                  .onTapGesture {
+                    handleSelection(item)
+                  }
+
+                if canCancelOffer(item) {
+                  cancelOfferButton(for: item)
                 }
+              }
             }
           }
         }
@@ -110,6 +117,53 @@ struct ActivityView: View {
     .refreshable {
       await viewModel.load()
     }
+    .alert(
+      "지원을 취소할까요?",
+      isPresented: Binding(
+        get: { pendingCancelEntry != nil },
+        set: { if !$0 {
+          pendingCancelEntry = nil
+        } }
+      ),
+      presenting: pendingCancelEntry
+    ) { entry in
+      Button("취소", role: .cancel) {
+        pendingCancelEntry = nil
+      }
+      Button("지원 취소", role: .destructive) {
+        guard let offerID = entry.offer?.id else {
+          return
+        }
+        Task { await viewModel.cancelMyOffer(offerID: offerID) }
+      }
+    } message: { entry in
+      Text(entry.proposal.title)
+    }
+  }
+
+  private func canCancelOffer(_ item: ActivityItem) -> Bool {
+    segment == .runner && item.offer?.status == .waiting && item.mission == nil
+  }
+
+  private func cancelOfferButton(for item: ActivityItem) -> some View {
+    let isCancelling = viewModel.isCancellingOfferID == item.offer?.id
+    return Button {
+      pendingCancelEntry = item
+    } label: {
+      Text(isCancelling ? "취소 중..." : "지원 취소")
+        .textStyle(.body3, weight: .bold)
+        .foregroundColor(Color.rose500)
+        .frame(maxWidth: .infinity)
+        .frame(height: 40)
+        .background(Color.white)
+        .clipShape(RoundedRectangle(cornerRadius: 8))
+        .overlay(
+          RoundedRectangle(cornerRadius: 8)
+            .stroke(Color.rose200, lineWidth: 1)
+        )
+    }
+    .buttonStyle(.plain)
+    .disabled(isCancelling)
   }
 
   private var currentItems: [ActivityItem] {
