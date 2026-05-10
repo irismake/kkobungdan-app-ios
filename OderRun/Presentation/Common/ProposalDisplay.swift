@@ -100,12 +100,14 @@ enum ProposalDisplay {
 
     if let mission {
       switch mission.status {
-      case .created, .inProgress:
+      case .created:
+        return [waitingBadge]
+      case .inProgress:
         return [inProgressBadge]
-      case .deliveryCompleted:
-        return [deliveryDoneBadge]
-      case .receivedConfirmed, .settled:
+      case .deliveryCompleted, .receivedConfirmed:
         return [completedBadge]
+      case .settled:
+        return [deliveryDoneBadge]
       case .disputed, .refunded:
         return [cancelledBadge]
       }

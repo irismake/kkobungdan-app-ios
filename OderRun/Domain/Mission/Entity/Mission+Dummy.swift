@@ -40,6 +40,28 @@ extension Mission {
         ordererID: "user-a002", runnerID: DummySession.currentUserID,
         status: .disputed, runFee: 3000, itemPrice: 0,
         proofImageURL: nil, createdAt: now.addingTimeInterval(-7 * 86400)
+      ),
+      // 내가 RUNNER — 매칭 직후, 아직 수행 시작 전 (CREATED)
+      Mission(
+        id: 104, offerID: 80, proposalID: 10,
+        ordererID: "user-a003", runnerID: DummySession.currentUserID,
+        status: .created, runFee: 12000, itemPrice: 0,
+        proofImageURL: nil, createdAt: now.addingTimeInterval(-3600)
+      ),
+      // 내가 ORDERER — 정산까지 완료 (SETTLED)
+      Mission(
+        id: 105, offerID: 81, proposalID: 11,
+        ordererID: DummySession.currentUserID, runnerID: "user-r004",
+        status: .settled, runFee: 2000, itemPrice: 0,
+        proofImageURL: "https://cdn.orderrun.com/proofs/mission-105.jpg",
+        createdAt: now.addingTimeInterval(-10 * 86400)
+      ),
+      // 내가 RUNNER — 환불 처리됨 (REFUNDED)
+      Mission(
+        id: 106, offerID: 82, proposalID: 12,
+        ordererID: "user-a004", runnerID: DummySession.currentUserID,
+        status: .refunded, runFee: 3500, itemPrice: 0,
+        proofImageURL: nil, createdAt: now.addingTimeInterval(-12 * 86400)
       )
     ]
   }()

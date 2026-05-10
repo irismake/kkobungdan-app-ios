@@ -91,6 +91,33 @@ extension Proposal {
         deadline: now.addingTimeInterval(-7 * 86400),
         errandFee: 3000,
         status: .matched
+      ),
+      Proposal(
+        id: 10,
+        ordererID: "user-a003",
+        title: "주말 이사 짐 옮기기",
+        content: "1.5톤 분량의 박스 정리 후 트럭에 적재 부탁드립니다. 시작 전 연락 주세요.",
+        deadline: now.addingTimeInterval(2 * 86400),
+        errandFee: 12000,
+        status: .matched
+      ),
+      Proposal(
+        id: 11,
+        ordererID: DummySession.currentUserID,
+        title: "도서관 도서 반납",
+        content: "관악구립도서관에 도서 3권 반납 부탁드립니다.",
+        deadline: now.addingTimeInterval(-10 * 86400),
+        errandFee: 2000,
+        status: .matched
+      ),
+      Proposal(
+        id: 12,
+        ordererID: "user-a004",
+        title: "세탁소 픽업",
+        content: "역삼동 크린토피아에서 세탁물 수령 후 자택 전달 부탁드립니다.",
+        deadline: now.addingTimeInterval(-12 * 86400),
+        errandFee: 3500,
+        status: .matched
       )
     ]
   }()

@@ -31,7 +31,13 @@ extension Offer {
       // proposal 8 (내 proposal, MATCHED — 완료)
       Offer(id: 60, proposalID: 8, runnerID: "user-r001", status: .accepted, createdAt: now.addingTimeInterval(-4 * 86400)),
       // proposal 9 (남의 proposal, MATCHED — 내가 RUNNER로 분쟁)
-      Offer(id: 70, proposalID: 9, runnerID: DummySession.currentUserID, status: .accepted, createdAt: now.addingTimeInterval(-7 * 86400))
+      Offer(id: 70, proposalID: 9, runnerID: DummySession.currentUserID, status: .accepted, createdAt: now.addingTimeInterval(-7 * 86400)),
+      // proposal 10 (남의 proposal, MATCHED — 내가 RUNNER, 미션 CREATED 직후)
+      Offer(id: 80, proposalID: 10, runnerID: DummySession.currentUserID, status: .accepted, createdAt: now.addingTimeInterval(-3600)),
+      // proposal 11 (내 proposal, MATCHED — 미션 SETTLED)
+      Offer(id: 81, proposalID: 11, runnerID: "user-r004", status: .accepted, createdAt: now.addingTimeInterval(-10 * 86400)),
+      // proposal 12 (남의 proposal, MATCHED — 내가 RUNNER, 미션 REFUNDED)
+      Offer(id: 82, proposalID: 12, runnerID: DummySession.currentUserID, status: .accepted, createdAt: now.addingTimeInterval(-12 * 86400))
     ]
   }()
 

@@ -35,11 +35,11 @@ struct ActivityItem: Identifiable, Equatable {
   var stage: ActivityStage {
     if let mission {
       switch mission.status {
-      case .created, .inProgress:
+      case .created:
+        return .waiting
+      case .inProgress:
         return .inProgress
-      case .deliveryCompleted:
-        return .inProgress
-      case .receivedConfirmed, .settled:
+      case .deliveryCompleted, .receivedConfirmed, .settled:
         return .completed
       case .disputed, .refunded:
         return .cancelled
