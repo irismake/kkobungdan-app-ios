@@ -97,18 +97,23 @@ struct MissionStatusSection: View {
     .disabled(viewModel.isUpdating)
   }
 
-  private func buttonStyle(
-    for action: MissionAction
-  ) -> (title: String, foreground: Color, background: Color, border: Color) {
+  private func buttonStyle(for action: MissionAction) -> ActionButtonStyle {
     switch action {
     case .startProgress:
-      return ("진행 시작", .white, .indigo500, .indigo500)
+      return ActionButtonStyle(title: "진행 시작", foreground: .white, background: .indigo500, border: .indigo500)
     case .completeDelivery:
-      return ("전달 완료", .white, .emerald500, .emerald500)
+      return ActionButtonStyle(title: "전달 완료", foreground: .white, background: .emerald500, border: .emerald500)
     case .confirmReceived:
-      return ("수령 확인", .white, .indigo500, .indigo500)
+      return ActionButtonStyle(title: "수령 확인", foreground: .white, background: .indigo500, border: .indigo500)
     case .dispute:
-      return ("분쟁 신고", .rose500, .white, .rose200)
+      return ActionButtonStyle(title: "분쟁 신고", foreground: .rose500, background: .white, border: .rose200)
     }
   }
+}
+
+private struct ActionButtonStyle {
+  let title: String
+  let foreground: Color
+  let background: Color
+  let border: Color
 }

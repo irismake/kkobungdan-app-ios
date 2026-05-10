@@ -20,11 +20,11 @@ final class HomeViewModel {
   }
 
   static func preview() -> HomeViewModel {
-    let vm = HomeViewModel(
+    let viewModel = HomeViewModel(
       fetchProposalsUseCase: FetchProposalsUseCase(repository: DIContainer.proposalRepository)
     )
-    vm.proposals = Proposal.dummyList
-    return vm
+    viewModel.proposals = Proposal.dummyList
+    return viewModel
   }
 
   @MainActor

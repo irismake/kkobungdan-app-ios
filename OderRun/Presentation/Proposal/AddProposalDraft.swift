@@ -11,6 +11,6 @@ import Foundation
 struct AddProposalDraft: Hashable {
   var title: String = ""
   var content: String = ""
-  var deadline: Date? = nil
-  var errandFee: Int? = nil
+  var deadline: Date?
+  var errandFee: Int?
 }

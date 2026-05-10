@@ -51,7 +51,7 @@ actor TestOfferRepositoryImpl: OfferRepositoryProtocol {
   func fetchMyOffers(status: OfferStatus?, page: Int, size: Int) async throws -> [Offer] {
     try await Task.sleep(nanoseconds: Self.simulatedLatency)
     let mine = offers.filter { $0.runnerID == DummySession.currentUserID }
-    let filtered = status.map { s in mine.filter { $0.status == s } } ?? mine
+    let filtered = status.map { status in mine.filter { $0.status == status } } ?? mine
     let start = page * size
     guard start < filtered.count else {
       return []

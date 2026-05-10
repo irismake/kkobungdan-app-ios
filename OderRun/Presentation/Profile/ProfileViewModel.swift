@@ -30,14 +30,14 @@ final class ProfileViewModel {
 
   static func preview() -> ProfileViewModel {
     let repo = DIContainer.userRepository
-    let vm = ProfileViewModel(
+    let viewModel = ProfileViewModel(
       fetchUserDetailUseCase: FetchUserDetailUseCase(userRepository: repo),
       updateAlarmUseCase: UpdateAlarmUseCase(userRepository: repo),
       userRepository: repo
     )
-    vm.user = User.dummy
-    vm.runnerProfile = RunnerProfile.dummy
-    return vm
+    viewModel.user = User.dummy
+    viewModel.runnerProfile = RunnerProfile.dummy
+    return viewModel
   }
 
   @MainActor

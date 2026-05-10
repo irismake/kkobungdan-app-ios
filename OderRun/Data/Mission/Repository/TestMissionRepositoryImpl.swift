@@ -64,7 +64,7 @@ actor TestMissionRepositoryImpl: MissionRepositoryProtocol {
       case .runner: return $0.runnerID == DummySession.currentUserID
       }
     }
-    let filtered = status.map { s in mine.filter { $0.status == s } } ?? mine
+    let filtered = status.map { status in mine.filter { $0.status == status } } ?? mine
     let start = page * size
     guard start < filtered.count else {
       return []

@@ -15,9 +15,9 @@ final class HTTPClient {
   private let tokenStorage: TokenStorage
 
   private let decoder: JSONDecoder = {
-    let d = JSONDecoder()
-    d.keyDecodingStrategy = .convertFromSnakeCase
-    return d
+    let decoder = JSONDecoder()
+    decoder.keyDecodingStrategy = .convertFromSnakeCase
+    return decoder
   }()
 
   init(tokenStorage: TokenStorage, session: URLSession = .shared) {
