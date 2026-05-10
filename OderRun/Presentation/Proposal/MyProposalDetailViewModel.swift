@@ -13,6 +13,7 @@ final class MyProposalDetailViewModel {
 
   var proposal: Proposal?
   var offers: [Offer] = []
+  var matchedRunnerProfile: RunnerProfile?
   var isLoading: Bool = false
   var errorMessage: String?
   var isCancelling: Bool = false
@@ -25,21 +26,29 @@ final class MyProposalDetailViewModel {
     offers.filter { $0.status == .waiting || $0.status == .accepted }.count
   }
 
+  /// 매칭된 (수락된) offer. 매칭이 완료된 proposal 에서 매칭 러너 카드 표시에 사용.
+  var matchedOffer: Offer? {
+    offers.first(where: { $0.status == .accepted })
+  }
+
   private let fetchDetailUseCase: FetchProposalDetailUseCase
   private let fetchOffersUseCase: FetchOffersByProposalUseCase
   private let cancelProposalUseCase: CancelProposalUseCase
+  private let userRepository: UserRepositoryProtocol
 
   init(
     proposalID: Int64,
     fetchDetailUseCase: FetchProposalDetailUseCase,
     fetchOffersUseCase: FetchOffersByProposalUseCase,
     cancelProposalUseCase: CancelProposalUseCase,
+    userRepository: UserRepositoryProtocol,
     missionViewModel: MissionDetailViewModel
   ) {
     self.proposalID = proposalID
     self.fetchDetailUseCase = fetchDetailUseCase
     self.fetchOffersUseCase = fetchOffersUseCase
     self.cancelProposalUseCase = cancelProposalUseCase
+    self.userRepository = userRepository
     self.missionViewModel = missionViewModel
   }
 
@@ -52,6 +61,12 @@ final class MyProposalDetailViewModel {
       async let offersTask = fetchOffersUseCase.execute(proposalID: proposalID)
       proposal = try await proposalTask
       offers = try await offersTask
+
+      if let matchedOffer {
+        matchedRunnerProfile = try await userRepository.fetchRunnerProfile(userID: matchedOffer.runnerID)
+      } else {
+        matchedRunnerProfile = nil
+      }
     } catch {
       errorMessage = "내 요청 상세를 불러오지 못했어요."
     }

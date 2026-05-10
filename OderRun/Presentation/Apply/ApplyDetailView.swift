@@ -37,10 +37,6 @@ struct ApplyDetailView: View {
             applicantProfileSection
             proposalCardSection
 
-            if let missionViewModel = viewModel.missionViewModel {
-              MissionStatusSection(viewModel: missionViewModel)
-            }
-
             if let errorMessage = viewModel.errorMessage {
               Text(errorMessage)
                 .textStyle(.body3)

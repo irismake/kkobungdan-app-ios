@@ -45,7 +45,16 @@ struct MyProposalDetailView: View {
             VStack(spacing: 12) {
               proposalCardSection
 
-              MissionStatusSection(viewModel: viewModel.missionViewModel)
+              if viewModel.missionViewModel.mission != nil,
+                 let profile = viewModel.matchedRunnerProfile,
+                 let matchedOffer = viewModel.matchedOffer {
+                MatchedRunnerSection(
+                  nickname: profile.nickname,
+                  level: profile.level,
+                  grade: profile.grade,
+                  appliedAt: ProposalDisplay.appliedAtString(matchedOffer.createdAt)
+                )
+              }
             }
           }
           .padding(.vertical, 12)
