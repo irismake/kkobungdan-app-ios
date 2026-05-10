@@ -11,20 +11,20 @@ extension Mission {
   static let dummyList: [Mission] = {
     let now = Date()
     return [
-      // 내가 ORDERER — 진행 중
+      // 내가 ORDERER — 전달 완료 (CONFIRM_RECEIVED 가능 상태)
       Mission(
         id: 100, offerID: 40, proposalID: 5,
         ordererID: DummySession.currentUserID, runnerID: "user-r002",
-        status: .inProgress, runFee: 8000, itemPrice: 23000,
-        proofImageURL: nil, createdAt: now.addingTimeInterval(-86400)
+        status: .deliveryCompleted, runFee: 8000, itemPrice: 23000,
+        proofImageURL: "https://cdn.orderrun.com/proofs/mission-100.jpg",
+        createdAt: now.addingTimeInterval(-86400)
       ),
-      // 내가 RUNNER — 전달 완료
+      // 내가 RUNNER — 진행 중 (COMPLETE_DELIVERY 가능 상태)
       Mission(
         id: 101, offerID: 30, proposalID: 4,
         ordererID: "user-a001", runnerID: DummySession.currentUserID,
-        status: .deliveryCompleted, runFee: 2500, itemPrice: 0,
-        proofImageURL: "https://cdn.orderrun.com/proofs/mission-101.jpg",
-        createdAt: now.addingTimeInterval(-2 * 86400)
+        status: .inProgress, runFee: 2500, itemPrice: 0,
+        proofImageURL: nil, createdAt: now.addingTimeInterval(-2 * 86400)
       ),
       // 내가 ORDERER — 완료
       Mission(

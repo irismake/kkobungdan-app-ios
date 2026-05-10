@@ -9,6 +9,7 @@ import SwiftUI
 
 struct ApplyDetailView: View {
   @State private var viewModel: ApplyDetailViewModel
+  @State private var isMissionCompleted: Bool = false
   var onBack: () -> Void = {}
   var onAccepted: (Mission) -> Void = { _ in }
 
@@ -28,6 +29,28 @@ struct ApplyDetailView: View {
   }
 
   var body: some View {
+    ZStack {
+      contentView
+
+      if isMissionCompleted {
+        MissionCompleteModal(
+          title: "진행 완료 처리하시겠습니까?",
+          isApplicant: true,
+          infoTitle: "취소 안내",
+          infoContent: "완료 처리 후 취소가 불가능하며 문제 발생 시 고객센터 이메일로 문의 부탁드립니다.",
+          onCancel: { isMissionCompleted = false },
+          onConfirm: {
+            Task {
+              await viewModel.missionViewModel?.performAction(.completeDelivery)
+              isMissionCompleted = false
+            }
+          }
+        )
+      }
+    }
+  }
+
+  private var contentView: some View {
     VStack(spacing: 0) {
       AppBar(title: isAcceptMode ? "지원자 상세" : "지원 상세", onBack: onBack)
 
@@ -90,7 +113,7 @@ struct ApplyDetailView: View {
         Task { await viewModel.acceptOffer() }
       }
     } else {
-      Button(action: {}) {
+      Button(action: { isMissionCompleted = true }) {
         Text("만났어요!")
           .textStyle(.heading4)
           .foregroundColor(.white)

@@ -11,7 +11,7 @@ struct MissionCompleteModal: View {
   private var description: String {
     isApplicant
       ? "요청자와 만나셨나요?\n요청자가 만남 확인 버튼을 누르면 웨이팅비가 지급됩니다."
-      : "타임 세이퍼와 만나셨나요?\n세이퍼가 만남 확인 버튼을 누르면 보증금이 환급됩니다."
+      : "지원자와 만나셨나요?\n지원자가 만남 확인 버튼을 누르면 보증금이 환급됩니다."
   }
 
   var body: some View {
@@ -109,6 +109,7 @@ struct MissionCompleteModal: View {
       .padding(.horizontal, 16)
       .background(Color.white)
       .clipShape(RoundedRectangle(cornerRadius: 16))
+      .padding(.horizontal, Layout.screenHorizontalPadding)
     }
   }
 }
