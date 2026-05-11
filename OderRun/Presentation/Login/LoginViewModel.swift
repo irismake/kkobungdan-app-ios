@@ -15,10 +15,21 @@ final class LoginViewModel {
   var errorMessage: String?
   var isLoginSuccess: Bool = true
 
-  private let loginUseCase: LoginUseCase
+  var isAppleLoading: Bool = false
+  var isTermsSheetPresented: Bool = false
 
-  init(loginUseCase: LoginUseCase) {
+  private let loginUseCase: LoginUseCase
+  private let appleLoginUseCase: AppleLoginUseCase
+  private let appleSignInController: AppleSignInController
+
+  init(
+    loginUseCase: LoginUseCase,
+    appleLoginUseCase: AppleLoginUseCase,
+    appleSignInController: AppleSignInController = AppleSignInController()
+  ) {
     self.loginUseCase = loginUseCase
+    self.appleLoginUseCase = appleLoginUseCase
+    self.appleSignInController = appleSignInController
   }
 
   @MainActor
@@ -39,6 +50,40 @@ final class LoginViewModel {
     }
 
     isLoading = false
+  }
+
+  @MainActor
+  func appleLogin() async {
+    guard !isAppleLoading else {
+      return
+    }
+    isAppleLoading = true
+    errorMessage = nil
+
+    do {
+      let credential = try await appleSignInController.requestSignIn()
+      let result = try await appleLoginUseCase.execute(
+        authorizationCode: credential.authorizationCode,
+        userName: credential.userName
+      )
+      if result.isFirstLogin {
+        isTermsSheetPresented = true
+      } else {
+        isLoginSuccess = true
+      }
+    } catch AppleSignInError.canceled {
+      // 사용자가 취소한 경우는 조용히 무시
+    } catch {
+      errorMessage = "Apple 로그인에 실패했습니다. 잠시 후 다시 시도해주세요."
+    }
+
+    isAppleLoading = false
+  }
+
+  @MainActor
+  func completeTermsAgreement() {
+    isTermsSheetPresented = false
+    isLoginSuccess = true
   }
 
   func clearError() {

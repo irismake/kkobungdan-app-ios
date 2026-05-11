@@ -31,6 +31,13 @@ struct LoginView: View {
           .padding(.bottom, 23)
       }
     }
+    .sheet(isPresented: $viewModel.isTermsSheetPresented) {
+      TermsAgreementView(
+        viewModel: TermsAgreementViewModel(),
+        onBack: { viewModel.isTermsSheetPresented = false },
+        onComplete: { viewModel.completeTermsAgreement() }
+      )
+    }
   }
 
   private var brandSection: some View {
@@ -82,7 +89,7 @@ struct LoginView: View {
 
       // 애플 로그인 버튼
       Button {
-        // TODO: 애플 로그인 액션
+        Task { await viewModel.appleLogin() }
       } label: {
         HStack(spacing: 6) {
           Image("icon_apple")
@@ -99,6 +106,7 @@ struct LoginView: View {
         .background(Color.black)
         .clipShape(RoundedRectangle(cornerRadius: 12))
       }
+      .disabled(viewModel.isAppleLoading)
     }
     .padding(.horizontal, 4)
     .frame(maxWidth: .infinity)
@@ -136,7 +144,8 @@ struct LoginView: View {
 #Preview {
   LoginView(
     viewModel: LoginViewModel(
-      loginUseCase: LoginUseCase(authRepository: DIContainer.authRepository)
+      loginUseCase: LoginUseCase(authRepository: DIContainer.authRepository),
+      appleLoginUseCase: AppleLoginUseCase(authRepository: DIContainer.authRepository)
     )
   )
 }
