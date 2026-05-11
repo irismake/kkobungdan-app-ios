@@ -5,7 +5,7 @@
 //  Created by 김가희 on 4/22/26.
 //
 
-import Foundation
+import SwiftUI
 
 enum ProposalDisplay {
   private static let dateFormatter: DateFormatter = {
@@ -70,5 +70,59 @@ enum ProposalDisplay {
     formatter.timeZone = TimeZone(identifier: "Asia/Seoul")
     formatter.dateFormat = "yyyy. M. d. a h:mm:ss '지원'"
     return formatter.string(from: date)
+  }
+
+  // MARK: - Badges
+
+  static let waitingBadge = BadgeItem(text: "대기중", textColor: .blue500, bgColor: .blue000)
+  static let newOfferBadge = BadgeItem(text: "새로운 지원 도착", textColor: .amber600, bgColor: .amber000)
+  static let inProgressBadge = BadgeItem(text: "진행중", textColor: .indigo500, bgColor: .indigo000)
+  static let deliveryDoneBadge = BadgeItem(text: "진행 완료", textColor: .gray500, bgColor: .gray100)
+  static let completedBadge = BadgeItem(text: "완료", textColor: .emerald500, bgColor: .emerald000)
+  static let cancelledBadge = BadgeItem(text: "취소", textColor: .gray500, bgColor: .gray100)
+  static let unpaidBadge = BadgeItem(text: "미입금", textColor: .rose500, bgColor: .rose000)
+
+  /// proposal + (있다면) mission 상태로 배지를 결정한다.
+  /// - myOfferStatus: 러너 본인이 이 proposal 에 제출한 offer 상태. 거절/취소된 경우 "취소" 로 표시.
+  static func badges(
+    proposal: Proposal,
+    mission: Mission?,
+    myOfferStatus: OfferStatus? = nil
+  ) -> [BadgeItem] {
+    if proposal.status == .cancelled {
+      return [cancelledBadge]
+    }
+
+    if let myOfferStatus,
+       myOfferStatus == .rejected || myOfferStatus == .cancelled {
+      return [cancelledBadge]
+    }
+
+    if let mission {
+      switch mission.status {
+      case .created:
+        return [waitingBadge]
+      case .inProgress:
+        return [inProgressBadge]
+      case .deliveryCompleted, .receivedConfirmed:
+        return [completedBadge]
+      case .settled:
+        return [deliveryDoneBadge]
+      case .disputed, .refunded:
+        return [cancelledBadge]
+      }
+    }
+
+    switch proposal.status {
+    case .posted:
+      return [waitingBadge]
+    case .offered:
+      return [waitingBadge, newOfferBadge]
+    case .matched:
+      // mission 객체가 아직 로딩되지 않은 과도기 — 매칭은 됐으니 진행중으로 처리한다.
+      return [inProgressBadge]
+    case .cancelled:
+      return [cancelledBadge]
+    }
   }
 }

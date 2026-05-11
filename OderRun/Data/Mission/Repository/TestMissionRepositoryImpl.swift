@@ -18,15 +18,35 @@ actor TestMissionRepositoryImpl: MissionRepositoryProtocol {
     if missions.contains(where: { $0.offerID == offerID }) {
       throw RepositoryError.conflict
     }
+    guard let (offer, proposal) = try await resolveOfferAndProposal(offerID: offerID) else {
+      throw RepositoryError.notFound
+    }
+    guard offer.status == .waiting else {
+      throw RepositoryError.conflict
+    }
+    guard proposal.status == .offered else {
+      throw RepositoryError.conflict
+    }
     let newID = nextID
     nextID += 1
     let mission = Mission(
-      id: newID, offerID: offerID, proposalID: 0,
-      ordererID: DummySession.currentUserID, runnerID: "user-r001",
+      id: newID, offerID: offerID, proposalID: offer.proposalID,
+      ordererID: proposal.ordererID, runnerID: offer.runnerID,
       status: .created, runFee: runFee, itemPrice: itemPrice,
       proofImageURL: nil, createdAt: Date()
     )
     missions.append(mission)
+
+    // 백엔드 cascade 를 흉내낸다: 선택 offer ACCEPTED, 나머지 WAITING offer REJECTED, proposal MATCHED.
+    if let testOfferRepo = DIContainer.offerRepository as? TestOfferRepositoryImpl {
+      await testOfferRepo.applyMissionCreationCascade(
+        acceptedOfferID: offerID,
+        proposalID: offer.proposalID
+      )
+    }
+    if let testProposalRepo = DIContainer.proposalRepository as? TestProposalRepositoryImpl {
+      await testProposalRepo.markMatched(id: offer.proposalID)
+    }
     return mission
   }
 
@@ -44,7 +64,7 @@ actor TestMissionRepositoryImpl: MissionRepositoryProtocol {
       case .runner: return $0.runnerID == DummySession.currentUserID
       }
     }
-    let filtered = status.map { s in mine.filter { $0.status == s } } ?? mine
+    let filtered = status.map { status in mine.filter { $0.status == status } } ?? mine
     let start = page * size
     guard start < filtered.count else {
       return []
@@ -92,5 +112,16 @@ actor TestMissionRepositoryImpl: MissionRepositoryProtocol {
     )
     missions[index] = updated
     return updated
+  }
+
+  private func resolveOfferAndProposal(offerID: Int64) async throws -> (Offer, Proposal)? {
+    let proposals = try await DIContainer.proposalRepository.fetchProposals(page: 0, size: 1000)
+    for proposal in proposals {
+      let offers = try await DIContainer.offerRepository.fetchOffersByProposal(proposalID: proposal.id)
+      if let offer = offers.first(where: { $0.id == offerID }) {
+        return (offer, proposal)
+      }
+    }
+    return nil
   }
 }

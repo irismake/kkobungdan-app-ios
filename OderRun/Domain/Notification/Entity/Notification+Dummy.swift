@@ -14,7 +14,7 @@ extension AppNotification {
       AppNotification(
         id: "n-1",
         title: "새 지원이 도착했어요",
-        body: "홍길동님이 '약국에서 약 수령' 요청에 지원했어요.",
+        body: "민수형님이 '약국에서 약 수령' 요청에 지원했어요.",
         createdAt: now.addingTimeInterval(-20 * 60),
         isRead: false
       ),
@@ -27,8 +27,8 @@ extension AppNotification {
       ),
       AppNotification(
         id: "n-3",
-        title: "전달 완료",
-        body: "'택배 맡기기' 미션이 전달 완료로 업데이트됐어요. 수령 확인 부탁드립니다.",
+        title: "전달 완료 처리됨",
+        body: "'택배 맡기기' 미션 전달 완료가 접수됐어요. 의뢰자 수령 확인을 기다리고 있어요.",
         createdAt: now.addingTimeInterval(-86400),
         isRead: true
       ),

@@ -1,5 +1,5 @@
 //
-//  SelectModal.swift
+//  ApplicantSelectModal.swift
 //  OderRun
 //
 //  Created by 김가희 on 3/27/26.
@@ -7,13 +7,18 @@
 
 import SwiftUI
 
-struct SelectModal: View {
-  let title: String
-  let description: String
-  let infoTitle: String
-  var infoItems: [String] = []
+struct ApplicantSelectModal: View {
   let onCancel: () -> Void
   let onConfirm: () -> Void
+
+  private let title: String = "이 지원자를 선택하시겠습니까?"
+  private let description: String = "지원자 선택 시 카카오톡 채팅방이 자동 개설되며,\n입장 코드는 알림을 통해 안내됩니다."
+  private let infoTitle: String = "💡 카카오 채팅방 이용방법"
+  private let infoItems: [String] = [
+    "선택 후 안내되는 채팅방 링크로 이동해 주세요.",
+    "알림으로 받은 입장 코드를 입력해 주세요.",
+    "채팅방에서 만남/진행 일정을 조율해 주세요."
+  ]
 
   var body: some View {
     ZStack {
@@ -69,8 +74,7 @@ struct SelectModal: View {
           RoundedRectangle(cornerRadius: 14)
             .stroke(Color.blue200, lineWidth: 1)
         )
-          
-        // Buttons
+
         HStack(spacing: 8) {
           Button(action: onCancel) {
             Text("취소")
@@ -112,11 +116,7 @@ struct SelectModal: View {
 }
 
 #Preview {
-  SelectModal(
-    title: "이 지원자를 선택하시겠습니까?",
-    description: "지원자 선택 시 카카오톡 채팅방이 자동 개설되며,\n입장 코드는 알림을 통해 안내됩니다.",
-    infoTitle: "💡 카카오 채팅방 이용방법",
-    infoItems: ["내용내용", "내용내욘"],
+  ApplicantSelectModal(
     onCancel: {},
     onConfirm: {}
   )

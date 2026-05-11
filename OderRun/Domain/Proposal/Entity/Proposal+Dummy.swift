@@ -18,7 +18,7 @@ extension Proposal {
         content: "GS25에서 저지방 우유 1L와 식빵을 사서 아파트 경비실에 맡겨주세요.",
         deadline: now.addingTimeInterval(2 * 86400),
         errandFee: 4000,
-        status: .posted
+        status: .offered
       ),
       Proposal(
         id: 2,
@@ -73,6 +73,51 @@ extension Proposal {
         deadline: now.addingTimeInterval(4 * 86400),
         errandFee: 6000,
         status: .posted
+      ),
+      Proposal(
+        id: 8,
+        ordererID: DummySession.currentUserID,
+        title: "공항 픽업 부탁",
+        content: "인천공항 1터미널에서 가족 픽업 후 자택까지 동행 부탁드립니다.",
+        deadline: now.addingTimeInterval(-4 * 86400),
+        errandFee: 5000,
+        status: .matched
+      ),
+      Proposal(
+        id: 9,
+        ordererID: "user-a002",
+        title: "병원 처방전 대리 수령",
+        content: "강남세브란스병원에서 처방전 1건 대리 수령 후 자택 전달 부탁드립니다.",
+        deadline: now.addingTimeInterval(-7 * 86400),
+        errandFee: 3000,
+        status: .matched
+      ),
+      Proposal(
+        id: 10,
+        ordererID: "user-a003",
+        title: "주말 이사 짐 옮기기",
+        content: "1.5톤 분량의 박스 정리 후 트럭에 적재 부탁드립니다. 시작 전 연락 주세요.",
+        deadline: now.addingTimeInterval(2 * 86400),
+        errandFee: 12000,
+        status: .matched
+      ),
+      Proposal(
+        id: 11,
+        ordererID: DummySession.currentUserID,
+        title: "도서관 도서 반납",
+        content: "관악구립도서관에 도서 3권 반납 부탁드립니다.",
+        deadline: now.addingTimeInterval(-10 * 86400),
+        errandFee: 2000,
+        status: .matched
+      ),
+      Proposal(
+        id: 12,
+        ordererID: "user-a004",
+        title: "세탁소 픽업",
+        content: "역삼동 크린토피아에서 세탁물 수령 후 자택 전달 부탁드립니다.",
+        deadline: now.addingTimeInterval(-12 * 86400),
+        errandFee: 3500,
+        status: .matched
       )
     ]
   }()

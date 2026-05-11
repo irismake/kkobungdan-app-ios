@@ -8,15 +8,27 @@
 import SwiftUI
 
 struct AddProposalView: View {
-  @State private var viewModel: AddProposalViewModel
-  @Environment(\.dismiss) private var dismiss
+  @State private var title: String
+  @State private var content: String
 
-  init(viewModel: AddProposalViewModel) {
-    _viewModel = State(initialValue: viewModel)
+  private let initialDraft: AddProposalDraft
+  let onBack: () -> Void
+  let onNext: (AddProposalDraft) -> Void
+
+  init(
+    draft: AddProposalDraft = AddProposalDraft(),
+    onBack: @escaping () -> Void = {},
+    onNext: @escaping (AddProposalDraft) -> Void = { _ in }
+  ) {
+    initialDraft = draft
+    _title = State(initialValue: draft.title)
+    _content = State(initialValue: draft.content)
+    self.onBack = onBack
+    self.onNext = onNext
   }
 
   private var isNextEnabled: Bool {
-    !viewModel.title.isEmpty && !viewModel.content.isEmpty
+    !title.isEmpty && !content.isEmpty
   }
 
   var body: some View {
@@ -33,7 +45,7 @@ struct AddProposalView: View {
 
   private var headerSection: some View {
     VStack(alignment: .leading, spacing: 12) {
-      AppBar(isProgress: true, onBack: {})
+      AppBar(isProgress: true, onBack: onBack)
 
       VStack(alignment: .leading, spacing: 8) {
         Text("기본 정보 작성")
@@ -69,7 +81,7 @@ struct AddProposalView: View {
     TitleTextField(
       title: "제목",
       placeholder: "예: 성수동 OO 베이커리 소금빵 웨이팅",
-      text: $viewModel.title,
+      text: $title,
       maxLength: 50,
       autoFocus: true
     )
@@ -79,24 +91,21 @@ struct AddProposalView: View {
     ContentTextField(
       title: "내용",
       placeholder: "만남 장소를 포함한 요청 내용을 자세히 작성해주세요",
-      text: $viewModel.content,
+      text: $content,
       maxLength: 500
     )
   }
 
   private var bottomSection: some View {
     BottomActionBar(title: "다음", isEnabled: isNextEnabled) {
-      // TODO: 다음 단계로 이동
+      var updated = initialDraft
+      updated.title = title
+      updated.content = content
+      onNext(updated)
     }
   }
 }
 
 #Preview {
-  AddProposalView(
-    viewModel: AddProposalViewModel(
-      createProposalUseCase: CreateProposalUseCase(
-        repository: DIContainer.proposalRepository
-      )
-    )
-  )
+  AddProposalView()
 }

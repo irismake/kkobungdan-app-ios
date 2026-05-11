@@ -18,7 +18,7 @@ actor TestOfferRepositoryImpl: OfferRepositoryProtocol {
     let duplicated = offers.contains {
       $0.proposalID == proposalID
         && $0.runnerID == DummySession.currentUserID
-        && $0.status == .waiting
+        && ($0.status == .waiting || $0.status == .accepted)
     }
     if duplicated {
       throw RepositoryError.conflict
@@ -33,6 +33,11 @@ actor TestOfferRepositoryImpl: OfferRepositoryProtocol {
       createdAt: Date()
     )
     offers.append(offer)
+
+    // 백엔드 cascade 흉내: 첫 지원이 들어오면 proposal 을 POSTED → OFFERED 로 전이.
+    if let testProposalRepo = DIContainer.proposalRepository as? TestProposalRepositoryImpl {
+      await testProposalRepo.markOfferedIfPosted(id: proposalID)
+    }
     return offer
   }
 
@@ -46,7 +51,7 @@ actor TestOfferRepositoryImpl: OfferRepositoryProtocol {
   func fetchMyOffers(status: OfferStatus?, page: Int, size: Int) async throws -> [Offer] {
     try await Task.sleep(nanoseconds: Self.simulatedLatency)
     let mine = offers.filter { $0.runnerID == DummySession.currentUserID }
-    let filtered = status.map { s in mine.filter { $0.status == s } } ?? mine
+    let filtered = status.map { status in mine.filter { $0.status == status } } ?? mine
     let start = page * size
     guard start < filtered.count else {
       return []
@@ -70,5 +75,32 @@ actor TestOfferRepositoryImpl: OfferRepositoryProtocol {
       status: .cancelled,
       createdAt: existing.createdAt
     )
+  }
+
+  /// 더미 환경에서 미션 생성 시 백엔드 cascade 를 흉내내기 위한 헬퍼.
+  /// 선택된 offer 는 ACCEPTED, 같은 proposal 의 다른 WAITING offer 는 REJECTED 로 전환한다.
+  func applyMissionCreationCascade(acceptedOfferID: Int64, proposalID: Int64) {
+    for index in offers.indices where offers[index].proposalID == proposalID {
+      let existing = offers[index]
+      let nextStatus: OfferStatus
+      if existing.id == acceptedOfferID {
+        nextStatus = .accepted
+      } else if existing.status == .waiting {
+        nextStatus = .rejected
+      } else {
+        continue
+      }
+      offers[index] = Offer(
+        id: existing.id,
+        proposalID: existing.proposalID,
+        runnerID: existing.runnerID,
+        status: nextStatus,
+        createdAt: existing.createdAt
+      )
+    }
+  }
+
+  func offerStatus(offerID: Int64) -> OfferStatus? {
+    offers.first(where: { $0.id == offerID })?.status
   }
 }

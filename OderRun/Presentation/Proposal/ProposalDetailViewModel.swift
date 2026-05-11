@@ -16,21 +16,24 @@ final class ProposalDetailViewModel {
   var isLoading: Bool = false
   var errorMessage: String?
   var isApplying: Bool = false
-  var didApply: Bool = false
+  var hasApplied: Bool = false
 
   private let fetchDetailUseCase: FetchProposalDetailUseCase
   private let createOfferUseCase: CreateOfferUseCase
+  private let fetchMyOffersUseCase: FetchMyOffersUseCase
   private let userRepository: UserRepositoryProtocol
 
   init(
     proposalID: Int64,
     fetchDetailUseCase: FetchProposalDetailUseCase,
     createOfferUseCase: CreateOfferUseCase,
+    fetchMyOffersUseCase: FetchMyOffersUseCase,
     userRepository: UserRepositoryProtocol
   ) {
     self.proposalID = proposalID
     self.fetchDetailUseCase = fetchDetailUseCase
     self.createOfferUseCase = createOfferUseCase
+    self.fetchMyOffersUseCase = fetchMyOffersUseCase
     self.userRepository = userRepository
   }
 
@@ -42,6 +45,10 @@ final class ProposalDetailViewModel {
       let proposal = try await fetchDetailUseCase.execute(id: proposalID)
       self.proposal = proposal
       ordererProfile = try await userRepository.fetchRunnerProfile(userID: proposal.ordererID)
+      let myOffers = try await fetchMyOffersUseCase.execute()
+      hasApplied = myOffers.contains {
+        $0.proposalID == proposalID && ($0.status == .waiting || $0.status == .accepted)
+      }
     } catch {
       errorMessage = "요청 상세를 불러오지 못했어요."
     }
@@ -49,18 +56,21 @@ final class ProposalDetailViewModel {
   }
 
   @MainActor
-  func apply() async {
-    guard !isApplying else {
-      return
+  func apply() async -> Bool {
+    guard !isApplying, !hasApplied else {
+      return false
     }
     isApplying = true
     errorMessage = nil
     do {
       _ = try await createOfferUseCase.execute(proposalID: proposalID)
-      didApply = true
+      hasApplied = true
+      isApplying = false
+      return true
     } catch {
       errorMessage = "지원에 실패했어요. 잠시 후 다시 시도해주세요."
     }
     isApplying = false
+    return false
   }
 }

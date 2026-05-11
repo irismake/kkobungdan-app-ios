@@ -2,20 +2,15 @@
 //  AddProposalViewModel.swift
 //  OderRun
 //
-//  Created by 김가희 on 3/9/26.
+//  Created by 김가희 on 4/28/26.
 //
 
 import Foundation
 
 @Observable
 final class AddProposalViewModel {
-  var title: String = ""
-  var content: String = ""
-  var deadline: String = ""
-  var errandFee: String = ""
-  var isLoading: Bool = false
+  var isSubmitting: Bool = false
   var errorMessage: String?
-  var isCreated: Bool = false
 
   private let createProposalUseCase: CreateProposalUseCase
 
@@ -24,31 +19,30 @@ final class AddProposalViewModel {
   }
 
   @MainActor
-  func createProposal() async {
-    guard !title.isEmpty, !content.isEmpty, !deadline.isEmpty, !errandFee.isEmpty else {
-      errorMessage = "제목, 내용, 마감 시간, 심부름비를 모두 입력해주세요."
-      return
+  func submit(
+    title: String,
+    content: String,
+    deadline: Date,
+    errandFee: Int
+  ) async -> Proposal? {
+    guard !isSubmitting else {
+      return nil
     }
-
-    isLoading = true
+    isSubmitting = true
     errorMessage = nil
-
     do {
-      _ = try await createProposalUseCase.execute(
+      let proposal = try await createProposalUseCase.execute(
         title: title,
         content: content,
-        deadline: deadline,
-        errandFee: errandFee
+        deadline: DateFormatters.format(deadline),
+        errandFee: String(errandFee)
       )
-      isCreated = true
+      isSubmitting = false
+      return proposal
     } catch {
-      errorMessage = "요청 생성에 실패했습니다. 다시 시도해주세요."
+      errorMessage = "요청 등록에 실패했어요. 다시 시도해주세요."
+      isSubmitting = false
+      return nil
     }
-
-    isLoading = false
-  }
-
-  func clearError() {
-    errorMessage = nil
   }
 }

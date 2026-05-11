@@ -22,6 +22,7 @@ enum TextStyle {
   case heading2 // SemiBold 24/24/-0.4
   case heading3 // SemiBold 18/28/-0.4
   case heading4 // SemiBold 16/24/-0.2
+  case heading5 // SemiBold 16/28/-0.4
   case title1 // SemiBold 18/18/-0.4 (compact)
   case title2 // SemiBold 14/20/-0.4
   case title3 // SemiBold 14/14/-0.4 (tight menu labels)
@@ -44,7 +45,7 @@ enum TextStyle {
     switch self {
     case .display:
       return "Pretendard-Bold"
-    case .heading1, .heading2, .heading3, .heading4, .title1, .title2, .title3, .caption4:
+    case .heading1, .heading2, .heading3, .heading4, .heading5, .title1, .title2, .title3, .caption4:
       return "Pretendard-SemiBold"
     case .body1, .body2, .caption1, .caption3, .inputBody2, .inputBody3:
       return "Pretendard-Medium"
@@ -62,7 +63,7 @@ enum TextStyle {
     case .display: return 30
     case .heading1, .heading2: return 24
     case .heading3, .title1: return 18
-    case .heading4, .body1, .interHeading1, .interBody1, .inputBody1, .inputBody3: return 16
+    case .heading4, .heading5, .body1, .interHeading1, .interBody1, .inputBody1, .inputBody3: return 16
     case .title2, .title3, .body2, .body3, .inputBody2: return 14
     case .caption1, .caption3, .caption2, .caption4, .caption5, .caption6: return 12
     }
@@ -75,6 +76,7 @@ enum TextStyle {
     case .heading2: return 24
     case .heading3: return 28
     case .heading4: return 24
+    case .heading5: return 28
     case .title1: return 18
     case .title2: return 20
     case .title3: return 14
@@ -97,7 +99,7 @@ enum TextStyle {
   var kerning: CGFloat {
     switch self {
     case .display: return 0.396
-    case .heading1, .heading2, .heading3, .title1, .title2, .title3, .caption4:
+    case .heading1, .heading2, .heading3, .heading5, .title1, .title2, .title3, .caption4:
       return -0.4
     case .interHeading1, .interBody1: return -0.312
     case .body1: return -0.3

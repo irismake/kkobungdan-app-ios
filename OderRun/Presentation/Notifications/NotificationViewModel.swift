@@ -26,12 +26,12 @@ final class NotificationViewModel {
 
   static func preview() -> NotificationViewModel {
     let repo = NotificationRepositoryImpl()
-    let vm = NotificationViewModel(
+    let viewModel = NotificationViewModel(
       fetchNotificationsUseCase: FetchNotificationsUseCase(repository: repo),
       repository: repo
     )
-    vm.notifications = AppNotification.dummyList
-    return vm
+    viewModel.notifications = AppNotification.dummyList
+    return viewModel
   }
 
   @MainActor

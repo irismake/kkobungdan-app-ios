@@ -44,10 +44,13 @@ struct ProposalDetailView: View {
       }
 
       VStack(spacing: 0) {
-        ConfirmButton(title: viewModel.isApplying ? "지원 중..." : "지원하기") {
+        ConfirmButton(
+          title: applyButtonTitle,
+          isEnabled: !viewModel.hasApplied && !viewModel.isApplying
+        ) {
           Task {
-            await viewModel.apply()
-            if viewModel.didApply {
+            let success = await viewModel.apply()
+            if success {
               onApply()
             }
           }
@@ -61,6 +64,13 @@ struct ProposalDetailView: View {
     .task {
       await viewModel.load()
     }
+  }
+
+  private var applyButtonTitle: String {
+    if viewModel.hasApplied {
+      return "지원 완료"
+    }
+    return viewModel.isApplying ? "지원 중..." : "지원하기"
   }
 
   @ViewBuilder
@@ -80,7 +90,11 @@ struct ProposalDetailView: View {
         description: proposal.content,
         date: ProposalDisplay.dateString(proposal.deadline),
         time: ProposalDisplay.timeString(proposal.deadline),
-        fee: ProposalDisplay.feeString(proposal.errandFee)
+        fee: ProposalDisplay.feeString(proposal.errandFee),
+        badges: ProposalDisplay.badges(
+          proposal: proposal,
+          mission: nil
+        )
       )
     } else if let errorMessage = viewModel.errorMessage {
       Text(errorMessage)

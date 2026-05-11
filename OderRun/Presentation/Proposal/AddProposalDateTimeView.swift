@@ -1,15 +1,38 @@
 import SwiftUI
 
-struct ProposalDateTimeView: View {
-  @Environment(\.dismiss) private var dismiss
-  @State private var currentMonth = Date()
-  @State private var selectedDate = Date()
-  @State private var isAM = true
-  @State private var selectedHour = 7
-  @State private var selectedMinute = 30
+struct AddProposalDateTimeView: View {
+  private let initialDraft: AddProposalDraft
+  let onBack: () -> Void
+  let onNext: (AddProposalDraft) -> Void
+
+  @State private var currentMonth: Date
+  @State private var selectedDate: Date
+  @State private var isAM: Bool
+  @State private var selectedHour: Int
+  @State private var selectedMinute: Int
 
   private let calendar = Calendar.current
   private let weekdays = ["일", "월", "화", "수", "목", "금", "토"]
+
+  init(
+    draft: AddProposalDraft = AddProposalDraft(),
+    onBack: @escaping () -> Void = {},
+    onNext: @escaping (AddProposalDraft) -> Void = { _ in }
+  ) {
+    initialDraft = draft
+    self.onBack = onBack
+    self.onNext = onNext
+
+    let cal = Calendar.current
+    let seed = draft.deadline ?? Date()
+    _currentMonth = State(initialValue: seed)
+    _selectedDate = State(initialValue: seed)
+
+    let hour24 = cal.component(.hour, from: seed)
+    _isAM = State(initialValue: hour24 < 12)
+    _selectedHour = State(initialValue: Self.toHour12(hour24: hour24))
+    _selectedMinute = State(initialValue: cal.component(.minute, from: seed))
+  }
 
   var body: some View {
     VStack(spacing: 0) {
@@ -25,7 +48,9 @@ struct ProposalDateTimeView: View {
       }
 
       BottomActionBar(title: "다음") {
-        // TODO: 다음 단계로 이동
+        var updated = initialDraft
+        updated.deadline = composedDate()
+        onNext(updated)
       }
     }
     .background(Color.gray000)
@@ -34,7 +59,7 @@ struct ProposalDateTimeView: View {
 
   private var headerSection: some View {
     VStack(alignment: .leading, spacing: 12) {
-      AppBar(isProgress: true, onBack: { dismiss() })
+      AppBar(isProgress: true, onBack: onBack)
 
       VStack(alignment: .leading, spacing: 8) {
         Text("날짜 / 시간 설정")
@@ -269,6 +294,31 @@ struct ProposalDateTimeView: View {
 
   // MARK: - Helpers
 
+  private func composedDate() -> Date {
+    let hour24: Int
+    if isAM {
+      hour24 = selectedHour == 12 ? 0 : selectedHour
+    } else {
+      hour24 = selectedHour == 12 ? 12 : selectedHour + 12
+    }
+    return calendar.date(
+      bySettingHour: hour24,
+      minute: selectedMinute,
+      second: 0,
+      of: selectedDate
+    ) ?? selectedDate
+  }
+
+  private static func toHour12(hour24: Int) -> Int {
+    if hour24 == 0 {
+      return 12
+    }
+    if hour24 > 12 {
+      return hour24 - 12
+    }
+    return hour24
+  }
+
   private var monthYearString: String {
     let formatter = DateFormatter()
     formatter.locale = Locale(identifier: "ko_KR")
@@ -294,5 +344,5 @@ struct ProposalDateTimeView: View {
 }
 
 #Preview {
-  ProposalDateTimeView()
+  AddProposalDateTimeView(draft: AddProposalDraft(title: "샘플", content: "내용"))
 }

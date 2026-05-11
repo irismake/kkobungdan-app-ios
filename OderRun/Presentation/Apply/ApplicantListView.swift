@@ -10,53 +10,90 @@ import SwiftUI
 struct ApplicantListView: View {
   @State private var viewModel: ApplicantListViewModel
   var onBack: () -> Void = {}
-  var onSelectApplicant: (Int64) -> Void = { _ in }
+  var onAccepted: (Mission) -> Void = { _ in }
+  var onSelectApplicant: (_ proposalID: Int64, _ offerID: Int64) -> Void = { _, _ in }
+
+  @State private var isSelectModalPresented: Bool = false
+  @State private var selectedEntry: ApplicantListEntry?
 
   init(
     viewModel: ApplicantListViewModel,
     onBack: @escaping () -> Void = {},
-    onSelectApplicant: @escaping (Int64) -> Void = { _ in }
+    onAccepted: @escaping (Mission) -> Void = { _ in },
+    onSelectApplicant: @escaping (_ proposalID: Int64, _ offerID: Int64) -> Void = { _, _ in }
   ) {
     _viewModel = State(initialValue: viewModel)
     self.onBack = onBack
+    self.onAccepted = onAccepted
     self.onSelectApplicant = onSelectApplicant
   }
 
   var body: some View {
-    VStack(spacing: 0) {
-      AppBar(title: "지원 리스트", onBack: onBack)
+    ZStack {
+      VStack(spacing: 0) {
+        AppBar(title: "지원 리스트", onBack: onBack)
 
-      ScrollView {
-        VStack(alignment: .leading, spacing: 12) {
-          headerSection
+        ScrollView {
+          VStack(alignment: .leading, spacing: 12) {
+            headerSection
 
-          if viewModel.isLoading, viewModel.entries.isEmpty {
-            ProgressView().padding(.top, 20)
-          } else if let errorMessage = viewModel.errorMessage, viewModel.entries.isEmpty {
-            Text(errorMessage)
-              .textStyle(.body3)
-              .foregroundColor(Color.rose500)
-          } else {
-            ForEach(viewModel.entries) { entry in
-              ApplicantCard(
-                nickname: entry.profile.nickname,
-                level: entry.profile.level,
-                grade: entry.profile.grade,
-                appliedAt: ProposalDisplay.appliedAtString(entry.offer.createdAt),
-                onSelect: {
-                  onSelectApplicant(entry.offer.id)
-                }
-              )
+            if viewModel.isLoading, viewModel.entries.isEmpty {
+              ProgressView().padding(.top, 20)
+            } else if let errorMessage = viewModel.errorMessage, viewModel.entries.isEmpty {
+              Text(errorMessage)
+                .textStyle(.body3)
+                .foregroundColor(Color.rose500)
+            } else {
+              ForEach(viewModel.entries) { entry in
+                applicantEntryCard(entry: entry)
+              }
             }
           }
+          .padding(.horizontal, Layout.screenHorizontalPadding)
+          .padding(.vertical, 12)
         }
-        .padding(.horizontal, Layout.screenHorizontalPadding)
-        .padding(.vertical, 12)
+      }
+      .background(Color.gray000)
+      .task {
+        await viewModel.load()
+      }
+      .refreshable {
+        await viewModel.load()
+      }
+
+      if isSelectModalPresented, let selectedEntry {
+        ApplicantSelectModal(
+          onCancel: {
+            isSelectModalPresented = false
+            self.selectedEntry = nil
+          },
+          onConfirm: {
+            Task {
+              await viewModel.acceptOffer(offerID: selectedEntry.offer.id)
+              if viewModel.didAcceptOffer, let mission = viewModel.acceptedMission {
+                isSelectModalPresented = false
+                self.selectedEntry = nil
+                onAccepted(mission)
+              }
+            }
+          }
+        )
       }
     }
-    .background(Color.gray000)
-    .task {
-      await viewModel.load()
+  }
+
+  private func applicantEntryCard(entry: ApplicantListEntry) -> some View {
+    VStack(spacing: 8) {
+      ApplicantCard(
+        nickname: entry.profile.nickname,
+        level: entry.profile.level,
+        grade: entry.profile.grade,
+        appliedAt: ProposalDisplay.appliedAtString(entry.offer.createdAt),
+        onSelect: {
+          selectedEntry = entry
+          isSelectModalPresented = true
+        }
+      )
     }
   }
 
