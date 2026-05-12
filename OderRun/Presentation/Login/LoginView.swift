@@ -69,7 +69,7 @@ struct LoginView: View {
     VStack(spacing: 12) {
       // 카카오 로그인 버튼
       Button {
-        // TODO: 카카오 로그인 액션
+        Task { await viewModel.kakaoLogin() }
       } label: {
         HStack(spacing: 6) {
           Image("icon_kakao")
@@ -86,6 +86,7 @@ struct LoginView: View {
         .background(Color.kakaoBrand)
         .clipShape(RoundedRectangle(cornerRadius: 12))
       }
+      .disabled(viewModel.isKakaoLoading)
 
       // 애플 로그인 버튼
       Button {
@@ -145,7 +146,8 @@ struct LoginView: View {
   LoginView(
     viewModel: LoginViewModel(
       loginUseCase: LoginUseCase(authRepository: DIContainer.authRepository),
-      appleLoginUseCase: AppleLoginUseCase(authRepository: DIContainer.authRepository)
+      appleLoginUseCase: AppleLoginUseCase(authRepository: DIContainer.authRepository),
+      kakaoLoginUseCase: KakaoLoginUseCase(authRepository: DIContainer.authRepository)
     )
   )
 }
