@@ -94,8 +94,7 @@ enum ProposalDisplay {
     }
 
     if let myOfferStatus,
-       myOfferStatus == .rejected || myOfferStatus == .cancelled
-    {
+       myOfferStatus == .rejected || myOfferStatus == .cancelled {
       return [cancelledBadge]
     }
 

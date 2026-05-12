@@ -70,8 +70,7 @@ struct MyProposalDetailView: View {
 
               if viewModel.missionViewModel.mission != nil,
                  let profile = viewModel.matchedRunnerProfile,
-                 let matchedOffer = viewModel.matchedOffer
-              {
+                 let matchedOffer = viewModel.matchedOffer {
                 MatchedRunnerSection(
                   nickname: profile.nickname,
                   level: profile.level,

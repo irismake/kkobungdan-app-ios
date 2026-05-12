@@ -12,8 +12,12 @@ import SwiftUI
 @main
 struct OderRunApp: App {
   init() {
-    // 로컬 전용: 카카오 개발자 콘솔의 네이티브 앱 키로 교체 (저장소에는 커밋하지 않음)
-    KakaoSDK.initSDK(appKey: "00000000000000000000000000000000")
+    guard let appKey = Bundle.main.object(forInfoDictionaryKey: "KAKAO_NATIVE_APP_KEY") as? String,
+          !appKey.isEmpty
+    else {
+      fatalError("KAKAO_NATIVE_APP_KEY 가 Info.plist 에 없습니다. Secrets.xcconfig 설정을 확인하세요.")
+    }
+    KakaoSDK.initSDK(appKey: appKey)
   }
 
   var body: some Scene {

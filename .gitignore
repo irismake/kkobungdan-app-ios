@@ -20,3 +20,6 @@ Products/
 ### Logging / misc
 *.log
 
+### Secrets
+Secrets.xcconfig
+

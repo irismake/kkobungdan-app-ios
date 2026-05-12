@@ -25,9 +25,11 @@
     	<dict>
         	<key>CFBundleURLSchemes</key>
         	<array>
-            	<string>kakao00000000000000000000000000000000</string>
+            	<string>kakao$(KAKAO_NATIVE_APP_KEY)</string>
         	</array>
     	</dict>
 </array>
+	<key>KAKAO_NATIVE_APP_KEY</key>
+	<string>$(KAKAO_NATIVE_APP_KEY)</string>
 </dict>
 </plist>
