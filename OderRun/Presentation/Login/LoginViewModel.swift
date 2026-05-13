@@ -15,10 +15,28 @@ final class LoginViewModel {
   var errorMessage: String?
   var isLoginSuccess: Bool = true
 
-  private let loginUseCase: LoginUseCase
+  var isAppleLoading: Bool = false
+  var isKakaoLoading: Bool = false
+  var isTermsSheetPresented: Bool = false
 
-  init(loginUseCase: LoginUseCase) {
+  private let loginUseCase: LoginUseCase
+  private let appleLoginUseCase: AppleLoginUseCase
+  private let kakaoLoginUseCase: KakaoLoginUseCase
+  private let appleSignInController: AppleSignInController
+  private let kakaoSignInController: KakaoSignInController
+
+  init(
+    loginUseCase: LoginUseCase,
+    appleLoginUseCase: AppleLoginUseCase,
+    kakaoLoginUseCase: KakaoLoginUseCase,
+    appleSignInController: AppleSignInController = AppleSignInController(),
+    kakaoSignInController: KakaoSignInController = KakaoSignInController()
+  ) {
     self.loginUseCase = loginUseCase
+    self.appleLoginUseCase = appleLoginUseCase
+    self.kakaoLoginUseCase = kakaoLoginUseCase
+    self.appleSignInController = appleSignInController
+    self.kakaoSignInController = kakaoSignInController
   }
 
   @MainActor
@@ -39,6 +57,65 @@ final class LoginViewModel {
     }
 
     isLoading = false
+  }
+
+  @MainActor
+  func appleLogin() async {
+    guard !isAppleLoading else {
+      return
+    }
+    isAppleLoading = true
+    errorMessage = nil
+
+    do {
+      let credential = try await appleSignInController.requestSignIn()
+      let result = try await appleLoginUseCase.execute(
+        authorizationCode: credential.authorizationCode,
+        userName: credential.userName
+      )
+      if result.isFirstLogin {
+        isTermsSheetPresented = true
+      } else {
+        isLoginSuccess = true
+      }
+    } catch AppleSignInError.canceled {
+      // 사용자가 취소한 경우는 조용히 무시
+    } catch {
+      errorMessage = "Apple 로그인에 실패했습니다. 잠시 후 다시 시도해주세요."
+    }
+
+    isAppleLoading = false
+  }
+
+  @MainActor
+  func kakaoLogin() async {
+    guard !isKakaoLoading else {
+      return
+    }
+    isKakaoLoading = true
+    errorMessage = nil
+
+    do {
+      let accessToken = try await kakaoSignInController.requestSignIn()
+      let result = try await kakaoLoginUseCase.execute(accessToken: accessToken)
+      if result.isFirstLogin {
+        isTermsSheetPresented = true
+      } else {
+        isLoginSuccess = true
+      }
+    } catch KakaoSignInError.canceled {
+      // 사용자가 취소한 경우는 조용히 무시
+    } catch {
+      errorMessage = "카카오 로그인에 실패했습니다. 잠시 후 다시 시도해주세요."
+    }
+
+    isKakaoLoading = false
+  }
+
+  @MainActor
+  func completeTermsAgreement() {
+    isTermsSheetPresented = false
+    isLoginSuccess = true
   }
 
   func clearError() {

@@ -19,6 +19,15 @@ private struct SignupRequestBody: Encodable {
   let phone: String
 }
 
+private struct AppleLoginRequestBody: Encodable {
+  let authorizationCode: String
+  let userName: String?
+}
+
+private struct KakaoLoginRequestBody: Encodable {
+  let accessToken: String
+}
+
 private struct RefreshRequestBody: Encodable {
   let refreshToken: String
 }
@@ -47,6 +56,28 @@ final class AuthRepository: AuthRepositoryProtocol {
     let response: LoginResponseDTO = try await client.post(
       "/v1/auth/login",
       body: LoginRequestBody(email: email, password: password)
+    )
+    tokenStorage.accessToken = response.accessToken
+    tokenStorage.refreshToken = response.refreshToken
+    return response.toDomain()
+  }
+
+  func loginWithApple(authorizationCode: String, userName: String?) async throws -> AppleLoginResult {
+    // TODO: 서버 API 스펙 확정 시 path/필드명 조정 필요
+    let response: AppleLoginResponseDTO = try await client.post(
+      "/v1/auth/oauth/apple",
+      body: AppleLoginRequestBody(authorizationCode: authorizationCode, userName: userName)
+    )
+    tokenStorage.accessToken = response.accessToken
+    tokenStorage.refreshToken = response.refreshToken
+    return response.toDomain()
+  }
+
+  func loginWithKakao(accessToken: String) async throws -> KakaoLoginResult {
+    // TODO: 서버 API 스펙 확정 시 path/필드명 조정 필요
+    let response: KakaoLoginResponseDTO = try await client.post(
+      "/v1/auth/oauth/kakao",
+      body: KakaoLoginRequestBody(accessToken: accessToken)
     )
     tokenStorage.accessToken = response.accessToken
     tokenStorage.refreshToken = response.refreshToken
