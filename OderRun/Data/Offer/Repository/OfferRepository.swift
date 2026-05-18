@@ -35,16 +35,6 @@ final class OfferRepository: OfferRepositoryProtocol {
     return res.data?.map { $0.toDomain() } ?? []
   }
 
-  func fetchMyOffers(status: OfferStatus?, page: Int, size: Int) async throws -> [Offer] {
-    var params: [String: Any] = ["page": page, "size": size]
-    if let status {
-      params["status"] = status.rawValue
-    }
-    let res: ApiResponseDTO<PageDTO<OfferResponseDTO>> =
-      try await client.get("/v1/offer/own", params: params)
-    return res.data?.content.map { $0.toDomain() } ?? []
-  }
-
   func cancelOffer(offerID: Int64) async throws {
     try await client.delete("/v1/offer/\(offerID)")
   }

@@ -12,16 +12,28 @@ struct TestActivityRepositoryImpl: ActivityRepositoryProtocol {
 
   let store: DummyBackendStore
 
-  func fetchMyActivities(
-    role: MissionRole?,
-    status: MissionStatus?,
+  func fetchMyProposals(
+    status: ProposalStatus?,
     page: Int,
     size: Int
-  ) async throws -> [Mission] {
+  ) async throws -> [MyProposal] {
     try await Task.sleep(nanoseconds: Self.simulatedLatency)
-    return await store.fetchMyActivities(
+    return await store.fetchMyProposals(
       userID: DummySession.currentUserID,
-      role: role,
+      status: status,
+      page: page,
+      size: size
+    )
+  }
+
+  func fetchMyOffers(
+    status: OfferStatus?,
+    page: Int,
+    size: Int
+  ) async throws -> [MyOffer] {
+    try await Task.sleep(nanoseconds: Self.simulatedLatency)
+    return await store.fetchMyOffers(
+      userID: DummySession.currentUserID,
       status: status,
       page: page,
       size: size

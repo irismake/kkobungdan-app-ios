@@ -115,4 +115,36 @@ enum ProposalDisplay {
       return [cancelledBadge]
     }
   }
+
+  /// 내 요청(orderer) 활동 한 행에 대한 배지. proposal status 기반.
+  static func badges(myProposal: MyProposal) -> [BadgeItem] {
+    switch myProposal.status {
+    case .posted:
+      return [unpaidBadge]
+    case .waiting:
+      return [waitingBadge]
+    case .offered:
+      return [newOfferBadge]
+    case .matched:
+      return [inProgressBadge]
+    case .complete:
+      return [completedBadge]
+    case .cancelled:
+      return [cancelledBadge]
+    }
+  }
+
+  /// 웨이팅 기록(runner) 활동 한 행에 대한 배지. offer status 기반.
+  static func badges(myOffer: MyOffer) -> [BadgeItem] {
+    switch myOffer.status {
+    case .waiting:
+      return [waitingBadge]
+    case .accepted:
+      return [inProgressBadge]
+    case .complete:
+      return [completedBadge]
+    case .rejected, .cancelled:
+      return [cancelledBadge]
+    }
+  }
 }

@@ -14,21 +14,31 @@ final class ActivityRepository: ActivityRepositoryProtocol {
     self.client = client
   }
 
-  func fetchMyActivities(
-    role: MissionRole?,
-    status: MissionStatus?,
+  func fetchMyProposals(
+    status: ProposalStatus?,
     page: Int,
     size: Int
-  ) async throws -> [Mission] {
+  ) async throws -> [MyProposal] {
     var params: [String: Any] = ["page": page, "size": size]
-    if let role {
-      params["role"] = role.rawValue
-    }
     if let status {
       params["status"] = status.rawValue
     }
-    let res: ApiResponseDTO<PageDTO<MissionResponseDTO>> =
-      try await client.get("/v1/activity", params: params)
+    let res: ApiResponseDTO<PageDTO<MyProposalResponseDTO>> =
+      try await client.get("/v1/proposal/own", params: params)
+    return res.data?.content.map { $0.toDomain() } ?? []
+  }
+
+  func fetchMyOffers(
+    status: OfferStatus?,
+    page: Int,
+    size: Int
+  ) async throws -> [MyOffer] {
+    var params: [String: Any] = ["page": page, "size": size]
+    if let status {
+      params["status"] = status.rawValue
+    }
+    let res: ApiResponseDTO<PageDTO<MyOfferResponseDTO>> =
+      try await client.get("/v1/offer/own", params: params)
     return res.data?.content.map { $0.toDomain() } ?? []
   }
 }

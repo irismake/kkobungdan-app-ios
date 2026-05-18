@@ -68,12 +68,8 @@ struct HomeView: View {
             onSelectOrdererProposal: { proposalID in
               activityPath.append(.myProposalDetail(proposalID: proposalID))
             },
-            onSelectRunnerItem: { proposalID, hasMission in
-              if hasMission {
-                activityPath.append(.runnerApplyDetail(proposalID: proposalID))
-              } else {
-                activityPath.append(.proposalDetail(proposalID: proposalID))
-              }
+            onSelectRunnerItem: { proposalID in
+              activityPath.append(.runnerApplyDetail(proposalID: proposalID))
             }
           )
           bottomBar

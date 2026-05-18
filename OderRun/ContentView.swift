@@ -21,11 +21,9 @@ struct ContentView: View {
           fetchProposalsUseCase: FetchProposalsUseCase(repository: DIContainer.proposalRepository)
         ),
         activityViewModel: ActivityViewModel(
-          fetchProposalsUseCase: FetchProposalsUseCase(repository: DIContainer.proposalRepository),
-          fetchMyOffersUseCase: FetchMyOffersUseCase(repository: DIContainer.offerRepository),
-          fetchMyActivitiesUseCase: FetchMyActivitiesUseCase(repository: DIContainer.activityRepository),
-          cancelOfferUseCase: CancelOfferUseCase(repository: DIContainer.offerRepository),
-          proposalRepository: DIContainer.proposalRepository
+          fetchMyProposalsUseCase: FetchMyProposalsUseCase(repository: DIContainer.activityRepository),
+          fetchMyOffersUseCase: FetchMyOffersUseCase(repository: DIContainer.activityRepository),
+          cancelOfferUseCase: CancelOfferUseCase(repository: DIContainer.offerRepository)
         ),
         profileViewModel: ProfileViewModel(
           fetchUserDetailUseCase: FetchUserDetailUseCase(userRepository: DIContainer.userRepository),

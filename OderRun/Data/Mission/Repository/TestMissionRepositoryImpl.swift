@@ -12,6 +12,22 @@ struct TestMissionRepositoryImpl: MissionRepositoryProtocol {
 
   let store: DummyBackendStore
 
+  func fetchMyMissions(
+    role: MissionRole,
+    status: MissionStatus?,
+    page: Int,
+    size: Int
+  ) async throws -> [Mission] {
+    try await Task.sleep(nanoseconds: Self.simulatedLatency)
+    return await store.fetchMyMissions(
+      userID: DummySession.currentUserID,
+      role: role,
+      status: status,
+      page: page,
+      size: size
+    )
+  }
+
   func createMission(offerID: Int64, runFee: Int, itemPrice: Int) async throws -> Mission {
     try await Task.sleep(nanoseconds: Self.simulatedLatency)
     return try await store.createMission(offerID: offerID, runFee: runFee, itemPrice: itemPrice)

@@ -132,16 +132,6 @@ actor DummyBackendStore {
       .sorted { $0.createdAt > $1.createdAt }
   }
 
-  func fetchMyOffers(runnerID: String, status: OfferStatus?, page: Int, size: Int) -> [Offer] {
-    let mine = offers.filter { $0.runnerID == runnerID }
-    let filtered = status.map { status in mine.filter { $0.status == status } } ?? mine
-    let start = page * size
-    guard start < filtered.count else {
-      return []
-    }
-    return Array(filtered[start ..< min(start + size, filtered.count)])
-  }
-
   func cancelOffer(offerID: Int64) throws {
     guard let index = offers.firstIndex(where: { $0.id == offerID }) else {
       throw RepositoryError.notFound
@@ -244,26 +234,87 @@ actor DummyBackendStore {
 
   // MARK: - Activity
 
-  func fetchMyActivities(
+  /// 내 proposal 활동. /v1/proposal/own 의 인메모리 흉내.
+  /// 각 MyProposal 에는 그 proposal 에 달린 offer 목록이 함께 포함된다.
+  func fetchMyProposals(
     userID: String,
-    role: MissionRole?,
+    status: ProposalStatus?,
+    page: Int,
+    size: Int
+  ) -> [MyProposal] {
+    let mine = proposals.filter { $0.ordererID == userID }
+    let filtered = status.map { filter in mine.filter { $0.status == filter } } ?? mine
+    return paginate(filtered, page: page, size: size).map { proposal in
+      MyProposal(
+        id: proposal.id,
+        title: proposal.title,
+        content: proposal.content,
+        deadline: proposal.deadline,
+        meetingAt: nil,
+        errandFee: proposal.errandFee,
+        itemPrice: nil,
+        deposit: nil,
+        status: proposal.status,
+        offers: offers
+          .filter { $0.proposalID == proposal.id }
+          .sorted { $0.createdAt > $1.createdAt }
+      )
+    }
+  }
+
+  /// 내 offer 활동. /v1/offer/own 의 인메모리 흉내.
+  /// 응답에 proposal 정보(title 등)가 함께 내려오는 모양을 따라 join 결과를 반환한다.
+  func fetchMyOffers(
+    userID: String,
+    status: OfferStatus?,
+    page: Int,
+    size: Int
+  ) -> [MyOffer] {
+    let mine = offers.filter { $0.runnerID == userID }
+    let filtered = status.map { filter in mine.filter { $0.status == filter } } ?? mine
+    return paginate(filtered, page: page, size: size).compactMap { offer -> MyOffer? in
+      guard let proposal = proposals.first(where: { $0.id == offer.proposalID }) else {
+        return nil
+      }
+      return MyOffer(
+        id: offer.id,
+        proposalID: proposal.id,
+        title: proposal.title,
+        content: proposal.content,
+        deadline: proposal.deadline,
+        meetingAt: nil,
+        errandFee: proposal.errandFee,
+        itemPrice: nil,
+        deposit: nil,
+        status: offer.status
+      )
+    }
+  }
+
+  /// 미션 단위 조회. MissionDetailViewModel 처럼 proposal/offer 가 아닌 mission 상태가 필요한 곳에서 사용.
+  func fetchMyMissions(
+    userID: String,
+    role: MissionRole,
     status: MissionStatus?,
     page: Int,
     size: Int
   ) -> [Mission] {
-    let resolvedRole = role ?? .orderer
     let mine = missions.filter {
-      switch resolvedRole {
+      switch role {
       case .orderer: return $0.ordererID == userID
       case .runner: return $0.runnerID == userID
       }
     }
     let filtered = status.map { status in mine.filter { $0.status == status } } ?? mine
+    return paginate(filtered, page: page, size: size)
+  }
+
+  private func paginate<T>(_ items: [T], page: Int, size: Int) -> [T] {
     let start = page * size
-    guard start < filtered.count else {
+    guard start < items.count else {
       return []
     }
-    return Array(filtered[start ..< min(start + size, filtered.count)])
+    return Array(items[start ..< min(start + size, items.count)])
   }
 
   // MARK: - Private cascade helpers
