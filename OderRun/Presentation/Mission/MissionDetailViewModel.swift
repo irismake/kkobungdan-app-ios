@@ -21,18 +21,18 @@ final class MissionDetailViewModel {
   var isUpdating: Bool = false
   var errorMessage: String?
 
-  private let fetchMyMissionsUseCase: FetchMyMissionsUseCase
+  private let fetchMyActivitiesUseCase: FetchMyActivitiesUseCase
   private let updateMissionActionUseCase: UpdateMissionActionUseCase
 
   init(
     proposalID: Int64,
     role: MissionRole,
-    fetchMyMissionsUseCase: FetchMyMissionsUseCase,
+    fetchMyActivitiesUseCase: FetchMyActivitiesUseCase,
     updateMissionActionUseCase: UpdateMissionActionUseCase
   ) {
     self.proposalID = proposalID
     self.role = role
-    self.fetchMyMissionsUseCase = fetchMyMissionsUseCase
+    self.fetchMyActivitiesUseCase = fetchMyActivitiesUseCase
     self.updateMissionActionUseCase = updateMissionActionUseCase
   }
 
@@ -58,7 +58,7 @@ final class MissionDetailViewModel {
     isLoading = true
     errorMessage = nil
     do {
-      let missions = try await fetchMyMissionsUseCase.execute(role: role)
+      let missions = try await fetchMyActivitiesUseCase.execute(role: role)
       mission = missions.first(where: { $0.proposalID == proposalID })
     } catch {
       errorMessage = "미션 정보를 불러오지 못했어요."

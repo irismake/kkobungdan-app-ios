@@ -107,7 +107,7 @@ enum AppRouteFactory {
     MissionDetailViewModel(
       proposalID: proposalID,
       role: role,
-      fetchMyMissionsUseCase: FetchMyMissionsUseCase(repository: DIContainer.missionRepository),
+      fetchMyActivitiesUseCase: FetchMyActivitiesUseCase(repository: DIContainer.activityRepository),
       updateMissionActionUseCase: UpdateMissionActionUseCase(repository: DIContainer.missionRepository)
     )
   }

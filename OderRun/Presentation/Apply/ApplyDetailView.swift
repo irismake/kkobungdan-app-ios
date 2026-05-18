@@ -145,10 +145,7 @@ struct ApplyDetailView: View {
         date: ProposalDisplay.dateString(proposal.deadline),
         time: ProposalDisplay.timeString(proposal.deadline),
         fee: ProposalDisplay.feeString(proposal.errandFee),
-        badges: ProposalDisplay.badges(
-          proposal: proposal,
-          mission: viewModel.missionViewModel?.mission
-        )
+        badges: ProposalDisplay.badges(proposal: proposal)
       )
     } else if let errorMessage = viewModel.errorMessage {
       Text(errorMessage)

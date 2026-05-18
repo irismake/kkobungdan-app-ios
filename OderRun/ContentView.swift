@@ -23,7 +23,7 @@ struct ContentView: View {
         activityViewModel: ActivityViewModel(
           fetchProposalsUseCase: FetchProposalsUseCase(repository: DIContainer.proposalRepository),
           fetchMyOffersUseCase: FetchMyOffersUseCase(repository: DIContainer.offerRepository),
-          fetchMyMissionsUseCase: FetchMyMissionsUseCase(repository: DIContainer.missionRepository),
+          fetchMyActivitiesUseCase: FetchMyActivitiesUseCase(repository: DIContainer.activityRepository),
           cancelOfferUseCase: CancelOfferUseCase(repository: DIContainer.offerRepository),
           proposalRepository: DIContainer.proposalRepository
         ),

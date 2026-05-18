@@ -12,6 +12,7 @@
 import Foundation
 
 enum ActivityStage {
+  case unpaid
   case waiting
   case inProgress
   case completed
@@ -31,35 +32,29 @@ struct ActivityItem: Identifiable, Equatable {
     return "proposal-\(proposal.id)"
   }
 
-  /// 미션 > 오퍼 > 프로포절 순으로 우선순위를 두어 현재 카드의 단계를 결정한다.
+  /// 오퍼 > 프로포절 순으로 현재 카드의 단계를 결정한다. mission 상태는 영향을 주지 않는다.
   var stage: ActivityStage {
-    if let mission {
-      switch mission.status {
-      case .created:
-        return .waiting
-      case .inProgress:
-        return .inProgress
-      case .deliveryCompleted, .receivedConfirmed, .settled:
-        return .completed
-      case .disputed, .refunded:
-        return .cancelled
-      }
-    }
     if let offer {
       switch offer.status {
       case .waiting:
         return .waiting
       case .accepted:
         return .inProgress
+      case .complete:
+        return .completed
       case .rejected, .cancelled:
         return .cancelled
       }
     }
     switch proposal.status {
-    case .posted, .offered:
+    case .posted:
+      return .unpaid
+    case .waiting, .offered:
       return .waiting
     case .matched:
       return .inProgress
+    case .complete:
+      return .completed
     case .cancelled:
       return .cancelled
     }
@@ -76,20 +71,20 @@ final class ActivityViewModel {
 
   private let fetchProposalsUseCase: FetchProposalsUseCase
   private let fetchMyOffersUseCase: FetchMyOffersUseCase
-  private let fetchMyMissionsUseCase: FetchMyMissionsUseCase
+  private let fetchMyActivitiesUseCase: FetchMyActivitiesUseCase
   private let cancelOfferUseCase: CancelOfferUseCase
   private let proposalRepository: ProposalRepositoryProtocol
 
   init(
     fetchProposalsUseCase: FetchProposalsUseCase,
     fetchMyOffersUseCase: FetchMyOffersUseCase,
-    fetchMyMissionsUseCase: FetchMyMissionsUseCase,
+    fetchMyActivitiesUseCase: FetchMyActivitiesUseCase,
     cancelOfferUseCase: CancelOfferUseCase,
     proposalRepository: ProposalRepositoryProtocol
   ) {
     self.fetchProposalsUseCase = fetchProposalsUseCase
     self.fetchMyOffersUseCase = fetchMyOffersUseCase
-    self.fetchMyMissionsUseCase = fetchMyMissionsUseCase
+    self.fetchMyActivitiesUseCase = fetchMyActivitiesUseCase
     self.cancelOfferUseCase = cancelOfferUseCase
     self.proposalRepository = proposalRepository
   }
@@ -98,7 +93,7 @@ final class ActivityViewModel {
     ActivityViewModel(
       fetchProposalsUseCase: FetchProposalsUseCase(repository: DIContainer.proposalRepository),
       fetchMyOffersUseCase: FetchMyOffersUseCase(repository: DIContainer.offerRepository),
-      fetchMyMissionsUseCase: FetchMyMissionsUseCase(repository: DIContainer.missionRepository),
+      fetchMyActivitiesUseCase: FetchMyActivitiesUseCase(repository: DIContainer.activityRepository),
       cancelOfferUseCase: CancelOfferUseCase(repository: DIContainer.offerRepository),
       proposalRepository: DIContainer.proposalRepository
     )
@@ -111,8 +106,8 @@ final class ActivityViewModel {
     do {
       async let proposalsTask = fetchProposalsUseCase.execute(page: 0, size: 100)
       async let offersTask = fetchMyOffersUseCase.execute()
-      async let ordererMissionsTask = fetchMyMissionsUseCase.execute(role: .orderer)
-      async let runnerMissionsTask = fetchMyMissionsUseCase.execute(role: .runner)
+      async let ordererMissionsTask = fetchMyActivitiesUseCase.execute(role: .orderer)
+      async let runnerMissionsTask = fetchMyActivitiesUseCase.execute(role: .runner)
 
       let (allProposals, myOffers, ordererMissions, runnerMissions) =
         try await (proposalsTask, offersTask, ordererMissionsTask, runnerMissionsTask)

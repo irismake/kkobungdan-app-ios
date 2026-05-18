@@ -18,11 +18,11 @@ final class MissionListViewModel {
   var isLoading: Bool = false
   var errorMessage: String?
 
-  private let fetchMyMissionsUseCase: FetchMyMissionsUseCase
+  private let fetchMyActivitiesUseCase: FetchMyActivitiesUseCase
 
-  init(role: MissionRole, fetchMyMissionsUseCase: FetchMyMissionsUseCase) {
+  init(role: MissionRole, fetchMyActivitiesUseCase: FetchMyActivitiesUseCase) {
     self.role = role
-    self.fetchMyMissionsUseCase = fetchMyMissionsUseCase
+    self.fetchMyActivitiesUseCase = fetchMyActivitiesUseCase
   }
 
   @MainActor
@@ -30,7 +30,7 @@ final class MissionListViewModel {
     isLoading = true
     errorMessage = nil
     do {
-      missions = try await fetchMyMissionsUseCase.execute(role: role, status: status)
+      missions = try await fetchMyActivitiesUseCase.execute(role: role, status: status)
     } catch {
       errorMessage = "미션을 불러오지 못했어요."
     }

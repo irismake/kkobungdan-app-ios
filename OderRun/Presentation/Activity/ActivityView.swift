@@ -21,6 +21,7 @@ enum ActivitySegment: String, CaseIterable {
 
 enum ActivityFilter: String, CaseIterable {
   case all = "전체"
+  case unpaid = "미입금"
   case waiting = "대기중"
   case inProgress = "진행중"
   case completed = "완료"
@@ -29,6 +30,7 @@ enum ActivityFilter: String, CaseIterable {
   func matches(_ stage: ActivityStage) -> Bool {
     switch self {
     case .all: return true
+    case .unpaid: return stage == .unpaid
     case .waiting: return stage == .waiting
     case .inProgress: return stage == .inProgress
     case .completed: return stage == .completed
@@ -266,7 +268,6 @@ struct ActivityView: View {
   private func badges(for item: ActivityItem) -> [BadgeItem] {
     ProposalDisplay.badges(
       proposal: item.proposal,
-      mission: item.mission,
       myOfferStatus: item.offer?.status
     )
   }

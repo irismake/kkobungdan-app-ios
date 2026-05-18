@@ -77,6 +77,24 @@ actor TestOfferRepositoryImpl: OfferRepositoryProtocol {
     )
   }
 
+  /// 더미 환경에서 proposal 취소 시 백엔드 cascade 를 흉내내기 위한 헬퍼.
+  /// 해당 proposal 의 WAITING/ACCEPTED offer 를 모두 REJECTED 로 전환한다.
+  func applyProposalCancelCascade(proposalID: Int64) {
+    for index in offers.indices where offers[index].proposalID == proposalID {
+      let existing = offers[index]
+      guard existing.status == .waiting || existing.status == .accepted else {
+        continue
+      }
+      offers[index] = Offer(
+        id: existing.id,
+        proposalID: existing.proposalID,
+        runnerID: existing.runnerID,
+        status: .rejected,
+        createdAt: existing.createdAt
+      )
+    }
+  }
+
   /// 더미 환경에서 미션 생성 시 백엔드 cascade 를 흉내내기 위한 헬퍼.
   /// 선택된 offer 는 ACCEPTED, 같은 proposal 의 다른 WAITING offer 는 REJECTED 로 전환한다.
   func applyMissionCreationCascade(acceptedOfferID: Int64, proposalID: Int64) {

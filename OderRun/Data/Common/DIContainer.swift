@@ -24,6 +24,9 @@ enum DIContainer {
   static let missionRepository: MissionRepositoryProtocol =
     isDummy ? TestMissionRepositoryImpl() : MissionRepository(client: .shared)
 
+  static let activityRepository: ActivityRepositoryProtocol =
+    isDummy ? TestActivityRepositoryImpl() : ActivityRepository(client: .shared)
+
   static let userRepository: UserRepositoryProtocol =
     isDummy ? TestUserRepositoryImpl() : UserRepository(client: .shared)
 

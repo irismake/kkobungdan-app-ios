@@ -37,19 +37,6 @@ final class MissionRepository: MissionRepositoryProtocol {
     return dto.toDomain()
   }
 
-  func fetchMyMissions(role: MissionRole?, status: MissionStatus?, page: Int, size: Int) async throws -> [Mission] {
-    var params: [String: Any] = ["page": page, "size": size]
-    if let role {
-      params["role"] = role.rawValue
-    }
-    if let status {
-      params["status"] = status.rawValue
-    }
-    let res: ApiResponseDTO<PageDTO<MissionResponseDTO>> =
-      try await client.get("/v1/mission", params: params)
-    return res.data?.content.map { $0.toDomain() } ?? []
-  }
-
   func updateMissionAction(
     id: Int64,
     action: MissionAction,

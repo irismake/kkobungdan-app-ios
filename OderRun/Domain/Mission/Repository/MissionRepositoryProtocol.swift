@@ -9,12 +9,6 @@ import Foundation
 
 protocol MissionRepositoryProtocol: Sendable {
   func createMission(offerID: Int64, runFee: Int, itemPrice: Int) async throws -> Mission
-  func fetchMyMissions(
-    role: MissionRole?,
-    status: MissionStatus?,
-    page: Int,
-    size: Int
-  ) async throws -> [Mission]
   func updateMissionAction(
     id: Int64,
     action: MissionAction,

@@ -30,10 +30,7 @@ struct MyProposalDetailView: View {
     guard let proposal = viewModel.proposal else {
       return []
     }
-    return ProposalDisplay.badges(
-      proposal: proposal,
-      mission: viewModel.missionViewModel.mission
-    )
+    return ProposalDisplay.badges(proposal: proposal)
   }
 
   var body: some View {
@@ -70,7 +67,8 @@ struct MyProposalDetailView: View {
 
               if viewModel.missionViewModel.mission != nil,
                  let profile = viewModel.matchedRunnerProfile,
-                 let matchedOffer = viewModel.matchedOffer {
+                 let matchedOffer = viewModel.matchedOffer
+              {
                 MatchedRunnerSection(
                   nickname: profile.nickname,
                   level: profile.level,
@@ -133,7 +131,7 @@ struct MyProposalDetailView: View {
           .clipShape(RoundedRectangle(cornerRadius: 12))
       }
       .buttonStyle(.plain)
-    case .cancelled:
+    case .complete, .cancelled:
       EmptyView()
     default:
       VStack(spacing: 8) {

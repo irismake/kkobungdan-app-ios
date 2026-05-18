@@ -135,10 +135,7 @@ struct HomeView: View {
                 date: ProposalDisplay.dateString(proposal.deadline),
                 time: ProposalDisplay.timeString(proposal.deadline),
                 fee: ProposalDisplay.feeString(proposal.errandFee),
-                badges: ProposalDisplay.badges(
-                  proposal: proposal,
-                  mission: nil
-                )
+                badges: ProposalDisplay.badges(proposal: proposal)
               )
               .contentShape(Rectangle())
               .onTapGesture {
