@@ -51,9 +51,9 @@ enum AppRouteFactory {
       proposalID: proposalID,
       fetchDetailUseCase: FetchProposalDetailUseCase(repository: DIContainer.proposalRepository),
       fetchOffersUseCase: FetchOffersByProposalUseCase(repository: DIContainer.offerRepository),
+      updateMissionActionUseCase: UpdateMissionActionUseCase(repository: DIContainer.missionRepository),
       cancelProposalUseCase: CancelProposalUseCase(repository: DIContainer.proposalRepository),
-      userRepository: DIContainer.userRepository,
-      missionViewModel: makeMissionDetailViewModel(proposalID: proposalID, role: .orderer)
+      userRepository: DIContainer.userRepository
     )
   }
 
@@ -62,19 +62,16 @@ enum AppRouteFactory {
   static func makeApplyDetailViewModel(
     proposalID: Int64,
     offerID: Int64? = nil,
-    asRunner: Bool
+    asRunner _: Bool = true
   ) -> ApplyDetailViewModel {
-    let missionVM: MissionDetailViewModel? = asRunner
-      ? makeMissionDetailViewModel(proposalID: proposalID, role: .runner)
-      : nil
-    return ApplyDetailViewModel(
+    ApplyDetailViewModel(
       proposalID: proposalID,
       offerID: offerID,
       fetchDetailUseCase: FetchProposalDetailUseCase(repository: DIContainer.proposalRepository),
       fetchOffersUseCase: FetchOffersByProposalUseCase(repository: DIContainer.offerRepository),
+      updateMissionActionUseCase: UpdateMissionActionUseCase(repository: DIContainer.missionRepository),
       userRepository: DIContainer.userRepository,
-      acceptOfferUseCase: AcceptOfferUseCase(repository: DIContainer.offerRepository),
-      missionViewModel: missionVM
+      acceptOfferUseCase: AcceptOfferUseCase(repository: DIContainer.offerRepository)
     )
   }
 
@@ -95,20 +92,6 @@ enum AppRouteFactory {
   static func makeAddProposalViewModel() -> AddProposalViewModel {
     AddProposalViewModel(
       createProposalUseCase: CreateProposalUseCase(repository: DIContainer.proposalRepository)
-    )
-  }
-
-  // MARK: - Mission Detail
-
-  static func makeMissionDetailViewModel(
-    proposalID: Int64,
-    role: MissionRole
-  ) -> MissionDetailViewModel {
-    MissionDetailViewModel(
-      proposalID: proposalID,
-      role: role,
-      fetchMyMissionsUseCase: FetchMyMissionsUseCase(repository: DIContainer.missionRepository),
-      updateMissionActionUseCase: UpdateMissionActionUseCase(repository: DIContainer.missionRepository)
     )
   }
 }

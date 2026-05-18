@@ -21,12 +21,24 @@ final class ApplyDetailViewModel {
 
   var isAccepting: Bool = false
   var didAcceptOffer: Bool = false
+  var mission: Mission?
+  var isCompletingMission: Bool = false
 
-  /// 러너 입장에서 본인의 미션 상태를 다루는 sub view model. orderer 모드에서는 nil.
-  let missionViewModel: MissionDetailViewModel?
+  var canCompleteDelivery: Bool {
+    guard let mission else {
+      return false
+    }
+    switch mission.status {
+    case .inProgress, .receivedConfirmed:
+      return true
+    default:
+      return false
+    }
+  }
 
   private let fetchDetailUseCase: FetchProposalDetailUseCase
   private let fetchOffersUseCase: FetchOffersByProposalUseCase
+  private let updateMissionActionUseCase: UpdateMissionActionUseCase
   private let userRepository: UserRepositoryProtocol
   private let acceptOfferUseCase: AcceptOfferUseCase
 
@@ -35,17 +47,17 @@ final class ApplyDetailViewModel {
     offerID: Int64? = nil,
     fetchDetailUseCase: FetchProposalDetailUseCase,
     fetchOffersUseCase: FetchOffersByProposalUseCase,
+    updateMissionActionUseCase: UpdateMissionActionUseCase,
     userRepository: UserRepositoryProtocol,
-    acceptOfferUseCase: AcceptOfferUseCase,
-    missionViewModel: MissionDetailViewModel? = nil
+    acceptOfferUseCase: AcceptOfferUseCase
   ) {
     self.proposalID = proposalID
     self.offerID = offerID
     self.fetchDetailUseCase = fetchDetailUseCase
     self.fetchOffersUseCase = fetchOffersUseCase
+    self.updateMissionActionUseCase = updateMissionActionUseCase
     self.userRepository = userRepository
     self.acceptOfferUseCase = acceptOfferUseCase
-    self.missionViewModel = missionViewModel
   }
 
   @MainActor
@@ -62,9 +74,28 @@ final class ApplyDetailViewModel {
       errorMessage = "지원 상세를 불러오지 못했어요."
     }
     isLoading = false
-    if let missionViewModel {
-      await missionViewModel.load()
+  }
+
+  /// 러너 전달 완료. `PUT /v1/mission/{id}` — `COMPLETE_DELIVERY`
+  @MainActor
+  func completeDelivery() async {
+    guard let mission, canCompleteDelivery, !isCompletingMission else {
+      return
     }
+    isCompletingMission = true
+    errorMessage = nil
+    do {
+      let proofURL = "https://cdn.orderrun.com/proofs/mission-\(mission.id).jpg"
+      _ = try await updateMissionActionUseCase.execute(
+        id: mission.id,
+        action: .completeDelivery,
+        proofImageURL: proofURL
+      )
+      await load()
+    } catch {
+      errorMessage = "진행 완료 처리에 실패했어요. 잠시 후 다시 시도해주세요."
+    }
+    isCompletingMission = false
   }
 
   /// 의뢰자가 지원자를 수락한다. `POST /v1/offer/{offerId}/accept` 호출로 매칭 cascade 가 일어나고

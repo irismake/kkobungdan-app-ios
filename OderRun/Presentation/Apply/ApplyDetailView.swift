@@ -41,7 +41,7 @@ struct ApplyDetailView: View {
           onCancel: { isMissionCompleted = false },
           onConfirm: {
             Task {
-              await viewModel.missionViewModel?.performAction(.completeDelivery)
+              await viewModel.completeDelivery()
               isMissionCompleted = false
             }
           }
@@ -112,7 +112,7 @@ struct ApplyDetailView: View {
       ) {
         Task { await viewModel.acceptOffer() }
       }
-    } else {
+    } else if viewModel.canCompleteDelivery {
       Button(action: { isMissionCompleted = true }) {
         Text("만났어요!")
           .textStyle(.heading4)

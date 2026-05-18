@@ -46,7 +46,7 @@ struct MyProposalDetailView: View {
           onCancel: { isMissionCompleted = false },
           onConfirm: {
             Task {
-              await viewModel.missionViewModel.performAction(.confirmReceived)
+              await viewModel.confirmReceived()
               isMissionCompleted = false
             }
           }
@@ -65,8 +65,7 @@ struct MyProposalDetailView: View {
             VStack(spacing: 12) {
               proposalCardSection
 
-              if viewModel.missionViewModel.mission != nil,
-                 let profile = viewModel.matchedRunnerProfile,
+              if let profile = viewModel.matchedRunnerProfile,
                  let matchedOffer = viewModel.matchedOffer {
                 MatchedRunnerSection(
                   nickname: profile.nickname,
@@ -118,7 +117,7 @@ struct MyProposalDetailView: View {
   @ViewBuilder
   private var bottomActionSection: some View {
     switch viewModel.proposal?.status {
-    case .matched:
+    case .matched where viewModel.canConfirmReceived:
       Button(action: { isMissionCompleted = true }) {
         Text("만났어요!")
           .textStyle(.heading4)

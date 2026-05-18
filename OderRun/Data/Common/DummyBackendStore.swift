@@ -205,46 +205,90 @@ actor DummyBackendStore {
   func updateMissionAction(
     id: Int64,
     action: MissionAction,
-    proofImageURL: String?
+    proofImageURL: String?,
+    disputeReason: String?
   ) throws -> Mission {
     guard let index = missions.firstIndex(where: { $0.id == id }) else {
       throw RepositoryError.notFound
     }
     let existing = missions[index]
-    let nextStatus: MissionStatus
+
     switch action {
     case .startProgress:
       guard existing.status == .created else {
         throw RepositoryError.conflict
       }
-      nextStatus = .inProgress
+      let updated = with(existing, status: .inProgress, proofImageURL: proofImageURL)
+      missions[index] = updated
+      return updated
+
     case .completeDelivery:
-      guard existing.status == .inProgress, proofImageURL != nil else {
+      guard let proofImageURL, !proofImageURL.isEmpty else {
         throw RepositoryError.conflict
       }
-      nextStatus = .deliveryCompleted
+      switch existing.status {
+      case .inProgress:
+        let updated = with(existing, status: .deliveryCompleted, proofImageURL: proofImageURL)
+        missions[index] = updated
+        return updated
+      case .receivedConfirmed:
+        return try completeMissionCascade(
+          at: index,
+          mission: with(existing, status: .receivedConfirmed, proofImageURL: proofImageURL)
+        )
+      default:
+        throw RepositoryError.conflict
+      }
+
     case .confirmReceived:
-      guard existing.status == .deliveryCompleted else {
+      switch existing.status {
+      case .inProgress:
+        let updated = with(existing, status: .receivedConfirmed, proofImageURL: proofImageURL)
+        missions[index] = updated
+        return updated
+      case .deliveryCompleted:
+        return try completeMissionCascade(
+          at: index,
+          mission: with(existing, status: .receivedConfirmed, proofImageURL: proofImageURL)
+        )
+      default:
         throw RepositoryError.conflict
       }
-      nextStatus = .receivedConfirmed
+
     case .dispute:
-      nextStatus = .disputed
+      guard let disputeReason, !disputeReason.isEmpty else {
+        throw RepositoryError.conflict
+      }
+      let updated = with(existing, status: .disputed, proofImageURL: proofImageURL)
+      missions[index] = updated
+      return updated
     }
-    let updated = Mission(
-      id: existing.id,
-      offerID: existing.offerID,
-      proposalID: existing.proposalID,
-      ordererID: existing.ordererID,
-      runnerID: existing.runnerID,
-      status: nextStatus,
-      runFee: existing.runFee,
-      itemPrice: existing.itemPrice,
-      proofImageURL: proofImageURL ?? existing.proofImageURL,
-      createdAt: existing.createdAt
+  }
+
+  private func completeMissionCascade(at index: Int, mission: Mission) throws -> Mission {
+    missions[index] = mission
+    if let offerIndex = offers.firstIndex(where: { $0.id == mission.offerID }) {
+      offers[offerIndex] = with(offers[offerIndex], status: .complete)
+    }
+    if let proposalIndex = proposals.firstIndex(where: { $0.id == mission.proposalID }) {
+      proposals[proposalIndex] = with(proposals[proposalIndex], status: .complete)
+    }
+    return mission
+  }
+
+  private func with(_ mission: Mission, status: MissionStatus, proofImageURL: String?) -> Mission {
+    Mission(
+      id: mission.id,
+      offerID: mission.offerID,
+      proposalID: mission.proposalID,
+      ordererID: mission.ordererID,
+      runnerID: mission.runnerID,
+      status: status,
+      runFee: mission.runFee,
+      itemPrice: mission.itemPrice,
+      proofImageURL: proofImageURL ?? mission.proofImageURL,
+      createdAt: mission.createdAt
     )
-    missions[index] = updated
-    return updated
   }
 
   // MARK: - Activity
@@ -306,7 +350,7 @@ actor DummyBackendStore {
     }
   }
 
-  /// 미션 단위 조회. MissionDetailViewModel 처럼 proposal/offer 가 아닌 mission 상태가 필요한 곳에서 사용.
+  /// 미션 단위 목록 조회. `/v1/mission/own` 의 인메모리 흉내.
   func fetchMyMissions(
     userID: String,
     role: MissionRole,

@@ -18,9 +18,20 @@ final class MyProposalDetailViewModel {
   var errorMessage: String?
   var isCancelling: Bool = false
   var didCancel: Bool = false
+  var mission: Mission?
+  var isCompletingMission: Bool = false
 
-  /// 의뢰자 입장에서의 미션 상태/액션을 다룬다.
-  let missionViewModel: MissionDetailViewModel
+  var canConfirmReceived: Bool {
+    guard let mission else {
+      return false
+    }
+    switch mission.status {
+    case .inProgress, .deliveryCompleted:
+      return true
+    default:
+      return false
+    }
+  }
 
   var applicantCount: Int {
     offers.filter { $0.status == .waiting || $0.status == .accepted }.count
@@ -33,6 +44,7 @@ final class MyProposalDetailViewModel {
 
   private let fetchDetailUseCase: FetchProposalDetailUseCase
   private let fetchOffersUseCase: FetchOffersByProposalUseCase
+  private let updateMissionActionUseCase: UpdateMissionActionUseCase
   private let cancelProposalUseCase: CancelProposalUseCase
   private let userRepository: UserRepositoryProtocol
 
@@ -40,16 +52,16 @@ final class MyProposalDetailViewModel {
     proposalID: Int64,
     fetchDetailUseCase: FetchProposalDetailUseCase,
     fetchOffersUseCase: FetchOffersByProposalUseCase,
+    updateMissionActionUseCase: UpdateMissionActionUseCase,
     cancelProposalUseCase: CancelProposalUseCase,
-    userRepository: UserRepositoryProtocol,
-    missionViewModel: MissionDetailViewModel
+    userRepository: UserRepositoryProtocol
   ) {
     self.proposalID = proposalID
     self.fetchDetailUseCase = fetchDetailUseCase
     self.fetchOffersUseCase = fetchOffersUseCase
+    self.updateMissionActionUseCase = updateMissionActionUseCase
     self.cancelProposalUseCase = cancelProposalUseCase
     self.userRepository = userRepository
-    self.missionViewModel = missionViewModel
   }
 
   @MainActor
@@ -71,7 +83,26 @@ final class MyProposalDetailViewModel {
       errorMessage = "내 요청 상세를 불러오지 못했어요."
     }
     isLoading = false
-    await missionViewModel.load()
+  }
+
+  /// 오더 수령 확인. `PUT /v1/mission/{id}` — `CONFIRM_RECEIVED`
+  @MainActor
+  func confirmReceived() async {
+    guard let mission, canConfirmReceived, !isCompletingMission else {
+      return
+    }
+    isCompletingMission = true
+    errorMessage = nil
+    do {
+      _ = try await updateMissionActionUseCase.execute(
+        id: mission.id,
+        action: .confirmReceived
+      )
+      await load()
+    } catch {
+      errorMessage = "진행 완료 처리에 실패했어요. 잠시 후 다시 시도해주세요."
+    }
+    isCompletingMission = false
   }
 
   @MainActor
