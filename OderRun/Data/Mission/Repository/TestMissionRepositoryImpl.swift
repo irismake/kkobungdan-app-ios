@@ -28,11 +28,6 @@ struct TestMissionRepositoryImpl: MissionRepositoryProtocol {
     )
   }
 
-  func createMission(offerID: Int64, runFee: Int, itemPrice: Int) async throws -> Mission {
-    try await Task.sleep(nanoseconds: Self.simulatedLatency)
-    return try await store.createMission(offerID: offerID, runFee: runFee, itemPrice: itemPrice)
-  }
-
   func updateMissionAction(
     id: Int64,
     action: MissionAction,

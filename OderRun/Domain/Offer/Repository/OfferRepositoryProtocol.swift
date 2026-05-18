@@ -11,4 +11,5 @@ protocol OfferRepositoryProtocol: Sendable {
   func createOffer(proposalID: Int64) async throws -> Offer
   func fetchOffersByProposal(proposalID: Int64) async throws -> [Offer]
   func cancelOffer(offerID: Int64) async throws
+  func acceptOffer(offerID: Int64, runFee: Int, itemPrice: Int) async throws -> MyProposal
 }

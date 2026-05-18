@@ -16,7 +16,6 @@ protocol MissionRepositoryProtocol: Sendable {
     page: Int,
     size: Int
   ) async throws -> [Mission]
-  func createMission(offerID: Int64, runFee: Int, itemPrice: Int) async throws -> Mission
   func updateMissionAction(
     id: Int64,
     action: MissionAction,

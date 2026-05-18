@@ -142,11 +142,10 @@ actor DummyBackendStore {
     offers[index] = with(offers[index], status: .cancelled)
   }
 
-  // MARK: - Mission
-
-  /// 미션 생성 시 같은 트랜잭션으로 선택 offer ACCEPTED, 나머지 WAITING offer REJECTED,
-  /// proposal MATCHED 로 전이.
-  func createMission(offerID: Int64, runFee: Int, itemPrice: Int) throws -> Mission {
+  /// `POST /v1/offer/{offerId}/accept` 의 인메모리 흉내.
+  /// offer ACCEPTED, 같은 proposal 의 나머지 WAITING offer REJECTED, proposal MATCHED 로 전이하고
+  /// 미션을 생성한다. 응답은 매칭된 proposal 정보(MyProposal) 그대로 반환.
+  func acceptOffer(offerID: Int64, runFee: Int, itemPrice: Int) throws -> MyProposal {
     if missions.contains(where: { $0.offerID == offerID }) {
       throw RepositoryError.conflict
     }
@@ -182,10 +181,26 @@ actor DummyBackendStore {
     missions.append(mission)
 
     acceptOfferAndRejectOthers(acceptedOfferID: offerID, proposalID: offer.proposalID)
-    proposals[proposalIndex] = with(proposal, status: .matched)
+    let matched = with(proposal, status: .matched)
+    proposals[proposalIndex] = matched
 
-    return mission
+    return MyProposal(
+      id: matched.id,
+      title: matched.title,
+      content: matched.content,
+      deadline: matched.deadline,
+      meetingAt: nil,
+      errandFee: matched.errandFee,
+      itemPrice: itemPrice,
+      deposit: nil,
+      status: matched.status,
+      offers: offers
+        .filter { $0.proposalID == matched.id }
+        .sorted { $0.createdAt > $1.createdAt }
+    )
   }
+
+  // MARK: - Mission
 
   func updateMissionAction(
     id: Int64,

@@ -10,7 +10,7 @@ import SwiftUI
 struct ApplicantListView: View {
   @State private var viewModel: ApplicantListViewModel
   var onBack: () -> Void = {}
-  var onAccepted: (Mission) -> Void = { _ in }
+  var onAccepted: () -> Void = {}
   var onSelectApplicant: (_ proposalID: Int64, _ offerID: Int64) -> Void = { _, _ in }
 
   @State private var isSelectModalPresented: Bool = false
@@ -19,7 +19,7 @@ struct ApplicantListView: View {
   init(
     viewModel: ApplicantListViewModel,
     onBack: @escaping () -> Void = {},
-    onAccepted: @escaping (Mission) -> Void = { _ in },
+    onAccepted: @escaping () -> Void = {},
     onSelectApplicant: @escaping (_ proposalID: Int64, _ offerID: Int64) -> Void = { _, _ in }
   ) {
     _viewModel = State(initialValue: viewModel)
@@ -70,10 +70,10 @@ struct ApplicantListView: View {
           onConfirm: {
             Task {
               await viewModel.acceptOffer(offerID: selectedEntry.offer.id)
-              if viewModel.didAcceptOffer, let mission = viewModel.acceptedMission {
+              if viewModel.didAcceptOffer {
                 isSelectModalPresented = false
                 self.selectedEntry = nil
-                onAccepted(mission)
+                onAccepted()
               }
             }
           }

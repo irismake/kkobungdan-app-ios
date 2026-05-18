@@ -7,12 +7,6 @@
 
 import Foundation
 
-private struct CreateMissionBody: Encodable {
-  let offerID: Int64
-  let runFee: Int
-  let itemPrice: Int
-}
-
 private struct MissionActionBody: Encodable {
   let action: String
   let proofImageURL: String?
@@ -39,17 +33,6 @@ final class MissionRepository: MissionRepositoryProtocol {
     let res: ApiResponseDTO<PageDTO<MissionResponseDTO>> =
       try await client.get("/v1/mission/own", params: params)
     return res.data?.content.map { $0.toDomain() } ?? []
-  }
-
-  func createMission(offerID: Int64, runFee: Int, itemPrice: Int) async throws -> Mission {
-    let res: ApiResponseDTO<MissionResponseDTO> = try await client.post(
-      "/v1/mission",
-      body: CreateMissionBody(offerID: offerID, runFee: runFee, itemPrice: itemPrice)
-    )
-    guard let dto = res.data else {
-      throw RepositoryError.network
-    }
-    return dto.toDomain()
   }
 
   func updateMissionAction(

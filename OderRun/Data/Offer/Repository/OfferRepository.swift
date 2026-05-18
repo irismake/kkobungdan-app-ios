@@ -11,6 +11,11 @@ private struct CreateOfferBody: Encodable {
   let proposalID: Int64
 }
 
+private struct AcceptOfferBody: Encodable {
+  let runFee: Int
+  let itemPrice: Int
+}
+
 final class OfferRepository: OfferRepositoryProtocol {
   private let client: HTTPClient
 
@@ -37,5 +42,16 @@ final class OfferRepository: OfferRepositoryProtocol {
 
   func cancelOffer(offerID: Int64) async throws {
     try await client.delete("/v1/offer/\(offerID)")
+  }
+
+  func acceptOffer(offerID: Int64, runFee: Int, itemPrice: Int) async throws -> MyProposal {
+    let res: ApiResponseDTO<MyProposalResponseDTO> = try await client.post(
+      "/v1/offer/\(offerID)/accept",
+      body: AcceptOfferBody(runFee: runFee, itemPrice: itemPrice)
+    )
+    guard let dto = res.data else {
+      throw RepositoryError.network
+    }
+    return dto.toDomain()
   }
 }

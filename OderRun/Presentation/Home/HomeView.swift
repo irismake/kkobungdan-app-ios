@@ -200,14 +200,14 @@ struct HomeView: View {
           asRunner: false
         ),
         onBack: { popLast(path: path) },
-        onAccepted: { _ in popLast(path: path) }
+        onAccepted: { popLast(path: path) }
       )
       .navigationBarBackButtonHidden(true)
     case let .applicantList(proposalID):
       ApplicantListView(
         viewModel: AppRouteFactory.makeApplicantListViewModel(proposalID: proposalID),
         onBack: { popLast(path: path) },
-        onAccepted: { _ in
+        onAccepted: {
           path.wrappedValue = [.myProposalDetail(proposalID: proposalID)]
         },
         onSelectApplicant: { proposalID, offerID in

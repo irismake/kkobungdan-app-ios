@@ -21,7 +21,6 @@ final class ApplyDetailViewModel {
 
   var isAccepting: Bool = false
   var didAcceptOffer: Bool = false
-  var acceptedMission: Mission?
 
   /// 러너 입장에서 본인의 미션 상태를 다루는 sub view model. orderer 모드에서는 nil.
   let missionViewModel: MissionDetailViewModel?
@@ -29,7 +28,7 @@ final class ApplyDetailViewModel {
   private let fetchDetailUseCase: FetchProposalDetailUseCase
   private let fetchOffersUseCase: FetchOffersByProposalUseCase
   private let userRepository: UserRepositoryProtocol
-  private let createMissionUseCase: CreateMissionUseCase
+  private let acceptOfferUseCase: AcceptOfferUseCase
 
   init(
     proposalID: Int64,
@@ -37,7 +36,7 @@ final class ApplyDetailViewModel {
     fetchDetailUseCase: FetchProposalDetailUseCase,
     fetchOffersUseCase: FetchOffersByProposalUseCase,
     userRepository: UserRepositoryProtocol,
-    createMissionUseCase: CreateMissionUseCase,
+    acceptOfferUseCase: AcceptOfferUseCase,
     missionViewModel: MissionDetailViewModel? = nil
   ) {
     self.proposalID = proposalID
@@ -45,7 +44,7 @@ final class ApplyDetailViewModel {
     self.fetchDetailUseCase = fetchDetailUseCase
     self.fetchOffersUseCase = fetchOffersUseCase
     self.userRepository = userRepository
-    self.createMissionUseCase = createMissionUseCase
+    self.acceptOfferUseCase = acceptOfferUseCase
     self.missionViewModel = missionViewModel
   }
 
@@ -68,8 +67,9 @@ final class ApplyDetailViewModel {
     }
   }
 
-  /// 의뢰자가 지원자를 수락하면 미션을 생성한다.
-  /// runFee/itemPrice 는 추후 의뢰자가 입력할 값이지만 현재는 proposal 의 errandFee 로 기본값 처리.
+  /// 의뢰자가 지원자를 수락한다. `POST /v1/offer/{offerId}/accept` 호출로 매칭 cascade 가 일어나고
+  /// 미션은 서버에서 함께 생성된다. runFee/itemPrice 는 추후 의뢰자가 입력할 값이지만 현재는
+  /// proposal 의 errandFee 로 기본값 처리.
   @MainActor
   func acceptOffer(runFee: Int? = nil, itemPrice: Int = 0) async {
     guard let offerID, !isAccepting else {
@@ -79,12 +79,11 @@ final class ApplyDetailViewModel {
     errorMessage = nil
     do {
       let resolvedFee = runFee ?? proposal?.errandFee ?? 0
-      let mission = try await createMissionUseCase.execute(
+      _ = try await acceptOfferUseCase.execute(
         offerID: offerID,
         runFee: resolvedFee,
         itemPrice: itemPrice
       )
-      acceptedMission = mission
       didAcceptOffer = true
     } catch {
       errorMessage = "지원자 수락에 실패했어요. 잠시 후 다시 시도해주세요."

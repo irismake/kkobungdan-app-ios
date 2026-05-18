@@ -11,12 +11,12 @@ struct ApplyDetailView: View {
   @State private var viewModel: ApplyDetailViewModel
   @State private var isMissionCompleted: Bool = false
   var onBack: () -> Void = {}
-  var onAccepted: (Mission) -> Void = { _ in }
+  var onAccepted: () -> Void = {}
 
   init(
     viewModel: ApplyDetailViewModel,
     onBack: @escaping () -> Void = {},
-    onAccepted: @escaping (Mission) -> Void = { _ in }
+    onAccepted: @escaping () -> Void = {}
   ) {
     _viewModel = State(initialValue: viewModel)
     self.onBack = onBack
@@ -97,8 +97,8 @@ struct ApplyDetailView: View {
       await viewModel.load()
     }
     .onChange(of: viewModel.didAcceptOffer) { _, didAccept in
-      if didAccept, let mission = viewModel.acceptedMission {
-        onAccepted(mission)
+      if didAccept {
+        onAccepted()
       }
     }
   }
