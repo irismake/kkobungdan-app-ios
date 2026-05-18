@@ -16,7 +16,7 @@ enum AppRoute: Hashable {
   /// 의뢰자 본인의 의뢰 상세
   case myProposalDetail(proposalID: Int64)
   /// 러너 본인의 지원 상세 (활동 탭에서 진입)
-  case runnerApplyDetail(proposalID: Int64)
+  case runnerApplyDetail(proposalID: Int64, offerID: Int64)
   /// 의뢰자가 지원자 한 명을 검토하는 상세
   case applicantOfferDetail(proposalID: Int64, offerID: Int64)
   /// 의뢰자가 자기 의뢰의 지원자 리스트를 보는 화면
@@ -51,27 +51,27 @@ enum AppRouteFactory {
       proposalID: proposalID,
       fetchDetailUseCase: FetchProposalDetailUseCase(repository: DIContainer.proposalRepository),
       fetchOffersUseCase: FetchOffersByProposalUseCase(repository: DIContainer.offerRepository),
+      fetchMissionByProposalUseCase: FetchMissionByProposalUseCase(repository: DIContainer.missionRepository),
       updateMissionActionUseCase: UpdateMissionActionUseCase(repository: DIContainer.missionRepository),
       cancelProposalUseCase: CancelProposalUseCase(repository: DIContainer.proposalRepository),
       userRepository: DIContainer.userRepository
     )
   }
 
-  // MARK: - Apply Detail (runner self / orderer accept mode)
+  // MARK: - Apply Detail (runner only)
 
   static func makeApplyDetailViewModel(
     proposalID: Int64,
-    offerID: Int64? = nil,
-    asRunner _: Bool = true
+    offerID: Int64
   ) -> ApplyDetailViewModel {
     ApplyDetailViewModel(
       proposalID: proposalID,
       offerID: offerID,
       fetchDetailUseCase: FetchProposalDetailUseCase(repository: DIContainer.proposalRepository),
-      fetchOffersUseCase: FetchOffersByProposalUseCase(repository: DIContainer.offerRepository),
+      fetchMyOffersUseCase: FetchMyOffersUseCase(repository: DIContainer.activityRepository),
+      fetchMissionByOfferUseCase: FetchMissionByOfferUseCase(repository: DIContainer.missionRepository),
       updateMissionActionUseCase: UpdateMissionActionUseCase(repository: DIContainer.missionRepository),
-      userRepository: DIContainer.userRepository,
-      acceptOfferUseCase: AcceptOfferUseCase(repository: DIContainer.offerRepository)
+      userRepository: DIContainer.userRepository
     )
   }
 

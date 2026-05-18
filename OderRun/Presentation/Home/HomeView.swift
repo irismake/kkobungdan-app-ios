@@ -68,8 +68,8 @@ struct HomeView: View {
             onSelectOrdererProposal: { proposalID in
               activityPath.append(.myProposalDetail(proposalID: proposalID))
             },
-            onSelectRunnerItem: { proposalID in
-              activityPath.append(.runnerApplyDetail(proposalID: proposalID))
+            onSelectRunnerItem: { proposalID, offerID in
+              activityPath.append(.runnerApplyDetail(proposalID: proposalID, offerID: offerID))
             }
           )
           bottomBar
@@ -163,13 +163,16 @@ struct HomeView: View {
         }
       )
       .navigationBarBackButtonHidden(true)
-    case let .applyComplete(proposalID):
+    case .applyComplete:
       ApplyCompleteView(
         onConfirm: {
           path.wrappedValue.removeAll()
         },
         onViewHistory: {
-          path.wrappedValue = [.runnerApplyDetail(proposalID: proposalID)]
+          // home segment 에는 offer 가 보이는 곳이 없으므로 activity 탭으로 보낸다.
+          // 거기서 본인 offer 카드를 탭하면 `.runnerApplyDetail(proposalID:offerID:)` 로 진입.
+          path.wrappedValue.removeAll()
+          selectedTab = .activity
         }
       )
       .navigationBarBackButtonHidden(true)
@@ -182,12 +185,11 @@ struct HomeView: View {
         }
       )
       .navigationBarBackButtonHidden(true)
-    case let .runnerApplyDetail(proposalID):
+    case let .runnerApplyDetail(proposalID, offerID):
       ApplyDetailView(
         viewModel: AppRouteFactory.makeApplyDetailViewModel(
           proposalID: proposalID,
-          offerID: nil,
-          asRunner: true
+          offerID: offerID
         ),
         onBack: { popLast(path: path) }
       )
@@ -196,11 +198,9 @@ struct HomeView: View {
       ApplyDetailView(
         viewModel: AppRouteFactory.makeApplyDetailViewModel(
           proposalID: proposalID,
-          offerID: offerID,
-          asRunner: false
+          offerID: offerID
         ),
-        onBack: { popLast(path: path) },
-        onAccepted: { popLast(path: path) }
+        onBack: { popLast(path: path) }
       )
       .navigationBarBackButtonHidden(true)
     case let .applicantList(proposalID):

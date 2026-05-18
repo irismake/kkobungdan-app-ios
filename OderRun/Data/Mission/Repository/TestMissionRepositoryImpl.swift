@@ -12,6 +12,16 @@ struct TestMissionRepositoryImpl: MissionRepositoryProtocol {
 
   let store: DummyBackendStore
 
+  func fetchMissionByProposal(proposalID: Int64) async throws -> Mission? {
+    try await Task.sleep(nanoseconds: Self.simulatedLatency)
+    return await store.fetchMission(proposalID: proposalID)
+  }
+
+  func fetchMissionByOffer(offerID: Int64) async throws -> Mission? {
+    try await Task.sleep(nanoseconds: Self.simulatedLatency)
+    return await store.fetchMission(offerID: offerID)
+  }
+
   func updateMissionAction(
     id: Int64,
     action: MissionAction,

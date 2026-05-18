@@ -21,16 +21,9 @@ final class MyProposalDetailViewModel {
   var mission: Mission?
   var isCompletingMission: Bool = false
 
+  /// "만났어요!" 버튼 노출 여부. proposal 이 MATCHED 이면 노출한다.
   var canConfirmReceived: Bool {
-    guard let mission else {
-      return false
-    }
-    switch mission.status {
-    case .inProgress, .deliveryCompleted:
-      return true
-    default:
-      return false
-    }
+    proposal?.status == .matched
   }
 
   var applicantCount: Int {
@@ -44,6 +37,7 @@ final class MyProposalDetailViewModel {
 
   private let fetchDetailUseCase: FetchProposalDetailUseCase
   private let fetchOffersUseCase: FetchOffersByProposalUseCase
+  private let fetchMissionByProposalUseCase: FetchMissionByProposalUseCase
   private let updateMissionActionUseCase: UpdateMissionActionUseCase
   private let cancelProposalUseCase: CancelProposalUseCase
   private let userRepository: UserRepositoryProtocol
@@ -52,6 +46,7 @@ final class MyProposalDetailViewModel {
     proposalID: Int64,
     fetchDetailUseCase: FetchProposalDetailUseCase,
     fetchOffersUseCase: FetchOffersByProposalUseCase,
+    fetchMissionByProposalUseCase: FetchMissionByProposalUseCase,
     updateMissionActionUseCase: UpdateMissionActionUseCase,
     cancelProposalUseCase: CancelProposalUseCase,
     userRepository: UserRepositoryProtocol
@@ -59,6 +54,7 @@ final class MyProposalDetailViewModel {
     self.proposalID = proposalID
     self.fetchDetailUseCase = fetchDetailUseCase
     self.fetchOffersUseCase = fetchOffersUseCase
+    self.fetchMissionByProposalUseCase = fetchMissionByProposalUseCase
     self.updateMissionActionUseCase = updateMissionActionUseCase
     self.cancelProposalUseCase = cancelProposalUseCase
     self.userRepository = userRepository
@@ -78,6 +74,13 @@ final class MyProposalDetailViewModel {
         matchedRunnerProfile = try await userRepository.fetchRunnerProfile(userID: matchedOffer.runnerID)
       } else {
         matchedRunnerProfile = nil
+      }
+
+      // proposal 이 MATCHED 이후라면 미션이 존재한다. 그 외 상태에서는 nil.
+      if proposal?.status == .matched || proposal?.status == .complete {
+        mission = try await fetchMissionByProposalUseCase.execute(proposalID: proposalID)
+      } else {
+        mission = nil
       }
     } catch {
       errorMessage = "내 요청 상세를 불러오지 못했어요."

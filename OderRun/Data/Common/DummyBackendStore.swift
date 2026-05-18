@@ -21,12 +21,11 @@ actor DummyBackendStore {
 
   // MARK: - Proposal
 
+  /// 홈 피드용 proposal 목록. 서버는 아직 의뢰자가 수락하지 않아 다른 러너가 지원할 수 있는
+  /// 활성 상태(`.waiting` = 대기중 / `.offered` = 새로운 지원 도착)만 반환한다.
   func fetchProposals(page: Int, size: Int) -> [Proposal] {
-    let start = page * size
-    guard start < proposals.count else {
-      return []
-    }
-    return Array(proposals[start ..< min(start + size, proposals.count)])
+    let filtered = proposals.filter { $0.status == .waiting || $0.status == .offered }
+    return paginate(filtered, page: page, size: size)
   }
 
   func fetchProposal(id: Int64) throws -> Proposal {
@@ -202,6 +201,16 @@ actor DummyBackendStore {
 
   // MARK: - Mission
 
+  /// proposal 에 매칭된 미션 1건. accept 시 cascade 로 1개만 만들어지므로 첫 매치를 반환.
+  func fetchMission(proposalID: Int64) -> Mission? {
+    missions.first(where: { $0.proposalID == proposalID })
+  }
+
+  /// 수락된 offer 로 생성된 미션 1건.
+  func fetchMission(offerID: Int64) -> Mission? {
+    missions.first(where: { $0.offerID == offerID })
+  }
+
   func updateMissionAction(
     id: Int64,
     action: MissionAction,
@@ -227,7 +236,7 @@ actor DummyBackendStore {
         throw RepositoryError.conflict
       }
       switch existing.status {
-      case .inProgress:
+      case .created, .inProgress:
         let updated = with(existing, status: .deliveryCompleted, proofImageURL: proofImageURL)
         missions[index] = updated
         return updated
@@ -242,7 +251,7 @@ actor DummyBackendStore {
 
     case .confirmReceived:
       switch existing.status {
-      case .inProgress:
+      case .created, .inProgress:
         let updated = with(existing, status: .receivedConfirmed, proofImageURL: proofImageURL)
         missions[index] = updated
         return updated

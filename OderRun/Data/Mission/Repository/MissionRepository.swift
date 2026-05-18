@@ -20,6 +20,23 @@ final class MissionRepository: MissionRepositoryProtocol {
     self.client = client
   }
 
+  func fetchMissionByProposal(proposalID: Int64) async throws -> Mission? {
+    try await fetchMission(params: ["proposalId": proposalID])
+  }
+
+  func fetchMissionByOffer(offerID: Int64) async throws -> Mission? {
+    try await fetchMission(params: ["offerId": offerID])
+  }
+
+  private func fetchMission(params: [String: Any]) async throws -> Mission? {
+    do {
+      let res: ApiResponseDTO<MissionResponseDTO> = try await client.get("/v1/mission", params: params)
+      return res.data?.toDomain()
+    } catch RepositoryError.notFound {
+      return nil
+    }
+  }
+
   func updateMissionAction(
     id: Int64,
     action: MissionAction,

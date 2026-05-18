@@ -46,7 +46,7 @@ struct ActivityView: View {
   @State private var pendingCancelOffer: MyOffer?
 
   var onSelectOrdererProposal: (Int64) -> Void = { _ in }
-  var onSelectRunnerItem: (_ proposalID: Int64) -> Void = { _ in }
+  var onSelectRunnerItem: (_ proposalID: Int64, _ offerID: Int64) -> Void = { _, _ in }
 
   private struct SegmentAnchorPreferenceKey: PreferenceKey {
     static var defaultValue: [ActivitySegment: Anchor<CGRect>] = [:]
@@ -62,7 +62,7 @@ struct ActivityView: View {
   init(
     viewModel: ActivityViewModel,
     onSelectOrdererProposal: @escaping (Int64) -> Void = { _ in },
-    onSelectRunnerItem: @escaping (_ proposalID: Int64) -> Void = { _ in }
+    onSelectRunnerItem: @escaping (_ proposalID: Int64, _ offerID: Int64) -> Void = { _, _ in }
   ) {
     _viewModel = State(initialValue: viewModel)
     self.onSelectOrdererProposal = onSelectOrdererProposal
@@ -170,7 +170,7 @@ struct ActivityView: View {
           card(for: offer)
             .contentShape(Rectangle())
             .onTapGesture {
-              onSelectRunnerItem(offer.proposalID)
+              onSelectRunnerItem(offer.proposalID, offer.id)
             }
 
           if offer.status == .waiting {

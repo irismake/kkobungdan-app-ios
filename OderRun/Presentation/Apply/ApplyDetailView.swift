@@ -11,21 +11,13 @@ struct ApplyDetailView: View {
   @State private var viewModel: ApplyDetailViewModel
   @State private var isMissionCompleted: Bool = false
   var onBack: () -> Void = {}
-  var onAccepted: () -> Void = {}
 
   init(
     viewModel: ApplyDetailViewModel,
-    onBack: @escaping () -> Void = {},
-    onAccepted: @escaping () -> Void = {}
+    onBack: @escaping () -> Void = {}
   ) {
     _viewModel = State(initialValue: viewModel)
     self.onBack = onBack
-    self.onAccepted = onAccepted
-  }
-
-  /// offerID 가 주어지면 의뢰자(orderer)가 지원자를 검토하는 모드.
-  private var isAcceptMode: Bool {
-    viewModel.offerID != nil
   }
 
   var body: some View {
@@ -52,12 +44,12 @@ struct ApplyDetailView: View {
 
   private var contentView: some View {
     VStack(spacing: 0) {
-      AppBar(title: isAcceptMode ? "지원자 상세" : "지원 상세", onBack: onBack)
+      AppBar(title: "지원 상세", onBack: onBack)
 
       VStack(spacing: 0) {
         ScrollView {
           VStack(alignment: .leading, spacing: 12) {
-            applicantProfileSection
+            ordererProfileSection
             proposalCardSection
 
             if let errorMessage = viewModel.errorMessage {
@@ -96,23 +88,11 @@ struct ApplyDetailView: View {
     .task {
       await viewModel.load()
     }
-    .onChange(of: viewModel.didAcceptOffer) { _, didAccept in
-      if didAccept {
-        onAccepted()
-      }
-    }
   }
 
   @ViewBuilder
   private var bottomActionSection: some View {
-    if isAcceptMode {
-      ConfirmButton(
-        title: viewModel.isAccepting ? "수락 중..." : "수락",
-        isEnabled: !viewModel.isAccepting
-      ) {
-        Task { await viewModel.acceptOffer() }
-      }
-    } else if viewModel.canCompleteDelivery {
+    if viewModel.canCompleteDelivery {
       Button(action: { isMissionCompleted = true }) {
         Text("만났어요!")
           .textStyle(.heading4)
@@ -128,9 +108,9 @@ struct ApplyDetailView: View {
   }
 
   @ViewBuilder
-  private var applicantProfileSection: some View {
-    if let profile = viewModel.counterpartProfile {
-      applicantProfile(nickname: profile.nickname, level: profile.level, grade: profile.grade)
+  private var ordererProfileSection: some View {
+    if let profile = viewModel.runnerProfile {
+      ordererProfile(nickname: profile.nickname, level: profile.level, grade: profile.grade)
     } else if viewModel.isLoading {
       ProgressView().padding(.horizontal, 16)
     }
@@ -155,7 +135,7 @@ struct ApplyDetailView: View {
     }
   }
 
-  private func applicantProfile(nickname: String, level: Int, grade: String) -> some View {
+  private func ordererProfile(nickname: String, level: Int, grade: String) -> some View {
     VStack(alignment: .leading, spacing: 4) {
       Text(nickname)
         .textStyle(.title1)
