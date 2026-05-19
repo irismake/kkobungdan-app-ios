@@ -70,10 +70,11 @@ final class LoginViewModel {
     do {
       let credential = try await appleSignInController.requestSignIn()
       let result = try await appleLoginUseCase.execute(
-        authorizationCode: credential.authorizationCode,
-        userName: credential.userName
+        identityToken: credential.identityToken,
+        name: credential.name,
+        email: credential.email
       )
-      if result.isFirstLogin {
+      if result.profileSyncRequired {
         isTermsSheetPresented = true
       } else {
         isLoginSuccess = true
@@ -98,7 +99,7 @@ final class LoginViewModel {
     do {
       let accessToken = try await kakaoSignInController.requestSignIn()
       let result = try await kakaoLoginUseCase.execute(accessToken: accessToken)
-      if result.isFirstLogin {
+      if result.profileSyncRequired {
         isTermsSheetPresented = true
       } else {
         isLoginSuccess = true

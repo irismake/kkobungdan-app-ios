@@ -20,8 +20,9 @@ private struct SignupRequestBody: Encodable {
 }
 
 private struct AppleLoginRequestBody: Encodable {
-  let authorizationCode: String
-  let userName: String?
+  let identityToken: String
+  let name: String?
+  let email: String?
 }
 
 private struct KakaoLoginRequestBody: Encodable {
@@ -62,11 +63,10 @@ final class AuthRepository: AuthRepositoryProtocol {
     return response.toDomain()
   }
 
-  func loginWithApple(authorizationCode: String, userName: String?) async throws -> AppleLoginResult {
-    // TODO: 서버 API 스펙 확정 시 path/필드명 조정 필요
+  func loginWithApple(identityToken: String, name: String?, email: String?) async throws -> AppleLoginResult {
     let response: AppleLoginResponseDTO = try await client.post(
       "/v1/auth/oauth/apple",
-      body: AppleLoginRequestBody(authorizationCode: authorizationCode, userName: userName)
+      body: AppleLoginRequestBody(identityToken: identityToken, name: name, email: email)
     )
     tokenStorage.accessToken = response.accessToken
     tokenStorage.refreshToken = response.refreshToken

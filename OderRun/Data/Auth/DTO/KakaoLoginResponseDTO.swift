@@ -12,6 +12,13 @@ struct KakaoLoginResponseDTO: Decodable {
   let refreshToken: String
   let userID: String
   let profileSyncRequired: Bool
+
+  private enum CodingKeys: String, CodingKey {
+    case accessToken
+    case refreshToken
+    case userID = "userId"
+    case profileSyncRequired
+  }
 }
 
 extension KakaoLoginResponseDTO {

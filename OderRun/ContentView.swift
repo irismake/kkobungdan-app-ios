@@ -10,7 +10,7 @@ import SwiftUI
 struct ContentView: View {
   @State private var loginViewModel = LoginViewModel(
     loginUseCase: LoginUseCase(authRepository: DIContainer.authRepository),
-    appleLoginUseCase: AppleLoginUseCase(authRepository: DIContainer.authRepository),
+    appleLoginUseCase: AppleLoginUseCase(authRepository: AuthRepository()),
     kakaoLoginUseCase: KakaoLoginUseCase(authRepository: AuthRepository())
   )
 

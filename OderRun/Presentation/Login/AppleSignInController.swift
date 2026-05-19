@@ -16,8 +16,9 @@ enum AppleSignInError: Error {
 }
 
 struct AppleSignInCredential {
-  let authorizationCode: String
-  let userName: String?
+  let identityToken: String
+  let name: String?
+  let email: String?
 }
 
 @MainActor
@@ -55,24 +56,28 @@ extension AppleSignInController: ASAuthorizationControllerDelegate {
     didCompleteWithAuthorization authorization: ASAuthorization
   ) {
     guard let credential = authorization.credential as? ASAuthorizationAppleIDCredential,
-          let codeData = credential.authorizationCode,
-          let authorizationCode = String(data: codeData, encoding: .utf8)
+          let tokenData = credential.identityToken,
+          let identityToken = String(data: tokenData, encoding: .utf8)
     else {
       resume(.failure(AppleSignInError.tokenMissing))
       return
     }
 
-    let userName: String? = {
-      guard let name = credential.fullName else {
+    let name: String? = {
+      guard let components = credential.fullName else {
         return nil
       }
       let formatter = PersonNameComponentsFormatter()
       formatter.style = .default
-      let formatted = formatter.string(from: name).trimmingCharacters(in: .whitespaces)
+      let formatted = formatter.string(from: components).trimmingCharacters(in: .whitespaces)
       return formatted.isEmpty ? nil : formatted
     }()
 
-    resume(.success(AppleSignInCredential(authorizationCode: authorizationCode, userName: userName)))
+    resume(.success(AppleSignInCredential(
+      identityToken: identityToken,
+      name: name,
+      email: credential.email
+    )))
   }
 
   func authorizationController(
