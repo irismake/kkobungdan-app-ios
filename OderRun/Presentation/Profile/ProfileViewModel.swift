@@ -67,7 +67,9 @@ final class ProfileViewModel {
 
   @MainActor
   func logout() async {
-    guard !isLoading else { return }
+    guard !isLoading else {
+      return
+    }
     isLoading = true
     errorMessage = nil
     let refreshToken = tokenStorage.refreshToken ?? ""

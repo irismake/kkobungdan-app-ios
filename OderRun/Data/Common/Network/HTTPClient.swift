@@ -10,9 +10,12 @@ import Foundation
 final class HTTPClient {
   static let shared = HTTPClient(tokenStorage: .shared)
 
-  private let baseURL = "http://43.200.56.9"
+  private static let baseURL = "http://43.200.56.9"
+  private static let refreshPath = "/v1/auth/refresh"
+
   private let session: URLSession
   private let tokenStorage: TokenStorage
+  private let tokenRefresher: TokenRefreshHandler
 
   private let decoder: JSONDecoder = {
     let decoder = JSONDecoder()
@@ -23,29 +26,33 @@ final class HTTPClient {
   init(tokenStorage: TokenStorage, session: URLSession = .shared) {
     self.tokenStorage = tokenStorage
     self.session = session
+    tokenRefresher = TokenRefreshHandler(
+      tokenStorage: tokenStorage,
+      baseURL: Self.baseURL,
+      session: session
+    )
   }
 
   // MARK: - Public Methods
 
   func get<T: Decodable>(_ path: String, params: [String: Any] = [:]) async throws -> T {
     let request = try buildRequest(method: "GET", path: path, params: params, body: nil as String?)
-    return try await perform(request)
+    return try await perform(request, isRetry: false)
   }
 
   func post<T: Decodable, B: Encodable>(_ path: String, body: B? = nil as String?) async throws -> T {
     let request = try buildRequest(method: "POST", path: path, params: [:], body: body)
-    return try await perform(request)
+    return try await perform(request, isRetry: false)
   }
 
   func put<T: Decodable, B: Encodable>(_ path: String, body: B? = nil as String?) async throws -> T {
     let request = try buildRequest(method: "PUT", path: path, params: [:], body: body)
-    return try await perform(request)
+    return try await perform(request, isRetry: false)
   }
 
   func delete(_ path: String) async throws {
     let request = try buildRequest(method: "DELETE", path: path, params: [:], body: nil as String?)
-    let (_, response) = try await session.data(for: request)
-    try mapHTTPError(response: response)
+    try await performVoid(request, isRetry: false)
   }
 
   // MARK: - Private Helpers
@@ -56,7 +63,7 @@ final class HTTPClient {
     params: [String: Any],
     body: B?
   ) throws -> URLRequest {
-    var components = URLComponents(string: baseURL + path)!
+    var components = URLComponents(string: Self.baseURL + path)!
     if !params.isEmpty {
       components.queryItems = params.map { URLQueryItem(name: $0.key, value: "\($0.value)") }
     }
@@ -72,8 +79,13 @@ final class HTTPClient {
     return request
   }
 
-  private func perform<T: Decodable>(_ request: URLRequest) async throws -> T {
+  private func perform<T: Decodable>(_ request: URLRequest, isRetry: Bool) async throws -> T {
     let (data, response) = try await session.data(for: request)
+
+    if try await shouldRetryAfterRefresh(request: request, response: response, isRetry: isRetry) {
+      return try await perform(rebuiltRequest(from: request), isRetry: true)
+    }
+
     try mapHTTPError(response: response)
     do {
       let envelope = try decoder.decode(ApiResponseDTO<T>.self, from: data)
@@ -86,6 +98,59 @@ final class HTTPClient {
     } catch {
       throw RepositoryError.network
     }
+  }
+
+  private func performVoid(_ request: URLRequest, isRetry: Bool) async throws {
+    let (_, response) = try await session.data(for: request)
+
+    if try await shouldRetryAfterRefresh(request: request, response: response, isRetry: isRetry) {
+      try await performVoid(rebuiltRequest(from: request), isRetry: true)
+      return
+    }
+
+    try mapHTTPError(response: response)
+  }
+
+  /// 401 응답을 받았을 때 refresh 를 시도하고, 호출자가 동일 요청을 재시도해야 하는지 반환한다.
+  /// refresh 자체가 실패하면 토큰을 클리어하고 unauthorized 를 throw 한다.
+  private func shouldRetryAfterRefresh(
+    request: URLRequest,
+    response: URLResponse,
+    isRetry: Bool
+  ) async throws -> Bool {
+    guard let http = response as? HTTPURLResponse, http.statusCode == 401 else {
+      return false
+    }
+    // 이미 한 번 재시도했는데도 401 — refresh 로 회복 불가
+    if isRetry {
+      tokenStorage.clear()
+      throw RepositoryError.unauthorized
+    }
+    // refresh 엔드포인트 자체의 401 은 정상 경로(mapHTTPError)로 처리
+    guard request.url?.path != Self.refreshPath else {
+      return false
+    }
+    // 애초에 Authorization 헤더 없이 보낸 요청은 refresh 대상이 아님
+    guard let auth = request.value(forHTTPHeaderField: "Authorization") else {
+      return false
+    }
+
+    let currentToken = auth.hasPrefix("Bearer ") ? String(auth.dropFirst("Bearer ".count)) : auth
+    do {
+      _ = try await tokenRefresher.refresh(currentAccessToken: currentToken)
+      return true
+    } catch {
+      tokenStorage.clear()
+      throw RepositoryError.unauthorized
+    }
+  }
+
+  private func rebuiltRequest(from request: URLRequest) -> URLRequest {
+    var retry = request
+    if let token = tokenStorage.accessToken {
+      retry.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
+    }
+    return retry
   }
 
   private func mapHTTPError(response: URLResponse) throws {
