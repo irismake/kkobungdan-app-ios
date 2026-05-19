@@ -10,7 +10,15 @@ import Foundation
 final class HTTPClient {
   static let shared = HTTPClient(tokenStorage: .shared)
 
-  private static let baseURL = "http://43.200.56.9"
+  private static let baseURL: String = {
+    guard let host = Bundle.main.object(forInfoDictionaryKey: "API_BASE_HOST") as? String,
+          !host.isEmpty
+    else {
+      fatalError("API_BASE_HOST 가 Info.plist 에 없습니다. Secrets.xcconfig 설정을 확인하세요.")
+    }
+    return "http://\(host)"
+  }()
+
   private static let refreshPath = "/v1/auth/refresh"
 
   private let session: URLSession

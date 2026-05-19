@@ -13,7 +13,7 @@ final class LoginViewModel {
   var password: String = ""
   var isLoading: Bool = false
   var errorMessage: String?
-  var isLoginSuccess: Bool = true
+  var isLoginSuccess: Bool = false
 
   var isAppleLoading: Bool = false
   var isKakaoLoading: Bool = false
