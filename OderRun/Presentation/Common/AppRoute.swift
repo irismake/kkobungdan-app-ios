@@ -16,7 +16,7 @@ enum AppRoute: Hashable {
   /// 의뢰자 본인의 의뢰 상세
   case myProposalDetail(proposalID: Int64)
   /// 러너 본인의 지원 상세 (활동 탭에서 진입)
-  case runnerApplyDetail(proposalID: Int64)
+  case runnerApplyDetail(proposalID: Int64, offerID: Int64)
   /// 의뢰자가 지원자 한 명을 검토하는 상세
   case applicantOfferDetail(proposalID: Int64, offerID: Int64)
   /// 의뢰자가 자기 의뢰의 지원자 리스트를 보는 화면
@@ -39,8 +39,7 @@ enum AppRouteFactory {
       proposalID: proposalID,
       fetchDetailUseCase: FetchProposalDetailUseCase(repository: DIContainer.proposalRepository),
       createOfferUseCase: CreateOfferUseCase(repository: DIContainer.offerRepository),
-      fetchMyOffersUseCase: FetchMyOffersUseCase(repository: DIContainer.offerRepository),
-      userRepository: DIContainer.userRepository
+      fetchMyOffersUseCase: FetchMyOffersUseCase(repository: DIContainer.activityRepository)
     )
   }
 
@@ -51,30 +50,26 @@ enum AppRouteFactory {
       proposalID: proposalID,
       fetchDetailUseCase: FetchProposalDetailUseCase(repository: DIContainer.proposalRepository),
       fetchOffersUseCase: FetchOffersByProposalUseCase(repository: DIContainer.offerRepository),
+      fetchMissionByProposalUseCase: FetchMissionByProposalUseCase(repository: DIContainer.missionRepository),
+      updateMissionActionUseCase: UpdateMissionActionUseCase(repository: DIContainer.missionRepository),
       cancelProposalUseCase: CancelProposalUseCase(repository: DIContainer.proposalRepository),
-      userRepository: DIContainer.userRepository,
-      missionViewModel: makeMissionDetailViewModel(proposalID: proposalID, role: .orderer)
+      offerRepository: DIContainer.offerRepository
     )
   }
 
-  // MARK: - Apply Detail (runner self / orderer accept mode)
+  // MARK: - Apply Detail (runner only)
 
   static func makeApplyDetailViewModel(
     proposalID: Int64,
-    offerID: Int64? = nil,
-    asRunner: Bool
+    offerID: Int64
   ) -> ApplyDetailViewModel {
-    let missionVM: MissionDetailViewModel? = asRunner
-      ? makeMissionDetailViewModel(proposalID: proposalID, role: .runner)
-      : nil
-    return ApplyDetailViewModel(
+    ApplyDetailViewModel(
       proposalID: proposalID,
       offerID: offerID,
       fetchDetailUseCase: FetchProposalDetailUseCase(repository: DIContainer.proposalRepository),
-      fetchOffersUseCase: FetchOffersByProposalUseCase(repository: DIContainer.offerRepository),
-      userRepository: DIContainer.userRepository,
-      createMissionUseCase: CreateMissionUseCase(repository: DIContainer.missionRepository),
-      missionViewModel: missionVM
+      fetchMyOffersUseCase: FetchMyOffersUseCase(repository: DIContainer.activityRepository),
+      fetchMissionByOfferUseCase: FetchMissionByOfferUseCase(repository: DIContainer.missionRepository),
+      updateMissionActionUseCase: UpdateMissionActionUseCase(repository: DIContainer.missionRepository)
     )
   }
 
@@ -85,8 +80,8 @@ enum AppRouteFactory {
       proposalID: proposalID,
       fetchDetailUseCase: FetchProposalDetailUseCase(repository: DIContainer.proposalRepository),
       fetchOffersUseCase: FetchOffersByProposalUseCase(repository: DIContainer.offerRepository),
-      userRepository: DIContainer.userRepository,
-      createMissionUseCase: CreateMissionUseCase(repository: DIContainer.missionRepository)
+      offerRepository: DIContainer.offerRepository,
+      acceptOfferUseCase: AcceptOfferUseCase(repository: DIContainer.offerRepository)
     )
   }
 
@@ -95,20 +90,6 @@ enum AppRouteFactory {
   static func makeAddProposalViewModel() -> AddProposalViewModel {
     AddProposalViewModel(
       createProposalUseCase: CreateProposalUseCase(repository: DIContainer.proposalRepository)
-    )
-  }
-
-  // MARK: - Mission Detail
-
-  static func makeMissionDetailViewModel(
-    proposalID: Int64,
-    role: MissionRole
-  ) -> MissionDetailViewModel {
-    MissionDetailViewModel(
-      proposalID: proposalID,
-      role: role,
-      fetchMyMissionsUseCase: FetchMyMissionsUseCase(repository: DIContainer.missionRepository),
-      updateMissionActionUseCase: UpdateMissionActionUseCase(repository: DIContainer.missionRepository)
     )
   }
 }

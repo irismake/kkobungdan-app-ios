@@ -11,6 +11,11 @@ private struct CreateOfferBody: Encodable {
   let proposalID: Int64
 }
 
+private struct AcceptOfferBody: Encodable {
+  let runFee: Int
+  let itemPrice: Int
+}
+
 final class OfferRepository: OfferRepositoryProtocol {
   private let client: HTTPClient
 
@@ -35,17 +40,27 @@ final class OfferRepository: OfferRepositoryProtocol {
     return res.data?.map { $0.toDomain() } ?? []
   }
 
-  func fetchMyOffers(status: OfferStatus?, page: Int, size: Int) async throws -> [Offer] {
-    var params: [String: Any] = ["page": page, "size": size]
-    if let status {
-      params["status"] = status.rawValue
+  func fetchOfferDetail(offerID: Int64) async throws -> OfferDetail {
+    let res: ApiResponseDTO<OfferDetailResponseDTO> =
+      try await client.get("/v1/offer/\(offerID)")
+    guard let dto = res.data else {
+      throw RepositoryError.notFound
     }
-    let res: ApiResponseDTO<PageDTO<OfferResponseDTO>> =
-      try await client.get("/v1/offer/own", params: params)
-    return res.data?.content.map { $0.toDomain() } ?? []
+    return dto.toDomain()
   }
 
   func cancelOffer(offerID: Int64) async throws {
     try await client.delete("/v1/offer/\(offerID)")
+  }
+
+  func acceptOffer(offerID: Int64, runFee: Int, itemPrice: Int) async throws -> MyProposal {
+    let res: ApiResponseDTO<MyProposalResponseDTO> = try await client.post(
+      "/v1/offer/\(offerID)/accept",
+      body: AcceptOfferBody(runFee: runFee, itemPrice: itemPrice)
+    )
+    guard let dto = res.data else {
+      throw RepositoryError.network
+    }
+    return dto.toDomain()
   }
 }

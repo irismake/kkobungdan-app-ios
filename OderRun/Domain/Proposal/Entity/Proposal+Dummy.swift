@@ -81,7 +81,7 @@ extension Proposal {
         content: "인천공항 1터미널에서 가족 픽업 후 자택까지 동행 부탁드립니다.",
         deadline: now.addingTimeInterval(-4 * 86400),
         errandFee: 5000,
-        status: .matched
+        status: .complete
       ),
       Proposal(
         id: 9,
@@ -108,7 +108,7 @@ extension Proposal {
         content: "관악구립도서관에 도서 3권 반납 부탁드립니다.",
         deadline: now.addingTimeInterval(-10 * 86400),
         errandFee: 2000,
-        status: .matched
+        status: .complete
       ),
       Proposal(
         id: 12,
@@ -118,6 +118,15 @@ extension Proposal {
         deadline: now.addingTimeInterval(-12 * 86400),
         errandFee: 3500,
         status: .matched
+      ),
+      Proposal(
+        id: 13,
+        ordererID: DummySession.currentUserID,
+        title: "도서관 자료 검색",
+        content: "국립중앙도서관에서 특정 논문 자료 복사본 받아주세요.",
+        deadline: now.addingTimeInterval(5 * 86400),
+        errandFee: 4500,
+        status: .waiting
       )
     ]
   }()

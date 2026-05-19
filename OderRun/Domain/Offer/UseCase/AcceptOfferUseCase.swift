@@ -1,0 +1,20 @@
+//
+//  AcceptOfferUseCase.swift
+//  OderRun
+//
+//  Created by 김가희 on 5/18/26.
+//
+
+import Foundation
+
+struct AcceptOfferUseCase {
+  private let repository: OfferRepositoryProtocol
+
+  init(repository: OfferRepositoryProtocol) {
+    self.repository = repository
+  }
+
+  func execute(offerID: Int64, runFee: Int, itemPrice: Int) async throws -> MyProposal {
+    try await repository.acceptOffer(offerID: offerID, runFee: runFee, itemPrice: itemPrice)
+  }
+}

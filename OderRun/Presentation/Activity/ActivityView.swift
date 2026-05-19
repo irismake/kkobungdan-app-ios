@@ -21,6 +21,7 @@ enum ActivitySegment: String, CaseIterable {
 
 enum ActivityFilter: String, CaseIterable {
   case all = "전체"
+  case unpaid = "미입금"
   case waiting = "대기중"
   case inProgress = "진행중"
   case completed = "완료"
@@ -29,6 +30,7 @@ enum ActivityFilter: String, CaseIterable {
   func matches(_ stage: ActivityStage) -> Bool {
     switch self {
     case .all: return true
+    case .unpaid: return stage == .unpaid
     case .waiting: return stage == .waiting
     case .inProgress: return stage == .inProgress
     case .completed: return stage == .completed
@@ -41,10 +43,10 @@ struct ActivityView: View {
   @State private var viewModel: ActivityViewModel
   @State private var segment: ActivitySegment = .orderer
   @State private var filter: ActivityFilter = .all
-  @State private var pendingCancelEntry: ActivityItem?
+  @State private var pendingCancelOffer: MyOffer?
 
   var onSelectOrdererProposal: (Int64) -> Void = { _ in }
-  var onSelectRunnerItem: (_ proposalID: Int64, _ hasMission: Bool) -> Void = { _, _ in }
+  var onSelectRunnerItem: (_ proposalID: Int64, _ offerID: Int64) -> Void = { _, _ in }
 
   private struct SegmentAnchorPreferenceKey: PreferenceKey {
     static var defaultValue: [ActivitySegment: Anchor<CGRect>] = [:]
@@ -60,7 +62,7 @@ struct ActivityView: View {
   init(
     viewModel: ActivityViewModel,
     onSelectOrdererProposal: @escaping (Int64) -> Void = { _ in },
-    onSelectRunnerItem: @escaping (_ proposalID: Int64, _ hasMission: Bool) -> Void = { _, _ in }
+    onSelectRunnerItem: @escaping (_ proposalID: Int64, _ offerID: Int64) -> Void = { _, _ in }
   ) {
     _viewModel = State(initialValue: viewModel)
     self.onSelectOrdererProposal = onSelectOrdererProposal
@@ -77,34 +79,7 @@ struct ActivityView: View {
 
       ScrollView {
         VStack(spacing: 12) {
-          if viewModel.isLoading, filteredItems.isEmpty {
-            ProgressView()
-              .padding(.top, 40)
-          } else if let errorMessage = viewModel.errorMessage, filteredItems.isEmpty {
-            Text(errorMessage)
-              .textStyle(.body3)
-              .foregroundColor(Color.rose500)
-              .padding(.top, 40)
-          } else if filteredItems.isEmpty {
-            Text(emptyMessage)
-              .textStyle(.body3)
-              .foregroundColor(Color.gray500)
-              .padding(.top, 40)
-          } else {
-            ForEach(filteredItems) { item in
-              VStack(spacing: 8) {
-                activityCard(for: item)
-                  .contentShape(Rectangle())
-                  .onTapGesture {
-                    handleSelection(item)
-                  }
-
-                if canCancelOffer(item) {
-                  cancelOfferButton(for: item)
-                }
-              }
-            }
-          }
+          contentSection
         }
         .padding(.horizontal, 16)
         .padding(.vertical, 16)
@@ -120,35 +95,96 @@ struct ActivityView: View {
     .alert(
       "지원을 취소할까요?",
       isPresented: Binding(
-        get: { pendingCancelEntry != nil },
+        get: { pendingCancelOffer != nil },
         set: { if !$0 {
-          pendingCancelEntry = nil
+          pendingCancelOffer = nil
         } }
       ),
-      presenting: pendingCancelEntry
+      presenting: pendingCancelOffer
     ) { entry in
       Button("취소", role: .cancel) {
-        pendingCancelEntry = nil
+        pendingCancelOffer = nil
       }
       Button("지원 취소", role: .destructive) {
-        guard let offerID = entry.offer?.id else {
-          return
-        }
-        Task { await viewModel.cancelMyOffer(offerID: offerID) }
+        Task { await viewModel.cancelMyOffer(offerID: entry.id) }
       }
     } message: { entry in
-      Text(entry.proposal.title)
+      Text(entry.title)
     }
   }
 
-  private func canCancelOffer(_ item: ActivityItem) -> Bool {
-    segment == .runner && item.offer?.status == .waiting && item.mission == nil
+  @ViewBuilder
+  private var contentSection: some View {
+    switch segment {
+    case .orderer:
+      myProposalsContent
+    case .runner:
+      myOffersContent
+    }
   }
 
-  private func cancelOfferButton(for item: ActivityItem) -> some View {
-    let isCancelling = viewModel.isCancellingOfferID == item.offer?.id
+  @ViewBuilder
+  private var myProposalsContent: some View {
+    let items = viewModel.myProposals.filter { filter.matches($0.stage) }
+    if viewModel.isLoading, items.isEmpty {
+      ProgressView().padding(.top, 40)
+    } else if let errorMessage = viewModel.errorMessage, items.isEmpty {
+      Text(errorMessage)
+        .textStyle(.body3)
+        .foregroundColor(Color.rose500)
+        .padding(.top, 40)
+    } else if items.isEmpty {
+      Text("아직 등록한 의뢰가 없어요.")
+        .textStyle(.body3)
+        .foregroundColor(Color.gray500)
+        .padding(.top, 40)
+    } else {
+      ForEach(items) { proposal in
+        card(for: proposal)
+          .contentShape(Rectangle())
+          .onTapGesture {
+            onSelectOrdererProposal(proposal.id)
+          }
+      }
+    }
+  }
+
+  @ViewBuilder
+  private var myOffersContent: some View {
+    let items = viewModel.myOffers.filter { filter.matches($0.stage) }
+    if viewModel.isLoading, items.isEmpty {
+      ProgressView().padding(.top, 40)
+    } else if let errorMessage = viewModel.errorMessage, items.isEmpty {
+      Text(errorMessage)
+        .textStyle(.body3)
+        .foregroundColor(Color.rose500)
+        .padding(.top, 40)
+    } else if items.isEmpty {
+      Text("아직 지원한 의뢰가 없어요.")
+        .textStyle(.body3)
+        .foregroundColor(Color.gray500)
+        .padding(.top, 40)
+    } else {
+      ForEach(items) { offer in
+        VStack(spacing: 8) {
+          card(for: offer)
+            .contentShape(Rectangle())
+            .onTapGesture {
+              onSelectRunnerItem(offer.proposalID, offer.id)
+            }
+
+          if offer.status == .waiting {
+            cancelOfferButton(for: offer)
+          }
+        }
+      }
+    }
+  }
+
+  private func cancelOfferButton(for offer: MyOffer) -> some View {
+    let isCancelling = viewModel.isCancellingOfferID == offer.id
     return Button {
-      pendingCancelEntry = item
+      pendingCancelOffer = offer
     } label: {
       Text(isCancelling ? "취소 중..." : "지원 취소")
         .textStyle(.body3, weight: .bold)
@@ -164,24 +200,6 @@ struct ActivityView: View {
     }
     .buttonStyle(.plain)
     .disabled(isCancelling)
-  }
-
-  private var currentItems: [ActivityItem] {
-    switch segment {
-    case .orderer: return viewModel.ordererItems
-    case .runner: return viewModel.runnerItems
-    }
-  }
-
-  private var filteredItems: [ActivityItem] {
-    currentItems.filter { filter.matches($0.stage) }
-  }
-
-  private var emptyMessage: String {
-    switch segment {
-    case .orderer: return "아직 등록한 의뢰가 없어요."
-    case .runner: return "아직 지원한 의뢰가 없어요."
-    }
   }
 
   private var segmentControl: some View {
@@ -251,33 +269,26 @@ struct ActivityView: View {
     .background(Color.gray000)
   }
 
-  private func activityCard(for item: ActivityItem) -> some View {
-    let proposal = item.proposal
-    return ProposalCard(
+  private func card(for proposal: MyProposal) -> some View {
+    ProposalCard(
       title: proposal.title,
       description: proposal.content,
       date: ProposalDisplay.dateString(proposal.deadline),
       time: ProposalDisplay.timeString(proposal.deadline),
       fee: ProposalDisplay.feeString(proposal.errandFee),
-      badges: badges(for: item)
+      badges: ProposalDisplay.badges(myProposal: proposal)
     )
   }
 
-  private func badges(for item: ActivityItem) -> [BadgeItem] {
-    ProposalDisplay.badges(
-      proposal: item.proposal,
-      mission: item.mission,
-      myOfferStatus: item.offer?.status
+  private func card(for offer: MyOffer) -> some View {
+    ProposalCard(
+      title: offer.title,
+      description: offer.content,
+      date: ProposalDisplay.dateString(offer.deadline),
+      time: ProposalDisplay.timeString(offer.deadline),
+      fee: ProposalDisplay.feeString(offer.errandFee),
+      badges: ProposalDisplay.badges(myOffer: offer)
     )
-  }
-
-  private func handleSelection(_ item: ActivityItem) {
-    switch segment {
-    case .orderer:
-      onSelectOrdererProposal(item.proposal.id)
-    case .runner:
-      onSelectRunnerItem(item.proposal.id, item.mission != nil)
-    }
   }
 }
 

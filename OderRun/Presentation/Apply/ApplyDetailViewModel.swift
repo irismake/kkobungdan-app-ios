@@ -10,43 +10,55 @@ import Foundation
 @Observable
 final class ApplyDetailViewModel {
   let proposalID: Int64
-  /// 의뢰자(orderer) 입장에서 지원자를 검토할 때 전달받는 offer ID. nil 이면 일반 '내 지원 상세' 모드.
-  let offerID: Int64?
+  let offerID: Int64
 
   var proposal: Proposal?
-  /// acceptMode(orderer) 에서는 지원한 러너의 프로필, 아니면 의뢰자(orderer) 프로필.
-  var counterpartProfile: RunnerProfile?
   var isLoading: Bool = false
   var errorMessage: String?
 
-  var isAccepting: Bool = false
-  var didAcceptOffer: Bool = false
-  var acceptedMission: Mission?
+  var myOffer: MyOffer?
+  var mission: Mission?
+  var isCompletingMission: Bool = false
 
-  /// 러너 입장에서 본인의 미션 상태를 다루는 sub view model. orderer 모드에서는 nil.
-  let missionViewModel: MissionDetailViewModel?
+  /// "만났어요!" 버튼 노출 여부.
+  /// 내 offer 가 ACCEPTED 이고, 미션이 아직 내(러너) 확인을 받지 않은 상태일 때만 노출.
+  /// (이미 내가 확인했다면 상대방 대기 상태이므로 다시 누를 수 없다.)
+  var canCompleteDelivery: Bool {
+    guard myOffer?.status == .accepted, let mission else {
+      return false
+    }
+    switch mission.status {
+    case .created, .inProgress, .receivedConfirmed:
+      return true
+    default:
+      return false
+    }
+  }
+
+  /// 러너가 "만났어요!"를 이미 눌렀고, 요청자(의뢰자) 확인을 기다리는 중인지 여부.
+  var isWaitingForOrdererConfirm: Bool {
+    myOffer?.status == .accepted && mission?.status == .deliveryCompleted
+  }
 
   private let fetchDetailUseCase: FetchProposalDetailUseCase
-  private let fetchOffersUseCase: FetchOffersByProposalUseCase
-  private let userRepository: UserRepositoryProtocol
-  private let createMissionUseCase: CreateMissionUseCase
+  private let fetchMyOffersUseCase: FetchMyOffersUseCase
+  private let fetchMissionByOfferUseCase: FetchMissionByOfferUseCase
+  private let updateMissionActionUseCase: UpdateMissionActionUseCase
 
   init(
     proposalID: Int64,
-    offerID: Int64? = nil,
+    offerID: Int64,
     fetchDetailUseCase: FetchProposalDetailUseCase,
-    fetchOffersUseCase: FetchOffersByProposalUseCase,
-    userRepository: UserRepositoryProtocol,
-    createMissionUseCase: CreateMissionUseCase,
-    missionViewModel: MissionDetailViewModel? = nil
+    fetchMyOffersUseCase: FetchMyOffersUseCase,
+    fetchMissionByOfferUseCase: FetchMissionByOfferUseCase,
+    updateMissionActionUseCase: UpdateMissionActionUseCase
   ) {
     self.proposalID = proposalID
     self.offerID = offerID
     self.fetchDetailUseCase = fetchDetailUseCase
-    self.fetchOffersUseCase = fetchOffersUseCase
-    self.userRepository = userRepository
-    self.createMissionUseCase = createMissionUseCase
-    self.missionViewModel = missionViewModel
+    self.fetchMyOffersUseCase = fetchMyOffersUseCase
+    self.fetchMissionByOfferUseCase = fetchMissionByOfferUseCase
+    self.updateMissionActionUseCase = updateMissionActionUseCase
   }
 
   @MainActor
@@ -57,50 +69,38 @@ final class ApplyDetailViewModel {
       let proposal = try await fetchDetailUseCase.execute(id: proposalID)
       self.proposal = proposal
 
-      let counterpartUserID = try await resolveCounterpartUserID(proposal: proposal)
-      counterpartProfile = try await userRepository.fetchRunnerProfile(userID: counterpartUserID)
+      let mine = try await fetchMyOffersUseCase.execute()
+      myOffer = mine.first { $0.proposalID == proposalID }
+      if myOffer?.status == .accepted || myOffer?.status == .complete {
+        mission = try await fetchMissionByOfferUseCase.execute(offerID: offerID)
+      } else {
+        mission = nil
+      }
     } catch {
       errorMessage = "지원 상세를 불러오지 못했어요."
     }
     isLoading = false
-    if let missionViewModel {
-      await missionViewModel.load()
-    }
   }
 
-  /// 의뢰자가 지원자를 수락하면 미션을 생성한다.
-  /// runFee/itemPrice 는 추후 의뢰자가 입력할 값이지만 현재는 proposal 의 errandFee 로 기본값 처리.
+  /// 러너 전달 완료. `PUT /v1/mission/{id}` — `COMPLETE_DELIVERY`
   @MainActor
-  func acceptOffer(runFee: Int? = nil, itemPrice: Int = 0) async {
-    guard let offerID, !isAccepting else {
+  func completeDelivery() async {
+    guard let mission, canCompleteDelivery, !isCompletingMission else {
       return
     }
-    isAccepting = true
+    isCompletingMission = true
     errorMessage = nil
     do {
-      let resolvedFee = runFee ?? proposal?.errandFee ?? 0
-      let mission = try await createMissionUseCase.execute(
-        offerID: offerID,
-        runFee: resolvedFee,
-        itemPrice: itemPrice
+      let proofURL = "https://cdn.orderrun.com/proofs/mission-\(mission.id).jpg"
+      _ = try await updateMissionActionUseCase.execute(
+        id: mission.id,
+        action: .completeDelivery,
+        proofImageURL: proofURL
       )
-      acceptedMission = mission
-      didAcceptOffer = true
+      await load()
     } catch {
-      errorMessage = "지원자 수락에 실패했어요. 잠시 후 다시 시도해주세요."
+      errorMessage = "진행 완료 처리에 실패했어요. 잠시 후 다시 시도해주세요."
     }
-    isAccepting = false
-  }
-
-  /// orderer 모드에서는 지원한 러너의 ID, runner 모드에서는 의뢰자(orderer) ID.
-  private func resolveCounterpartUserID(proposal: Proposal) async throws -> String {
-    guard let offerID else {
-      return proposal.ordererID
-    }
-    let offers = try await fetchOffersUseCase.execute(proposalID: proposalID)
-    if let offer = offers.first(where: { $0.id == offerID }) {
-      return offer.runnerID
-    }
-    return proposal.ordererID
+    isCompletingMission = false
   }
 }

@@ -26,16 +26,11 @@ actor TestUserRepositoryImpl: UserRepositoryProtocol {
       phone: currentUser.phone,
       createdAt: currentUser.createdAt,
       lastLoginAt: currentUser.lastLoginAt,
-      alarmEnabled: enabled
+      alarmEnabled: enabled,
+      nickname: currentUser.nickname,
+      level: currentUser.level,
+      grade: currentUser.grade
     )
     return currentUser
-  }
-
-  func fetchRunnerProfile(userID: String) async throws -> RunnerProfile {
-    try await Task.sleep(nanoseconds: Self.simulatedLatency)
-    guard let profile = RunnerProfile.dummyByID[userID] else {
-      throw RepositoryError.notFound
-    }
-    return profile
   }
 }

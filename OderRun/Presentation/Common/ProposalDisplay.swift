@@ -77,51 +77,74 @@ enum ProposalDisplay {
   static let waitingBadge = BadgeItem(text: "대기중", textColor: .blue500, bgColor: .blue000)
   static let newOfferBadge = BadgeItem(text: "새로운 지원 도착", textColor: .amber600, bgColor: .amber000)
   static let inProgressBadge = BadgeItem(text: "진행중", textColor: .indigo500, bgColor: .indigo000)
-  static let deliveryDoneBadge = BadgeItem(text: "진행 완료", textColor: .gray500, bgColor: .gray100)
   static let completedBadge = BadgeItem(text: "완료", textColor: .emerald500, bgColor: .emerald000)
   static let cancelledBadge = BadgeItem(text: "취소", textColor: .gray500, bgColor: .gray100)
   static let unpaidBadge = BadgeItem(text: "미입금", textColor: .rose500, bgColor: .rose000)
 
-  /// proposal + (있다면) mission 상태로 배지를 결정한다.
-  /// - myOfferStatus: 러너 본인이 이 proposal 에 제출한 offer 상태. 거절/취소된 경우 "취소" 로 표시.
+  /// proposal / offer 상태로 배지를 결정한다.
+  /// - myOfferStatus: 러너 본인이 이 proposal 에 제출한 offer 상태. 있으면 offer 상태가 우선.
   static func badges(
     proposal: Proposal,
-    mission: Mission?,
     myOfferStatus: OfferStatus? = nil
   ) -> [BadgeItem] {
-    if proposal.status == .cancelled {
-      return [cancelledBadge]
-    }
-
-    if let myOfferStatus,
-       myOfferStatus == .rejected || myOfferStatus == .cancelled {
-      return [cancelledBadge]
-    }
-
-    if let mission {
-      switch mission.status {
-      case .created:
+    if let myOfferStatus {
+      switch myOfferStatus {
+      case .waiting:
         return [waitingBadge]
-      case .inProgress:
+      case .accepted:
         return [inProgressBadge]
-      case .deliveryCompleted, .receivedConfirmed:
+      case .complete:
         return [completedBadge]
-      case .settled:
-        return [deliveryDoneBadge]
-      case .disputed, .refunded:
+      case .rejected, .cancelled:
         return [cancelledBadge]
       }
     }
 
     switch proposal.status {
     case .posted:
+      return [unpaidBadge]
+    case .waiting:
       return [waitingBadge]
     case .offered:
       return [waitingBadge, newOfferBadge]
     case .matched:
-      // mission 객체가 아직 로딩되지 않은 과도기 — 매칭은 됐으니 진행중으로 처리한다.
       return [inProgressBadge]
+    case .complete:
+      return [completedBadge]
     case .cancelled:
+      return [cancelledBadge]
+    }
+  }
+
+  /// 내 요청(orderer) 활동 한 행에 대한 배지. proposal status 기반.
+  static func badges(myProposal: MyProposal) -> [BadgeItem] {
+    switch myProposal.status {
+    case .posted:
+      return [unpaidBadge]
+    case .waiting:
+      return [waitingBadge]
+    case .offered:
+      return [waitingBadge, newOfferBadge]
+    case .matched:
+      return [inProgressBadge]
+    case .complete:
+      return [completedBadge]
+    case .cancelled:
+      return [cancelledBadge]
+    }
+  }
+
+  // TODO: 내 웨이팅 기록 배찌 기획 반영
+  /// 웨이팅 기록(runner) 활동 한 행에 대한 배지. offer status 기반.
+  static func badges(myOffer: MyOffer) -> [BadgeItem] {
+    switch myOffer.status {
+    case .waiting:
+      return [waitingBadge]
+    case .accepted:
+      return [inProgressBadge]
+    case .complete:
+      return [completedBadge]
+    case .rejected, .cancelled:
       return [cancelledBadge]
     }
   }

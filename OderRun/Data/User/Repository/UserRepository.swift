@@ -37,12 +37,4 @@ final class UserRepository: UserRepositoryProtocol {
     }
     return dto.toDomain()
   }
-
-  func fetchRunnerProfile(userID: String) async throws -> RunnerProfile {
-    // TODO: 서버 스펙 확정 시 실제 엔드포인트로 교체. 현재는 더미 폴백.
-    guard let profile = RunnerProfile.dummyByID[userID] else {
-      throw RepositoryError.notFound
-    }
-    return profile
-  }
 }

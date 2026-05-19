@@ -21,16 +21,13 @@ struct ContentView: View {
           fetchProposalsUseCase: FetchProposalsUseCase(repository: DIContainer.proposalRepository)
         ),
         activityViewModel: ActivityViewModel(
-          fetchProposalsUseCase: FetchProposalsUseCase(repository: DIContainer.proposalRepository),
-          fetchMyOffersUseCase: FetchMyOffersUseCase(repository: DIContainer.offerRepository),
-          fetchMyMissionsUseCase: FetchMyMissionsUseCase(repository: DIContainer.missionRepository),
-          cancelOfferUseCase: CancelOfferUseCase(repository: DIContainer.offerRepository),
-          proposalRepository: DIContainer.proposalRepository
+          fetchMyProposalsUseCase: FetchMyProposalsUseCase(repository: DIContainer.activityRepository),
+          fetchMyOffersUseCase: FetchMyOffersUseCase(repository: DIContainer.activityRepository),
+          cancelOfferUseCase: CancelOfferUseCase(repository: DIContainer.offerRepository)
         ),
         profileViewModel: ProfileViewModel(
           fetchUserDetailUseCase: FetchUserDetailUseCase(userRepository: DIContainer.userRepository),
-          updateAlarmUseCase: UpdateAlarmUseCase(userRepository: DIContainer.userRepository),
-          userRepository: DIContainer.userRepository
+          updateAlarmUseCase: UpdateAlarmUseCase(userRepository: DIContainer.userRepository)
         ),
         notificationViewModel: NotificationViewModel(
           fetchNotificationsUseCase: FetchNotificationsUseCase(repository: DIContainer.notificationRepository),

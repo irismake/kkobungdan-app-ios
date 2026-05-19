@@ -10,33 +10,27 @@ import Foundation
 @Observable
 final class ProfileViewModel {
   var user: User?
-  var runnerProfile: RunnerProfile?
   var isLoading: Bool = false
   var errorMessage: String?
 
   private let fetchUserDetailUseCase: FetchUserDetailUseCase
   private let updateAlarmUseCase: UpdateAlarmUseCase
-  private let userRepository: UserRepositoryProtocol
 
   init(
     fetchUserDetailUseCase: FetchUserDetailUseCase,
-    updateAlarmUseCase: UpdateAlarmUseCase,
-    userRepository: UserRepositoryProtocol
+    updateAlarmUseCase: UpdateAlarmUseCase
   ) {
     self.fetchUserDetailUseCase = fetchUserDetailUseCase
     self.updateAlarmUseCase = updateAlarmUseCase
-    self.userRepository = userRepository
   }
 
   static func preview() -> ProfileViewModel {
-    let repo = DIContainer.userRepository
+    let userRepo = DIContainer.userRepository
     let viewModel = ProfileViewModel(
-      fetchUserDetailUseCase: FetchUserDetailUseCase(userRepository: repo),
-      updateAlarmUseCase: UpdateAlarmUseCase(userRepository: repo),
-      userRepository: repo
+      fetchUserDetailUseCase: FetchUserDetailUseCase(userRepository: userRepo),
+      updateAlarmUseCase: UpdateAlarmUseCase(userRepository: userRepo)
     )
     viewModel.user = User.dummy
-    viewModel.runnerProfile = RunnerProfile.dummy
     return viewModel
   }
 
@@ -45,9 +39,7 @@ final class ProfileViewModel {
     isLoading = true
     errorMessage = nil
     do {
-      let user = try await fetchUserDetailUseCase.execute()
-      self.user = user
-      runnerProfile = try await userRepository.fetchRunnerProfile(userID: user.id)
+      user = try await fetchUserDetailUseCase.execute()
     } catch {
       errorMessage = "프로필을 불러오지 못했어요."
     }

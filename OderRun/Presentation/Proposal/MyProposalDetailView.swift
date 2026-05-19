@@ -30,10 +30,7 @@ struct MyProposalDetailView: View {
     guard let proposal = viewModel.proposal else {
       return []
     }
-    return ProposalDisplay.badges(
-      proposal: proposal,
-      mission: viewModel.missionViewModel.mission
-    )
+    return ProposalDisplay.badges(proposal: proposal)
   }
 
   var body: some View {
@@ -49,7 +46,7 @@ struct MyProposalDetailView: View {
           onCancel: { isMissionCompleted = false },
           onConfirm: {
             Task {
-              await viewModel.missionViewModel.performAction(.confirmReceived)
+              await viewModel.confirmReceived()
               isMissionCompleted = false
             }
           }
@@ -68,14 +65,12 @@ struct MyProposalDetailView: View {
             VStack(spacing: 12) {
               proposalCardSection
 
-              if viewModel.missionViewModel.mission != nil,
-                 let profile = viewModel.matchedRunnerProfile,
-                 let matchedOffer = viewModel.matchedOffer {
+              if let detail = viewModel.matchedOfferDetail {
                 MatchedRunnerSection(
-                  nickname: profile.nickname,
-                  level: profile.level,
-                  grade: profile.grade,
-                  appliedAt: ProposalDisplay.appliedAtString(matchedOffer.createdAt)
+                  nickname: detail.nickname,
+                  level: detail.level,
+                  grade: detail.grade,
+                  appliedAt: ProposalDisplay.appliedAtString(detail.createdAt)
                 )
               }
             }
@@ -121,7 +116,7 @@ struct MyProposalDetailView: View {
   @ViewBuilder
   private var bottomActionSection: some View {
     switch viewModel.proposal?.status {
-    case .matched:
+    case .matched where viewModel.canConfirmReceived:
       Button(action: { isMissionCompleted = true }) {
         Text("만났어요!")
           .textStyle(.heading4)
@@ -133,7 +128,16 @@ struct MyProposalDetailView: View {
           .clipShape(RoundedRectangle(cornerRadius: 12))
       }
       .buttonStyle(.plain)
-    case .cancelled:
+    case .matched where viewModel.isWaitingForRunnerConfirm:
+      Text("지원자 확인 대기 중")
+        .textStyle(.heading4)
+        .foregroundColor(.gray400)
+        .multilineTextAlignment(.center)
+        .frame(maxWidth: .infinity)
+        .frame(height: 56)
+        .background(Color.gray200)
+        .clipShape(RoundedRectangle(cornerRadius: 12))
+    case .complete, .cancelled:
       EmptyView()
     default:
       VStack(spacing: 8) {

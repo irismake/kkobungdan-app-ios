@@ -13,14 +13,33 @@ final class MyProposalDetailViewModel {
 
   var proposal: Proposal?
   var offers: [Offer] = []
-  var matchedRunnerProfile: RunnerProfile?
+  var matchedOfferDetail: OfferDetail?
   var isLoading: Bool = false
   var errorMessage: String?
   var isCancelling: Bool = false
   var didCancel: Bool = false
+  var mission: Mission?
+  var isCompletingMission: Bool = false
 
-  /// 의뢰자 입장에서의 미션 상태/액션을 다룬다.
-  let missionViewModel: MissionDetailViewModel
+  /// "만났어요!" 버튼 노출 여부.
+  /// proposal 이 MATCHED 이고, 미션이 아직 내(요청자) 확인을 받지 않은 상태일 때만 노출.
+  /// (이미 내가 확인했다면 상대방 대기 상태이므로 다시 누를 수 없다.)
+  var canConfirmReceived: Bool {
+    guard proposal?.status == .matched, let mission else {
+      return false
+    }
+    switch mission.status {
+    case .created, .inProgress, .deliveryCompleted:
+      return true
+    default:
+      return false
+    }
+  }
+
+  /// 의뢰자가 "만났어요!"를 이미 눌렀고, 러너 확인을 기다리는 중인지 여부.
+  var isWaitingForRunnerConfirm: Bool {
+    proposal?.status == .matched && mission?.status == .receivedConfirmed
+  }
 
   var applicantCount: Int {
     offers.filter { $0.status == .waiting || $0.status == .accepted }.count
@@ -33,23 +52,27 @@ final class MyProposalDetailViewModel {
 
   private let fetchDetailUseCase: FetchProposalDetailUseCase
   private let fetchOffersUseCase: FetchOffersByProposalUseCase
+  private let fetchMissionByProposalUseCase: FetchMissionByProposalUseCase
+  private let updateMissionActionUseCase: UpdateMissionActionUseCase
   private let cancelProposalUseCase: CancelProposalUseCase
-  private let userRepository: UserRepositoryProtocol
+  private let offerRepository: OfferRepositoryProtocol
 
   init(
     proposalID: Int64,
     fetchDetailUseCase: FetchProposalDetailUseCase,
     fetchOffersUseCase: FetchOffersByProposalUseCase,
+    fetchMissionByProposalUseCase: FetchMissionByProposalUseCase,
+    updateMissionActionUseCase: UpdateMissionActionUseCase,
     cancelProposalUseCase: CancelProposalUseCase,
-    userRepository: UserRepositoryProtocol,
-    missionViewModel: MissionDetailViewModel
+    offerRepository: OfferRepositoryProtocol
   ) {
     self.proposalID = proposalID
     self.fetchDetailUseCase = fetchDetailUseCase
     self.fetchOffersUseCase = fetchOffersUseCase
+    self.fetchMissionByProposalUseCase = fetchMissionByProposalUseCase
+    self.updateMissionActionUseCase = updateMissionActionUseCase
     self.cancelProposalUseCase = cancelProposalUseCase
-    self.userRepository = userRepository
-    self.missionViewModel = missionViewModel
+    self.offerRepository = offerRepository
   }
 
   @MainActor
@@ -63,15 +86,41 @@ final class MyProposalDetailViewModel {
       offers = try await offersTask
 
       if let matchedOffer {
-        matchedRunnerProfile = try await userRepository.fetchRunnerProfile(userID: matchedOffer.runnerID)
+        matchedOfferDetail = try await offerRepository.fetchOfferDetail(offerID: matchedOffer.id)
       } else {
-        matchedRunnerProfile = nil
+        matchedOfferDetail = nil
+      }
+
+      // proposal 이 MATCHED 이후라면 미션이 존재한다. 그 외 상태에서는 nil.
+      if proposal?.status == .matched || proposal?.status == .complete {
+        mission = try await fetchMissionByProposalUseCase.execute(proposalID: proposalID)
+      } else {
+        mission = nil
       }
     } catch {
       errorMessage = "내 요청 상세를 불러오지 못했어요."
     }
     isLoading = false
-    await missionViewModel.load()
+  }
+
+  /// 오더 수령 확인. `PUT /v1/mission/{id}` — `CONFIRM_RECEIVED`
+  @MainActor
+  func confirmReceived() async {
+    guard let mission, canConfirmReceived, !isCompletingMission else {
+      return
+    }
+    isCompletingMission = true
+    errorMessage = nil
+    do {
+      _ = try await updateMissionActionUseCase.execute(
+        id: mission.id,
+        action: .confirmReceived
+      )
+      await load()
+    } catch {
+      errorMessage = "진행 완료 처리에 실패했어요. 잠시 후 다시 시도해주세요."
+    }
+    isCompletingMission = false
   }
 
   @MainActor

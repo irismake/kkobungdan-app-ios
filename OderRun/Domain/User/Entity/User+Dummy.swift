@@ -15,6 +15,9 @@ extension User {
     phone: "010-1234-5678",
     createdAt: Date(),
     lastLoginAt: Date(),
-    alarmEnabled: true
+    alarmEnabled: true,
+    nickname: "길동이",
+    level: 5,
+    grade: "B등급"
   )
 }
