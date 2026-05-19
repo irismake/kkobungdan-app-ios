@@ -164,28 +164,34 @@ struct ProfileView: View {
   }
 
   private var logoutRow: some View {
-    HStack(spacing: 8) {
-      Image(systemName: "rectangle.portrait.and.arrow.right")
-        .resizable()
-        .scaledToFit()
-        .frame(width: 20, height: 20)
-        .foregroundColor(Color.rose500)
+    Button {
+      Task { await viewModel.logout() }
+    } label: {
+      HStack(spacing: 8) {
+        Image(systemName: "rectangle.portrait.and.arrow.right")
+          .resizable()
+          .scaledToFit()
+          .frame(width: 20, height: 20)
+          .foregroundColor(Color.rose500)
 
-      Text("로그아웃")
-        .textStyle(.title3)
-        .foregroundColor(Color.rose500)
+        Text("로그아웃")
+          .textStyle(.title3)
+          .foregroundColor(Color.rose500)
 
-      Spacer()
+        Spacer()
+      }
+      .padding(.horizontal, 24)
+      .padding(.vertical, 20)
+      .background(Color.white)
+      .overlay(alignment: .top) {
+        Rectangle().fill(Color.gray200).frame(height: 1)
+      }
+      .overlay(alignment: .bottom) {
+        Rectangle().fill(Color.gray200).frame(height: 1)
+      }
     }
-    .padding(.horizontal, 24)
-    .padding(.vertical, 20)
-    .background(Color.white)
-    .overlay(alignment: .top) {
-      Rectangle().fill(Color.gray200).frame(height: 1)
-    }
-    .overlay(alignment: .bottom) {
-      Rectangle().fill(Color.gray200).frame(height: 1)
-    }
+    .buttonStyle(.plain)
+    .disabled(viewModel.isLoading)
   }
 
   // MARK: - Customer Support

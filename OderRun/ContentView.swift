@@ -27,7 +27,9 @@ struct ContentView: View {
         ),
         profileViewModel: ProfileViewModel(
           fetchUserDetailUseCase: FetchUserDetailUseCase(userRepository: DIContainer.userRepository),
-          updateAlarmUseCase: UpdateAlarmUseCase(userRepository: DIContainer.userRepository)
+          updateAlarmUseCase: UpdateAlarmUseCase(userRepository: DIContainer.userRepository),
+          logoutUseCase: LogoutUseCase(authRepository: AuthRepository()),
+          onLogout: { loginViewModel.isLoginSuccess = false }
         ),
         notificationViewModel: NotificationViewModel(
           fetchNotificationsUseCase: FetchNotificationsUseCase(repository: DIContainer.notificationRepository),
