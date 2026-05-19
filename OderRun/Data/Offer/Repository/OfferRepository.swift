@@ -40,6 +40,15 @@ final class OfferRepository: OfferRepositoryProtocol {
     return res.data?.map { $0.toDomain() } ?? []
   }
 
+  func fetchOfferDetail(offerID: Int64) async throws -> OfferDetail {
+    let res: ApiResponseDTO<OfferDetailResponseDTO> =
+      try await client.get("/v1/offer/\(offerID)")
+    guard let dto = res.data else {
+      throw RepositoryError.notFound
+    }
+    return dto.toDomain()
+  }
+
   func cancelOffer(offerID: Int64) async throws {
     try await client.delete("/v1/offer/\(offerID)")
   }

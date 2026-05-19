@@ -13,8 +13,6 @@ final class ApplyDetailViewModel {
   let offerID: Int64
 
   var proposal: Proposal?
-  /// 의뢰자(orderer) 프로필.
-  var runnerProfile: RunnerProfile?
   var isLoading: Bool = false
   var errorMessage: String?
 
@@ -31,7 +29,6 @@ final class ApplyDetailViewModel {
   private let fetchMyOffersUseCase: FetchMyOffersUseCase
   private let fetchMissionByOfferUseCase: FetchMissionByOfferUseCase
   private let updateMissionActionUseCase: UpdateMissionActionUseCase
-  private let userRepository: UserRepositoryProtocol
 
   init(
     proposalID: Int64,
@@ -39,8 +36,7 @@ final class ApplyDetailViewModel {
     fetchDetailUseCase: FetchProposalDetailUseCase,
     fetchMyOffersUseCase: FetchMyOffersUseCase,
     fetchMissionByOfferUseCase: FetchMissionByOfferUseCase,
-    updateMissionActionUseCase: UpdateMissionActionUseCase,
-    userRepository: UserRepositoryProtocol
+    updateMissionActionUseCase: UpdateMissionActionUseCase
   ) {
     self.proposalID = proposalID
     self.offerID = offerID
@@ -48,7 +44,6 @@ final class ApplyDetailViewModel {
     self.fetchMyOffersUseCase = fetchMyOffersUseCase
     self.fetchMissionByOfferUseCase = fetchMissionByOfferUseCase
     self.updateMissionActionUseCase = updateMissionActionUseCase
-    self.userRepository = userRepository
   }
 
   @MainActor
@@ -58,8 +53,6 @@ final class ApplyDetailViewModel {
     do {
       let proposal = try await fetchDetailUseCase.execute(id: proposalID)
       self.proposal = proposal
-
-      runnerProfile = try await userRepository.fetchRunnerProfile(userID: proposal.ordererID)
 
       let mine = try await fetchMyOffersUseCase.execute()
       myOffer = mine.first { $0.proposalID == proposalID }

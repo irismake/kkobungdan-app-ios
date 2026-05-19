@@ -15,6 +15,9 @@ struct UserDetailResponseDTO: Decodable {
   let createdAt: String
   let lastLoginAt: String
   let alarmEnabled: Bool
+  let nickname: String
+  let level: Int
+  let grade: String
 }
 
 extension UserDetailResponseDTO {
@@ -26,7 +29,10 @@ extension UserDetailResponseDTO {
       phone: phone,
       createdAt: DateFormatters.parse(createdAt),
       lastLoginAt: DateFormatters.parse(lastLoginAt),
-      alarmEnabled: alarmEnabled
+      alarmEnabled: alarmEnabled,
+      nickname: nickname,
+      level: level,
+      grade: grade
     )
   }
 }

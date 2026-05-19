@@ -11,15 +11,15 @@ struct ProfileView: View {
   }
 
   private var nickname: String {
-    viewModel.runnerProfile?.nickname ?? viewModel.user?.name ?? "{닉네임}"
+    viewModel.user?.nickname ?? "{닉네임}"
   }
 
   private var level: Int {
-    viewModel.runnerProfile?.level ?? 1
+    viewModel.user?.level ?? 1
   }
 
   private var grade: String {
-    viewModel.runnerProfile?.grade ?? "{등급}"
+    viewModel.user?.grade ?? "{등급}"
   }
 
   var body: some View {

@@ -27,8 +27,7 @@ struct ContentView: View {
         ),
         profileViewModel: ProfileViewModel(
           fetchUserDetailUseCase: FetchUserDetailUseCase(userRepository: DIContainer.userRepository),
-          updateAlarmUseCase: UpdateAlarmUseCase(userRepository: DIContainer.userRepository),
-          userRepository: DIContainer.userRepository
+          updateAlarmUseCase: UpdateAlarmUseCase(userRepository: DIContainer.userRepository)
         ),
         notificationViewModel: NotificationViewModel(
           fetchNotificationsUseCase: FetchNotificationsUseCase(repository: DIContainer.notificationRepository),

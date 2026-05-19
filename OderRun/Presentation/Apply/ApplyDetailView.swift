@@ -49,7 +49,6 @@ struct ApplyDetailView: View {
       VStack(spacing: 0) {
         ScrollView {
           VStack(alignment: .leading, spacing: 12) {
-            ordererProfileSection
             proposalCardSection
 
             if let errorMessage = viewModel.errorMessage {
@@ -108,15 +107,6 @@ struct ApplyDetailView: View {
   }
 
   @ViewBuilder
-  private var ordererProfileSection: some View {
-    if let profile = viewModel.runnerProfile {
-      ordererProfile(nickname: profile.nickname, level: profile.level, grade: profile.grade)
-    } else if viewModel.isLoading {
-      ProgressView().padding(.horizontal, 16)
-    }
-  }
-
-  @ViewBuilder
   private var proposalCardSection: some View {
     if let proposal = viewModel.proposal {
       ProposalCard(
@@ -133,37 +123,5 @@ struct ApplyDetailView: View {
         .foregroundColor(Color.rose500)
         .padding(.horizontal, 16)
     }
-  }
-
-  private func ordererProfile(nickname: String, level: Int, grade: String) -> some View {
-    VStack(alignment: .leading, spacing: 4) {
-      Text(nickname)
-        .textStyle(.title1)
-        .foregroundColor(.black)
-
-      Text("웨이팅 레벨")
-        .textStyle(.caption2)
-        .foregroundColor(Color.gray500)
-
-      HStack(spacing: 6) {
-        Image("icon_users")
-          .renderingMode(.template)
-          .resizable()
-          .frame(width: 16, height: 16)
-          .foregroundColor(Color.amber500)
-
-        HStack(spacing: 4) {
-          HStack(spacing: 1) {
-            Text("Lv \(level)")
-            Text(":")
-          }
-          Text(grade)
-        }
-        .textStyle(.body2)
-        .kerning(-0.15)
-        .foregroundColor(Color.gray900)
-      }
-    }
-    .padding(.horizontal, 16)
   }
 }

@@ -13,7 +13,7 @@ final class MyProposalDetailViewModel {
 
   var proposal: Proposal?
   var offers: [Offer] = []
-  var matchedRunnerProfile: RunnerProfile?
+  var matchedOfferDetail: OfferDetail?
   var isLoading: Bool = false
   var errorMessage: String?
   var isCancelling: Bool = false
@@ -40,7 +40,7 @@ final class MyProposalDetailViewModel {
   private let fetchMissionByProposalUseCase: FetchMissionByProposalUseCase
   private let updateMissionActionUseCase: UpdateMissionActionUseCase
   private let cancelProposalUseCase: CancelProposalUseCase
-  private let userRepository: UserRepositoryProtocol
+  private let offerRepository: OfferRepositoryProtocol
 
   init(
     proposalID: Int64,
@@ -49,7 +49,7 @@ final class MyProposalDetailViewModel {
     fetchMissionByProposalUseCase: FetchMissionByProposalUseCase,
     updateMissionActionUseCase: UpdateMissionActionUseCase,
     cancelProposalUseCase: CancelProposalUseCase,
-    userRepository: UserRepositoryProtocol
+    offerRepository: OfferRepositoryProtocol
   ) {
     self.proposalID = proposalID
     self.fetchDetailUseCase = fetchDetailUseCase
@@ -57,7 +57,7 @@ final class MyProposalDetailViewModel {
     self.fetchMissionByProposalUseCase = fetchMissionByProposalUseCase
     self.updateMissionActionUseCase = updateMissionActionUseCase
     self.cancelProposalUseCase = cancelProposalUseCase
-    self.userRepository = userRepository
+    self.offerRepository = offerRepository
   }
 
   @MainActor
@@ -71,9 +71,9 @@ final class MyProposalDetailViewModel {
       offers = try await offersTask
 
       if let matchedOffer {
-        matchedRunnerProfile = try await userRepository.fetchRunnerProfile(userID: matchedOffer.runnerID)
+        matchedOfferDetail = try await offerRepository.fetchOfferDetail(offerID: matchedOffer.id)
       } else {
-        matchedRunnerProfile = nil
+        matchedOfferDetail = nil
       }
 
       // proposal 이 MATCHED 이후라면 미션이 존재한다. 그 외 상태에서는 nil.

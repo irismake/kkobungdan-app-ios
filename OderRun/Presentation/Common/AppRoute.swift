@@ -39,8 +39,7 @@ enum AppRouteFactory {
       proposalID: proposalID,
       fetchDetailUseCase: FetchProposalDetailUseCase(repository: DIContainer.proposalRepository),
       createOfferUseCase: CreateOfferUseCase(repository: DIContainer.offerRepository),
-      fetchMyOffersUseCase: FetchMyOffersUseCase(repository: DIContainer.activityRepository),
-      userRepository: DIContainer.userRepository
+      fetchMyOffersUseCase: FetchMyOffersUseCase(repository: DIContainer.activityRepository)
     )
   }
 
@@ -54,7 +53,7 @@ enum AppRouteFactory {
       fetchMissionByProposalUseCase: FetchMissionByProposalUseCase(repository: DIContainer.missionRepository),
       updateMissionActionUseCase: UpdateMissionActionUseCase(repository: DIContainer.missionRepository),
       cancelProposalUseCase: CancelProposalUseCase(repository: DIContainer.proposalRepository),
-      userRepository: DIContainer.userRepository
+      offerRepository: DIContainer.offerRepository
     )
   }
 
@@ -70,8 +69,7 @@ enum AppRouteFactory {
       fetchDetailUseCase: FetchProposalDetailUseCase(repository: DIContainer.proposalRepository),
       fetchMyOffersUseCase: FetchMyOffersUseCase(repository: DIContainer.activityRepository),
       fetchMissionByOfferUseCase: FetchMissionByOfferUseCase(repository: DIContainer.missionRepository),
-      updateMissionActionUseCase: UpdateMissionActionUseCase(repository: DIContainer.missionRepository),
-      userRepository: DIContainer.userRepository
+      updateMissionActionUseCase: UpdateMissionActionUseCase(repository: DIContainer.missionRepository)
     )
   }
 
@@ -82,7 +80,7 @@ enum AppRouteFactory {
       proposalID: proposalID,
       fetchDetailUseCase: FetchProposalDetailUseCase(repository: DIContainer.proposalRepository),
       fetchOffersUseCase: FetchOffersByProposalUseCase(repository: DIContainer.offerRepository),
-      userRepository: DIContainer.userRepository,
+      offerRepository: DIContainer.offerRepository,
       acceptOfferUseCase: AcceptOfferUseCase(repository: DIContainer.offerRepository)
     )
   }

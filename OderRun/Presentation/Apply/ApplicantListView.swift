@@ -14,7 +14,7 @@ struct ApplicantListView: View {
   var onSelectApplicant: (_ proposalID: Int64, _ offerID: Int64) -> Void = { _, _ in }
 
   @State private var isSelectModalPresented: Bool = false
-  @State private var selectedEntry: ApplicantListEntry?
+  @State private var selectedEntry: OfferDetail?
 
   init(
     viewModel: ApplicantListViewModel,
@@ -69,7 +69,7 @@ struct ApplicantListView: View {
           },
           onConfirm: {
             Task {
-              await viewModel.acceptOffer(offerID: selectedEntry.offer.id)
+              await viewModel.acceptOffer(offerID: selectedEntry.id)
               if viewModel.didAcceptOffer {
                 isSelectModalPresented = false
                 self.selectedEntry = nil
@@ -82,13 +82,13 @@ struct ApplicantListView: View {
     }
   }
 
-  private func applicantEntryCard(entry: ApplicantListEntry) -> some View {
+  private func applicantEntryCard(entry: OfferDetail) -> some View {
     VStack(spacing: 8) {
       ApplicantCard(
-        nickname: entry.profile.nickname,
-        level: entry.profile.level,
-        grade: entry.profile.grade,
-        appliedAt: ProposalDisplay.appliedAtString(entry.offer.createdAt),
+        nickname: entry.nickname,
+        level: entry.level,
+        grade: entry.grade,
+        appliedAt: ProposalDisplay.appliedAtString(entry.createdAt),
         onSelect: {
           selectedEntry = entry
           isSelectModalPresented = true

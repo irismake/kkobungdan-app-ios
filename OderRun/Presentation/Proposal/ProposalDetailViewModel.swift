@@ -12,7 +12,6 @@ final class ProposalDetailViewModel {
   let proposalID: Int64
 
   var proposal: Proposal?
-  var ordererProfile: RunnerProfile?
   var isLoading: Bool = false
   var errorMessage: String?
   var isApplying: Bool = false
@@ -21,20 +20,17 @@ final class ProposalDetailViewModel {
   private let fetchDetailUseCase: FetchProposalDetailUseCase
   private let createOfferUseCase: CreateOfferUseCase
   private let fetchMyOffersUseCase: FetchMyOffersUseCase
-  private let userRepository: UserRepositoryProtocol
 
   init(
     proposalID: Int64,
     fetchDetailUseCase: FetchProposalDetailUseCase,
     createOfferUseCase: CreateOfferUseCase,
-    fetchMyOffersUseCase: FetchMyOffersUseCase,
-    userRepository: UserRepositoryProtocol
+    fetchMyOffersUseCase: FetchMyOffersUseCase
   ) {
     self.proposalID = proposalID
     self.fetchDetailUseCase = fetchDetailUseCase
     self.createOfferUseCase = createOfferUseCase
     self.fetchMyOffersUseCase = fetchMyOffersUseCase
-    self.userRepository = userRepository
   }
 
   @MainActor
@@ -44,7 +40,6 @@ final class ProposalDetailViewModel {
     do {
       let proposal = try await fetchDetailUseCase.execute(id: proposalID)
       self.proposal = proposal
-      ordererProfile = try await userRepository.fetchRunnerProfile(userID: proposal.ordererID)
       let myOffers = try await fetchMyOffersUseCase.execute()
       hasApplied = myOffers.contains {
         $0.proposalID == proposalID && ($0.status == .waiting || $0.status == .accepted)

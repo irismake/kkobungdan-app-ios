@@ -131,6 +131,24 @@ actor DummyBackendStore {
       .sorted { $0.createdAt > $1.createdAt }
   }
 
+  /// `GET /v1/offer/{offerId}` 인메모리 흉내. offer 기본 필드 + 러너 프로필을 함께 반환.
+  func fetchOfferDetail(offerID: Int64) throws -> OfferDetail {
+    guard let offer = offers.first(where: { $0.id == offerID }) else {
+      throw RepositoryError.notFound
+    }
+    let profile = OfferDetail.dummyProfile(for: offer.runnerID)
+    return OfferDetail(
+      id: offer.id,
+      proposalID: offer.proposalID,
+      runnerID: offer.runnerID,
+      status: offer.status,
+      createdAt: offer.createdAt,
+      nickname: profile.nickname,
+      level: profile.level,
+      grade: profile.grade
+    )
+  }
+
   func cancelOffer(offerID: Int64) throws {
     guard let index = offers.firstIndex(where: { $0.id == offerID }) else {
       throw RepositoryError.notFound

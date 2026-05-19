@@ -7,21 +7,12 @@
 
 import Foundation
 
-struct ApplicantListEntry: Identifiable, Equatable {
-  let offer: Offer
-  let profile: RunnerProfile
-
-  var id: Int64 {
-    offer.id
-  }
-}
-
 @Observable
 final class ApplicantListViewModel {
   let proposalID: Int64
 
   var proposal: Proposal?
-  var entries: [ApplicantListEntry] = []
+  var entries: [OfferDetail] = []
   var isLoading: Bool = false
   var errorMessage: String?
   var isRejecting: Bool = false
@@ -30,20 +21,20 @@ final class ApplicantListViewModel {
 
   private let fetchDetailUseCase: FetchProposalDetailUseCase
   private let fetchOffersUseCase: FetchOffersByProposalUseCase
-  private let userRepository: UserRepositoryProtocol
+  private let offerRepository: OfferRepositoryProtocol
   private let acceptOfferUseCase: AcceptOfferUseCase
 
   init(
     proposalID: Int64,
     fetchDetailUseCase: FetchProposalDetailUseCase,
     fetchOffersUseCase: FetchOffersByProposalUseCase,
-    userRepository: UserRepositoryProtocol,
+    offerRepository: OfferRepositoryProtocol,
     acceptOfferUseCase: AcceptOfferUseCase
   ) {
     self.proposalID = proposalID
     self.fetchDetailUseCase = fetchDetailUseCase
     self.fetchOffersUseCase = fetchOffersUseCase
-    self.userRepository = userRepository
+    self.offerRepository = offerRepository
     self.acceptOfferUseCase = acceptOfferUseCase
   }
 
@@ -57,10 +48,10 @@ final class ApplicantListViewModel {
       let (proposal, offers) = try await (proposalTask, offersTask)
       self.proposal = proposal
 
-      var built: [ApplicantListEntry] = []
+      var built: [OfferDetail] = []
       for offer in offers where offer.status == .waiting || offer.status == .accepted {
-        let profile = try await userRepository.fetchRunnerProfile(userID: offer.runnerID)
-        built.append(ApplicantListEntry(offer: offer, profile: profile))
+        let detail = try await offerRepository.fetchOfferDetail(offerID: offer.id)
+        built.append(detail)
       }
       entries = built
     } catch {

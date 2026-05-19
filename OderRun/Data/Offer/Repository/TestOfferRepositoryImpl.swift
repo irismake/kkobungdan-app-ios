@@ -25,6 +25,11 @@ struct TestOfferRepositoryImpl: OfferRepositoryProtocol {
     return await store.fetchOffersByProposal(proposalID: proposalID)
   }
 
+  func fetchOfferDetail(offerID: Int64) async throws -> OfferDetail {
+    try await Task.sleep(nanoseconds: Self.simulatedLatency)
+    return try await store.fetchOfferDetail(offerID: offerID)
+  }
+
   func cancelOffer(offerID: Int64) async throws {
     try await Task.sleep(nanoseconds: Self.simulatedLatency)
     try await store.cancelOffer(offerID: offerID)

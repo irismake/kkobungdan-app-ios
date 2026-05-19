@@ -21,20 +21,15 @@ final class MissionRepository: MissionRepositoryProtocol {
   }
 
   func fetchMissionByProposal(proposalID: Int64) async throws -> Mission? {
-    try await fetchMission(params: ["proposalId": proposalID])
+    let res: ApiResponseDTO<MissionResponseDTO> =
+      try await client.get("/v1/mission", params: ["proposalId": proposalID])
+    return res.data?.toDomain()
   }
 
   func fetchMissionByOffer(offerID: Int64) async throws -> Mission? {
-    try await fetchMission(params: ["offerId": offerID])
-  }
-
-  private func fetchMission(params: [String: Any]) async throws -> Mission? {
-    do {
-      let res: ApiResponseDTO<MissionResponseDTO> = try await client.get("/v1/mission", params: params)
-      return res.data?.toDomain()
-    } catch RepositoryError.notFound {
-      return nil
-    }
+    let res: ApiResponseDTO<MissionResponseDTO> =
+      try await client.get("/v1/mission", params: ["offerId": offerID])
+    return res.data?.toDomain()
   }
 
   func updateMissionAction(
