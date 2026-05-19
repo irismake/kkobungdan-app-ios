@@ -106,7 +106,7 @@ enum ProposalDisplay {
     case .waiting:
       return [waitingBadge]
     case .offered:
-      return [newOfferBadge]
+      return [waitingBadge, newOfferBadge]
     case .matched:
       return [inProgressBadge]
     case .complete:
@@ -124,7 +124,7 @@ enum ProposalDisplay {
     case .waiting:
       return [waitingBadge]
     case .offered:
-      return [newOfferBadge]
+      return [waitingBadge, newOfferBadge]
     case .matched:
       return [inProgressBadge]
     case .complete:
@@ -134,6 +134,7 @@ enum ProposalDisplay {
     }
   }
 
+  // TODO: 내 웨이팅 기록 배찌 기획 반영
   /// 웨이팅 기록(runner) 활동 한 행에 대한 배지. offer status 기반.
   static func badges(myOffer: MyOffer) -> [BadgeItem] {
     switch myOffer.status {
