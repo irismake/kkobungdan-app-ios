@@ -48,20 +48,9 @@ actor TestAuthRepositoryImpl: AuthRepositoryProtocol {
     )
   }
 
-  func loginWithKakao(accessToken: String) async throws -> KakaoLoginResult {
-    try await Task.sleep(nanoseconds: Self.simulatedLatency)
-    guard !accessToken.isEmpty else {
-      throw RepositoryError.unauthorized
-    }
-    // 더미: "first-" 로 시작하는 토큰이면 첫 로그인, 그 외엔 기존 유저
-    let isFirstLogin = accessToken.hasPrefix("first-")
-    return KakaoLoginResult(
-      tokens: AuthTokens(
-        accessToken: DummySession.accessToken,
-        refreshToken: DummySession.refreshToken
-      ),
-      isFirstLogin: isFirstLogin
-    )
+  /// 카카오 로그인은 실 API 전용 — ContentView 에서 AuthRepository() 를 직접 주입한다.
+  func loginWithKakao(accessToken _: String) async throws -> KakaoLoginResult {
+    throw RepositoryError.notImplemented
   }
 
   func refresh(refreshToken: String) async throws -> AuthTokens {
@@ -76,7 +65,8 @@ actor TestAuthRepositoryImpl: AuthRepositoryProtocol {
     return dto.toDomain()
   }
 
+  /// 로그아웃도 실 API 전용 — ContentView 에서 AuthRepository() 를 직접 주입한다.
   func logout(refreshToken _: String) async throws {
-    try await Task.sleep(nanoseconds: Self.simulatedLatency)
+    throw RepositoryError.notImplemented
   }
 }

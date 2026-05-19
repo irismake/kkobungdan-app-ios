@@ -25,7 +25,7 @@ private struct AppleLoginRequestBody: Encodable {
 }
 
 private struct KakaoLoginRequestBody: Encodable {
-  let accessToken: String
+  let kakaoAccessToken: String
 }
 
 private struct RefreshRequestBody: Encodable {
@@ -74,10 +74,9 @@ final class AuthRepository: AuthRepositoryProtocol {
   }
 
   func loginWithKakao(accessToken: String) async throws -> KakaoLoginResult {
-    // TODO: 서버 API 스펙 확정 시 path/필드명 조정 필요
     let response: KakaoLoginResponseDTO = try await client.post(
       "/v1/auth/oauth/kakao",
-      body: KakaoLoginRequestBody(accessToken: accessToken)
+      body: KakaoLoginRequestBody(kakaoAccessToken: accessToken)
     )
     tokenStorage.accessToken = response.accessToken
     tokenStorage.refreshToken = response.refreshToken

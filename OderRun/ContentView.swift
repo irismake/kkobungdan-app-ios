@@ -11,7 +11,7 @@ struct ContentView: View {
   @State private var loginViewModel = LoginViewModel(
     loginUseCase: LoginUseCase(authRepository: DIContainer.authRepository),
     appleLoginUseCase: AppleLoginUseCase(authRepository: DIContainer.authRepository),
-    kakaoLoginUseCase: KakaoLoginUseCase(authRepository: DIContainer.authRepository)
+    kakaoLoginUseCase: KakaoLoginUseCase(authRepository: AuthRepository())
   )
 
   var body: some View {

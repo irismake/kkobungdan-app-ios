@@ -10,14 +10,16 @@ import Foundation
 struct KakaoLoginResponseDTO: Decodable {
   let accessToken: String
   let refreshToken: String
-  let isFirstLogin: Bool
+  let userID: String
+  let profileSyncRequired: Bool
 }
 
 extension KakaoLoginResponseDTO {
   func toDomain() -> KakaoLoginResult {
     KakaoLoginResult(
       tokens: AuthTokens(accessToken: accessToken, refreshToken: refreshToken),
-      isFirstLogin: isFirstLogin
+      userID: userID,
+      profileSyncRequired: profileSyncRequired
     )
   }
 }
