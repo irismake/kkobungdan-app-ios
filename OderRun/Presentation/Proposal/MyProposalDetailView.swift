@@ -128,6 +128,15 @@ struct MyProposalDetailView: View {
           .clipShape(RoundedRectangle(cornerRadius: 12))
       }
       .buttonStyle(.plain)
+    case .matched where viewModel.isWaitingForRunnerConfirm:
+      Text("지원자 확인 대기 중")
+        .textStyle(.heading4)
+        .foregroundColor(.gray400)
+        .multilineTextAlignment(.center)
+        .frame(maxWidth: .infinity)
+        .frame(height: 56)
+        .background(Color.gray200)
+        .clipShape(RoundedRectangle(cornerRadius: 12))
     case .complete, .cancelled:
       EmptyView()
     default:

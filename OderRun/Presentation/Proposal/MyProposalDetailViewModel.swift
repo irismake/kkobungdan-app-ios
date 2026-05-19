@@ -21,9 +21,24 @@ final class MyProposalDetailViewModel {
   var mission: Mission?
   var isCompletingMission: Bool = false
 
-  /// "만났어요!" 버튼 노출 여부. proposal 이 MATCHED 이면 노출한다.
+  /// "만났어요!" 버튼 노출 여부.
+  /// proposal 이 MATCHED 이고, 미션이 아직 내(요청자) 확인을 받지 않은 상태일 때만 노출.
+  /// (이미 내가 확인했다면 상대방 대기 상태이므로 다시 누를 수 없다.)
   var canConfirmReceived: Bool {
-    proposal?.status == .matched
+    guard proposal?.status == .matched, let mission else {
+      return false
+    }
+    switch mission.status {
+    case .created, .inProgress, .deliveryCompleted:
+      return true
+    default:
+      return false
+    }
+  }
+
+  /// 의뢰자가 "만났어요!"를 이미 눌렀고, 러너 확인을 기다리는 중인지 여부.
+  var isWaitingForRunnerConfirm: Bool {
+    proposal?.status == .matched && mission?.status == .receivedConfirmed
   }
 
   var applicantCount: Int {

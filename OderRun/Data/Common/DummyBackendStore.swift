@@ -261,7 +261,7 @@ actor DummyBackendStore {
       case .receivedConfirmed:
         return try completeMissionCascade(
           at: index,
-          mission: with(existing, status: .receivedConfirmed, proofImageURL: proofImageURL)
+          mission: with(existing, status: .settled, proofImageURL: proofImageURL)
         )
       default:
         throw RepositoryError.conflict
@@ -276,7 +276,7 @@ actor DummyBackendStore {
       case .deliveryCompleted:
         return try completeMissionCascade(
           at: index,
-          mission: with(existing, status: .receivedConfirmed, proofImageURL: proofImageURL)
+          mission: with(existing, status: .settled, proofImageURL: proofImageURL)
         )
       default:
         throw RepositoryError.conflict

@@ -20,9 +20,24 @@ final class ApplyDetailViewModel {
   var mission: Mission?
   var isCompletingMission: Bool = false
 
-  /// "만났어요!" 버튼 노출 여부. 내 offer 가 ACCEPTED 이면 노출.
+  /// "만났어요!" 버튼 노출 여부.
+  /// 내 offer 가 ACCEPTED 이고, 미션이 아직 내(러너) 확인을 받지 않은 상태일 때만 노출.
+  /// (이미 내가 확인했다면 상대방 대기 상태이므로 다시 누를 수 없다.)
   var canCompleteDelivery: Bool {
-    myOffer?.status == .accepted
+    guard myOffer?.status == .accepted, let mission else {
+      return false
+    }
+    switch mission.status {
+    case .created, .inProgress, .receivedConfirmed:
+      return true
+    default:
+      return false
+    }
+  }
+
+  /// 러너가 "만났어요!"를 이미 눌렀고, 요청자(의뢰자) 확인을 기다리는 중인지 여부.
+  var isWaitingForOrdererConfirm: Bool {
+    myOffer?.status == .accepted && mission?.status == .deliveryCompleted
   }
 
   private let fetchDetailUseCase: FetchProposalDetailUseCase
