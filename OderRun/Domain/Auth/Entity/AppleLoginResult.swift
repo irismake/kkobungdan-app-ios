@@ -9,5 +9,6 @@ import Foundation
 
 struct AppleLoginResult: Equatable {
   let tokens: AuthTokens
-  let isFirstLogin: Bool
+  let userID: String
+  let profileSyncRequired: Bool
 }

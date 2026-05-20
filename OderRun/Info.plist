@@ -31,5 +31,16 @@
 </array>
 	<key>KAKAO_NATIVE_APP_KEY</key>
 	<string>$(KAKAO_NATIVE_APP_KEY)</string>
+	<key>API_BASE_HOST</key>
+	<string>$(API_BASE_HOST)</string>
+	<!--
+	  개발 단계 한정: 백엔드가 아직 HTTP 라서 전역 ATS 우회를 켠다.
+	  운영 전 반드시 false 로 되돌리고 NSExceptionDomains 로 좁히거나 서버를 HTTPS 화할 것.
+	-->
+	<key>NSAppTransportSecurity</key>
+	<dict>
+		<key>NSAllowsArbitraryLoads</key>
+		<true/>
+	</dict>
 </dict>
 </plist>

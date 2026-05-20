@@ -14,7 +14,7 @@ struct AppleLoginUseCase {
     self.authRepository = authRepository
   }
 
-  func execute(authorizationCode: String, userName: String?) async throws -> AppleLoginResult {
-    try await authRepository.loginWithApple(authorizationCode: authorizationCode, userName: userName)
+  func execute(identityToken: String, name: String?, email: String?) async throws -> AppleLoginResult {
+    try await authRepository.loginWithApple(identityToken: identityToken, name: name, email: email)
   }
 }

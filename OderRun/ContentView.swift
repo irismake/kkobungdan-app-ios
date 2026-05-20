@@ -10,8 +10,8 @@ import SwiftUI
 struct ContentView: View {
   @State private var loginViewModel = LoginViewModel(
     loginUseCase: LoginUseCase(authRepository: DIContainer.authRepository),
-    appleLoginUseCase: AppleLoginUseCase(authRepository: DIContainer.authRepository),
-    kakaoLoginUseCase: KakaoLoginUseCase(authRepository: DIContainer.authRepository)
+    appleLoginUseCase: AppleLoginUseCase(authRepository: AuthRepository()),
+    kakaoLoginUseCase: KakaoLoginUseCase(authRepository: AuthRepository())
   )
 
   var body: some View {
@@ -27,7 +27,9 @@ struct ContentView: View {
         ),
         profileViewModel: ProfileViewModel(
           fetchUserDetailUseCase: FetchUserDetailUseCase(userRepository: DIContainer.userRepository),
-          updateAlarmUseCase: UpdateAlarmUseCase(userRepository: DIContainer.userRepository)
+          updateAlarmUseCase: UpdateAlarmUseCase(userRepository: DIContainer.userRepository),
+          logoutUseCase: LogoutUseCase(authRepository: AuthRepository()),
+          onLogout: { loginViewModel.isLoginSuccess = false }
         ),
         notificationViewModel: NotificationViewModel(
           fetchNotificationsUseCase: FetchNotificationsUseCase(repository: DIContainer.notificationRepository),
