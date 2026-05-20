@@ -23,9 +23,9 @@ final class ActivityRepository: ActivityRepositoryProtocol {
     if let status {
       params["status"] = status.rawValue
     }
-    let res: ApiResponseDTO<PageDTO<MyProposalResponseDTO>> =
+    let pageDTO: PageDTO<MyProposalResponseDTO> =
       try await client.get("/v1/proposal/own", params: params)
-    return res.data?.content.map { $0.toDomain() } ?? []
+    return pageDTO.content.map { $0.toDomain() }
   }
 
   func fetchMyOffers(
@@ -37,8 +37,8 @@ final class ActivityRepository: ActivityRepositoryProtocol {
     if let status {
       params["status"] = status.rawValue
     }
-    let res: ApiResponseDTO<PageDTO<MyOfferResponseDTO>> =
+    let pageDTO: PageDTO<MyOfferResponseDTO> =
       try await client.get("/v1/offer/own", params: params)
-    return res.data?.content.map { $0.toDomain() } ?? []
+    return pageDTO.content.map { $0.toDomain() }
   }
 }

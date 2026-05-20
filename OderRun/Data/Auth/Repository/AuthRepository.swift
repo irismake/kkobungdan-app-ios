@@ -47,7 +47,7 @@ final class AuthRepository: AuthRepositoryProtocol {
   }
 
   func signup(email: String, password: String, name: String, phone: String) async throws {
-    let _: ApiResponseDTO<String> = try await client.post(
+    let _: String = try await client.post(
       "/v1/auth/signup",
       body: SignupRequestBody(email: email, password: password, name: name, phone: phone)
     )
@@ -94,7 +94,7 @@ final class AuthRepository: AuthRepositoryProtocol {
   }
 
   func logout(refreshToken: String) async throws {
-    let _: ApiResponseDTO<String> = try await client.post(
+    let _: String = try await client.post(
       "/v1/auth/logout",
       body: LogoutRequestBody(refreshToken: refreshToken)
     )

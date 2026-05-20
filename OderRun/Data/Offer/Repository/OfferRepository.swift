@@ -24,28 +24,22 @@ final class OfferRepository: OfferRepositoryProtocol {
   }
 
   func createOffer(proposalID: Int64) async throws -> Offer {
-    let res: ApiResponseDTO<OfferResponseDTO> = try await client.post(
+    let dto: OfferResponseDTO = try await client.post(
       "/v1/offer",
       body: CreateOfferBody(proposalID: proposalID)
     )
-    guard let dto = res.data else {
-      throw RepositoryError.network
-    }
     return dto.toDomain()
   }
 
   func fetchOffersByProposal(proposalID: Int64) async throws -> [Offer] {
-    let res: ApiResponseDTO<[OfferResponseDTO]> =
+    let dtos: [OfferResponseDTO] =
       try await client.get("/v1/offer", params: ["proposalId": proposalID])
-    return res.data?.map { $0.toDomain() } ?? []
+    return dtos.map { $0.toDomain() }
   }
 
   func fetchOfferDetail(offerID: Int64) async throws -> OfferDetail {
-    let res: ApiResponseDTO<OfferDetailResponseDTO> =
+    let dto: OfferDetailResponseDTO =
       try await client.get("/v1/offer/\(offerID)")
-    guard let dto = res.data else {
-      throw RepositoryError.notFound
-    }
     return dto.toDomain()
   }
 
@@ -54,13 +48,10 @@ final class OfferRepository: OfferRepositoryProtocol {
   }
 
   func acceptOffer(offerID: Int64, runFee: Int, itemPrice: Int) async throws -> MyProposal {
-    let res: ApiResponseDTO<MyProposalResponseDTO> = try await client.post(
+    let dto: MyProposalResponseDTO = try await client.post(
       "/v1/offer/\(offerID)/accept",
       body: AcceptOfferBody(runFee: runFee, itemPrice: itemPrice)
     )
-    guard let dto = res.data else {
-      throw RepositoryError.network
-    }
     return dto.toDomain()
   }
 }

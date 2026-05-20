@@ -29,48 +29,35 @@ final class ProposalRepository: ProposalRepositoryProtocol {
   }
 
   func fetchProposals(page: Int, size: Int) async throws -> [Proposal] {
-    let res: ApiResponseDTO<PageDTO<ProposalResponseDTO>> =
+    let pageDTO: PageDTO<ProposalResponseDTO> =
       try await client.get("/v1/proposal", params: ["page": page, "size": size])
-    return res.data?.content.map { $0.toDomain() } ?? []
+    return pageDTO.content.map { $0.toDomain() }
   }
 
   func fetchProposal(id: Int64) async throws -> Proposal {
-    let res: ApiResponseDTO<ProposalResponseDTO> =
-      try await client.get("/v1/proposal/\(id)")
-    guard let dto = res.data else {
-      throw RepositoryError.notFound
-    }
+    let dto: ProposalResponseDTO = try await client.get("/v1/proposal/\(id)")
     return dto.toDomain()
   }
 
   func createProposal(title: String, content: String, deadline: String, errandFee: String) async throws -> Proposal {
-    let res: ApiResponseDTO<ProposalResponseDTO> = try await client.post(
+    let dto: ProposalResponseDTO = try await client.post(
       "/v1/proposal",
       body: ProposalCreateBody(title: title, content: content, deadline: deadline, errandFee: Int(errandFee) ?? 0)
     )
-    guard let dto = res.data else {
-      throw RepositoryError.network
-    }
     return dto.toDomain()
   }
 
   func updateProposal(id: Int64, title: String, content: String, deadline: String, errandFee: String) async throws -> Proposal {
-    let res: ApiResponseDTO<ProposalResponseDTO> = try await client.put(
+    let dto: ProposalResponseDTO = try await client.put(
       "/v1/proposal/\(id)",
       body: ProposalUpdateBody(title: title, content: content, deadline: deadline, errandFee: Int(errandFee) ?? 0)
     )
-    guard let dto = res.data else {
-      throw RepositoryError.network
-    }
     return dto.toDomain()
   }
 
   func cancelProposal(id: Int64) async throws -> Proposal {
-    let res: ApiResponseDTO<ProposalResponseDTO> =
+    let dto: ProposalResponseDTO =
       try await client.post("/v1/proposal/\(id)/cancel", body: nil as String?)
-    guard let dto = res.data else {
-      throw RepositoryError.network
-    }
     return dto.toDomain()
   }
 }
