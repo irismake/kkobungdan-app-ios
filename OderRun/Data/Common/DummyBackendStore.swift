@@ -217,14 +217,8 @@ actor DummyBackendStore {
       title: matched.title,
       content: matched.content,
       deadline: matched.deadline,
-      meetingAt: nil,
       errandFee: matched.errandFee,
-      itemPrice: itemPrice,
-      deposit: nil,
-      status: matched.status,
-      offers: offers
-        .filter { $0.proposalID == matched.id }
-        .sorted { $0.createdAt > $1.createdAt }
+      status: matched.status
     )
   }
 
@@ -347,14 +341,8 @@ actor DummyBackendStore {
         title: proposal.title,
         content: proposal.content,
         deadline: proposal.deadline,
-        meetingAt: nil,
         errandFee: proposal.errandFee,
-        itemPrice: nil,
-        deposit: nil,
-        status: proposal.status,
-        offers: offers
-          .filter { $0.proposalID == proposal.id }
-          .sorted { $0.createdAt > $1.createdAt }
+        status: proposal.status
       )
     }
   }

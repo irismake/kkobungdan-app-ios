@@ -14,12 +14,8 @@ struct MyProposalResponseDTO: Decodable {
   let title: String
   let content: String
   let deadline: String
-  let meetingAt: String?
   let errandFee: Int
-  let itemPrice: Int?
-  let deposit: Int?
   let status: String
-  let offers: [OfferResponseDTO]?
 }
 
 extension MyProposalResponseDTO {
@@ -29,12 +25,8 @@ extension MyProposalResponseDTO {
       title: title,
       content: content,
       deadline: DateFormatters.parse(deadline),
-      meetingAt: meetingAt.map(DateFormatters.parse),
       errandFee: errandFee,
-      itemPrice: itemPrice,
-      deposit: deposit,
-      status: ProposalStatus(rawValue: status) ?? .posted,
-      offers: offers?.map { $0.toDomain() } ?? []
+      status: ProposalStatus(rawValue: status) ?? .posted
     )
   }
 }
