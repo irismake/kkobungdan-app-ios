@@ -6,6 +6,9 @@
 //
 
 import Foundation
+import OSLog
+
+private let networkLogger = Logger(subsystem: "com.oderrun.OderRun", category: "Network")
 
 final class HTTPClient {
   static let shared = HTTPClient(tokenStorage: .shared)
@@ -88,7 +91,24 @@ final class HTTPClient {
   }
 
   private func perform<T: Decodable>(_ request: URLRequest, isRetry: Bool) async throws -> T {
+    let method = request.httpMethod ?? "?"
+    let url = request.url?.absoluteString ?? "?"
+    if let body = request.httpBody, let bodyStr = String(data: body, encoding: .utf8) {
+      networkLogger.debug("→ \(method) \(url)\n\(bodyStr)")
+    } else {
+      networkLogger.debug("→ \(method) \(url)")
+    }
+
     let (data, response) = try await session.data(for: request)
+
+    if let http = response as? HTTPURLResponse {
+      let bodyStr = String(data: data, encoding: .utf8) ?? "(binary)"
+      if (200 ..< 300).contains(http.statusCode) {
+        networkLogger.debug("← \(http.statusCode) \(url)\n\(bodyStr)")
+      } else {
+        networkLogger.error("← \(http.statusCode) \(url)\n\(bodyStr)")
+      }
+    }
 
     if try await shouldRetryAfterRefresh(request: request, response: response, isRetry: isRetry) {
       return try await perform(rebuiltRequest(from: request), isRetry: true)

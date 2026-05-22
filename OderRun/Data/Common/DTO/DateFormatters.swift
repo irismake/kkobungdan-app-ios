@@ -33,6 +33,6 @@ enum DateFormatters {
   }
 
   static func format(_ date: Date) -> String {
-    localDateTime.string(from: date)
+    iso8601.string(from: date)
   }
 }
