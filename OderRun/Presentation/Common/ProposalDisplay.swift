@@ -101,6 +101,8 @@ enum ProposalDisplay {
     }
 
     switch proposal.status {
+    case .holding:
+      return [unpaidBadge]
     case .posted:
       return [unpaidBadge]
     case .waiting:
@@ -119,6 +121,8 @@ enum ProposalDisplay {
   /// 내 요청(orderer) 활동 한 행에 대한 배지. proposal status 기반.
   static func badges(myProposal: MyProposal) -> [BadgeItem] {
     switch myProposal.status {
+    case .holding:
+      return [unpaidBadge]
     case .posted:
       return [unpaidBadge]
     case .waiting:

@@ -42,20 +42,31 @@ actor DummyBackendStore {
     content: String,
     deadline: Date,
     errandFee: Int
-  ) -> Proposal {
+  ) -> ProposalDetail {
     let newID = nextProposalID
     nextProposalID += 1
-    let proposal = Proposal(
+    let stub = Proposal(
       id: newID,
       title: title,
       content: content,
       deadline: deadline,
       errandFee: errandFee,
-      status: .posted
+      status: .holding
     )
     ordererIDByProposalID[newID] = ordererID
-    proposals.insert(proposal, at: 0)
-    return proposal
+    proposals.insert(stub, at: 0)
+    // TODO: 서버에서 meetingAt/itemPrice/deposit 필드 제거되면 ProposalDetail에서도 삭제
+    return ProposalDetail(
+      id: newID,
+      title: title,
+      content: content,
+      deadline: deadline,
+      meetingAt: deadline,
+      errandFee: errandFee,
+      itemPrice: 1000,
+      deposit: 1000,
+      status: .holding
+    )
   }
 
   func updateProposal(

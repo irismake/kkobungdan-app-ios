@@ -11,7 +11,11 @@ private struct ProposalCreateBody: Encodable {
   let title: String
   let content: String
   let deadline: String
+  let meetingAt: String
   let errandFee: Int
+  // TODO: 서버에서 itemPrice/deposit 필드 제거되면 삭제
+  let itemPrice: Int
+  let deposit: Int
 }
 
 private struct ProposalUpdateBody: Encodable {
@@ -39,10 +43,23 @@ final class ProposalRepository: ProposalRepositoryProtocol {
     return dto.toDomain()
   }
 
-  func createProposal(title: String, content: String, deadline: String, errandFee: String) async throws -> Proposal {
-    let dto: ProposalResponseDTO = try await client.post(
+  func createProposal(
+    title: String,
+    content: String,
+    deadline: String,
+    errandFee: Int
+  ) async throws -> ProposalDetail {
+    let dto: ProposalDetailResponseDTO = try await client.post(
       "/v1/proposal",
-      body: ProposalCreateBody(title: title, content: content, deadline: deadline, errandFee: Int(errandFee) ?? 0)
+      body: ProposalCreateBody(
+        title: title,
+        content: content,
+        deadline: deadline,
+        meetingAt: deadline, // TODO: 서버에서 meetingAt 필드 제거되면 삭제
+        errandFee: errandFee,
+        itemPrice: 1000, // TODO: 서버에서 itemPrice 필드 제거되면 삭제
+        deposit: 1000 // TODO: 서버에서 deposit 필드 제거되면 삭제
+      )
     )
     return dto.toDomain()
   }
