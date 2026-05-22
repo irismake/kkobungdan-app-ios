@@ -13,6 +13,7 @@ import Foundation
 
 actor DummyBackendStore {
   private var proposals: [Proposal] = Proposal.dummyList
+  private var ordererIDByProposalID: [Int64: String] = Proposal.dummyOrdererIDByProposalID
   private var offers: [Offer] = Offer.dummyList
   private var missions: [Mission] = Mission.dummyList
   private var nextProposalID: Int64 = 100
@@ -46,13 +47,13 @@ actor DummyBackendStore {
     nextProposalID += 1
     let proposal = Proposal(
       id: newID,
-      ordererID: ordererID,
       title: title,
       content: content,
       deadline: deadline,
       errandFee: errandFee,
       status: .posted
     )
+    ordererIDByProposalID[newID] = ordererID
     proposals.insert(proposal, at: 0)
     return proposal
   }
@@ -73,7 +74,6 @@ actor DummyBackendStore {
     }
     let updated = Proposal(
       id: existing.id,
-      ordererID: existing.ordererID,
       title: title,
       content: content,
       deadline: deadline,
@@ -187,7 +187,7 @@ actor DummyBackendStore {
       id: newID,
       offerID: offerID,
       proposalID: offer.proposalID,
-      ordererID: proposal.ordererID,
+      ordererID: ordererIDByProposalID[proposal.id] ?? "",
       runnerID: offer.runnerID,
       status: .created,
       runFee: runFee,
@@ -328,7 +328,7 @@ actor DummyBackendStore {
     page: Int,
     size: Int
   ) -> [MyProposal] {
-    let mine = proposals.filter { $0.ordererID == userID }
+    let mine = proposals.filter { ordererIDByProposalID[$0.id] == userID }
     let filtered = status.map { filter in mine.filter { $0.status == filter } } ?? mine
     return paginate(filtered, page: page, size: size).map { proposal in
       MyProposal(
@@ -444,7 +444,6 @@ actor DummyBackendStore {
   private func with(_ proposal: Proposal, status: ProposalStatus) -> Proposal {
     Proposal(
       id: proposal.id,
-      ordererID: proposal.ordererID,
       title: proposal.title,
       content: proposal.content,
       deadline: proposal.deadline,

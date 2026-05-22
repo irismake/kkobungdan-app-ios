@@ -4,8 +4,6 @@
 //
 //  Created by 김가희 on 4/22/26.
 //
-//  NOTE: ordererID 는 공식 스펙 밖 필드. 서버 응답에 없으면 nil 로 디코딩된다.
-//
 
 import Foundation
 

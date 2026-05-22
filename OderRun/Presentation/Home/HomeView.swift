@@ -258,11 +258,7 @@ struct HomeView: View {
   // MARK: - Actions
 
   private func handleProposalTap(_ proposal: Proposal) {
-    if proposal.ordererID == DummySession.currentUserID {
-      homePath.append(.myProposalDetail(proposalID: proposal.id))
-    } else {
-      homePath.append(.proposalDetail(proposalID: proposal.id))
-    }
+    homePath.append(.proposalDetail(proposalID: proposal.id))
   }
 }
 
