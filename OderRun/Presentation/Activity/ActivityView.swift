@@ -108,8 +108,8 @@ struct ActivityView: View {
       Button("지원 취소", role: .destructive) {
         Task { await viewModel.cancelMyOffer(offerID: entry.id) }
       }
-    } message: { entry in
-      Text(entry.title)
+    } message: { _ in
+      Text("지원을 취소하면 되돌릴 수 없어요.")
     }
   }
 
@@ -281,12 +281,13 @@ struct ActivityView: View {
   }
 
   private func card(for offer: MyOffer) -> some View {
-    ProposalCard(
-      title: offer.title,
-      description: offer.content,
-      date: ProposalDisplay.dateString(offer.deadline),
-      time: ProposalDisplay.timeString(offer.deadline),
-      fee: ProposalDisplay.feeString(offer.errandFee),
+    let proposal = viewModel.proposalByOfferID[offer.id]
+    return ProposalCard(
+      title: proposal?.title ?? "",
+      description: proposal?.content ?? "",
+      date: ProposalDisplay.dateString(proposal?.deadline ?? offer.createdAt),
+      time: ProposalDisplay.timeString(proposal?.deadline ?? offer.createdAt),
+      fee: proposal.map { ProposalDisplay.feeString($0.errandFee) } ?? "",
       badges: ProposalDisplay.badges(myOffer: offer)
     )
   }

@@ -7,6 +7,7 @@
 //  '내 활동' 탭의 데이터 소스.
 //  - 내 요청(orderer): /v1/proposal/own → [MyProposal]
 //  - 웨이팅 기록(runner): /v1/offer/own → [MyOffer]
+//    offer 카드 표시에 필요한 proposal 상세는 /v1/proposal/{id} 로 별도 조회한다.
 //
 
 import Foundation
@@ -46,21 +47,26 @@ extension MyOffer {
 final class ActivityViewModel {
   var myProposals: [MyProposal] = []
   var myOffers: [MyOffer] = []
+  /// offer 카드 표시용. proposalID → Proposal
+  var proposalByOfferID: [Int64: Proposal] = [:]
   var isLoading: Bool = false
   var errorMessage: String?
   var isCancellingOfferID: Int64?
 
   private let fetchMyProposalsUseCase: FetchMyProposalsUseCase
   private let fetchMyOffersUseCase: FetchMyOffersUseCase
+  private let fetchProposalDetailUseCase: FetchProposalDetailUseCase
   private let cancelOfferUseCase: CancelOfferUseCase
 
   init(
     fetchMyProposalsUseCase: FetchMyProposalsUseCase,
     fetchMyOffersUseCase: FetchMyOffersUseCase,
+    fetchProposalDetailUseCase: FetchProposalDetailUseCase,
     cancelOfferUseCase: CancelOfferUseCase
   ) {
     self.fetchMyProposalsUseCase = fetchMyProposalsUseCase
     self.fetchMyOffersUseCase = fetchMyOffersUseCase
+    self.fetchProposalDetailUseCase = fetchProposalDetailUseCase
     self.cancelOfferUseCase = cancelOfferUseCase
   }
 
@@ -68,6 +74,7 @@ final class ActivityViewModel {
     ActivityViewModel(
       fetchMyProposalsUseCase: FetchMyProposalsUseCase(repository: DIContainer.activityRepository),
       fetchMyOffersUseCase: FetchMyOffersUseCase(repository: DIContainer.activityRepository),
+      fetchProposalDetailUseCase: FetchProposalDetailUseCase(repository: DIContainer.proposalRepository),
       cancelOfferUseCase: CancelOfferUseCase(repository: DIContainer.offerRepository)
     )
   }
@@ -82,6 +89,20 @@ final class ActivityViewModel {
       let (proposals, offers) = try await (proposalsTask, offersTask)
       myProposals = proposals
       myOffers = offers
+
+      var map: [Int64: Proposal] = [:]
+      try await withThrowingTaskGroup(of: (Int64, Proposal).self) { group in
+        for offer in offers {
+          group.addTask {
+            let proposal = try await self.fetchProposalDetailUseCase.execute(id: offer.proposalID)
+            return (offer.id, proposal)
+          }
+        }
+        for try await (offerID, proposal) in group {
+          map[offerID] = proposal
+        }
+      }
+      proposalByOfferID = map
     } catch {
       errorMessage = "내 활동을 불러오지 못했어요."
     }

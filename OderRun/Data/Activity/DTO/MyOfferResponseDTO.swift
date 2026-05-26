@@ -12,14 +12,14 @@ import Foundation
 struct MyOfferResponseDTO: Decodable {
   let id: Int64
   let proposalID: Int64
-  let runnerName: String
+  let runnerID: String
   let status: String
   let createdAt: String
 
   enum CodingKeys: String, CodingKey {
     case id
     case proposalID = "proposalId"
-    case runnerName
+    case runnerID = "runnerId"
     case status
     case createdAt
   }
@@ -30,17 +30,9 @@ extension MyOfferResponseDTO {
     MyOffer(
       id: id,
       proposalID: proposalID,
-      runnerName: runnerName,
+      runnerID: runnerID,
       status: OfferStatus(rawValue: status) ?? .waiting,
-      createdAt: DateFormatters.parse(createdAt),
-      // TODO: 서버에서 title/content/deadline/errandFee/meetingAt/itemPrice/deposit 필드 추가되면 교체
-      title: "",
-      content: "",
-      deadline: DateFormatters.parse(createdAt),
-      meetingAt: nil,
-      errandFee: 0,
-      itemPrice: nil,
-      deposit: nil
+      createdAt: DateFormatters.parse(createdAt)
     )
   }
 }

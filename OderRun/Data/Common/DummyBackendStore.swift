@@ -353,24 +353,13 @@ actor DummyBackendStore {
   ) -> [MyOffer] {
     let mine = offers.filter { $0.runnerID == userID }
     let filtered = status.map { filter in mine.filter { $0.status == filter } } ?? mine
-    return paginate(filtered, page: page, size: size).compactMap { offer -> MyOffer? in
-      guard let proposal = proposals.first(where: { $0.id == offer.proposalID }) else {
-        return nil
-      }
-      return MyOffer(
+    return paginate(filtered, page: page, size: size).map { offer in
+      MyOffer(
         id: offer.id,
-        proposalID: proposal.id,
-        runnerName: DummySession.currentUserID,
+        proposalID: offer.proposalID,
+        runnerID: offer.runnerID,
         status: offer.status,
-        createdAt: offer.createdAt,
-        // TODO: 서버에서 title/content/deadline/errandFee/meetingAt/itemPrice/deposit 필드 추가되면 교체
-        title: proposal.title,
-        content: proposal.content,
-        deadline: proposal.deadline,
-        meetingAt: nil,
-        errandFee: proposal.errandFee,
-        itemPrice: nil,
-        deposit: nil
+        createdAt: offer.createdAt
       )
     }
   }
