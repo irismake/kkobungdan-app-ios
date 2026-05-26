@@ -12,15 +12,18 @@ enum MissionRole: String {
   case runner = "RUNNER"
 }
 
+struct MissionParticipant: Equatable {
+  let id: String
+  let name: String
+  let phone: String
+}
+
 struct Mission: Equatable, Identifiable {
   let id: Int64
   let offerID: Int64
   let proposalID: Int64
-  let ordererID: String
-  let runnerID: String
+  let orderer: MissionParticipant
+  let runner: MissionParticipant
   let status: MissionStatus
   let runFee: Int
-  let itemPrice: Int
-  let proofImageURL: String?
-  let createdAt: Date
 }

@@ -2,29 +2,112 @@
 
 API 응답 DTO와 Domain 엔티티는 서버 스펙을 기준으로 맞춘다. (`separate-dto-entity` 규칙과 함께 적용 — 응답마다 타입은 분리하되, 각 타입 내부 필드는 아래를 따른다.)
 
-1. **DTO는 서버와 일치**: API 응답 DTO의 프로퍼티·`CodingKeys`·필수/옵셔널 여부는 서버 JSON 스펙과 **반드시** 같게 둔다. 서버에 있는 키를 DTO에서 빼거나, 서버에 없는 키를 DTO에 넣지 않는다.
+---
 
-2. **엔티티는 DTO와 일치**: Domain 엔티티는 해당 DTO와 **같은 필드 집합**을 갖는다. `toDomain()` 은 필드 단위 1:1 매핑이 원칙이다.
+## 응답 DTO (Decodable)
 
-3. **서버 필수·클라이언트 미사용**: 서버 스펙상 필수이거나 응답에 포함되지만, 앱에서 아직 쓰지 않는 필드는 DTO·엔티티 **둘 다** 프로퍼티로 두고, 타입에 맞는 **빈 값**으로 채운다.
-   - `String` → `""`
-   - `Int` / `Int64` → `0`
-   - `Bool` → `false`
-   - `Date` → 스펙·화면에 맞는 기본값(동일 응답의 다른 날짜 필드 파싱값 등). 임의 sentinel 은 TODO 와 함께 이유를 적는다.
-   - 서버가 optional 이면 `nil`, 서버가 required 이면 non-optional + 빈 값
+### 1. 응답 DTO = 서버 스펙 완전 일치
 
-4. **TODO 표시**: 위 빈 값·임시 필드·`toDomain()` 의 placeholder 매핑에는 `// TODO:` 로 **추후 제거·교체 예정**임을 남긴다. 서버 연동·UI 반영 후 필드·TODO 를 함께 정리한다.
+- 프로퍼티 이름·`CodingKeys`·**optional/required 여부**를 서버 JSON 스펙과 **반드시** 동일하게 유지한다.
+- 서버에 있는 키를 빼거나, 서버에 없는 키를 넣지 않는다.
+- 서버가 required → Swift non-optional, 서버가 optional → Swift `?`.
 
-**예시** (`toDomain()` — 서버에 아직 없거나 미사용인 필드):
+### 2. 엔티티 = 클라이언트가 실제 사용하는 필드만
+
+- 앱에서 실제로 참조하는 필드만 엔티티에 둔다.
+- 클라이언트 미사용 필드는 엔티티에 추가하지 않는다. **optional 로 남기지도 않는다 — 아예 제거.**
+
+### 3. 미사용 필드 처리 (응답 DTO 있음 / 엔티티 없음)
+
+DTO에는 있지만 엔티티에 없는 필드는 아래를 모두 지킨다.
+
+1. **DTO에 전역 테스트 값 선언**: DTO 파일 하단 `extension`에 `static` 상수로 테스트·더미용 기본값을 전역 접근 가능하게 추가한다.
+
+   ```swift
+   extension MissionResponseDTO {
+     // TODO: itemPrice UI 반영 시 Mission 엔티티에 추가
+     static let stubItemPrice: Int = 0
+   }
+   ```
+
+2. **`toDomain()` 에 TODO 주석**: 매핑하지 않는 필드 목록을 `toDomain()` 상단에 한 줄로 남긴다.
+
+   ```swift
+   func toDomain() -> Mission {
+     // TODO: itemPrice, totalAmount … UI 반영 시 엔티티에 추가
+     Mission(id: id, ...)
+   }
+   ```
+
+---
+
+## 요청 바디 (Encodable)
+
+### 4. 요청 바디 = 서버 스펙 완전 일치
+
+응답 DTO와 동일한 원칙을 적용한다.
+
+- 프로퍼티 이름·`CodingKeys`·**optional/required 여부**를 서버 요청 스펙과 **반드시** 동일하게 유지한다.
+- 서버가 받는 키를 빼거나, 서버가 받지 않는 키를 넣지 않는다.
+
+### 5. 클라이언트 미구현 필드 처리 (서버는 받지만 UI 미구현)
+
+서버가 받는 필드지만 클라이언트가 아직 UI를 구현하지 않은 경우:
+
+1. **요청 바디 struct에 필드 선언**: 서버 스펙대로 필드를 두고, stub 상수를 기본값으로 사용한다.
+
+   ```swift
+   struct SomeRequestBody: Encodable {
+     let action: String
+     // TODO: imageUrl UI 연동 전까지 stub 값 전송
+     let imageUrl: String? = SomeRequestBody.stubImageUrl
+   }
+   ```
+
+2. **struct extension에 전역 stub 값 선언**: 테스트·더미 코드에서도 접근 가능하도록 `static` 상수로 추가한다.
+
+   ```swift
+   extension SomeRequestBody {
+     // TODO: imageUrl UI 반영 시 호출부에서 실제 값 전달로 교체
+     static let stubImageUrl: String? = nil
+   }
+   ```
+
+---
+
+## TODO 정리 시점
+
+UI 반영·서버 연동이 완료되면 해당 필드를 엔티티에 추가(응답) 또는 호출부에서 실제 값 전달(요청)로 교체하고, `stubXxx` 상수와 TODO를 함께 제거한다.
+
+---
+
+## 예시
 
 ```swift
-// TODO: 서버 nickname 필드 연동 후 "" 제거
-nickname: nickname.isEmpty ? "" : nickname,
-```
+// ── 응답 DTO ──────────────────────────────
+struct MissionResponseDTO: Decodable {
+  let runFee: Int
+  let itemPrice: Int         // required → non-optional
+  let disputeReason: String? // optional → ?
+}
+extension MissionResponseDTO {
+  // TODO: itemPrice UI 반영 시 Mission 엔티티에 추가
+  static let stubItemPrice: Int = 0
+}
+func toDomain() -> Mission {
+  // TODO: itemPrice, disputeReason — UI 반영 시 엔티티에 추가
+  Mission(runFee: runFee, ...)
+}
+struct Mission { let runFee: Int } // 사용 필드만
 
-```swift
-// TODO: 서버에서 title 필드 추가·연동되면 "" · 0 · nil placeholder 제거
-title: "",
-errandFee: 0,
-meetingAt: nil,
+// ── 요청 바디 ──────────────────────────────
+struct MissionActionBody: Encodable {
+  let action: String
+  // TODO: proofImageUrl — COMPLETE_DELIVERY UI 연동 전까지 stub 값 전송
+  let proofImageUrl: String? = MissionActionBody.stubProofImageUrl
+}
+extension MissionActionBody {
+  // TODO: proofImageUrl UI 반영 시 호출부에서 실제 값 전달로 교체
+  static let stubProofImageUrl: String? = nil
+}
 ```
