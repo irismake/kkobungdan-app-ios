@@ -74,12 +74,12 @@ actor TokenRefreshHandler {
       throw RepositoryError.network
     }
 
-    let envelope = try decoder.decode(ApiResponseDTO<LoginResponseDTO>.self, from: data)
-    guard let tokens = envelope.data else {
+    let envelope = try decoder.decode(ApiResponseDTO<RefreshTokenResponseDTO>.self, from: data)
+    guard let response = envelope.data else {
       throw RepositoryError.network
     }
-    tokenStorage.accessToken = tokens.accessToken
-    tokenStorage.refreshToken = tokens.refreshToken
-    return tokens.accessToken
+    // refreshToken은 서버 응답에 없으므로 기존 storage 값 유지
+    tokenStorage.accessToken = response.accessToken
+    return response.accessToken
   }
 }

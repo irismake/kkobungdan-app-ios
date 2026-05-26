@@ -156,7 +156,7 @@ final class HTTPClient {
     }
     // 이미 한 번 재시도했는데도 401 — refresh 로 회복 불가
     if isRetry {
-      tokenStorage.clear()
+      tokenStorage.forceLogout()
       throw RepositoryError.unauthorized
     }
     // refresh 엔드포인트 자체의 401 은 정상 경로(mapHTTPError)로 처리
@@ -173,7 +173,7 @@ final class HTTPClient {
       _ = try await tokenRefresher.refresh(currentAccessToken: currentToken)
       return true
     } catch {
-      tokenStorage.clear()
+      tokenStorage.forceLogout()
       throw RepositoryError.unauthorized
     }
   }

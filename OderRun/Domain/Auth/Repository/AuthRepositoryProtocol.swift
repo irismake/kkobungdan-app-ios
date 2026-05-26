@@ -12,6 +12,6 @@ protocol AuthRepositoryProtocol: Sendable {
   func login(email: String, password: String) async throws -> AuthTokens
   func loginWithApple(identityToken: String, name: String?, email: String?) async throws -> AppleLoginResult
   func loginWithKakao(accessToken: String) async throws -> KakaoLoginResult
-  func refresh(refreshToken: String) async throws -> AuthTokens
+  func refresh(refreshToken: String) async throws -> String
   func logout(refreshToken: String) async throws
 }

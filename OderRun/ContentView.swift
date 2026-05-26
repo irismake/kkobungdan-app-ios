@@ -15,32 +15,37 @@ struct ContentView: View {
   )
 
   var body: some View {
-    if loginViewModel.isLoginSuccess {
-      HomeView(
-        viewModel: HomeViewModel(
-          fetchProposalsUseCase: FetchProposalsUseCase(repository: DIContainer.proposalRepository)
-        ),
-        myProposalsViewModel: MyProposalsViewModel(
-          fetchMyProposalsUseCase: FetchMyProposalsUseCase(repository: DIContainer.activityRepository)
-        ),
-        myOffersViewModel: MyOffersViewModel(
-          fetchMyOffersUseCase: FetchMyOffersUseCase(repository: DIContainer.activityRepository),
-          fetchProposalDetailUseCase: FetchProposalDetailUseCase(repository: DIContainer.proposalRepository),
-          cancelOfferUseCase: CancelOfferUseCase(repository: DIContainer.offerRepository)
-        ),
-        profileViewModel: ProfileViewModel(
-          fetchUserDetailUseCase: FetchUserDetailUseCase(userRepository: DIContainer.userRepository),
-          updateAlarmUseCase: UpdateAlarmUseCase(userRepository: DIContainer.userRepository),
-          logoutUseCase: LogoutUseCase(authRepository: AuthRepository()),
-          onLogout: { loginViewModel.isLoginSuccess = false }
-        ),
-        notificationViewModel: NotificationViewModel(
-          fetchNotificationsUseCase: FetchNotificationsUseCase(repository: DIContainer.notificationRepository),
-          repository: DIContainer.notificationRepository
+    Group {
+      if loginViewModel.isLoginSuccess {
+        HomeView(
+          viewModel: HomeViewModel(
+            fetchProposalsUseCase: FetchProposalsUseCase(repository: DIContainer.proposalRepository)
+          ),
+          myProposalsViewModel: MyProposalsViewModel(
+            fetchMyProposalsUseCase: FetchMyProposalsUseCase(repository: DIContainer.activityRepository)
+          ),
+          myOffersViewModel: MyOffersViewModel(
+            fetchMyOffersUseCase: FetchMyOffersUseCase(repository: DIContainer.activityRepository),
+            fetchProposalDetailUseCase: FetchProposalDetailUseCase(repository: DIContainer.proposalRepository),
+            cancelOfferUseCase: CancelOfferUseCase(repository: DIContainer.offerRepository)
+          ),
+          profileViewModel: ProfileViewModel(
+            fetchUserDetailUseCase: FetchUserDetailUseCase(userRepository: DIContainer.userRepository),
+            updateAlarmUseCase: UpdateAlarmUseCase(userRepository: DIContainer.userRepository),
+            logoutUseCase: LogoutUseCase(authRepository: AuthRepository()),
+            onLogout: { loginViewModel.isLoginSuccess = false }
+          ),
+          notificationViewModel: NotificationViewModel(
+            fetchNotificationsUseCase: FetchNotificationsUseCase(repository: DIContainer.notificationRepository),
+            repository: DIContainer.notificationRepository
+          )
         )
-      )
-    } else {
-      LoginView(viewModel: loginViewModel)
+      } else {
+        LoginView(viewModel: loginViewModel)
+      }
+    }
+    .onReceive(NotificationCenter.default.publisher(for: .authForcedLogout)) { _ in
+      loginViewModel.isLoginSuccess = false
     }
   }
 }

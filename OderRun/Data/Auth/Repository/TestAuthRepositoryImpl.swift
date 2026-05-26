@@ -34,16 +34,12 @@ actor TestAuthRepositoryImpl: AuthRepositoryProtocol {
     throw RepositoryError.notImplemented
   }
 
-  func refresh(refreshToken: String) async throws -> AuthTokens {
+  func refresh(refreshToken: String) async throws -> String {
     try await Task.sleep(nanoseconds: Self.simulatedLatency)
     guard refreshToken == DummySession.refreshToken else {
       throw RepositoryError.unauthorized
     }
-    let dto = LoginResponseDTO(
-      accessToken: DummySession.accessToken,
-      refreshToken: DummySession.refreshToken
-    )
-    return dto.toDomain()
+    return DummySession.accessToken
   }
 
   /// 로그아웃도 실 API 전용 — ContentView 에서 AuthRepository() 를 직접 주입한다.
