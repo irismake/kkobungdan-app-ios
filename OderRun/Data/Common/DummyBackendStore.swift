@@ -396,7 +396,7 @@ actor DummyBackendStore {
   // MARK: - Private cascade helpers
 
   private func canEditOrCancel(_ status: ProposalStatus) -> Bool {
-    status == .posted || status == .waiting || status == .offered
+    status == .holding || status == .posted || status == .waiting || status == .offered
   }
 
   private func rejectActiveOffers(forProposalID proposalID: Int64) {
