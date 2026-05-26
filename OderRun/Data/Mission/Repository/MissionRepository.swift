@@ -7,10 +7,19 @@
 
 import Foundation
 
-private struct MissionActionBody: Encodable {
+struct MissionActionBody: Encodable {
   let action: String
-  let proofImageURL: String?
+  // TODO: proofImageUrl — COMPLETE_DELIVERY UI 연동 전까지 stub 값 전송
+  let proofImageUrl: String?
+  // TODO: disputeReason — DISPUTE UI 연동 전까지 stub 값 전송
   let disputeReason: String?
+}
+
+extension MissionActionBody {
+  // TODO: proofImageUrl UI 반영 시 호출부에서 실제 값 전달로 교체
+  static let stubProofImageUrl: String? = nil
+  // TODO: disputeReason UI 반영 시 호출부에서 실제 값 전달로 교체
+  static let stubDisputeReason: String? = nil
 }
 
 final class MissionRepository: MissionRepositoryProtocol {
@@ -48,7 +57,7 @@ final class MissionRepository: MissionRepositoryProtocol {
   ) async throws -> Mission {
     let dto: MissionResponseDTO = try await client.put(
       "/v1/mission/\(id)",
-      body: MissionActionBody(action: action.rawValue, proofImageURL: proofImageURL, disputeReason: disputeReason)
+      body: MissionActionBody(action: action.rawValue, proofImageUrl: proofImageURL, disputeReason: disputeReason)
     )
     return dto.toDomain()
   }

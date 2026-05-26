@@ -191,17 +191,15 @@ actor DummyBackendStore {
     let now = Date()
     let newID = nextMissionID
     nextMissionID += 1
+    // TODO: 서버 연동 시 orderer/runner name·phone 실제 값으로 교체
     let mission = Mission(
       id: newID,
       offerID: offerID,
       proposalID: offer.proposalID,
-      ordererID: ordererIDByProposalID[proposal.id] ?? "",
-      runnerID: offer.runnerID,
+      orderer: MissionParticipant(id: ordererIDByProposalID[proposal.id] ?? "", name: "", phone: ""),
+      runner: MissionParticipant(id: offer.runnerID, name: "", phone: ""),
       status: .created,
-      runFee: runFee,
-      itemPrice: itemPrice,
-      proofImageURL: nil,
-      createdAt: now
+      runFee: runFee
     )
     missions.append(mission)
 
@@ -254,7 +252,7 @@ actor DummyBackendStore {
       guard existing.status == .created else {
         throw RepositoryError.conflict
       }
-      let updated = with(existing, status: .inProgress, proofImageURL: proofImageURL)
+      let updated = with(existing, status: .inProgress)
       missions[index] = updated
       return updated
 
@@ -264,13 +262,13 @@ actor DummyBackendStore {
       }
       switch existing.status {
       case .created, .inProgress:
-        let updated = with(existing, status: .deliveryCompleted, proofImageURL: proofImageURL)
+        let updated = with(existing, status: .deliveryCompleted)
         missions[index] = updated
         return updated
       case .receivedConfirmed:
         return try completeMissionCascade(
           at: index,
-          mission: with(existing, status: .settled, proofImageURL: proofImageURL)
+          mission: with(existing, status: .settled)
         )
       default:
         throw RepositoryError.conflict
@@ -279,13 +277,13 @@ actor DummyBackendStore {
     case .confirmReceived:
       switch existing.status {
       case .created, .inProgress:
-        let updated = with(existing, status: .receivedConfirmed, proofImageURL: proofImageURL)
+        let updated = with(existing, status: .receivedConfirmed)
         missions[index] = updated
         return updated
       case .deliveryCompleted:
         return try completeMissionCascade(
           at: index,
-          mission: with(existing, status: .settled, proofImageURL: proofImageURL)
+          mission: with(existing, status: .settled)
         )
       default:
         throw RepositoryError.conflict
@@ -295,7 +293,7 @@ actor DummyBackendStore {
       guard let disputeReason, !disputeReason.isEmpty else {
         throw RepositoryError.conflict
       }
-      let updated = with(existing, status: .disputed, proofImageURL: proofImageURL)
+      let updated = with(existing, status: .disputed)
       missions[index] = updated
       return updated
     }
@@ -312,18 +310,15 @@ actor DummyBackendStore {
     return mission
   }
 
-  private func with(_ mission: Mission, status: MissionStatus, proofImageURL: String?) -> Mission {
+  private func with(_ mission: Mission, status: MissionStatus) -> Mission {
     Mission(
       id: mission.id,
       offerID: mission.offerID,
       proposalID: mission.proposalID,
-      ordererID: mission.ordererID,
-      runnerID: mission.runnerID,
+      orderer: mission.orderer,
+      runner: mission.runner,
       status: status,
-      runFee: mission.runFee,
-      itemPrice: mission.itemPrice,
-      proofImageURL: proofImageURL ?? mission.proofImageURL,
-      createdAt: mission.createdAt
+      runFee: mission.runFee
     )
   }
 
@@ -382,8 +377,8 @@ actor DummyBackendStore {
   ) -> [Mission] {
     let mine = missions.filter {
       switch role {
-      case .orderer: return $0.ordererID == userID
-      case .runner: return $0.runnerID == userID
+      case .orderer: return $0.orderer.id == userID
+      case .runner: return $0.runner.id == userID
       }
     }
     let filtered = status.map { status in mine.filter { $0.status == status } } ?? mine
