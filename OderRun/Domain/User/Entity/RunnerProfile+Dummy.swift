@@ -16,8 +16,4 @@ extension RunnerProfile {
     "user-r002": RunnerProfile(id: "user-r002", nickname: "지현님", level: 6, grade: "A등급"),
     "user-r003": RunnerProfile(id: "user-r003", nickname: "준호야", level: 2, grade: "C등급")
   ]
-
-  static func dummy(for id: String) -> RunnerProfile {
-    dummyByID[id] ?? RunnerProfile(id: id, nickname: "러너", level: 1, grade: "C등급")
-  }
 }

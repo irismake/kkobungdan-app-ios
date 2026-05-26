@@ -33,6 +33,9 @@ actor TestUserRepositoryImpl: UserRepositoryProtocol {
 
   func fetchRunner(id: String) async throws -> RunnerProfile {
     try await Task.sleep(nanoseconds: Self.simulatedLatency)
-    return RunnerProfile.dummy(for: id)
+    guard let profile = RunnerProfile.dummyByID[id] else {
+      throw RepositoryError.notFound
+    }
+    return profile
   }
 }
