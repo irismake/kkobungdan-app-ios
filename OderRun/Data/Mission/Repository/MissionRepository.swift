@@ -10,9 +10,9 @@ import Foundation
 struct MissionActionBody: Encodable {
   let action: String
   // TODO: proofImageUrl — COMPLETE_DELIVERY UI 연동 전까지 stub 값 전송
-  let proofImageUrl: String? = MissionActionBody.stubProofImageUrl
+  var proofImageUrl: String? = MissionActionBody.stubProofImageUrl
   // TODO: disputeReason — DISPUTE UI 연동 전까지 stub 값 전송
-  let disputeReason: String? = MissionActionBody.stubDisputeReason
+  var disputeReason: String? = MissionActionBody.stubDisputeReason
 }
 
 extension MissionActionBody {
