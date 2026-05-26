@@ -61,6 +61,11 @@ final class HTTPClient {
     return try await perform(request, isRetry: false)
   }
 
+  func postVoid<B: Encodable>(_ path: String, body: B? = nil as String?) async throws {
+    let request = try buildRequest(method: "POST", path: path, params: [:], body: body)
+    try await performVoid(request, isRetry: false)
+  }
+
   func delete(_ path: String) async throws {
     let request = try buildRequest(method: "DELETE", path: path, params: [:], body: nil as String?)
     try await performVoid(request, isRetry: false)

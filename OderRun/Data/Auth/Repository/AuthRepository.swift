@@ -96,7 +96,7 @@ final class AuthRepository: AuthRepositoryProtocol {
   }
 
   func logout(refreshToken: String) async throws {
-    let _: String = try await client.post(
+    try await client.postVoid(
       "/v1/auth/logout",
       body: LogoutRequestBody(refreshToken: refreshToken)
     )
