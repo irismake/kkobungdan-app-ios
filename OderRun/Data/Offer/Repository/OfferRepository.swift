@@ -9,6 +9,10 @@ import Foundation
 
 private struct CreateOfferBody: Encodable {
   let proposalID: Int64
+
+  enum CodingKeys: String, CodingKey {
+    case proposalID = "proposalId"
+  }
 }
 
 private struct AcceptOfferBody: Encodable {

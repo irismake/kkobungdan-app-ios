@@ -16,6 +16,17 @@ struct OfferDetailResponseDTO: Decodable {
   let nickname: String
   let level: Int
   let grade: String
+
+  enum CodingKeys: String, CodingKey {
+    case id
+    case proposalID = "proposalId"
+    case runnerID = "runnerId"
+    case status
+    case createdAt
+    case nickname
+    case level
+    case grade
+  }
 }
 
 extension OfferDetailResponseDTO {
