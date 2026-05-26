@@ -13,9 +13,6 @@ struct OfferDetailResponseDTO: Decodable {
   let runnerID: String
   let status: String
   let createdAt: String
-  let nickname: String
-  let level: Int
-  let grade: String
 
   enum CodingKeys: String, CodingKey {
     case id
@@ -23,9 +20,6 @@ struct OfferDetailResponseDTO: Decodable {
     case runnerID = "runnerId"
     case status
     case createdAt
-    case nickname
-    case level
-    case grade
   }
 }
 
@@ -37,9 +31,9 @@ extension OfferDetailResponseDTO {
       runnerID: runnerID,
       status: OfferStatus(rawValue: status) ?? .waiting,
       createdAt: DateFormatters.parse(createdAt),
-      nickname: nickname,
-      level: level,
-      grade: grade
+      nickname: "",
+      level: 0,
+      grade: ""
     )
   }
 }
