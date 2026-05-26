@@ -10,17 +10,10 @@ struct ProfileView: View {
     _viewModel = State(initialValue: viewModel)
   }
 
-  private var nickname: String {
-    viewModel.user?.nickname ?? "{닉네임}"
-  }
-
-  private var level: Int {
-    viewModel.user?.level ?? 1
-  }
-
-  private var grade: String {
-    viewModel.user?.grade ?? "{등급}"
-  }
+  // TODO: 서버 응답에 nickname/level/grade 추가 시 viewModel.user에서 가져오도록 교체
+  private let nickname: String = "길동이"
+  private let level: Int = 5
+  private let grade: String = "B등급"
 
   var body: some View {
     VStack(spacing: 0) {

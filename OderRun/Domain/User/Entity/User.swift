@@ -15,7 +15,4 @@ struct User: Equatable {
   let createdAt: Date
   let lastLoginAt: Date
   let alarmEnabled: Bool
-  let nickname: String
-  let level: Int
-  let grade: String
 }

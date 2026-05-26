@@ -12,16 +12,18 @@ struct UserDetailResponseDTO: Decodable {
   let email: String?
   let name: String
   let phone: String?
+  let phoneVerifiedAt: String?
   let createdAt: String
   let lastLoginAt: String
   let alarmEnabled: Bool
-  let nickname: String?
-  let level: Int?
-  let grade: String?
 }
 
 extension UserDetailResponseDTO {
+  // TODO: phoneVerifiedAt UI 반영 시 User 엔티티에 추가
+  static let stubPhoneVerifiedAt: String? = nil
+
   func toDomain() -> User {
+    // TODO: phoneVerifiedAt — UI 반영 시 엔티티에 추가
     User(
       id: id,
       email: email ?? "",
@@ -29,10 +31,7 @@ extension UserDetailResponseDTO {
       phone: phone ?? "",
       createdAt: DateFormatters.parse(createdAt),
       lastLoginAt: DateFormatters.parse(lastLoginAt),
-      alarmEnabled: alarmEnabled,
-      nickname: nickname ?? "",
-      level: level ?? 0,
-      grade: grade ?? ""
+      alarmEnabled: alarmEnabled
     )
   }
 }

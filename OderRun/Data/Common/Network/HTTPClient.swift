@@ -61,6 +61,11 @@ final class HTTPClient {
     return try await perform(request, isRetry: false)
   }
 
+  func postVoid<B: Encodable>(_ path: String, body: B? = nil as String?) async throws {
+    let request = try buildRequest(method: "POST", path: path, params: [:], body: body)
+    try await performVoid(request, isRetry: false)
+  }
+
   func delete(_ path: String) async throws {
     let request = try buildRequest(method: "DELETE", path: path, params: [:], body: nil as String?)
     try await performVoid(request, isRetry: false)
@@ -151,7 +156,7 @@ final class HTTPClient {
     }
     // 이미 한 번 재시도했는데도 401 — refresh 로 회복 불가
     if isRetry {
-      tokenStorage.clear()
+      tokenStorage.forceLogout()
       throw RepositoryError.unauthorized
     }
     // refresh 엔드포인트 자체의 401 은 정상 경로(mapHTTPError)로 처리
@@ -168,7 +173,7 @@ final class HTTPClient {
       _ = try await tokenRefresher.refresh(currentAccessToken: currentToken)
       return true
     } catch {
-      tokenStorage.clear()
+      tokenStorage.forceLogout()
       throw RepositoryError.unauthorized
     }
   }

@@ -85,18 +85,18 @@ final class AuthRepository: AuthRepositoryProtocol {
     return response.toDomain()
   }
 
-  func refresh(refreshToken: String) async throws -> AuthTokens {
-    let response: LoginResponseDTO = try await client.post(
+  func refresh(refreshToken: String) async throws -> String {
+    let response: RefreshTokenResponseDTO = try await client.post(
       "/v1/auth/refresh",
       body: RefreshRequestBody(refreshToken: refreshToken)
     )
+    // refreshToken은 서버 응답에 없으므로 기존 storage 값 유지
     tokenStorage.accessToken = response.accessToken
-    tokenStorage.refreshToken = response.refreshToken
-    return response.toDomain()
+    return response.accessToken
   }
 
   func logout(refreshToken: String) async throws {
-    let _: String = try await client.post(
+    try await client.postVoid(
       "/v1/auth/logout",
       body: LogoutRequestBody(refreshToken: refreshToken)
     )

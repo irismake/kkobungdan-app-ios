@@ -14,7 +14,7 @@ struct RefreshTokenUseCase {
     self.authRepository = authRepository
   }
 
-  func execute(refreshToken: String) async throws -> AuthTokens {
+  func execute(refreshToken: String) async throws -> String {
     try await authRepository.refresh(refreshToken: refreshToken)
   }
 }

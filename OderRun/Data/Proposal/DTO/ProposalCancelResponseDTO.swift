@@ -21,6 +21,7 @@ struct ProposalCancelResponseDTO: Decodable {
 
 extension ProposalCancelResponseDTO {
   func toDomain() -> Proposal {
+    // TODO: meetingAt, itemPrice, deposit — UI 반영 시 엔티티에 추가
     Proposal(
       id: id,
       title: title,
@@ -30,4 +31,11 @@ extension ProposalCancelResponseDTO {
       status: ProposalStatus(rawValue: status) ?? .cancelled
     )
   }
+
+  // TODO: meetingAt UI 반영 시 Proposal 엔티티에 추가
+  static let stubMeetingAt: String = ""
+  // TODO: itemPrice UI 반영 시 Proposal 엔티티에 추가
+  static let stubItemPrice: Int = 0
+  // TODO: deposit UI 반영 시 Proposal 엔티티에 추가
+  static let stubDeposit: Int = 0
 }
