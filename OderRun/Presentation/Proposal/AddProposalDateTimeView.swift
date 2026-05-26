@@ -136,7 +136,6 @@ struct AddProposalDateTimeView: View {
           .frame(height: 40)
       }
     }
-
     .padding(.horizontal, 15)
   }
 
@@ -240,7 +239,6 @@ struct AddProposalDateTimeView: View {
     ZStack(alignment: .center) {
       Color.gray100
         .frame(height: 47)
-        
       HStack(spacing: 8) {
         TimePickerColumn(values: Array(1 ... 12), selection: $selectedHour, format: "%02d")
         TimePickerColumn(values: Array(0 ... 59), selection: $selectedMinute, format: "%02d")

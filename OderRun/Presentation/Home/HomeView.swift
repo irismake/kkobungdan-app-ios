@@ -80,7 +80,10 @@ struct HomeView: View {
       }
       .onChange(of: activityPath) { _, newPath in
         if newPath.isEmpty {
-          Task { await activityViewModel.load() }
+          Task {
+            await activityViewModel.load()
+            await viewModel.load()
+          }
         }
       }
     case .notifications:
@@ -258,11 +261,7 @@ struct HomeView: View {
   // MARK: - Actions
 
   private func handleProposalTap(_ proposal: Proposal) {
-    if proposal.ordererID == DummySession.currentUserID {
-      homePath.append(.myProposalDetail(proposalID: proposal.id))
-    } else {
-      homePath.append(.proposalDetail(proposalID: proposal.id))
-    }
+    homePath.append(.proposalDetail(proposalID: proposal.id))
   }
 }
 

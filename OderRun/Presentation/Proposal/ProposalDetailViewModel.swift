@@ -19,18 +19,21 @@ final class ProposalDetailViewModel {
 
   private let fetchDetailUseCase: FetchProposalDetailUseCase
   private let createOfferUseCase: CreateOfferUseCase
-  private let fetchMyOffersUseCase: FetchMyOffersUseCase
+  private let fetchOffersByProposalUseCase: FetchOffersByProposalUseCase
+  private let fetchUserDetailUseCase: FetchUserDetailUseCase
 
   init(
     proposalID: Int64,
     fetchDetailUseCase: FetchProposalDetailUseCase,
     createOfferUseCase: CreateOfferUseCase,
-    fetchMyOffersUseCase: FetchMyOffersUseCase
+    fetchOffersByProposalUseCase: FetchOffersByProposalUseCase,
+    fetchUserDetailUseCase: FetchUserDetailUseCase
   ) {
     self.proposalID = proposalID
     self.fetchDetailUseCase = fetchDetailUseCase
     self.createOfferUseCase = createOfferUseCase
-    self.fetchMyOffersUseCase = fetchMyOffersUseCase
+    self.fetchOffersByProposalUseCase = fetchOffersByProposalUseCase
+    self.fetchUserDetailUseCase = fetchUserDetailUseCase
   }
 
   @MainActor
@@ -38,11 +41,13 @@ final class ProposalDetailViewModel {
     isLoading = true
     errorMessage = nil
     do {
-      let proposal = try await fetchDetailUseCase.execute(id: proposalID)
+      async let proposalTask = fetchDetailUseCase.execute(id: proposalID)
+      async let offersTask = fetchOffersByProposalUseCase.execute(proposalID: proposalID)
+      async let userTask = fetchUserDetailUseCase.execute()
+      let (proposal, offers, user) = try await (proposalTask, offersTask, userTask)
       self.proposal = proposal
-      let myOffers = try await fetchMyOffersUseCase.execute()
-      hasApplied = myOffers.contains {
-        $0.proposalID == proposalID && ($0.status == .waiting || $0.status == .accepted)
+      hasApplied = offers.contains {
+        $0.runnerID == user.id && ($0.status == .waiting || $0.status == .accepted)
       }
     } catch {
       errorMessage = "요청 상세를 불러오지 못했어요."

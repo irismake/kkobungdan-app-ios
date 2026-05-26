@@ -24,21 +24,21 @@ final class AddProposalViewModel {
     content: String,
     deadline: Date,
     errandFee: Int
-  ) async -> Proposal? {
+  ) async -> ProposalDetail? {
     guard !isSubmitting else {
       return nil
     }
     isSubmitting = true
     errorMessage = nil
     do {
-      let proposal = try await createProposalUseCase.execute(
+      let detail = try await createProposalUseCase.execute(
         title: title,
         content: content,
         deadline: DateFormatters.format(deadline),
-        errandFee: String(errandFee)
+        errandFee: errandFee
       )
       isSubmitting = false
-      return proposal
+      return detail
     } catch {
       errorMessage = "요청 등록에 실패했어요. 다시 시도해주세요."
       isSubmitting = false

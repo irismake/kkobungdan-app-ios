@@ -13,6 +13,7 @@ import Foundation
 
 actor DummyBackendStore {
   private var proposals: [Proposal] = Proposal.dummyList
+  private var ordererIDByProposalID: [Int64: String] = Proposal.dummyOrdererIDByProposalID
   private var offers: [Offer] = Offer.dummyList
   private var missions: [Mission] = Mission.dummyList
   private var nextProposalID: Int64 = 100
@@ -41,20 +42,31 @@ actor DummyBackendStore {
     content: String,
     deadline: Date,
     errandFee: Int
-  ) -> Proposal {
+  ) -> ProposalDetail {
     let newID = nextProposalID
     nextProposalID += 1
-    let proposal = Proposal(
+    let stub = Proposal(
       id: newID,
-      ordererID: ordererID,
       title: title,
       content: content,
       deadline: deadline,
       errandFee: errandFee,
-      status: .posted
+      status: .holding
     )
-    proposals.insert(proposal, at: 0)
-    return proposal
+    ordererIDByProposalID[newID] = ordererID
+    proposals.insert(stub, at: 0)
+    // TODO: 서버에서 meetingAt/itemPrice/deposit 필드 제거되면 ProposalDetail에서도 삭제
+    return ProposalDetail(
+      id: newID,
+      title: title,
+      content: content,
+      deadline: deadline,
+      meetingAt: deadline,
+      errandFee: errandFee,
+      itemPrice: 1000,
+      deposit: 1000,
+      status: .holding
+    )
   }
 
   func updateProposal(
@@ -73,7 +85,6 @@ actor DummyBackendStore {
     }
     let updated = Proposal(
       id: existing.id,
-      ordererID: existing.ordererID,
       title: title,
       content: content,
       deadline: deadline,
@@ -187,7 +198,7 @@ actor DummyBackendStore {
       id: newID,
       offerID: offerID,
       proposalID: offer.proposalID,
-      ordererID: proposal.ordererID,
+      ordererID: ordererIDByProposalID[proposal.id] ?? "",
       runnerID: offer.runnerID,
       status: .created,
       runFee: runFee,
@@ -206,14 +217,8 @@ actor DummyBackendStore {
       title: matched.title,
       content: matched.content,
       deadline: matched.deadline,
-      meetingAt: nil,
       errandFee: matched.errandFee,
-      itemPrice: itemPrice,
-      deposit: nil,
-      status: matched.status,
-      offers: offers
-        .filter { $0.proposalID == matched.id }
-        .sorted { $0.createdAt > $1.createdAt }
+      status: matched.status
     )
   }
 
@@ -328,7 +333,7 @@ actor DummyBackendStore {
     page: Int,
     size: Int
   ) -> [MyProposal] {
-    let mine = proposals.filter { $0.ordererID == userID }
+    let mine = proposals.filter { ordererIDByProposalID[$0.id] == userID }
     let filtered = status.map { filter in mine.filter { $0.status == filter } } ?? mine
     return paginate(filtered, page: page, size: size).map { proposal in
       MyProposal(
@@ -336,14 +341,8 @@ actor DummyBackendStore {
         title: proposal.title,
         content: proposal.content,
         deadline: proposal.deadline,
-        meetingAt: nil,
         errandFee: proposal.errandFee,
-        itemPrice: nil,
-        deposit: nil,
-        status: proposal.status,
-        offers: offers
-          .filter { $0.proposalID == proposal.id }
-          .sorted { $0.createdAt > $1.createdAt }
+        status: proposal.status
       )
     }
   }
@@ -444,7 +443,6 @@ actor DummyBackendStore {
   private func with(_ proposal: Proposal, status: ProposalStatus) -> Proposal {
     Proposal(
       id: proposal.id,
-      ordererID: proposal.ordererID,
       title: proposal.title,
       content: proposal.content,
       deadline: proposal.deadline,

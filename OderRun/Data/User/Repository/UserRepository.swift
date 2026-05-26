@@ -19,22 +19,16 @@ final class UserRepository: UserRepositoryProtocol {
   }
 
   func fetchUserDetail() async throws -> User {
-    let res: ApiResponseDTO<UserDetailResponseDTO> =
+    let dto: UserDetailResponseDTO =
       try await client.get("/v1/user/detail")
-    guard let dto = res.data else {
-      throw RepositoryError.notFound
-    }
     return dto.toDomain()
   }
 
   func updateAlarm(enabled: Bool) async throws -> User {
-    let res: ApiResponseDTO<UserDetailResponseDTO> = try await client.post(
+    let dto: UserDetailResponseDTO = try await client.post(
       "/v1/user/alarm",
       body: AlarmUpdateBody(enabled: enabled)
     )
-    guard let dto = res.data else {
-      throw RepositoryError.network
-    }
     return dto.toDomain()
   }
 }

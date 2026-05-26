@@ -26,15 +26,15 @@ struct TestProposalRepositoryImpl: ProposalRepositoryProtocol {
     title: String,
     content: String,
     deadline: String,
-    errandFee: String
-  ) async throws -> Proposal {
+    errandFee: Int
+  ) async throws -> ProposalDetail {
     try await Task.sleep(nanoseconds: Self.simulatedLatency)
     return await store.createProposal(
       ordererID: DummySession.currentUserID,
       title: title,
       content: content,
       deadline: DateFormatters.parse(deadline),
-      errandFee: Int(errandFee) ?? 0
+      errandFee: errandFee
     )
   }
 
