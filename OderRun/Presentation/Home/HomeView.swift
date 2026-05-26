@@ -9,7 +9,8 @@ import SwiftUI
 
 struct HomeView: View {
   @State private var viewModel: HomeViewModel
-  @State private var activityViewModel: ActivityViewModel
+  @State private var myProposalsViewModel: MyProposalsViewModel
+  @State private var myOffersViewModel: MyOffersViewModel
   @State private var selectedTab: HomeTab = .home
 
   @State private var homePath: [AppRoute] = []
@@ -20,12 +21,14 @@ struct HomeView: View {
 
   init(
     viewModel: HomeViewModel,
-    activityViewModel: ActivityViewModel,
+    myProposalsViewModel: MyProposalsViewModel,
+    myOffersViewModel: MyOffersViewModel,
     profileViewModel: ProfileViewModel,
     notificationViewModel: NotificationViewModel
   ) {
     _viewModel = State(initialValue: viewModel)
-    _activityViewModel = State(initialValue: activityViewModel)
+    _myProposalsViewModel = State(initialValue: myProposalsViewModel)
+    _myOffersViewModel = State(initialValue: myOffersViewModel)
     self.profileViewModel = profileViewModel
     self.notificationViewModel = notificationViewModel
   }
@@ -56,7 +59,8 @@ struct HomeView: View {
         if newPath.isEmpty {
           Task {
             await viewModel.load()
-            await activityViewModel.load()
+            await myProposalsViewModel.load()
+            await myOffersViewModel.load()
           }
         }
       }
@@ -64,7 +68,8 @@ struct HomeView: View {
       NavigationStack(path: $activityPath) {
         VStack(spacing: 0) {
           ActivityView(
-            viewModel: activityViewModel,
+            proposalsViewModel: myProposalsViewModel,
+            offersViewModel: myOffersViewModel,
             onSelectOrdererProposal: { proposalID in
               activityPath.append(.myProposalDetail(proposalID: proposalID))
             },
@@ -81,7 +86,8 @@ struct HomeView: View {
       .onChange(of: activityPath) { _, newPath in
         if newPath.isEmpty {
           Task {
-            await activityViewModel.load()
+            await myProposalsViewModel.load()
+            await myOffersViewModel.load()
             await viewModel.load()
           }
         }

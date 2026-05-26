@@ -40,7 +40,8 @@ enum ActivityFilter: String, CaseIterable {
 }
 
 struct ActivityView: View {
-  @State private var viewModel: ActivityViewModel
+  @State private var proposalsViewModel: MyProposalsViewModel
+  @State private var offersViewModel: MyOffersViewModel
   @State private var segment: ActivitySegment = .orderer
   @State private var filter: ActivityFilter = .all
   @State private var pendingCancelOffer: MyOffer?
@@ -60,11 +61,13 @@ struct ActivityView: View {
   }
 
   init(
-    viewModel: ActivityViewModel,
+    proposalsViewModel: MyProposalsViewModel,
+    offersViewModel: MyOffersViewModel,
     onSelectOrdererProposal: @escaping (Int64) -> Void = { _ in },
     onSelectRunnerItem: @escaping (_ proposalID: Int64, _ offerID: Int64) -> Void = { _, _ in }
   ) {
-    _viewModel = State(initialValue: viewModel)
+    _proposalsViewModel = State(initialValue: proposalsViewModel)
+    _offersViewModel = State(initialValue: offersViewModel)
     self.onSelectOrdererProposal = onSelectOrdererProposal
     self.onSelectRunnerItem = onSelectRunnerItem
   }
@@ -87,10 +90,14 @@ struct ActivityView: View {
       .background(Color.gray000)
     }
     .task {
-      await viewModel.load()
+      async let proposalsTask: Void = proposalsViewModel.load()
+      async let offersTask: Void = offersViewModel.load()
+      _ = await (proposalsTask, offersTask)
     }
     .refreshable {
-      await viewModel.load()
+      async let proposalsTask: Void = proposalsViewModel.load()
+      async let offersTask: Void = offersViewModel.load()
+      _ = await (proposalsTask, offersTask)
     }
     .alert(
       "지원을 취소할까요?",
@@ -106,7 +113,7 @@ struct ActivityView: View {
         pendingCancelOffer = nil
       }
       Button("지원 취소", role: .destructive) {
-        Task { await viewModel.cancelMyOffer(offerID: entry.id) }
+        Task { await offersViewModel.cancelMyOffer(offerID: entry.id) }
       }
     } message: { _ in
       Text("지원을 취소하면 되돌릴 수 없어요.")
@@ -125,10 +132,10 @@ struct ActivityView: View {
 
   @ViewBuilder
   private var myProposalsContent: some View {
-    let items = viewModel.myProposals.filter { filter.matches($0.stage) }
-    if viewModel.isLoading, items.isEmpty {
+    let items = proposalsViewModel.myProposals.filter { filter.matches($0.stage) }
+    if proposalsViewModel.isLoading, items.isEmpty {
       ProgressView().padding(.top, 40)
-    } else if let errorMessage = viewModel.errorMessage, items.isEmpty {
+    } else if let errorMessage = proposalsViewModel.errorMessage, items.isEmpty {
       Text(errorMessage)
         .textStyle(.body3)
         .foregroundColor(Color.rose500)
@@ -151,10 +158,10 @@ struct ActivityView: View {
 
   @ViewBuilder
   private var myOffersContent: some View {
-    let items = viewModel.myOffers.filter { filter.matches($0.stage) }
-    if viewModel.isLoading, items.isEmpty {
+    let items = offersViewModel.myOffers.filter { filter.matches($0.stage) }
+    if offersViewModel.isLoading, items.isEmpty {
       ProgressView().padding(.top, 40)
-    } else if let errorMessage = viewModel.errorMessage, items.isEmpty {
+    } else if let errorMessage = offersViewModel.errorMessage, items.isEmpty {
       Text(errorMessage)
         .textStyle(.body3)
         .foregroundColor(Color.rose500)
@@ -182,7 +189,7 @@ struct ActivityView: View {
   }
 
   private func cancelOfferButton(for offer: MyOffer) -> some View {
-    let isCancelling = viewModel.isCancellingOfferID == offer.id
+    let isCancelling = offersViewModel.isCancellingOfferID == offer.id
     return Button {
       pendingCancelOffer = offer
     } label: {
@@ -281,7 +288,7 @@ struct ActivityView: View {
   }
 
   private func card(for offer: MyOffer) -> some View {
-    let proposal = viewModel.proposalByOfferID[offer.id]
+    let proposal = offersViewModel.proposalByOfferID[offer.id]
     return ProposalCard(
       title: proposal?.title ?? "",
       description: proposal?.content ?? "",
@@ -294,5 +301,14 @@ struct ActivityView: View {
 }
 
 #Preview {
-  ActivityView(viewModel: .preview())
+  ActivityView(
+    proposalsViewModel: MyProposalsViewModel(
+      fetchMyProposalsUseCase: FetchMyProposalsUseCase(repository: DIContainer.activityRepository)
+    ),
+    offersViewModel: MyOffersViewModel(
+      fetchMyOffersUseCase: FetchMyOffersUseCase(repository: DIContainer.activityRepository),
+      fetchProposalDetailUseCase: FetchProposalDetailUseCase(repository: DIContainer.proposalRepository),
+      cancelOfferUseCase: CancelOfferUseCase(repository: DIContainer.offerRepository)
+    )
+  )
 }
