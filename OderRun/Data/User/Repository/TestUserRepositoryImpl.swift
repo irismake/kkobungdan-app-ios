@@ -26,10 +26,7 @@ actor TestUserRepositoryImpl: UserRepositoryProtocol {
       phone: currentUser.phone,
       createdAt: currentUser.createdAt,
       lastLoginAt: currentUser.lastLoginAt,
-      alarmEnabled: enabled,
-      nickname: currentUser.nickname,
-      level: currentUser.level,
-      grade: currentUser.grade
+      alarmEnabled: enabled
     )
     return currentUser
   }
