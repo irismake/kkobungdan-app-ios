@@ -7,12 +7,21 @@
 
 import Foundation
 
+struct ApplicantEntry: Identifiable {
+  var id: Int64 {
+    offerDetail.id
+  }
+
+  let offerDetail: OfferDetail
+  let runnerProfile: RunnerProfile
+}
+
 @Observable
 final class ApplicantListViewModel {
   let proposalID: Int64
 
   var proposal: Proposal?
-  var entries: [OfferDetail] = []
+  var entries: [ApplicantEntry] = []
   var isLoading: Bool = false
   var errorMessage: String?
   var isRejecting: Bool = false
@@ -21,20 +30,23 @@ final class ApplicantListViewModel {
 
   private let fetchDetailUseCase: FetchProposalDetailUseCase
   private let fetchOffersUseCase: FetchOffersByProposalUseCase
-  private let offerRepository: OfferRepositoryProtocol
+  private let fetchOfferDetailUseCase: FetchOfferDetailUseCase
+  private let fetchRunnerProfileUseCase: FetchRunnerProfileUseCase
   private let acceptOfferUseCase: AcceptOfferUseCase
 
   init(
     proposalID: Int64,
     fetchDetailUseCase: FetchProposalDetailUseCase,
     fetchOffersUseCase: FetchOffersByProposalUseCase,
-    offerRepository: OfferRepositoryProtocol,
+    fetchOfferDetailUseCase: FetchOfferDetailUseCase,
+    fetchRunnerProfileUseCase: FetchRunnerProfileUseCase,
     acceptOfferUseCase: AcceptOfferUseCase
   ) {
     self.proposalID = proposalID
     self.fetchDetailUseCase = fetchDetailUseCase
     self.fetchOffersUseCase = fetchOffersUseCase
-    self.offerRepository = offerRepository
+    self.fetchOfferDetailUseCase = fetchOfferDetailUseCase
+    self.fetchRunnerProfileUseCase = fetchRunnerProfileUseCase
     self.acceptOfferUseCase = acceptOfferUseCase
   }
 
@@ -48,10 +60,12 @@ final class ApplicantListViewModel {
       let (proposal, offers) = try await (proposalTask, offersTask)
       self.proposal = proposal
 
-      var built: [OfferDetail] = []
+      var built: [ApplicantEntry] = []
       for offer in offers where offer.status == .waiting || offer.status == .accepted {
-        let detail = try await offerRepository.fetchOfferDetail(offerID: offer.id)
-        built.append(detail)
+        async let detailTask = fetchOfferDetailUseCase.execute(offerID: offer.id)
+        async let profileTask = fetchRunnerProfileUseCase.execute(runnerID: offer.runnerID)
+        let (detail, profile) = try await (detailTask, profileTask)
+        built.append(ApplicantEntry(offerDetail: detail, runnerProfile: profile))
       }
       entries = built
     } catch {

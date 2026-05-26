@@ -10,6 +10,7 @@
 | 텍스트 스타일 | [`.cursor/rules/text-style.mdc`](.cursor/rules/text-style.mdc) | [`.claude/rules/text-style.md`](.claude/rules/text-style.md) |
 | 더미 백엔드 | [`.cursor/rules/dummy-backend-store.mdc`](.cursor/rules/dummy-backend-store.mdc) | [`.claude/rules/dummy-backend-store.md`](.claude/rules/dummy-backend-store.md) |
 | 별도 DTO/엔티티 | [`.cursor/rules/separate-dto-entity.mdc`](.cursor/rules/separate-dto-entity.mdc) | [`.claude/rules/separate-dto-entity.md`](.claude/rules/separate-dto-entity.md) |
+| DTO·엔티티 서버 일치 | [`.cursor/rules/dto-entity-server-align.mdc`](.cursor/rules/dto-entity-server-align.mdc) | [`.claude/rules/dto-entity-server-align.md`](.claude/rules/dto-entity-server-align.md) |
 | 로깅 (`Logger`) | [`.cursor/rules/logging.mdc`](.cursor/rules/logging.mdc) | [`.claude/rules/logging.md`](.claude/rules/logging.md) |
 
 > Claude 인덱스: [`CLAUDE.md`](CLAUDE.md)

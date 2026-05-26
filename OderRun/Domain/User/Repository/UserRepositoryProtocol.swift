@@ -10,4 +10,5 @@ import Foundation
 protocol UserRepositoryProtocol: Sendable {
   func fetchUserDetail() async throws -> User
   func updateAlarm(enabled: Bool) async throws -> User
+  func fetchRunner(id: String) async throws -> RunnerProfile
 }

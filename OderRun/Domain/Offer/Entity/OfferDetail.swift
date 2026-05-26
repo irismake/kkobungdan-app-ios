@@ -16,7 +16,4 @@ struct OfferDetail: Equatable, Identifiable {
   let runnerID: String
   let status: OfferStatus
   let createdAt: Date
-  let nickname: String
-  let level: Int
-  let grade: String
 }

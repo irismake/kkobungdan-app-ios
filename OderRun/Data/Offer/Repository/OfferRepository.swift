@@ -9,6 +9,10 @@ import Foundation
 
 private struct CreateOfferBody: Encodable {
   let proposalID: Int64
+
+  enum CodingKeys: String, CodingKey {
+    case proposalID = "proposalId"
+  }
 }
 
 private struct AcceptOfferBody: Encodable {
@@ -47,8 +51,8 @@ final class OfferRepository: OfferRepositoryProtocol {
     try await client.delete("/v1/offer/\(offerID)")
   }
 
-  func acceptOffer(offerID: Int64, runFee: Int, itemPrice: Int) async throws -> MyProposal {
-    let dto: MyProposalResponseDTO = try await client.post(
+  func acceptOffer(offerID: Int64, runFee: Int, itemPrice: Int) async throws -> OfferAcceptResult {
+    let dto: OfferAcceptResponseDTO = try await client.post(
       "/v1/offer/\(offerID)/accept",
       body: AcceptOfferBody(runFee: runFee, itemPrice: itemPrice)
     )

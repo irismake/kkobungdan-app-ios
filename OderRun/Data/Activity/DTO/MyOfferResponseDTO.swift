@@ -12,14 +12,17 @@ import Foundation
 struct MyOfferResponseDTO: Decodable {
   let id: Int64
   let proposalID: Int64
-  let title: String
-  let content: String
-  let deadline: String
-  let meetingAt: String?
-  let errandFee: Int
-  let itemPrice: Int?
-  let deposit: Int?
+  let runnerID: String
   let status: String
+  let createdAt: String
+
+  enum CodingKeys: String, CodingKey {
+    case id
+    case proposalID = "proposalId"
+    case runnerID = "runnerId"
+    case status
+    case createdAt
+  }
 }
 
 extension MyOfferResponseDTO {
@@ -27,14 +30,9 @@ extension MyOfferResponseDTO {
     MyOffer(
       id: id,
       proposalID: proposalID,
-      title: title,
-      content: content,
-      deadline: DateFormatters.parse(deadline),
-      meetingAt: meetingAt.map(DateFormatters.parse),
-      errandFee: errandFee,
-      itemPrice: itemPrice,
-      deposit: deposit,
-      status: OfferStatus(rawValue: status) ?? .waiting
+      runnerID: runnerID,
+      status: OfferStatus(rawValue: status) ?? .waiting,
+      createdAt: DateFormatters.parse(createdAt)
     )
   }
 }

@@ -70,6 +70,7 @@ final class AuthRepository: AuthRepositoryProtocol {
     )
     tokenStorage.accessToken = response.accessToken
     tokenStorage.refreshToken = response.refreshToken
+    tokenStorage.userID = response.userID
     return response.toDomain()
   }
 
@@ -80,6 +81,7 @@ final class AuthRepository: AuthRepositoryProtocol {
     )
     tokenStorage.accessToken = response.accessToken
     tokenStorage.refreshToken = response.refreshToken
+    tokenStorage.userID = response.userID
     return response.toDomain()
   }
 

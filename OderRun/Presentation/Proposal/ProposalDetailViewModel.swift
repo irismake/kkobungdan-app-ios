@@ -20,20 +20,20 @@ final class ProposalDetailViewModel {
   private let fetchDetailUseCase: FetchProposalDetailUseCase
   private let createOfferUseCase: CreateOfferUseCase
   private let fetchOffersByProposalUseCase: FetchOffersByProposalUseCase
-  private let fetchUserDetailUseCase: FetchUserDetailUseCase
+  private let tokenStorage: TokenStorage
 
   init(
     proposalID: Int64,
     fetchDetailUseCase: FetchProposalDetailUseCase,
     createOfferUseCase: CreateOfferUseCase,
     fetchOffersByProposalUseCase: FetchOffersByProposalUseCase,
-    fetchUserDetailUseCase: FetchUserDetailUseCase
+    tokenStorage: TokenStorage = .shared
   ) {
     self.proposalID = proposalID
     self.fetchDetailUseCase = fetchDetailUseCase
     self.createOfferUseCase = createOfferUseCase
     self.fetchOffersByProposalUseCase = fetchOffersByProposalUseCase
-    self.fetchUserDetailUseCase = fetchUserDetailUseCase
+    self.tokenStorage = tokenStorage
   }
 
   @MainActor
@@ -43,11 +43,11 @@ final class ProposalDetailViewModel {
     do {
       async let proposalTask = fetchDetailUseCase.execute(id: proposalID)
       async let offersTask = fetchOffersByProposalUseCase.execute(proposalID: proposalID)
-      async let userTask = fetchUserDetailUseCase.execute()
-      let (proposal, offers, user) = try await (proposalTask, offersTask, userTask)
+      let (proposal, offers) = try await (proposalTask, offersTask)
       self.proposal = proposal
+      let currentUserID = tokenStorage.userID
       hasApplied = offers.contains {
-        $0.runnerID == user.id && ($0.status == .waiting || $0.status == .accepted)
+        $0.runnerID == currentUserID && ($0.status == .waiting || $0.status == .accepted)
       }
     } catch {
       errorMessage = "요청 상세를 불러오지 못했어요."
