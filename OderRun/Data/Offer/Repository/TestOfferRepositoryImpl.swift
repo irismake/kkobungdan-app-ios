@@ -35,7 +35,7 @@ struct TestOfferRepositoryImpl: OfferRepositoryProtocol {
     try await store.cancelOffer(offerID: offerID)
   }
 
-  func acceptOffer(offerID: Int64, runFee: Int, itemPrice: Int) async throws -> MyProposal {
+  func acceptOffer(offerID: Int64, runFee: Int, itemPrice: Int) async throws -> OfferAcceptResult {
     try await Task.sleep(nanoseconds: Self.simulatedLatency)
     return try await store.acceptOffer(offerID: offerID, runFee: runFee, itemPrice: itemPrice)
   }

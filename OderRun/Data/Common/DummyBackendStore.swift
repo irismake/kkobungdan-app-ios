@@ -168,8 +168,8 @@ actor DummyBackendStore {
 
   /// `POST /v1/offer/{offerId}/accept` 의 인메모리 흉내.
   /// offer ACCEPTED, 같은 proposal 의 나머지 WAITING offer REJECTED, proposal MATCHED 로 전이하고
-  /// 미션을 생성한다. 응답은 매칭된 proposal 정보(MyProposal) 그대로 반환.
-  func acceptOffer(offerID: Int64, runFee: Int, itemPrice: Int) throws -> MyProposal {
+  /// 미션을 생성한다.
+  func acceptOffer(offerID: Int64, runFee: Int, itemPrice: Int) throws -> OfferAcceptResult {
     if missions.contains(where: { $0.offerID == offerID }) {
       throw RepositoryError.conflict
     }
@@ -188,6 +188,7 @@ actor DummyBackendStore {
       throw RepositoryError.conflict
     }
 
+    let now = Date()
     let newID = nextMissionID
     nextMissionID += 1
     let mission = Mission(
@@ -200,21 +201,28 @@ actor DummyBackendStore {
       runFee: runFee,
       itemPrice: itemPrice,
       proofImageURL: nil,
-      createdAt: Date()
+      createdAt: now
     )
     missions.append(mission)
 
-    acceptOfferAndRejectOthers(acceptedOfferID: offerID, proposalID: offer.proposalID)
+    let rejectedCount = acceptOfferAndRejectOthers(acceptedOfferID: offerID, proposalID: offer.proposalID)
     let matched = with(proposal, status: .matched)
     proposals[proposalIndex] = matched
 
-    return MyProposal(
-      id: matched.id,
-      title: matched.title,
-      content: matched.content,
-      deadline: matched.deadline,
-      errandFee: matched.errandFee,
-      status: matched.status
+    return OfferAcceptResult(
+      proposalID: matched.id,
+      offerID: offerID,
+      missionID: newID,
+      proposalStatus: .matched,
+      acceptedOfferStatus: .accepted,
+      rejectedOfferCount: rejectedCount,
+      missionStatus: .created,
+      ordererID: ordererIDByProposalID[proposal.id] ?? "",
+      runnerID: offer.runnerID,
+      runFee: runFee,
+      itemPrice: itemPrice,
+      totalAmount: runFee + itemPrice,
+      createdAt: now
     )
   }
 
@@ -417,15 +425,19 @@ actor DummyBackendStore {
     proposals[index] = with(proposal, status: .offered)
   }
 
-  private func acceptOfferAndRejectOthers(acceptedOfferID: Int64, proposalID: Int64) {
+  @discardableResult
+  private func acceptOfferAndRejectOthers(acceptedOfferID: Int64, proposalID: Int64) -> Int {
+    var rejectedCount = 0
     for index in offers.indices where offers[index].proposalID == proposalID {
       let offer = offers[index]
       if offer.id == acceptedOfferID {
         offers[index] = with(offer, status: .accepted)
       } else if offer.status == .waiting {
         offers[index] = with(offer, status: .rejected)
+        rejectedCount += 1
       }
     }
+    return rejectedCount
   }
 
   private func with(_ proposal: Proposal, status: ProposalStatus) -> Proposal {
