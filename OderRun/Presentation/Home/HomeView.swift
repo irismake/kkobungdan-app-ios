@@ -250,7 +250,8 @@ struct HomeView: View {
           path.wrappedValue = [.myProposalDetail(proposalID: proposal.id)]
           Task {
             await viewModel.load()
-            await activityViewModel.load()
+            await myProposalsViewModel.load()
+            await myOffersViewModel.load()
           }
         }
       )
@@ -274,7 +275,8 @@ struct HomeView: View {
 #Preview {
   HomeView(
     viewModel: .preview(),
-    activityViewModel: .preview(),
+    myProposalsViewModel: .preview(),
+    myOffersViewModel: .preview(),
     profileViewModel: .preview(),
     notificationViewModel: .preview()
   )

@@ -34,6 +34,14 @@ final class MyOffersViewModel {
     self.cancelOfferUseCase = cancelOfferUseCase
   }
 
+  static func preview() -> MyOffersViewModel {
+    MyOffersViewModel(
+      fetchMyOffersUseCase: FetchMyOffersUseCase(repository: DIContainer.activityRepository),
+      fetchProposalDetailUseCase: FetchProposalDetailUseCase(repository: DIContainer.proposalRepository),
+      cancelOfferUseCase: CancelOfferUseCase(repository: DIContainer.offerRepository)
+    )
+  }
+
   @MainActor
   func load() async {
     isLoading = true

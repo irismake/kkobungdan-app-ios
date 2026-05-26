@@ -22,6 +22,12 @@ final class MyProposalsViewModel {
     self.fetchMyProposalsUseCase = fetchMyProposalsUseCase
   }
 
+  static func preview() -> MyProposalsViewModel {
+    MyProposalsViewModel(
+      fetchMyProposalsUseCase: FetchMyProposalsUseCase(repository: DIContainer.activityRepository)
+    )
+  }
+
   @MainActor
   func load() async {
     isLoading = true
