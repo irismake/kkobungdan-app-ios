@@ -73,7 +73,7 @@ final class ProposalRepository: ProposalRepositoryProtocol {
   }
 
   func cancelProposal(id: Int64) async throws -> Proposal {
-    let dto: ProposalResponseDTO =
+    let dto: ProposalCancelResponseDTO =
       try await client.post("/v1/proposal/\(id)/cancel", body: nil as String?)
     return dto.toDomain()
   }

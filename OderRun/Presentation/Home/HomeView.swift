@@ -80,7 +80,10 @@ struct HomeView: View {
       }
       .onChange(of: activityPath) { _, newPath in
         if newPath.isEmpty {
-          Task { await activityViewModel.load() }
+          Task {
+            await activityViewModel.load()
+            await viewModel.load()
+          }
         }
       }
     case .notifications:
