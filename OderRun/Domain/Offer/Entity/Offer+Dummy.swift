@@ -36,8 +36,8 @@ extension Offer {
       Offer(id: 80, proposalID: 10, runnerID: DummySession.currentUserID, status: .accepted, createdAt: now.addingTimeInterval(-3600)),
       // proposal 11 (내 proposal, COMPLETE — 미션 SETTLED)
       Offer(id: 81, proposalID: 11, runnerID: "user-r004", status: .complete, createdAt: now.addingTimeInterval(-10 * 86400)),
-      // proposal 12 (남의 proposal, MATCHED — 내가 RUNNER, 미션 REFUNDED)
-      Offer(id: 82, proposalID: 12, runnerID: DummySession.currentUserID, status: .accepted, createdAt: now.addingTimeInterval(-12 * 86400))
+      // proposal 12 (남의 proposal, COMPLETE — 내가 RUNNER, 미션 REFUNDED 로 terminal cascade)
+      Offer(id: 82, proposalID: 12, runnerID: DummySession.currentUserID, status: .complete, createdAt: now.addingTimeInterval(-12 * 86400))
     ]
   }()
 

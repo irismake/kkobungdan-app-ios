@@ -20,8 +20,8 @@ enum ActivityStage {
 extension MyProposal {
   var stage: ActivityStage {
     switch status {
-    case .posted, .holding: return .unpaid
-    case .waiting, .offered: return .waiting
+    case .holding: return .unpaid
+    case .posted, .waiting, .offered: return .waiting
     case .matched: return .inProgress
     case .complete: return .completed
     case .cancelled: return .cancelled
