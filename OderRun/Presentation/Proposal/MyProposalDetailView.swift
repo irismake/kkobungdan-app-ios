@@ -65,11 +65,13 @@ struct MyProposalDetailView: View {
             VStack(spacing: 12) {
               proposalCardSection
 
-              if let detail = viewModel.matchedOfferDetail {
+              if let detail = viewModel.matchedOfferDetail,
+                 let profile = viewModel.matchedRunnerProfile
+              {
                 MatchedRunnerSection(
-                  nickname: detail.nickname,
-                  level: detail.level,
-                  grade: detail.grade,
+                  nickname: profile.nickname,
+                  level: profile.level,
+                  grade: profile.grade,
                   appliedAt: ProposalDisplay.appliedAtString(detail.createdAt)
                 )
               }

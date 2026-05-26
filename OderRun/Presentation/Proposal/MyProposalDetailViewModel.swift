@@ -14,6 +14,7 @@ final class MyProposalDetailViewModel {
   var proposal: Proposal?
   var offers: [Offer] = []
   var matchedOfferDetail: OfferDetail?
+  var matchedRunnerProfile: RunnerProfile?
   var isLoading: Bool = false
   var errorMessage: String?
   var isCancelling: Bool = false
@@ -53,6 +54,7 @@ final class MyProposalDetailViewModel {
   private let fetchDetailUseCase: FetchProposalDetailUseCase
   private let fetchOffersUseCase: FetchOffersByProposalUseCase
   private let fetchOfferDetailUseCase: FetchOfferDetailUseCase
+  private let fetchRunnerProfileUseCase: FetchRunnerProfileUseCase
   private let fetchMissionByProposalUseCase: FetchMissionByProposalUseCase
   private let updateMissionActionUseCase: UpdateMissionActionUseCase
   private let cancelProposalUseCase: CancelProposalUseCase
@@ -62,6 +64,7 @@ final class MyProposalDetailViewModel {
     fetchDetailUseCase: FetchProposalDetailUseCase,
     fetchOffersUseCase: FetchOffersByProposalUseCase,
     fetchOfferDetailUseCase: FetchOfferDetailUseCase,
+    fetchRunnerProfileUseCase: FetchRunnerProfileUseCase,
     fetchMissionByProposalUseCase: FetchMissionByProposalUseCase,
     updateMissionActionUseCase: UpdateMissionActionUseCase,
     cancelProposalUseCase: CancelProposalUseCase
@@ -70,6 +73,7 @@ final class MyProposalDetailViewModel {
     self.fetchDetailUseCase = fetchDetailUseCase
     self.fetchOffersUseCase = fetchOffersUseCase
     self.fetchOfferDetailUseCase = fetchOfferDetailUseCase
+    self.fetchRunnerProfileUseCase = fetchRunnerProfileUseCase
     self.fetchMissionByProposalUseCase = fetchMissionByProposalUseCase
     self.updateMissionActionUseCase = updateMissionActionUseCase
     self.cancelProposalUseCase = cancelProposalUseCase
@@ -86,9 +90,14 @@ final class MyProposalDetailViewModel {
       offers = try await offersTask
 
       if let matchedOffer {
-        matchedOfferDetail = try await fetchOfferDetailUseCase.execute(offerID: matchedOffer.id)
+        async let detailTask = fetchOfferDetailUseCase.execute(offerID: matchedOffer.id)
+        async let profileTask = fetchRunnerProfileUseCase.execute(runnerID: matchedOffer.runnerID)
+        let (detail, profile) = try await (detailTask, profileTask)
+        matchedOfferDetail = detail
+        matchedRunnerProfile = profile
       } else {
         matchedOfferDetail = nil
+        matchedRunnerProfile = nil
       }
 
       // proposal 이 MATCHED 이후라면 미션이 존재한다. 그 외 상태에서는 nil.
