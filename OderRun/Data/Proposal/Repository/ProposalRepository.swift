@@ -11,11 +11,22 @@ private struct ProposalCreateBody: Encodable {
   let title: String
   let content: String
   let deadline: String
-  let meetingAt: String
   let errandFee: Int
-  // TODO: 서버에서 itemPrice/deposit 필드 제거되면 삭제
-  let itemPrice: Int
-  let deposit: Int
+  // TODO: meetingAt UI 연동 전까지 stub 값 전송
+  let meetingAt: String = ProposalCreateBody.stubMeetingAt
+  // TODO: itemPrice UI 연동 전까지 stub 값 전송
+  let itemPrice: Int = ProposalCreateBody.stubItemPrice
+  // TODO: deposit UI 연동 전까지 stub 값 전송
+  let deposit: Int = ProposalCreateBody.stubDeposit
+}
+
+extension ProposalCreateBody {
+  // TODO: meetingAt UI 반영 시 호출부에서 실제 값 전달로 교체
+  static let stubMeetingAt: String = ""
+  // TODO: itemPrice UI 반영 시 호출부에서 실제 값 전달로 교체
+  static let stubItemPrice: Int = 0
+  // TODO: deposit UI 반영 시 호출부에서 실제 값 전달로 교체
+  static let stubDeposit: Int = 0
 }
 
 private struct ProposalUpdateBody: Encodable {
@@ -55,10 +66,7 @@ final class ProposalRepository: ProposalRepositoryProtocol {
         title: title,
         content: content,
         deadline: deadline,
-        meetingAt: deadline, // TODO: 서버에서 meetingAt 필드 제거되면 삭제
-        errandFee: errandFee,
-        itemPrice: 1000, // TODO: 서버에서 itemPrice 필드 제거되면 삭제
-        deposit: 1000 // TODO: 서버에서 deposit 필드 제거되면 삭제
+        errandFee: errandFee
       )
     )
     return dto.toDomain()
