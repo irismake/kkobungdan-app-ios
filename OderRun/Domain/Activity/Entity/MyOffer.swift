@@ -15,6 +15,10 @@ struct MyOffer: Equatable, Identifiable {
   let id: Int64
   /// 이 offer 가 가리키는 proposal 의 id. 활동 탭에서 상세 진입에 사용한다.
   let proposalID: Int64
+  let runnerName: String
+  let status: OfferStatus
+  let createdAt: Date
+  // TODO: 서버에서 title/content/deadline/errandFee/meetingAt/itemPrice/deposit 필드 추가되면 "" · 0 · nil 제거
   let title: String
   let content: String
   let deadline: Date
@@ -22,5 +26,4 @@ struct MyOffer: Equatable, Identifiable {
   let errandFee: Int
   let itemPrice: Int?
   let deposit: Int?
-  let status: OfferStatus
 }

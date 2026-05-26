@@ -50,10 +50,10 @@ enum AppRouteFactory {
       proposalID: proposalID,
       fetchDetailUseCase: FetchProposalDetailUseCase(repository: DIContainer.proposalRepository),
       fetchOffersUseCase: FetchOffersByProposalUseCase(repository: DIContainer.offerRepository),
+      fetchOfferDetailUseCase: FetchOfferDetailUseCase(repository: DIContainer.offerRepository),
       fetchMissionByProposalUseCase: FetchMissionByProposalUseCase(repository: DIContainer.missionRepository),
       updateMissionActionUseCase: UpdateMissionActionUseCase(repository: DIContainer.missionRepository),
-      cancelProposalUseCase: CancelProposalUseCase(repository: DIContainer.proposalRepository),
-      offerRepository: DIContainer.offerRepository
+      cancelProposalUseCase: CancelProposalUseCase(repository: DIContainer.proposalRepository)
     )
   }
 
@@ -80,7 +80,7 @@ enum AppRouteFactory {
       proposalID: proposalID,
       fetchDetailUseCase: FetchProposalDetailUseCase(repository: DIContainer.proposalRepository),
       fetchOffersUseCase: FetchOffersByProposalUseCase(repository: DIContainer.offerRepository),
-      offerRepository: DIContainer.offerRepository,
+      fetchOfferDetailUseCase: FetchOfferDetailUseCase(repository: DIContainer.offerRepository),
       acceptOfferUseCase: AcceptOfferUseCase(repository: DIContainer.offerRepository)
     )
   }

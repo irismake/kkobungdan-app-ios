@@ -21,20 +21,20 @@ final class ApplicantListViewModel {
 
   private let fetchDetailUseCase: FetchProposalDetailUseCase
   private let fetchOffersUseCase: FetchOffersByProposalUseCase
-  private let offerRepository: OfferRepositoryProtocol
+  private let fetchOfferDetailUseCase: FetchOfferDetailUseCase
   private let acceptOfferUseCase: AcceptOfferUseCase
 
   init(
     proposalID: Int64,
     fetchDetailUseCase: FetchProposalDetailUseCase,
     fetchOffersUseCase: FetchOffersByProposalUseCase,
-    offerRepository: OfferRepositoryProtocol,
+    fetchOfferDetailUseCase: FetchOfferDetailUseCase,
     acceptOfferUseCase: AcceptOfferUseCase
   ) {
     self.proposalID = proposalID
     self.fetchDetailUseCase = fetchDetailUseCase
     self.fetchOffersUseCase = fetchOffersUseCase
-    self.offerRepository = offerRepository
+    self.fetchOfferDetailUseCase = fetchOfferDetailUseCase
     self.acceptOfferUseCase = acceptOfferUseCase
   }
 
@@ -50,7 +50,7 @@ final class ApplicantListViewModel {
 
       var built: [OfferDetail] = []
       for offer in offers where offer.status == .waiting || offer.status == .accepted {
-        let detail = try await offerRepository.fetchOfferDetail(offerID: offer.id)
+        let detail = try await fetchOfferDetailUseCase.execute(offerID: offer.id)
         built.append(detail)
       }
       entries = built

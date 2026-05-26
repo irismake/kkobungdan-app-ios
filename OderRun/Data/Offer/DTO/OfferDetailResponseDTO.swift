@@ -30,10 +30,7 @@ extension OfferDetailResponseDTO {
       proposalID: proposalID,
       runnerID: runnerID,
       status: OfferStatus(rawValue: status) ?? .waiting,
-      createdAt: DateFormatters.parse(createdAt),
-      nickname: "",
-      level: 0,
-      grade: ""
+      createdAt: DateFormatters.parse(createdAt)
     )
   }
 }

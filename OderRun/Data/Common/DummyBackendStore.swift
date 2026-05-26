@@ -142,21 +142,17 @@ actor DummyBackendStore {
       .sorted { $0.createdAt > $1.createdAt }
   }
 
-  /// `GET /v1/offer/{offerId}` 인메모리 흉내. offer 기본 필드 + 러너 프로필을 함께 반환.
+  /// `GET /v1/offer/{offerId}` 인메모리 흉내.
   func fetchOfferDetail(offerID: Int64) throws -> OfferDetail {
     guard let offer = offers.first(where: { $0.id == offerID }) else {
       throw RepositoryError.notFound
     }
-    let profile = OfferDetail.dummyProfile(for: offer.runnerID)
     return OfferDetail(
       id: offer.id,
       proposalID: offer.proposalID,
       runnerID: offer.runnerID,
       status: offer.status,
-      createdAt: offer.createdAt,
-      nickname: profile.nickname,
-      level: profile.level,
-      grade: profile.grade
+      createdAt: offer.createdAt
     )
   }
 
@@ -364,14 +360,17 @@ actor DummyBackendStore {
       return MyOffer(
         id: offer.id,
         proposalID: proposal.id,
+        runnerName: DummySession.currentUserID,
+        status: offer.status,
+        createdAt: offer.createdAt,
+        // TODO: 서버에서 title/content/deadline/errandFee/meetingAt/itemPrice/deposit 필드 추가되면 교체
         title: proposal.title,
         content: proposal.content,
         deadline: proposal.deadline,
         meetingAt: nil,
         errandFee: proposal.errandFee,
         itemPrice: nil,
-        deposit: nil,
-        status: offer.status
+        deposit: nil
       )
     }
   }
