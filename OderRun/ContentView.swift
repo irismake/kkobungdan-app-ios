@@ -8,11 +8,18 @@
 import SwiftUI
 
 struct ContentView: View {
+  /// 로그인 진입 화면에서 분기되는 인증 경로.
+  private enum AuthRoute: Hashable {
+    case signup
+    case login
+  }
+
   @State private var socialLoginViewModel = SocialLoginViewModel(
     emailLoginUseCase: EmailLoginUseCase(authRepository: DIContainer.authRepository),
     appleLoginUseCase: AppleLoginUseCase(authRepository: AuthRepository()),
     kakaoLoginUseCase: KakaoLoginUseCase(authRepository: AuthRepository())
   )
+  @State private var authPath: [AuthRoute] = []
 
   var body: some View {
     Group {
@@ -41,7 +48,22 @@ struct ContentView: View {
           )
         )
       } else {
-        SocialLoginView(viewModel: socialLoginViewModel)
+        NavigationStack(path: $authPath) {
+          LoginView(
+            onStart: { authPath.append(.signup) },
+            onLogin: { authPath.append(.login) }
+          )
+          .navigationDestination(for: AuthRoute.self) { route in
+            switch route {
+            case .signup:
+              // TODO: SMS 회원가입 플로우 화면으로 교체
+              SocialLoginView(viewModel: socialLoginViewModel)
+            case .login:
+              // TODO: 로그인 전용 화면으로 교체
+              SocialLoginView(viewModel: socialLoginViewModel)
+            }
+          }
+        }
       }
     }
     .onReceive(NotificationCenter.default.publisher(for: .authForcedLogout)) { _ in
