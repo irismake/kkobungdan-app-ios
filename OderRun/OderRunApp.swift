@@ -22,7 +22,7 @@ struct OderRunApp: App {
 
   var body: some Scene {
     WindowGroup {
-      ContentView()
+      RootView()
         .onOpenURL { url in
           if AuthApi.isKakaoTalkLoginUrl(url) {
             AuthController.handleOpenUrl(url: url)
