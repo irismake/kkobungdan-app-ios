@@ -7,7 +7,7 @@
 
 import Foundation
 
-private struct LoginRequestBody: Encodable {
+private struct EmailLoginRequestBody: Encodable {
   let email: String
   let password: String
 }
@@ -53,10 +53,10 @@ final class AuthRepository: AuthRepositoryProtocol {
     )
   }
 
-  func login(email: String, password: String) async throws -> AuthTokens {
+  func emailLogin(email: String, password: String) async throws -> AuthTokens {
     let response: LoginResponseDTO = try await client.post(
       "/v1/auth/login",
-      body: LoginRequestBody(email: email, password: password)
+      body: EmailLoginRequestBody(email: email, password: password)
     )
     tokenStorage.accessToken = response.accessToken
     tokenStorage.refreshToken = response.refreshToken

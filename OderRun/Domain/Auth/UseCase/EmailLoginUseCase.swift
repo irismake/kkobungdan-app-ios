@@ -1,5 +1,5 @@
 //
-//  LoginUseCase.swift
+//  EmailLoginUseCase.swift
 //  OderRun
 //
 //  Created by 김가희 on 3/4/26.
@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct LoginUseCase {
+struct EmailLoginUseCase {
   private let authRepository: AuthRepositoryProtocol
 
   init(authRepository: AuthRepositoryProtocol) {
@@ -15,6 +15,6 @@ struct LoginUseCase {
   }
 
   func execute(email: String, password: String) async throws -> AuthTokens {
-    try await authRepository.login(email: email, password: password)
+    try await authRepository.emailLogin(email: email, password: password)
   }
 }

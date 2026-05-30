@@ -8,15 +8,23 @@
 import SwiftUI
 
 struct ContentView: View {
-  @State private var loginViewModel = LoginViewModel(
-    loginUseCase: LoginUseCase(authRepository: DIContainer.authRepository),
+  /// 로그인 진입 화면에서 분기되는 인증 경로.
+  private enum AuthRoute: Hashable {
+    case signup
+    case verification
+    case login
+  }
+
+  @State private var socialLoginViewModel = SocialLoginViewModel(
+    emailLoginUseCase: EmailLoginUseCase(authRepository: DIContainer.authRepository),
     appleLoginUseCase: AppleLoginUseCase(authRepository: AuthRepository()),
     kakaoLoginUseCase: KakaoLoginUseCase(authRepository: AuthRepository())
   )
+  @State private var authPath: [AuthRoute] = []
 
   var body: some View {
     Group {
-      if loginViewModel.isLoginSuccess {
+      if socialLoginViewModel.isLoginSuccess {
         HomeView(
           viewModel: HomeViewModel(
             fetchProposalsUseCase: FetchProposalsUseCase(repository: DIContainer.proposalRepository)
@@ -33,7 +41,7 @@ struct ContentView: View {
             fetchUserDetailUseCase: FetchUserDetailUseCase(userRepository: DIContainer.userRepository),
             updateAlarmUseCase: UpdateAlarmUseCase(userRepository: DIContainer.userRepository),
             logoutUseCase: LogoutUseCase(authRepository: AuthRepository()),
-            onLogout: { loginViewModel.isLoginSuccess = false }
+            onLogout: { socialLoginViewModel.isLoginSuccess = false }
           ),
           notificationViewModel: NotificationViewModel(
             fetchNotificationsUseCase: FetchNotificationsUseCase(repository: DIContainer.notificationRepository),
@@ -41,11 +49,41 @@ struct ContentView: View {
           )
         )
       } else {
-        LoginView(viewModel: loginViewModel)
+        NavigationStack(path: $authPath) {
+          LoginView(
+            onStart: { authPath.append(.signup) },
+            onLogin: { authPath.append(.login) }
+          )
+          .navigationDestination(for: AuthRoute.self) { route in
+            switch route {
+            case .signup:
+              SignupView(
+                onClose: { authPath.removeAll() },
+                onComplete: { authPath.append(.verification) }
+              )
+            case .verification:
+              VerificationCodeView(
+                onClose: { authPath.removeAll() },
+                onComplete: {
+                  // TODO: 인증 완료 후 실제 가입/로그인 처리 연동
+                  socialLoginViewModel.isLoginSuccess = true
+                }
+              )
+            case .login:
+              SmsLoginView(
+                onClose: { authPath.removeAll() },
+                onNext: { authPath.append(.verification) },
+                onFindAccount: {
+                  // TODO: 내 계정 찾기 — 회원가입과 같은 본인인증 flow 진행
+                }
+              )
+            }
+          }
+        }
       }
     }
     .onReceive(NotificationCenter.default.publisher(for: .authForcedLogout)) { _ in
-      loginViewModel.isLoginSuccess = false
+      socialLoginViewModel.isLoginSuccess = false
     }
   }
 }
