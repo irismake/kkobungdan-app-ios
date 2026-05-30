@@ -8,15 +8,15 @@
 import SwiftUI
 
 struct ContentView: View {
-  @State private var loginViewModel = LoginViewModel(
-    loginUseCase: LoginUseCase(authRepository: DIContainer.authRepository),
+  @State private var socialLoginViewModel = SocialLoginViewModel(
+    emailLoginUseCase: EmailLoginUseCase(authRepository: DIContainer.authRepository),
     appleLoginUseCase: AppleLoginUseCase(authRepository: AuthRepository()),
     kakaoLoginUseCase: KakaoLoginUseCase(authRepository: AuthRepository())
   )
 
   var body: some View {
     Group {
-      if loginViewModel.isLoginSuccess {
+      if socialLoginViewModel.isLoginSuccess {
         HomeView(
           viewModel: HomeViewModel(
             fetchProposalsUseCase: FetchProposalsUseCase(repository: DIContainer.proposalRepository)
@@ -33,7 +33,7 @@ struct ContentView: View {
             fetchUserDetailUseCase: FetchUserDetailUseCase(userRepository: DIContainer.userRepository),
             updateAlarmUseCase: UpdateAlarmUseCase(userRepository: DIContainer.userRepository),
             logoutUseCase: LogoutUseCase(authRepository: AuthRepository()),
-            onLogout: { loginViewModel.isLoginSuccess = false }
+            onLogout: { socialLoginViewModel.isLoginSuccess = false }
           ),
           notificationViewModel: NotificationViewModel(
             fetchNotificationsUseCase: FetchNotificationsUseCase(repository: DIContainer.notificationRepository),
@@ -41,11 +41,11 @@ struct ContentView: View {
           )
         )
       } else {
-        LoginView(viewModel: loginViewModel)
+        SocialLoginView(viewModel: socialLoginViewModel)
       }
     }
     .onReceive(NotificationCenter.default.publisher(for: .authForcedLogout)) { _ in
-      loginViewModel.isLoginSuccess = false
+      socialLoginViewModel.isLoginSuccess = false
     }
   }
 }

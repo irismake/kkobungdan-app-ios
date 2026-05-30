@@ -20,7 +20,7 @@ actor TestAuthRepositoryImpl: AuthRepositoryProtocol {
     }
   }
 
-  func login(email _: String, password _: String) async throws -> AuthTokens {
+  func emailLogin(email _: String, password _: String) async throws -> AuthTokens {
     throw RepositoryError.notImplemented
   }
 

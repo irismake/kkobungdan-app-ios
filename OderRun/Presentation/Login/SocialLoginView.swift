@@ -1,5 +1,5 @@
 //
-//  LoginView.swift
+//  SocialLoginView.swift
 //  OderRun
 //
 //  Created by 김가희 on 3/4/26.
@@ -7,10 +7,10 @@
 
 import SwiftUI
 
-struct LoginView: View {
-  @State private var viewModel: LoginViewModel
+struct SocialLoginView: View {
+  @State private var viewModel: SocialLoginViewModel
 
-  init(viewModel: LoginViewModel) {
+  init(viewModel: SocialLoginViewModel) {
     _viewModel = State(initialValue: viewModel)
   }
 
@@ -143,9 +143,9 @@ struct LoginView: View {
 }
 
 #Preview {
-  LoginView(
-    viewModel: LoginViewModel(
-      loginUseCase: LoginUseCase(authRepository: DIContainer.authRepository),
+  SocialLoginView(
+    viewModel: SocialLoginViewModel(
+      emailLoginUseCase: EmailLoginUseCase(authRepository: DIContainer.authRepository),
       appleLoginUseCase: AppleLoginUseCase(authRepository: DIContainer.authRepository),
       kakaoLoginUseCase: KakaoLoginUseCase(authRepository: DIContainer.authRepository)
     )
