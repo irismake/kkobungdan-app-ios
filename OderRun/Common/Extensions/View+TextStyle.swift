@@ -29,6 +29,7 @@ enum TextStyle {
   case body1 // Medium 16/24/-0.3
   case body2 // Medium 14/20/-0.1
   case body3 // Regular 14/20/-0.1
+  case body4 // Regular 16/24/-0.312
   case caption1 // Medium 12/20/-0.1
   case caption2 // Regular 12/20/-0.15
   case caption3 // Medium 12/16/0
@@ -49,7 +50,7 @@ enum TextStyle {
       return "Pretendard-SemiBold"
     case .body1, .body2, .caption1, .caption3, .inputBody2, .inputBody3:
       return "Pretendard-Medium"
-    case .body3, .caption2, .caption5, .caption6, .inputBody1:
+    case .body3, .body4, .caption2, .caption5, .caption6, .inputBody1:
       return "Pretendard-Regular"
     case .interHeading1:
       return "Inter-Medium"
@@ -63,7 +64,7 @@ enum TextStyle {
     case .display: return 30
     case .heading1, .heading2: return 24
     case .heading3, .title1: return 18
-    case .heading4, .heading5, .body1, .interHeading1, .interBody1, .inputBody1, .inputBody3: return 16
+    case .heading4, .heading5, .body1, .body4, .interHeading1, .interBody1, .inputBody1, .inputBody3: return 16
     case .title2, .title3, .body2, .body3, .inputBody2: return 14
     case .caption1, .caption3, .caption2, .caption4, .caption5, .caption6: return 12
     }
@@ -83,6 +84,7 @@ enum TextStyle {
     case .body1: return 24
     case .body2: return 20
     case .body3: return 20
+    case .body4: return 24
     case .caption1: return 20
     case .caption3: return 16
     case .caption2: return 20
@@ -101,7 +103,7 @@ enum TextStyle {
     case .display: return 0.396
     case .heading1, .heading2, .heading3, .heading5, .title1, .title2, .title3, .caption4:
       return -0.4
-    case .interHeading1, .interBody1: return -0.312
+    case .body4, .interHeading1, .interBody1: return -0.312
     case .body1: return -0.3
     case .heading4, .inputBody1, .inputBody2, .inputBody3: return -0.2
     case .caption2: return -0.15

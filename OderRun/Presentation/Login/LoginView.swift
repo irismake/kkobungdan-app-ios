@@ -48,10 +48,10 @@ struct LoginView: View {
 
   private var brandSection: some View {
     VStack(spacing: 12) {
-      Image("logo")
+      Image("mascot_login")
         .resizable()
         .scaledToFit()
-        .frame(width: 96, height: 67)
+        .frame(width: 96, height: 62)
 
       VStack(spacing: 8) {
         Text("꼬붕단")
@@ -60,7 +60,7 @@ struct LoginView: View {
           .multilineTextAlignment(.center)
 
         Text("줄서기부터 쇼핑 동행까지,\n오늘도 꼬붕단 출동!")
-          .textStyle(.body1)
+          .textStyle(.body4)
           .foregroundColor(.gray600)
           .multilineTextAlignment(.center)
       }

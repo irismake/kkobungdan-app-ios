@@ -13,7 +13,7 @@ struct SplashView: View {
       Color.white
         .ignoresSafeArea()
 
-      Image("logo")
+      Image("mascot_logo")
         .resizable()
         .scaledToFit()
         .frame(width: 353, height: 353)

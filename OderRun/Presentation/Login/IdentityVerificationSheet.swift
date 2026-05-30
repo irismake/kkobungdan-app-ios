@@ -33,7 +33,7 @@ struct IdentityVerificationSheet: View {
   private var sheet: some View {
     VStack(spacing: 0) {
       Capsule()
-        .fill(Color.gray200)
+        .fill(Color.gray400)
         .frame(width: 40, height: 4)
         .padding(.top, 8)
         .padding(.bottom, 16)
@@ -51,15 +51,16 @@ struct IdentityVerificationSheet: View {
         }
         .frame(maxWidth: .infinity, alignment: .leading)
 
-        Image("image_identify")
+        Image("mascot_identify")
           .resizable()
           .scaledToFill()
           .frame(width: 192, height: 144)
           .clipped()
       }
       .padding(.horizontal, 24)
-      .padding(.bottom, 8)
+      .padding(.top, 8)
 
+      Gap.v(16)
       BottomActionBar(title: "30초 만에 인증하기", action: { close(onVerify) })
     }
     .frame(maxWidth: .infinity)
