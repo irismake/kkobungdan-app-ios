@@ -15,12 +15,14 @@ struct SignupView: View {
     case phoneNumber
     case carrier
     case name
+    case birthDate
   }
 
   @State private var step: Step = .phoneNumber
   @State private var phoneNumber: String = ""
   @State private var carrier: String?
   @State private var name: String = ""
+  @State private var birthDate: String = ""
 
   var body: some View {
     ZStack {
@@ -48,7 +50,18 @@ struct SignupView: View {
           carrier: carrier ?? "",
           phoneNumber: phoneNumber,
           onClose: onClose,
-          // TODO: 다음 단계(주민번호/인증 등)로 이동
+          onNext: { withAnimation(.easeInOut) { step = .birthDate } }
+        )
+        .transition(.opacity)
+
+      case .birthDate:
+        BirthDateInputView(
+          birthDate: $birthDate,
+          name: name,
+          carrier: carrier ?? "",
+          phoneNumber: phoneNumber,
+          onClose: onClose,
+          // TODO: 다음 단계(인증 완료 등)로 이동
           onNext: {}
         )
         .transition(.opacity)
