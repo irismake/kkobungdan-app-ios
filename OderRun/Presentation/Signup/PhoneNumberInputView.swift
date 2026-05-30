@@ -27,8 +27,6 @@ struct PhoneNumberInputView: View {
     .padding(.top, 8)
     .frame(maxWidth: .infinity, maxHeight: .infinity)
     .background(Color.white)
-    .contentShape(Rectangle())
-    .onTapGesture { isFocused = false }
     .onAppear { isFocused = true }
   }
 
