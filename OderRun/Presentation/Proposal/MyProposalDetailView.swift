@@ -125,17 +125,13 @@ struct MyProposalDetailView: View {
   private var bottomActionSection: some View {
     switch viewModel.proposal?.status {
     case .matched where viewModel.canConfirmReceived:
-      Button(action: { isMissionCompleted = true }) {
-        Text("만났어요!")
-          .textStyle(.heading4)
-          .foregroundColor(.white)
-          .multilineTextAlignment(.center)
-          .frame(maxWidth: .infinity)
-          .frame(height: 56)
-          .background(Color.emerald500)
-          .clipShape(RoundedRectangle(cornerRadius: 12))
+      VStack(spacing: 8) {
+        MeetButton { isMissionCompleted = true }
+
+        OutlineButton(title: "임무 중단") {
+          // TODO: 분쟁 기능 추가
+        }
       }
-      .buttonStyle(.plain)
     case .matched where viewModel.isWaitingForRunnerConfirm:
       Text("지원자 확인 대기 중")
         .textStyle(.heading4)
@@ -156,7 +152,7 @@ struct MyProposalDetailView: View {
           onShowApplicants()
         }
 
-        CancelButton(title: viewModel.isCancelling ? "취소 중..." : "요청 취소") {
+        OutlineButton(title: viewModel.isCancelling ? "취소 중..." : "요청 취소") {
           Task { await viewModel.cancelProposal() }
         }
       }

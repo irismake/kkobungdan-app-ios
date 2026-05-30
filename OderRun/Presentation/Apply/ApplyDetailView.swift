@@ -92,17 +92,14 @@ struct ApplyDetailView: View {
   @ViewBuilder
   private var bottomActionSection: some View {
     if viewModel.canCompleteDelivery {
-      Button(action: { isMissionCompleted = true }) {
-        Text("만났어요!")
-          .textStyle(.heading4)
-          .foregroundColor(.white)
-          .multilineTextAlignment(.center)
-          .frame(maxWidth: .infinity)
-          .frame(height: 56)
-          .background(Color.emerald500)
-          .clipShape(RoundedRectangle(cornerRadius: 12))
+      VStack(spacing: 8) {
+        MeetButton { isMissionCompleted = true }
+
+        OutlineButton(title: "임무 중단") {
+          // TODO: 분쟁 기능 추가
+        }
       }
-      .buttonStyle(.plain)
+
     } else if viewModel.isWaitingForOrdererConfirm {
       Text("요청자 확인 대기 중")
         .textStyle(.heading4)

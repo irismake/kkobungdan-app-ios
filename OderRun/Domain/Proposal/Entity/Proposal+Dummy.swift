@@ -82,7 +82,7 @@ extension Proposal {
         content: "꽃시장 근처에서 빨간 장미 20송이 구매 후 회사로 배달 부탁드립니다.",
         deadline: now.addingTimeInterval(4 * 86400),
         errandFee: 6000,
-        status: .posted
+        status: .holding
       ),
       Proposal(
         id: 8,
