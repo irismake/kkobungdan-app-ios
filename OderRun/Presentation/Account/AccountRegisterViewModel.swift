@@ -18,11 +18,7 @@ final class AccountRegisterViewModel {
   var errorMessage: String?
 
   /// 임무 수행비를 받을 은행 목록.
-  let banks: [String] = [
-    "NH 농협", "카카오뱅크", "KB 국민",
-    "토스뱅크", "신한", "우리",
-    "IBK기업", "하나", "새마을"
-  ]
+  let banks: [String] = BankSelectSheet.banks
 
   private let createOfferUseCase: CreateOfferUseCase
 

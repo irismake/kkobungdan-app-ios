@@ -9,6 +9,13 @@ import SwiftUI
 
 /// 은행 선택 바텀시트. 3열 그리드로 은행을 나열하고 탭하면 선택 후 닫힌다.
 struct BankSelectSheet: View {
+  /// 선택 가능한 은행 목록(공용). 서버 스펙이 없어 클라이언트 상수로 보관한다.
+  static let banks: [String] = [
+    "NH 농협", "카카오뱅크", "KB 국민",
+    "토스뱅크", "신한", "우리",
+    "IBK기업", "하나", "새마을"
+  ]
+
   let banks: [String]
   let onClose: () -> Void
   let onSelect: (String) -> Void

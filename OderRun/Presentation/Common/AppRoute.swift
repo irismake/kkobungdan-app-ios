@@ -40,6 +40,7 @@ enum AppRouteFactory {
     ProposalDetailViewModel(
       proposalID: proposalID,
       fetchDetailUseCase: FetchProposalDetailUseCase(repository: DIContainer.proposalRepository),
+      createOfferUseCase: CreateOfferUseCase(repository: DIContainer.offerRepository),
       fetchOffersByProposalUseCase: FetchOffersByProposalUseCase(repository: DIContainer.offerRepository)
     )
   }
