@@ -42,6 +42,10 @@ final class SignupViewModel {
 
   let carriers = ["SKT", "KT", "LG U+", "SKT 알뜰폰", "KT 알뜰폰", "LG U+ 알뜰폰"]
 
+  /// 모든 입력을 마친 뒤 띄우는 약관 동의 시트.
+  let termsViewModel = TermsAgreementViewModel()
+  var isTermsSheetPresented = false
+
   /// 현재 step의 헤더 문구.
   var title: String {
     switch step {
@@ -52,13 +56,29 @@ final class SignupViewModel {
     }
   }
 
-  /// 현재 step을 완료할 수 있는지.
+  private var isPhoneValid: Bool {
+    phoneNumber.filter(\.isNumber).count == 11
+  }
+
+  private var isCarrierValid: Bool {
+    carrier != nil
+  }
+
+  private var isNameValid: Bool {
+    !name.trimmingCharacters(in: .whitespaces).isEmpty
+  }
+
+  private var isBirthDateValid: Bool {
+    birthDate.count == 7
+  }
+
+  /// 현재 step을 완료할 수 있는지. 진행된 단계에서 이전 필드를 비우면 다시 비활성화되도록 누적 검사한다.
   var canProceed: Bool {
     switch step {
-    case .phoneNumber: phoneNumber.filter(\.isNumber).count == 11
-    case .carrier: carrier != nil
-    case .name: !name.trimmingCharacters(in: .whitespaces).isEmpty
-    case .birthDate: birthDate.count == 7
+    case .phoneNumber: isPhoneValid
+    case .carrier: isPhoneValid && isCarrierValid
+    case .name: isPhoneValid && isCarrierValid && isNameValid
+    case .birthDate: isPhoneValid && isCarrierValid && isNameValid && isBirthDateValid
     }
   }
 
@@ -69,10 +89,22 @@ final class SignupViewModel {
       reveal(.birthDate)
       focus = .birth
     case .birthDate:
-      focus = nil // TODO: 다음 단계(인증 완료 등)로 이동
+      focus = nil // 키보드를 내리고 약관 동의 시트를 띄운다.
+      isTermsSheetPresented = true
     default:
       break
     }
+  }
+
+  /// 약관 시트를 동의 없이 닫는다.
+  func dismissTermsSheet() {
+    isTermsSheetPresented = false
+  }
+
+  /// 약관 동의 완료.
+  func completeTermsAgreement() {
+    isTermsSheetPresented = false
+    // TODO: 다음 단계(인증 완료 등)로 이동
   }
 
   func fommatPhoneNumber(_ input: String) {

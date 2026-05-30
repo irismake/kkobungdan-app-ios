@@ -38,13 +38,22 @@ struct SignupView: View {
         }
       }
     }
-    // 통신사 시트는 safeAreaInset(다음 버튼)보다 바깥의 overlay 라야 버튼 위로 스택된다.
+    // 시트는 safeAreaInset(다음 버튼)보다 바깥의 overlay 라야 버튼 위로 스택된다.
     .overlay {
       if viewModel.isCarrierSheetPresented {
         CarrierSelectSheet(
           carriers: viewModel.carriers,
           onClose: { viewModel.dismissCarrierSheet() },
           onSelect: { viewModel.selectCarrier($0) }
+        )
+      }
+    }
+    .overlay {
+      if viewModel.isTermsSheetPresented {
+        TermsAgreementBottomsheet(
+          viewModel: viewModel.termsViewModel,
+          onClose: { viewModel.dismissTermsSheet() },
+          onConfirm: { viewModel.completeTermsAgreement() }
         )
       }
     }
