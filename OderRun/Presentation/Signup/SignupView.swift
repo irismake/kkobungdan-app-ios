@@ -7,68 +7,123 @@
 
 import SwiftUI
 
-/// 회원가입 본인인증 플로우 호스트. 각 step은 별도 파일이지만 같은 화면에서 교체된다.
+/// 회원가입 본인인증 플로우. 하나의 화면에서 입력을 마칠 때마다 다음 필드가 위에서부터 하나씩 나타난다.
 struct SignupView: View {
   let onClose: () -> Void
 
-  private enum Step {
-    case phoneNumber
-    case carrier
-    case name
-    case birthDate
-  }
+  @State private var viewModel = SignupViewModel()
 
-  @State private var step: Step = .phoneNumber
-  @State private var phoneNumber: String = ""
-  @State private var carrier: String?
-  @State private var name: String = ""
-  @State private var birthDate: String = ""
+  @FocusState private var focus: SignupViewModel.Focus?
 
   var body: some View {
-    ZStack {
-      switch step {
-      case .phoneNumber:
-        PhoneNumberInputView(
-          phoneNumber: $phoneNumber,
-          onClose: onClose,
-          onNext: { withAnimation(.easeInOut) { step = .carrier } }
-        )
-        .transition(.opacity)
+    VStack(spacing: 0) {
+      header
+        .padding(.top, 8)
+        .padding(.bottom, 32)
 
-      case .carrier:
-        CarrierSelectionView(
-          phoneNumber: phoneNumber,
-          carrier: $carrier,
-          onClose: onClose,
-          onNext: { withAnimation(.easeInOut) { step = .name } }
+      ScrollView {
+        VStack(spacing: 32) {
+          fields
+        }
+        .padding(.bottom, 32)
+      }
+      .scrollBounceBehavior(.basedOnSize)
+    }
+    .frame(maxWidth: .infinity, maxHeight: .infinity)
+    .background(Color.white)
+    .safeAreaInset(edge: .bottom, spacing: 0) {
+      if showsBottomBar {
+        BottomActionBar(title: "다음", isEnabled: viewModel.canProceed) {
+          viewModel.goNext()
+        }
+      }
+    }
+    // 통신사 시트는 safeAreaInset(다음 버튼)보다 바깥의 overlay 라야 버튼 위로 스택된다.
+    .overlay {
+      if viewModel.isCarrierSheetPresented {
+        CarrierSelectSheet(
+          carriers: viewModel.carriers,
+          onClose: { viewModel.dismissCarrierSheet() },
+          onSelect: { viewModel.selectCarrier($0) }
         )
-        .transition(.opacity)
-
-      case .name:
-        NameInputView(
-          name: $name,
-          carrier: carrier ?? "",
-          phoneNumber: phoneNumber,
-          onClose: onClose,
-          onNext: { withAnimation(.easeInOut) { step = .birthDate } }
-        )
-        .transition(.opacity)
-
-      case .birthDate:
-        BirthDateInputView(
-          birthDate: $birthDate,
-          name: name,
-          carrier: carrier ?? "",
-          phoneNumber: phoneNumber,
-          onClose: onClose,
-          // TODO: 다음 단계(인증 완료 등)로 이동
-          onNext: {}
-        )
-        .transition(.opacity)
       }
     }
     .navigationBarBackButtonHidden(true)
     .toolbar(.hidden, for: .navigationBar)
+    .onAppear { focus = viewModel.focus }
+    .onChange(of: viewModel.focus) { _, new in
+      // carrier 는 키보드가 없으므로 nil(키보드 내림)로 매핑한다. 시트 노출은 isCarrierSheetPresented 가 담당.
+      let mapped = new.flatMap { $0.keyboardField }
+      if focus != mapped {
+        focus = mapped
+      }
+    }
+    .onChange(of: focus) { _, new in
+      if let new, viewModel.focus != new {
+        viewModel.focus = new
+      }
+    }
+  }
+
+  /// 생년월일 → 이름 → 통신사 → 휴대폰 순(위에서 아래). 단계가 진행될수록 위에 필드가 하나씩 추가된다.
+  /// 모든 필드는 항상 편집 가능 — 생년월일 단계에서도 아래의 휴대폰 번호를 다시 수정할 수 있다.
+  @ViewBuilder
+  private var fields: some View {
+    if viewModel.step >= .birthDate {
+      BirthDateField(
+        birthDate: $viewModel.birthDate,
+        focus: $focus,
+        onChange: viewModel.formatBirthDate
+      )
+      .transition(.opacity.combined(with: .move(edge: .top)))
+    }
+
+    if viewModel.step >= .name {
+      NameField(
+        name: $viewModel.name,
+        focus: $focus
+      )
+      .transition(.opacity.combined(with: .move(edge: .top)))
+    }
+
+    if viewModel.step >= .carrier {
+      CarrierField(
+        carrier: viewModel.carrier,
+        isActive: viewModel.isCarrierSheetPresented,
+        onTap: { viewModel.openCarrierSheet() }
+      )
+      .transition(.opacity.combined(with: .move(edge: .top)))
+    }
+
+    PhoneNumberField(
+      phoneNumber: $viewModel.phoneNumber,
+      focus: $focus,
+      onChange: viewModel.fommatPhoneNumber
+    )
+  }
+
+  /// 이름·생년월일 step은 하단 버튼으로 진행한다. (휴대폰은 자동, 통신사는 시트 선택으로 진행)
+  private var showsBottomBar: Bool {
+    viewModel.step == .name || viewModel.step == .birthDate
+  }
+
+  private var header: some View {
+    HStack(spacing: 8) {
+      Button(action: onClose) {
+        Image("icon_close")
+          .resizable()
+          .scaledToFit()
+          .frame(width: 24, height: 24)
+          .padding(8)
+      }
+
+      Text(viewModel.title)
+        .textStyle(.heading3)
+        .foregroundColor(.gray900)
+
+      Spacer(minLength: 0)
+    }
+    .padding(.leading, 8)
   }
 }
 

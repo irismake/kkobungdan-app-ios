@@ -24,6 +24,7 @@ struct BottomActionBar: View {
           .padding(.bottom, 32)
       }
     }
+    .background(Color.white)
   }
 }
 
