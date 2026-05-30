@@ -12,6 +12,7 @@ struct CarrierSelectionView: View {
   let phoneNumber: String
   @Binding var carrier: String?
   let onClose: () -> Void
+  let onNext: () -> Void
 
   @State private var isSheetPresented = false
 
@@ -39,6 +40,7 @@ struct CarrierSelectionView: View {
           onSelect: { selected in
             carrier = selected
             isSheetPresented = false
+            onNext()
           }
         )
       }
@@ -130,6 +132,7 @@ struct CarrierSelectionView: View {
   CarrierSelectionView(
     phoneNumber: "010-2323-4545",
     carrier: .constant(nil),
-    onClose: {}
+    onClose: {},
+    onNext: {}
   )
 }

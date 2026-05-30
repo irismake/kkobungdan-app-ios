@@ -14,11 +14,13 @@ struct SignupView: View {
   private enum Step {
     case phoneNumber
     case carrier
+    case name
   }
 
   @State private var step: Step = .phoneNumber
   @State private var phoneNumber: String = ""
   @State private var carrier: String?
+  @State private var name: String = ""
 
   var body: some View {
     ZStack {
@@ -35,7 +37,19 @@ struct SignupView: View {
         CarrierSelectionView(
           phoneNumber: phoneNumber,
           carrier: $carrier,
-          onClose: onClose
+          onClose: onClose,
+          onNext: { withAnimation(.easeInOut) { step = .name } }
+        )
+        .transition(.opacity)
+
+      case .name:
+        NameInputView(
+          name: $name,
+          carrier: carrier ?? "",
+          phoneNumber: phoneNumber,
+          onClose: onClose,
+          // TODO: 다음 단계(주민번호/인증 등)로 이동
+          onNext: {}
         )
         .transition(.opacity)
       }
