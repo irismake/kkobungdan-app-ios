@@ -44,7 +44,6 @@ struct ActivityView: View {
   @State private var offersViewModel: MyOffersViewModel
   @State private var segment: ActivitySegment = .orderer
   @State private var filter: ActivityFilter = .all
-  @State private var pendingCancelOffer: MyOffer?
 
   var onSelectOrdererProposal: (Int64) -> Void = { _ in }
   var onSelectRunnerItem: (_ proposalID: Int64, _ offerID: Int64) -> Void = { _, _ in }
@@ -98,25 +97,6 @@ struct ActivityView: View {
       async let proposalsTask: Void = proposalsViewModel.load()
       async let offersTask: Void = offersViewModel.load()
       _ = await (proposalsTask, offersTask)
-    }
-    .alert(
-      "지원을 취소할까요?",
-      isPresented: Binding(
-        get: { pendingCancelOffer != nil },
-        set: { if !$0 {
-          pendingCancelOffer = nil
-        } }
-      ),
-      presenting: pendingCancelOffer
-    ) { entry in
-      Button("취소", role: .cancel) {
-        pendingCancelOffer = nil
-      }
-      Button("지원 취소", role: .destructive) {
-        Task { await offersViewModel.cancelMyOffer(offerID: entry.id) }
-      }
-    } message: { _ in
-      Text("지원을 취소하면 되돌릴 수 없어요.")
     }
   }
 
@@ -173,40 +153,13 @@ struct ActivityView: View {
         .padding(.top, 40)
     } else {
       ForEach(items) { offer in
-        VStack(spacing: 8) {
-          card(for: offer)
-            .contentShape(Rectangle())
-            .onTapGesture {
-              onSelectRunnerItem(offer.proposalID, offer.id)
-            }
-
-          if offer.status == .waiting {
-            cancelOfferButton(for: offer)
+        card(for: offer)
+          .contentShape(Rectangle())
+          .onTapGesture {
+            onSelectRunnerItem(offer.proposalID, offer.id)
           }
-        }
       }
     }
-  }
-
-  private func cancelOfferButton(for offer: MyOffer) -> some View {
-    let isCancelling = offersViewModel.isCancellingOfferID == offer.id
-    return Button {
-      pendingCancelOffer = offer
-    } label: {
-      Text(isCancelling ? "취소 중..." : "지원 취소")
-        .textStyle(.body3, weight: .bold)
-        .foregroundColor(Color.rose500)
-        .frame(maxWidth: .infinity)
-        .frame(height: 40)
-        .background(Color.white)
-        .clipShape(RoundedRectangle(cornerRadius: 8))
-        .overlay(
-          RoundedRectangle(cornerRadius: 8)
-            .stroke(Color.rose200, lineWidth: 1)
-        )
-    }
-    .buttonStyle(.plain)
-    .disabled(isCancelling)
   }
 
   private var segmentControl: some View {
@@ -307,8 +260,7 @@ struct ActivityView: View {
     ),
     offersViewModel: MyOffersViewModel(
       fetchMyOffersUseCase: FetchMyOffersUseCase(repository: DIContainer.activityRepository),
-      fetchProposalDetailUseCase: FetchProposalDetailUseCase(repository: DIContainer.proposalRepository),
-      cancelOfferUseCase: CancelOfferUseCase(repository: DIContainer.offerRepository)
+      fetchProposalDetailUseCase: FetchProposalDetailUseCase(repository: DIContainer.proposalRepository)
     )
   )
 }

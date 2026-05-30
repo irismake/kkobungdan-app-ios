@@ -19,6 +19,8 @@ final class ApplyDetailViewModel {
   var myOffer: MyOffer?
   var mission: Mission?
   var isCompletingMission: Bool = false
+  var isCancelling: Bool = false
+  var didCancel: Bool = false
 
   /// "만났어요!" 버튼 노출 여부.
   /// 내 offer 가 ACCEPTED 이고, 미션이 아직 내(러너) 확인을 받지 않은 상태일 때만 노출.
@@ -40,10 +42,16 @@ final class ApplyDetailViewModel {
     myOffer?.status == .accepted && mission?.status == .deliveryCompleted
   }
 
+  /// 매칭 전(WAITING) 지원만 취소할 수 있다. (디자인: "매칭되기 전에는 지원 취소 버튼 제공")
+  var canCancelOffer: Bool {
+    myOffer?.status == .waiting
+  }
+
   private let fetchDetailUseCase: FetchProposalDetailUseCase
   private let fetchMyOffersUseCase: FetchMyOffersUseCase
   private let fetchMissionByOfferUseCase: FetchMissionByOfferUseCase
   private let updateMissionActionUseCase: UpdateMissionActionUseCase
+  private let cancelOfferUseCase: CancelOfferUseCase
 
   init(
     proposalID: Int64,
@@ -51,7 +59,8 @@ final class ApplyDetailViewModel {
     fetchDetailUseCase: FetchProposalDetailUseCase,
     fetchMyOffersUseCase: FetchMyOffersUseCase,
     fetchMissionByOfferUseCase: FetchMissionByOfferUseCase,
-    updateMissionActionUseCase: UpdateMissionActionUseCase
+    updateMissionActionUseCase: UpdateMissionActionUseCase,
+    cancelOfferUseCase: CancelOfferUseCase
   ) {
     self.proposalID = proposalID
     self.offerID = offerID
@@ -59,6 +68,7 @@ final class ApplyDetailViewModel {
     self.fetchMyOffersUseCase = fetchMyOffersUseCase
     self.fetchMissionByOfferUseCase = fetchMissionByOfferUseCase
     self.updateMissionActionUseCase = updateMissionActionUseCase
+    self.cancelOfferUseCase = cancelOfferUseCase
   }
 
   @MainActor
@@ -102,5 +112,22 @@ final class ApplyDetailViewModel {
       errorMessage = "진행 완료 처리에 실패했어요. 잠시 후 다시 시도해주세요."
     }
     isCompletingMission = false
+  }
+
+  /// 러너가 본인 지원(WAITING)을 취소한다. 성공 시 `didCancel` 을 올려 화면을 닫는다.
+  @MainActor
+  func cancelOffer() async {
+    guard canCancelOffer, !isCancelling else {
+      return
+    }
+    isCancelling = true
+    errorMessage = nil
+    do {
+      try await cancelOfferUseCase.execute(offerID: offerID)
+      didCancel = true
+    } catch {
+      errorMessage = "지원을 취소하지 못했어요."
+    }
+    isCancelling = false
   }
 }

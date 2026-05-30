@@ -34,8 +34,7 @@ struct ContentView: View {
           ),
           myOffersViewModel: MyOffersViewModel(
             fetchMyOffersUseCase: FetchMyOffersUseCase(repository: DIContainer.activityRepository),
-            fetchProposalDetailUseCase: FetchProposalDetailUseCase(repository: DIContainer.proposalRepository),
-            cancelOfferUseCase: CancelOfferUseCase(repository: DIContainer.offerRepository)
+            fetchProposalDetailUseCase: FetchProposalDetailUseCase(repository: DIContainer.proposalRepository)
           ),
           profileViewModel: ProfileViewModel(
             fetchUserDetailUseCase: FetchUserDetailUseCase(userRepository: DIContainer.userRepository),

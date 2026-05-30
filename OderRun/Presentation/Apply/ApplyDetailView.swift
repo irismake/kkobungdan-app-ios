@@ -10,6 +10,7 @@ import SwiftUI
 struct ApplyDetailView: View {
   @State private var viewModel: ApplyDetailViewModel
   @State private var isMissionCompleted: Bool = false
+  @State private var isCancelConfirmPresented: Bool = false
   var onBack: () -> Void = {}
 
   init(
@@ -87,6 +88,19 @@ struct ApplyDetailView: View {
     .task {
       await viewModel.load()
     }
+    .onChange(of: viewModel.didCancel) { _, didCancel in
+      if didCancel {
+        onBack()
+      }
+    }
+    .alert("지원을 취소할까요?", isPresented: $isCancelConfirmPresented) {
+      Button("취소", role: .cancel) {}
+      Button("지원 취소", role: .destructive) {
+        Task { await viewModel.cancelOffer() }
+      }
+    } message: {
+      Text("지원을 취소하면 되돌릴 수 없어요.")
+    }
   }
 
   @ViewBuilder
@@ -109,6 +123,10 @@ struct ApplyDetailView: View {
         .frame(height: 56)
         .background(Color.gray200)
         .clipShape(RoundedRectangle(cornerRadius: 12))
+    } else if viewModel.canCancelOffer {
+      OutlineButton(title: viewModel.isCancelling ? "취소 중..." : "지원 취소") {
+        isCancelConfirmPresented = true
+      }
     }
   }
 
