@@ -10,6 +10,8 @@ import SwiftUI
 /// 회원가입 본인인증 플로우. 하나의 화면에서 입력을 마칠 때마다 다음 필드가 위에서부터 하나씩 나타난다.
 struct SignupView: View {
   let onClose: () -> Void
+  /// 약관 동의까지 마쳐 인증번호 단계로 넘어갈 때.
+  let onComplete: () -> Void
 
   @State private var viewModel = SignupViewModel()
 
@@ -17,7 +19,7 @@ struct SignupView: View {
 
   var body: some View {
     VStack(spacing: 0) {
-      header
+      CloseHeader(title: viewModel.title, onClose: onClose)
         .padding(.top, 8)
         .padding(.bottom, 32)
 
@@ -53,7 +55,10 @@ struct SignupView: View {
         TermsAgreementBottomsheet(
           viewModel: viewModel.termsViewModel,
           onClose: { viewModel.dismissTermsSheet() },
-          onConfirm: { viewModel.completeTermsAgreement() }
+          onConfirm: {
+            viewModel.completeTermsAgreement()
+            onComplete()
+          }
         )
       }
     }
@@ -115,27 +120,8 @@ struct SignupView: View {
   private var showsBottomBar: Bool {
     viewModel.step == .name || viewModel.step == .birthDate
   }
-
-  private var header: some View {
-    HStack(spacing: 8) {
-      Button(action: onClose) {
-        Image("icon_close")
-          .resizable()
-          .scaledToFit()
-          .frame(width: 24, height: 24)
-          .padding(8)
-      }
-
-      Text(viewModel.title)
-        .textStyle(.heading3)
-        .foregroundColor(.gray900)
-
-      Spacer(minLength: 0)
-    }
-    .padding(.leading, 8)
-  }
 }
 
 #Preview {
-  SignupView(onClose: {})
+  SignupView(onClose: {}, onComplete: {})
 }

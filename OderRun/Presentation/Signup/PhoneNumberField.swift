@@ -15,13 +15,14 @@ struct PhoneNumberField: View {
 
   var body: some View {
     SignupFieldContainer(label: "휴대폰 번호") {
-      TextField("010-1234-5678", text: $phoneNumber)
-        .textStyle(.inputBody1)
-        .foregroundColor(.gray900)
-        .keyboardType(.numberPad)
-        .focused(focus, equals: .phone)
-        .onChange(of: phoneNumber) { _, newValue in onChange(newValue) }
-        .signupFieldBox(isActive: focus.wrappedValue == .phone)
+      SignupTextField(
+        text: $phoneNumber,
+        placeholder: "010-1234-5678",
+        keyboardType: .numberPad,
+        focus: focus,
+        focusValue: .phone,
+        onChange: onChange
+      )
     }
   }
 }

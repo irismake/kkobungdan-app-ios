@@ -101,10 +101,9 @@ final class SignupViewModel {
     isTermsSheetPresented = false
   }
 
-  /// 약관 동의 완료.
+  /// 약관 동의 완료. 시트를 닫는다. (이후 인증 단계 이동은 View 의 onComplete 가 처리)
   func completeTermsAgreement() {
     isTermsSheetPresented = false
-    // TODO: 다음 단계(인증 완료 등)로 이동
   }
 
   func fommatPhoneNumber(_ input: String) {

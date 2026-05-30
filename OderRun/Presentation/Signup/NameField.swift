@@ -14,11 +14,12 @@ struct NameField: View {
 
   var body: some View {
     SignupFieldContainer(label: "이름") {
-      TextField("휴대폰 명의자 이름을 입력해 주세요.", text: $name)
-        .textStyle(.inputBody1)
-        .foregroundColor(.gray900)
-        .focused(focus, equals: .name)
-        .signupFieldBox(isActive: focus.wrappedValue == .name)
+      SignupTextField(
+        text: $name,
+        placeholder: "휴대폰 명의자 이름을 입력해 주세요.",
+        focus: focus,
+        focusValue: .name
+      )
     }
   }
 }

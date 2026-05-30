@@ -11,6 +11,7 @@ struct ContentView: View {
   /// 로그인 진입 화면에서 분기되는 인증 경로.
   private enum AuthRoute: Hashable {
     case signup
+    case verification
     case login
   }
 
@@ -56,7 +57,18 @@ struct ContentView: View {
           .navigationDestination(for: AuthRoute.self) { route in
             switch route {
             case .signup:
-              SignupView(onClose: { authPath.removeAll() })
+              SignupView(
+                onClose: { authPath.removeAll() },
+                onComplete: { authPath.append(.verification) }
+              )
+            case .verification:
+              VerificationCodeView(
+                onClose: { authPath.removeAll() },
+                onComplete: {
+                  // TODO: 인증 완료 후 실제 가입/로그인 처리 연동
+                  socialLoginViewModel.isLoginSuccess = true
+                }
+              )
             case .login:
               // TODO: 로그인 전용 화면으로 교체
               SocialLoginView(viewModel: socialLoginViewModel)
