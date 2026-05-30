@@ -9,10 +9,10 @@ import SwiftUI
 
 /// 회원가입 본인인증 플로우 1단계 — 휴대폰 번호 입력.
 struct PhoneNumberInputView: View {
+  @Binding var phoneNumber: String
   let onClose: () -> Void
-  let onNext: (String) -> Void
+  let onNext: () -> Void
 
-  @State private var phoneNumber: String = ""
   @FocusState private var isFocused: Bool
 
   var body: some View {
@@ -29,8 +29,6 @@ struct PhoneNumberInputView: View {
     .background(Color.white)
     .contentShape(Rectangle())
     .onTapGesture { isFocused = false }
-    .navigationBarBackButtonHidden(true)
-    .toolbar(.hidden, for: .navigationBar)
     .onAppear { isFocused = true }
   }
 
@@ -66,7 +64,7 @@ struct PhoneNumberInputView: View {
         }
         if formatted.filter(\.isNumber).count == 11 {
           isFocused = false
-          onNext(formatted)
+          onNext()
         }
       }
       .padding(.horizontal, 16)
@@ -99,5 +97,5 @@ struct PhoneNumberInputView: View {
 }
 
 #Preview {
-  PhoneNumberInputView(onClose: {}, onNext: { _ in })
+  PhoneNumberInputView(phoneNumber: .constant(""), onClose: {}, onNext: {})
 }

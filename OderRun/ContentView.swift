@@ -56,11 +56,7 @@ struct ContentView: View {
           .navigationDestination(for: AuthRoute.self) { route in
             switch route {
             case .signup:
-              PhoneNumberInputView(
-                onClose: { authPath.removeAll() },
-                // TODO: 인증번호 입력 화면으로 이동 (회원가입 플로우 다음 단계)
-                onNext: { _ in }
-              )
+              SignupView(onClose: { authPath.removeAll() })
             case .login:
               // TODO: 로그인 전용 화면으로 교체
               SocialLoginView(viewModel: socialLoginViewModel)
