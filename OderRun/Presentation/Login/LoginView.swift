@@ -8,18 +8,41 @@
 import SwiftUI
 
 struct LoginView: View {
+  /// 본인인증 안내 시트를 띄운 버튼의 의도. 인증 완료 후 분기에 사용.
+  private enum VerificationIntent {
+    case signup
+    case login
+  }
+
   let onStart: () -> Void
   let onLogin: () -> Void
 
+  @State private var verificationIntent: VerificationIntent?
+
   var body: some View {
-    VStack(spacing: 0) {
-      Spacer()
+    ZStack {
+      VStack(spacing: 0) {
+        Spacer()
 
-      brandSection
+        brandSection
 
-      Spacer()
+        Spacer()
 
-      bottomSection
+        bottomSection
+      }
+
+      if let verificationIntent {
+        IdentityVerificationSheet(
+          onClose: { self.verificationIntent = nil },
+          onVerify: {
+            self.verificationIntent = nil
+            switch verificationIntent {
+            case .signup: onStart()
+            case .login: onLogin()
+            }
+          }
+        )
+      }
     }
   }
 
@@ -52,9 +75,9 @@ struct LoginView: View {
 
       ScreenContainer {
         VStack(spacing: 10) {
-          ConfirmButton(title: "시작하기", action: onStart)
+          ConfirmButton(title: "시작하기", action: { verificationIntent = .signup })
 
-          Button(action: onLogin) {
+          Button(action: { verificationIntent = .login }) {
             HStack(spacing: 2) {
               Text("이미 계정이 있나요?")
                 .textStyle(.caption5)
