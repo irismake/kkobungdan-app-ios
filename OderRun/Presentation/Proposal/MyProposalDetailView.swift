@@ -65,6 +65,13 @@ struct MyProposalDetailView: View {
             VStack(spacing: 12) {
               proposalCardSection
 
+              if viewModel.proposal?.status == .holding {
+                AccountInfoCard(
+                  bankName: "토스뱅크",
+                  accountNumber: "1234-56-24687"
+                )
+              }
+
               if let detail = viewModel.matchedOfferDetail,
                  let profile = viewModel.matchedRunnerProfile {
                 MatchedRunnerSection(
