@@ -107,7 +107,7 @@ final class SignupViewModel {
   }
 
   func fommatPhoneNumber(_ input: String) {
-    let formatted = Self.formatPhoneNumber(input)
+    let formatted = input.formattedKoreanPhoneNumber
     if formatted != phoneNumber {
       phoneNumber = formatted
     }
@@ -147,24 +147,6 @@ final class SignupViewModel {
 
   func formatBirthDate(_ input: String) {
     birthDate = String(input.filter(\.isNumber).prefix(7))
-  }
-
-  /// 숫자만 추려 최대 11자리까지 010-1234-5678 형태로 포맷.
-  private static func formatPhoneNumber(_ input: String) -> String {
-    let digits = String(input.filter(\.isNumber).prefix(11))
-    switch digits.count {
-    case 0 ... 3:
-      return digits
-    case 4 ... 7:
-      let start = digits.prefix(3)
-      let rest = digits.dropFirst(3)
-      return "\(start)-\(rest)"
-    default:
-      let start = digits.prefix(3)
-      let middle = digits.dropFirst(3).prefix(4)
-      let rest = digits.dropFirst(7)
-      return "\(start)-\(middle)-\(rest)"
-    }
   }
 }
 

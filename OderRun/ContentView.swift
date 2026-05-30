@@ -70,8 +70,13 @@ struct ContentView: View {
                 }
               )
             case .login:
-              // TODO: 로그인 전용 화면으로 교체
-              SocialLoginView(viewModel: socialLoginViewModel)
+              SmsLoginView(
+                onClose: { authPath.removeAll() },
+                onNext: { authPath.append(.verification) },
+                onFindAccount: {
+                  // TODO: 내 계정 찾기 — 회원가입과 같은 본인인증 flow 진행
+                }
+              )
             }
           }
         }
