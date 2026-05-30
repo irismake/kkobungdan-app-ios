@@ -21,6 +21,8 @@ enum AppRoute: Hashable {
   case applicantOfferDetail(proposalID: Int64, offerID: Int64)
   /// 의뢰자가 자기 의뢰의 지원자 리스트를 보는 화면
   case applicantList(proposalID: Int64)
+  /// 지원하기 → 계좌 등록 (임무 수행비 받을 계좌 입력)
+  case accountRegister(proposalID: Int64)
   /// 지원하기 성공 직후 안내 화면
   case applyComplete(proposalID: Int64)
   /// 새 의뢰 작성 — 1단계: 제목/내용
@@ -38,8 +40,16 @@ enum AppRouteFactory {
     ProposalDetailViewModel(
       proposalID: proposalID,
       fetchDetailUseCase: FetchProposalDetailUseCase(repository: DIContainer.proposalRepository),
-      createOfferUseCase: CreateOfferUseCase(repository: DIContainer.offerRepository),
       fetchOffersByProposalUseCase: FetchOffersByProposalUseCase(repository: DIContainer.offerRepository)
+    )
+  }
+
+  // MARK: - Account Register (지원하기 → 계좌 등록)
+
+  static func makeAccountRegisterViewModel(proposalID: Int64) -> AccountRegisterViewModel {
+    AccountRegisterViewModel(
+      proposalID: proposalID,
+      createOfferUseCase: CreateOfferUseCase(repository: DIContainer.offerRepository)
     )
   }
 

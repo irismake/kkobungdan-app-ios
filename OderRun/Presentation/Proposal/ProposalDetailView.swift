@@ -45,14 +45,10 @@ struct ProposalDetailView: View {
       VStack(spacing: 0) {
         ConfirmButton(
           title: applyButtonTitle,
-          isEnabled: !viewModel.hasApplied && !viewModel.isApplying
+          isEnabled: !viewModel.hasApplied
         ) {
-          Task {
-            let success = await viewModel.apply()
-            if success {
-              onApply()
-            }
-          }
+          // TODO: 계좌번호 여부에 따라 분기
+          onApply()
         }
       }
       .padding(.horizontal, Layout.screenHorizontalPadding)
@@ -66,10 +62,7 @@ struct ProposalDetailView: View {
   }
 
   private var applyButtonTitle: String {
-    if viewModel.hasApplied {
-      return "지원 완료"
-    }
-    return viewModel.isApplying ? "지원 중..." : "지원하기"
+    viewModel.hasApplied ? "지원 완료" : "지원하기"
   }
 
   @ViewBuilder

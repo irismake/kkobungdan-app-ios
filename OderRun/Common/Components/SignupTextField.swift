@@ -52,12 +52,20 @@ struct SignupTextField<FocusValue: Hashable, Trailing: View>: View {
 
   var body: some View {
     HStack(spacing: 8) {
-      TextField(placeholder, text: $text)
+      TextField("", text: $text)
         .textStyle(.inputBody1)
         .foregroundColor(.gray900)
         .keyboardType(keyboardType)
         .focused(focus, equals: focusValue)
         .onChange(of: text) { _, newValue in onChange?(newValue) }
+        .overlay(alignment: .leading) {
+          if text.isEmpty {
+            Text(placeholder)
+              .textStyle(.inputBody4)
+              .foregroundColor(.gray500)
+              .allowsHitTesting(false)
+          }
+        }
 
       trailing()
     }
