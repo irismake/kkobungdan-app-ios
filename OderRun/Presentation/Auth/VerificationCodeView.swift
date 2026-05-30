@@ -9,7 +9,6 @@ import Combine
 import SwiftUI
 
 /// 회원가입 본인인증 마지막 단계. 휴대폰으로 받은 인증번호 6자리를 입력한다.
-/// 헤더(CloseHeader)·입력 필드(SignupTextField)는 회원가입 화면과 공용 컴포넌트를 쓴다.
 struct VerificationCodeView: View {
   let onClose: () -> Void
   let onComplete: () -> Void
