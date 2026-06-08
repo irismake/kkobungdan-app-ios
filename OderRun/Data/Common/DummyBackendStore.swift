@@ -168,7 +168,7 @@ actor DummyBackendStore {
   /// `POST /v1/offer/{offerId}/accept` 의 인메모리 흉내.
   /// offer ACCEPTED, 같은 proposal 의 나머지 WAITING offer REJECTED, proposal MATCHED 로 전이하고
   /// 미션을 생성한다.
-  func acceptOffer(offerID: Int64, runFee: Int, itemPrice _: Int) throws -> OfferAcceptResult {
+  func acceptOffer(offerID: Int64, runFee _: Int, itemPrice _: Int) throws -> OfferAcceptResult {
     if missions.contains(where: { $0.offerID == offerID }) {
       throw RepositoryError.conflict
     }
@@ -197,8 +197,7 @@ actor DummyBackendStore {
       proposalID: offer.proposalID,
       orderer: .dummy(for: ordererID),
       runner: .dummy(for: offer.runnerID),
-      status: .created,
-      runFee: runFee
+      status: .created
     )
     missions.append(mission)
 
@@ -305,8 +304,7 @@ actor DummyBackendStore {
       proposalID: mission.proposalID,
       orderer: mission.orderer,
       runner: mission.runner,
-      status: status,
-      runFee: mission.runFee
+      status: status
     )
   }
 

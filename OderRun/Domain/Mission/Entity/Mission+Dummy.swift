@@ -35,53 +35,49 @@ extension Mission {
       id: 100, offerID: 40, proposalID: 5,
       orderer: .dummy(for: DummySession.currentUserID),
       runner: .dummy(for: "user-r002"),
-      status: .deliveryCompleted,
-      runFee: 8000
+      status: .deliveryCompleted
     ),
     // 내가 RUNNER — 진행 중 (COMPLETE_DELIVERY 가능 상태)
     Mission(
       id: 101, offerID: 30, proposalID: 4,
       orderer: .dummy(for: "user-a001"),
       runner: .dummy(for: DummySession.currentUserID),
-      status: .inProgress,
-      runFee: 2500
+      status: .inProgress
     ),
     // 내가 ORDERER — 정산 완료 (cascade: mission .settled + offer/proposal .complete)
     Mission(
       id: 102, offerID: 60, proposalID: 8,
       orderer: .dummy(for: DummySession.currentUserID),
       runner: .dummy(for: "user-r001"),
-      status: .settled,
-      runFee: 5000
+      status: .settled
     ),
     // 내가 RUNNER — 분쟁 (offer/proposal 은 진행 상태 유지)
     Mission(
       id: 103, offerID: 70, proposalID: 9,
       orderer: .dummy(for: "user-a002"),
       runner: .dummy(for: DummySession.currentUserID),
-      status: .disputed, runFee: 3000
+      status: .disputed
     ),
     // 내가 RUNNER — 매칭 직후, 아직 수행 시작 전 (CREATED)
     Mission(
       id: 104, offerID: 80, proposalID: 10,
       orderer: .dummy(for: "user-a003"),
       runner: .dummy(for: DummySession.currentUserID),
-      status: .created, runFee: 12000
+      status: .created
     ),
     // 내가 ORDERER — 정산까지 완료 (SETTLED)
     Mission(
       id: 105, offerID: 81, proposalID: 11,
       orderer: .dummy(for: DummySession.currentUserID),
       runner: .dummy(for: "user-r004"),
-      status: .settled, runFee: 2000
+      status: .settled
     ),
     // 내가 RUNNER — 환불 처리됨 (REFUNDED, offer/proposal 도 terminal 로 정합)
     Mission(
       id: 106, offerID: 82, proposalID: 12,
       orderer: .dummy(for: "user-a004"),
       runner: .dummy(for: DummySession.currentUserID),
-      status: .refunded,
-      runFee: 3500
+      status: .refunded
     )
   ]
 

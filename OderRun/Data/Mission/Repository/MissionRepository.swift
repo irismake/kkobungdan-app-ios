@@ -24,11 +24,12 @@ final class MissionRepository: MissionRepositoryProtocol {
     self.client = client
   }
 
+  /// `GET /v1/mission` 은 페이지 응답(`data.content[]`)이므로 첫 미션만 도메인으로 변환한다.
   func fetchMissionByProposal(proposalID: Int64) async throws -> Mission? {
     do {
-      let dto: MissionResponseDTO =
+      let page: PageDTO<MissionResponseDTO> =
         try await client.get("/v1/mission", params: ["proposalId": proposalID])
-      return dto.toDomain()
+      return page.content.first?.toDomain()
     } catch RepositoryError.notFound {
       return nil
     }
@@ -36,9 +37,9 @@ final class MissionRepository: MissionRepositoryProtocol {
 
   func fetchMissionByOffer(offerID: Int64) async throws -> Mission? {
     do {
-      let dto: MissionResponseDTO =
+      let page: PageDTO<MissionResponseDTO> =
         try await client.get("/v1/mission", params: ["offerId": offerID])
-      return dto.toDomain()
+      return page.content.first?.toDomain()
     } catch RepositoryError.notFound {
       return nil
     }

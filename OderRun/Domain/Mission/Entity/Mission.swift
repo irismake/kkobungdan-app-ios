@@ -25,5 +25,4 @@ struct Mission: Equatable, Identifiable {
   let orderer: MissionParticipant
   let runner: MissionParticipant
   let status: MissionStatus
-  let runFee: Int
 }

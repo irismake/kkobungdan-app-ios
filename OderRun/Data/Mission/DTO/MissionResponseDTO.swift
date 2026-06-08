@@ -19,9 +19,6 @@ struct MissionResponseDTO: Decodable {
   let offerID: Int64
   let orderer: MissionParticipantDTO
   let runner: MissionParticipantDTO
-  let runFee: Int
-  let itemPrice: Int
-  let totalAmount: Int
   let deliveryProofImageUrl: String?
   let status: String
   let pickupAt: String?
@@ -37,9 +34,6 @@ struct MissionResponseDTO: Decodable {
     case offerID = "offerId"
     case orderer
     case runner
-    case runFee
-    case itemPrice
-    case totalAmount
     case deliveryProofImageUrl
     case status
     case pickupAt
@@ -61,15 +55,10 @@ extension MissionResponseDTO {
       proposalID: proposalID,
       orderer: MissionParticipant(id: orderer.id, name: orderer.name, phone: orderer.phone),
       runner: MissionParticipant(id: runner.id, name: runner.name, phone: runner.phone),
-      status: MissionStatus(rawValue: status) ?? .created,
-      runFee: runFee
+      status: MissionStatus(rawValue: status) ?? .created
     )
   }
 
-  // TODO: itemPrice UI 반영 시 Mission 엔티티에 추가
-  static let stubItemPrice: Int = 0
-  // TODO: totalAmount UI 반영 시 Mission 엔티티에 추가
-  static let stubTotalAmount: Int = 0
   // TODO: deliveryProofImageUrl UI 반영 시 Mission 엔티티에 추가
   static let stubDeliveryProofImageUrl: String? = nil
   // TODO: pickupAt UI 반영 시 Mission 엔티티에 추가
