@@ -23,9 +23,11 @@ actor DummyBackendStore {
   // MARK: - Proposal
 
   /// 홈 피드용 proposal 목록. 서버는 아직 의뢰자가 수락하지 않아 다른 러너가 지원할 수 있는
-  /// 활성 상태(`.waiting` = 대기중 / `.offered` = 새로운 지원 도착)만 반환한다.
+  /// 활성 상태(`.posted` = 등록 완료 / `.waiting` = 대기중 / `.offered` = 새로운 지원 도착)만 반환한다.
   func fetchProposals(page: Int, size: Int) -> [Proposal] {
-    let filtered = proposals.filter { $0.status == .waiting || $0.status == .offered }
+    let filtered = proposals.filter {
+      $0.status == .posted || $0.status == .waiting || $0.status == .offered
+    }
     return paginate(filtered, page: page, size: size)
   }
 
@@ -191,13 +193,13 @@ actor DummyBackendStore {
     let now = Date()
     let newID = nextMissionID
     nextMissionID += 1
-    // TODO: 서버 연동 시 orderer/runner name·phone 실제 값으로 교체
+    let ordererID = ordererIDByProposalID[proposal.id] ?? ""
     let mission = Mission(
       id: newID,
       offerID: offerID,
       proposalID: offer.proposalID,
-      orderer: MissionParticipant(id: ordererIDByProposalID[proposal.id] ?? "", name: "", phone: ""),
-      runner: MissionParticipant(id: offer.runnerID, name: "", phone: ""),
+      orderer: .dummy(for: ordererID),
+      runner: .dummy(for: offer.runnerID),
       status: .created,
       runFee: runFee
     )
@@ -396,7 +398,7 @@ actor DummyBackendStore {
   // MARK: - Private cascade helpers
 
   private func canEditOrCancel(_ status: ProposalStatus) -> Bool {
-    status == .posted || status == .waiting || status == .offered
+    status == .holding || status == .posted || status == .waiting || status == .offered
   }
 
   private func rejectActiveOffers(forProposalID proposalID: Int64) {

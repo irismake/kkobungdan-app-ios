@@ -122,7 +122,7 @@ extension Proposal {
         content: "역삼동 크린토피아에서 세탁물 수령 후 자택 전달 부탁드립니다.",
         deadline: now.addingTimeInterval(-12 * 86400),
         errandFee: 3500,
-        status: .matched
+        status: .complete
       ),
       Proposal(
         id: 13,
