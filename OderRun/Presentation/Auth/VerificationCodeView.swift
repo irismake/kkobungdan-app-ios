@@ -75,7 +75,6 @@ struct VerificationCodeView: View {
     .navigationBarBackButtonHidden(true)
     .toolbar(.hidden, for: .navigationBar)
     .onAppear { focus = .code }
-    .task { await viewModel.sendCode() }
     .onReceive(timer) { _ in viewModel.tick() }
   }
 
