@@ -12,9 +12,9 @@ struct TestProposalRepositoryImpl: ProposalRepositoryProtocol {
 
   let store: DummyBackendStore
 
-  func fetchProposals(page: Int, size: Int) async throws -> [Proposal] {
+  func fetchProposals(status: [ProposalStatus], page: Int, size: Int) async throws -> [Proposal] {
     try await Task.sleep(nanoseconds: Self.simulatedLatency)
-    return await store.fetchProposals(page: page, size: size)
+    return await store.fetchProposals(status: status, page: page, size: size)
   }
 
   func fetchProposal(id: Int64) async throws -> Proposal {

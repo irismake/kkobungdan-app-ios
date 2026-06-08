@@ -15,13 +15,13 @@ final class ActivityRepository: ActivityRepositoryProtocol {
   }
 
   func fetchMyProposals(
-    status: ProposalStatus?,
+    status: [ProposalStatus],
     page: Int,
     size: Int
   ) async throws -> [MyProposal] {
     var params: [String: Any] = ["page": page, "size": size]
-    if let status {
-      params["status"] = status.rawValue
+    if !status.isEmpty {
+      params["status"] = status.map(\.rawValue)
     }
     let pageDTO: PageDTO<MyProposalResponseDTO> =
       try await client.get("/v1/proposal/own", params: params)
@@ -29,13 +29,13 @@ final class ActivityRepository: ActivityRepositoryProtocol {
   }
 
   func fetchMyOffers(
-    status: OfferStatus?,
+    status: [OfferStatus],
     page: Int,
     size: Int
   ) async throws -> [MyOffer] {
     var params: [String: Any] = ["page": page, "size": size]
-    if let status {
-      params["status"] = status.rawValue
+    if !status.isEmpty {
+      params["status"] = status.map(\.rawValue)
     }
     let pageDTO: PageDTO<MyOfferResponseDTO> =
       try await client.get("/v1/offer/own", params: params)

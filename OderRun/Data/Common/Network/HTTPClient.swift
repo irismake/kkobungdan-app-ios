@@ -81,7 +81,13 @@ final class HTTPClient {
   ) throws -> URLRequest {
     var components = URLComponents(string: Self.baseURL + path)!
     if !params.isEmpty {
-      components.queryItems = params.map { URLQueryItem(name: $0.key, value: "\($0.value)") }
+      // 배열 값은 같은 키를 반복해 다중값 쿼리(`status=A&status=B`)로 직렬화한다.
+      components.queryItems = params.flatMap { key, value -> [URLQueryItem] in
+        if let array = value as? [Any] {
+          return array.map { URLQueryItem(name: key, value: "\($0)") }
+        }
+        return [URLQueryItem(name: key, value: "\(value)")]
+      }
     }
     var request = URLRequest(url: components.url!)
     request.httpMethod = method

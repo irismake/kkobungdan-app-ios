@@ -28,9 +28,13 @@ final class ProposalRepository: ProposalRepositoryProtocol {
     self.client = client
   }
 
-  func fetchProposals(page: Int, size: Int) async throws -> [Proposal] {
+  func fetchProposals(status: [ProposalStatus], page: Int, size: Int) async throws -> [Proposal] {
+    var params: [String: Any] = ["page": page, "size": size]
+    if !status.isEmpty {
+      params["status"] = status.map(\.rawValue)
+    }
     let pageDTO: PageDTO<ProposalResponseDTO> =
-      try await client.get("/v1/proposal", params: ["page": page, "size": size])
+      try await client.get("/v1/proposal", params: params)
     return pageDTO.content.map { $0.toDomain() }
   }
 

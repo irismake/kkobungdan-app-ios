@@ -103,7 +103,7 @@ enum ProposalDisplay {
     switch proposal.status {
     case .holding:
       return [unpaidBadge]
-    case .posted, .waiting:
+    case .posted:
       return [waitingBadge]
     case .offered:
       return [waitingBadge, newOfferBadge]
@@ -121,7 +121,7 @@ enum ProposalDisplay {
     switch myProposal.status {
     case .holding:
       return [unpaidBadge]
-    case .posted, .waiting:
+    case .posted:
       return [waitingBadge]
     case .offered:
       return [waitingBadge, newOfferBadge]

@@ -15,7 +15,7 @@ struct FetchMyProposalsUseCase {
   }
 
   func execute(
-    status: ProposalStatus? = nil,
+    status: [ProposalStatus] = [],
     page: Int = 0,
     size: Int = 20
   ) async throws -> [MyProposal] {

@@ -13,7 +13,7 @@ struct TestActivityRepositoryImpl: ActivityRepositoryProtocol {
   let store: DummyBackendStore
 
   func fetchMyProposals(
-    status: ProposalStatus?,
+    status: [ProposalStatus],
     page: Int,
     size: Int
   ) async throws -> [MyProposal] {
@@ -27,7 +27,7 @@ struct TestActivityRepositoryImpl: ActivityRepositoryProtocol {
   }
 
   func fetchMyOffers(
-    status: OfferStatus?,
+    status: [OfferStatus],
     page: Int,
     size: Int
   ) async throws -> [MyOffer] {

@@ -35,9 +35,13 @@ final class OfferRepository: OfferRepositoryProtocol {
     return dto.toDomain()
   }
 
-  func fetchOffersByProposal(proposalID: Int64) async throws -> [Offer] {
+  func fetchOffersByProposal(proposalID: Int64, status: [OfferStatus]) async throws -> [Offer] {
+    var params: [String: Any] = ["proposalId": proposalID]
+    if !status.isEmpty {
+      params["status"] = status.map(\.rawValue)
+    }
     let dtos: [OfferResponseDTO] =
-      try await client.get("/v1/offer", params: ["proposalId": proposalID])
+      try await client.get("/v1/offer", params: params)
     return dtos.map { $0.toDomain() }
   }
 

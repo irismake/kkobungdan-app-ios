@@ -130,7 +130,7 @@ extension Proposal {
         content: "국립중앙도서관에서 특정 논문 자료 복사본 받아주세요.",
         deadline: now.addingTimeInterval(5 * 86400),
         errandFee: 4500,
-        status: .waiting
+        status: .posted
       )
     ]
   }()

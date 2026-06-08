@@ -38,11 +38,11 @@ final class MyOffersViewModel {
   }
 
   @MainActor
-  func load() async {
+  func load(status: [OfferStatus] = []) async {
     isLoading = true
     errorMessage = nil
     do {
-      let offers = try await fetchMyOffersUseCase.execute()
+      let offers = try await fetchMyOffersUseCase.execute(status: status)
       myOffers = offers
 
       var map: [Int64: Proposal] = [:]

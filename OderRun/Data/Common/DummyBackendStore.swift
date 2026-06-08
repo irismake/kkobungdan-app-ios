@@ -22,11 +22,17 @@ actor DummyBackendStore {
 
   // MARK: - Proposal
 
-  /// 홈 피드용 proposal 목록. 서버는 아직 의뢰자가 수락하지 않아 다른 러너가 지원할 수 있는
-  /// 활성 상태(`.posted` = 등록 완료 / `.waiting` = 대기중 / `.offered` = 새로운 지원 도착)만 반환한다.
-  func fetchProposals(page: Int, size: Int) -> [Proposal] {
-    let filtered = proposals.filter {
-      $0.status == .posted || $0.status == .waiting || $0.status == .offered
+  /// 홈 피드용 proposal 목록. `status` 가 비어 있으면 아직 의뢰자가 수락하지 않아 다른 러너가
+  /// 지원할 수 있는 활성 상태(`.posted` = 등록 완료·지원 대기 / `.offered` = 새로운 지원 도착)만
+  /// 반환하고, 지정되면 해당 상태들로 필터한다.
+  func fetchProposals(status: [ProposalStatus], page: Int, size: Int) -> [Proposal] {
+    let filtered: [Proposal]
+    if status.isEmpty {
+      filtered = proposals.filter {
+        $0.status == .posted || $0.status == .offered
+      }
+    } else {
+      filtered = proposals.filter { status.contains($0.status) }
     }
     return paginate(filtered, page: page, size: size)
   }
@@ -138,9 +144,9 @@ actor DummyBackendStore {
     return offer
   }
 
-  func fetchOffersByProposal(proposalID: Int64) -> [Offer] {
+  func fetchOffersByProposal(proposalID: Int64, status: [OfferStatus]) -> [Offer] {
     offers
-      .filter { $0.proposalID == proposalID }
+      .filter { $0.proposalID == proposalID && (status.isEmpty || status.contains($0.status)) }
       .sorted { $0.createdAt > $1.createdAt }
   }
 
@@ -322,12 +328,12 @@ actor DummyBackendStore {
   /// 각 MyProposal 에는 그 proposal 에 달린 offer 목록이 함께 포함된다.
   func fetchMyProposals(
     userID: String,
-    status: ProposalStatus?,
+    status: [ProposalStatus],
     page: Int,
     size: Int
   ) -> [MyProposal] {
     let mine = proposals.filter { ordererIDByProposalID[$0.id] == userID }
-    let filtered = status.map { filter in mine.filter { $0.status == filter } } ?? mine
+    let filtered = status.isEmpty ? mine : mine.filter { status.contains($0.status) }
     return paginate(filtered, page: page, size: size).map { proposal in
       MyProposal(
         id: proposal.id,
@@ -344,12 +350,12 @@ actor DummyBackendStore {
   /// 응답에 proposal 정보(title 등)가 함께 내려오는 모양을 따라 join 결과를 반환한다.
   func fetchMyOffers(
     userID: String,
-    status: OfferStatus?,
+    status: [OfferStatus],
     page: Int,
     size: Int
   ) -> [MyOffer] {
     let mine = offers.filter { $0.runnerID == userID }
-    let filtered = status.map { filter in mine.filter { $0.status == filter } } ?? mine
+    let filtered = status.isEmpty ? mine : mine.filter { status.contains($0.status) }
     return paginate(filtered, page: page, size: size).map { offer in
       MyOffer(
         id: offer.id,
@@ -390,7 +396,7 @@ actor DummyBackendStore {
   // MARK: - Private cascade helpers
 
   private func canEditOrCancel(_ status: ProposalStatus) -> Bool {
-    status == .holding || status == .posted || status == .waiting || status == .offered
+    status == .holding || status == .posted || status == .offered
   }
 
   private func rejectActiveOffers(forProposalID proposalID: Int64) {
@@ -408,7 +414,7 @@ actor DummyBackendStore {
       return
     }
     let proposal = proposals[index]
-    guard proposal.status == .posted || proposal.status == .waiting else {
+    guard proposal.status == .posted else {
       return
     }
     proposals[index] = with(proposal, status: .offered)

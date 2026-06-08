@@ -21,7 +21,7 @@ extension MyProposal {
   var stage: ActivityStage {
     switch status {
     case .holding: return .unpaid
-    case .posted, .waiting, .offered: return .waiting
+    case .posted, .offered: return .waiting
     case .matched: return .inProgress
     case .complete: return .completed
     case .cancelled: return .cancelled
