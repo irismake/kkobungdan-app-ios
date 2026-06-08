@@ -8,6 +8,10 @@
 import Foundation
 
 protocol AuthRepositoryProtocol: Sendable {
+  func sendSignupCode(name: String, phone: String, carrier: String) async throws -> PhoneVerification
+  func confirmSignupCode(code: String, phone: String) async throws -> AuthTokens
+  func sendLoginCode(phone: String) async throws -> PhoneVerification
+  func confirmLoginCode(code: String, phone: String) async throws -> AuthTokens
   func signup(email: String, password: String, name: String, phone: String) async throws
   func emailLogin(email: String, password: String) async throws -> AuthTokens
   func loginWithApple(identityToken: String, name: String?, email: String?) async throws -> AppleLoginResult

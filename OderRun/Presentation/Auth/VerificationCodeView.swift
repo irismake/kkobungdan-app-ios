@@ -13,7 +13,17 @@ struct VerificationCodeView: View {
   let onClose: () -> Void
   let onComplete: () -> Void
 
-  @State private var viewModel = VerificationCodeViewModel()
+  @State private var viewModel: VerificationCodeViewModel
+
+  init(
+    viewModel: VerificationCodeViewModel,
+    onClose: @escaping () -> Void,
+    onComplete: @escaping () -> Void
+  ) {
+    _viewModel = State(initialValue: viewModel)
+    self.onClose = onClose
+    self.onComplete = onComplete
+  }
 
   private enum Field {
     case code
@@ -55,18 +65,23 @@ struct VerificationCodeView: View {
     .ignoresSafeArea(.keyboard, edges: .bottom)
     .safeAreaInset(edge: .bottom, spacing: 0) {
       BottomActionBar(title: "확인", isEnabled: viewModel.canProceed) {
-        onComplete()
+        Task {
+          if await viewModel.confirm() {
+            onComplete()
+          }
+        }
       }
     }
     .navigationBarBackButtonHidden(true)
     .toolbar(.hidden, for: .navigationBar)
     .onAppear { focus = .code }
+    .task { await viewModel.sendCode() }
     .onReceive(timer) { _ in viewModel.tick() }
   }
 
   private var resendButton: some View {
     Button {
-      viewModel.resend()
+      Task { await viewModel.resend() }
     } label: {
       Text("인증번호 재전송")
         .textStyle(.body2)
@@ -81,5 +96,15 @@ struct VerificationCodeView: View {
 }
 
 #Preview {
-  VerificationCodeView(onClose: {}, onComplete: {})
+  VerificationCodeView(
+    viewModel: VerificationCodeViewModel(
+      flow: .login(phone: "01012345678"),
+      sendSignupCodeUseCase: SendSignupCodeUseCase(authRepository: DIContainer.authRepository),
+      confirmSignupCodeUseCase: ConfirmSignupCodeUseCase(authRepository: DIContainer.authRepository),
+      sendLoginCodeUseCase: SendLoginCodeUseCase(authRepository: DIContainer.authRepository),
+      confirmLoginCodeUseCase: ConfirmLoginCodeUseCase(authRepository: DIContainer.authRepository)
+    ),
+    onClose: {},
+    onComplete: {}
+  )
 }

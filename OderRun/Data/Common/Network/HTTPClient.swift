@@ -87,7 +87,8 @@ final class HTTPClient {
     request.httpMethod = method
     request.setValue("application/json", forHTTPHeaderField: "Content-Type")
     if let token = tokenStorage.accessToken {
-      request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
+      let scheme = tokenStorage.tokenType ?? "Bearer"
+      request.setValue("\(scheme) \(token)", forHTTPHeaderField: "Authorization")
     }
     if let body {
       request.httpBody = try JSONEncoder().encode(body)
@@ -168,7 +169,8 @@ final class HTTPClient {
       return false
     }
 
-    let currentToken = auth.hasPrefix("Bearer ") ? String(auth.dropFirst("Bearer ".count)) : auth
+    // "<scheme> <token>" 에서 토큰만 추출 (scheme 은 Bearer 등 가변).
+    let currentToken = auth.split(separator: " ", maxSplits: 1).last.map(String.init) ?? auth
     do {
       _ = try await tokenRefresher.refresh(currentAccessToken: currentToken)
       return true
@@ -181,7 +183,8 @@ final class HTTPClient {
   private func rebuiltRequest(from request: URLRequest) -> URLRequest {
     var retry = request
     if let token = tokenStorage.accessToken {
-      retry.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
+      let scheme = tokenStorage.tokenType ?? "Bearer"
+      retry.setValue("\(scheme) \(token)", forHTTPHeaderField: "Authorization")
     }
     return retry
   }

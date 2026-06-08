@@ -11,6 +11,8 @@ import SwiftUI
 
 @main
 struct OderRunApp: App {
+  @State private var session = SessionViewModel()
+
   init() {
     guard let appKey = Bundle.main.object(forInfoDictionaryKey: "KAKAO_NATIVE_APP_KEY") as? String,
           !appKey.isEmpty
@@ -23,6 +25,7 @@ struct OderRunApp: App {
   var body: some Scene {
     WindowGroup {
       RootView()
+        .environment(session)
         .onOpenURL { url in
           if AuthApi.isKakaoTalkLoginUrl(url) {
             AuthController.handleOpenUrl(url: url)

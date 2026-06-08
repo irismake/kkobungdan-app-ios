@@ -14,6 +14,7 @@ final class TokenStorage {
   private let accessKey = "orderrun.accessToken"
   private let refreshKey = "orderrun.refreshToken"
   private let userIDKey = "orderrun.userID"
+  private let tokenTypeKey = "orderrun.tokenType"
 
   var accessToken: String? {
     get { defaults.string(forKey: accessKey) }
@@ -30,10 +31,17 @@ final class TokenStorage {
     set { defaults.set(newValue, forKey: userIDKey) }
   }
 
+  /// Authorization 헤더 스킴(예: "Bearer"). 미저장 시 호출부에서 "Bearer" 로 폴백한다.
+  var tokenType: String? {
+    get { defaults.string(forKey: tokenTypeKey) }
+    set { defaults.set(newValue, forKey: tokenTypeKey) }
+  }
+
   func clear() {
     defaults.removeObject(forKey: accessKey)
     defaults.removeObject(forKey: refreshKey)
     defaults.removeObject(forKey: userIDKey)
+    defaults.removeObject(forKey: tokenTypeKey)
   }
 
   private init() {
