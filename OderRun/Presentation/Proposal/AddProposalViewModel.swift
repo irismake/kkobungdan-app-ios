@@ -24,7 +24,7 @@ final class AddProposalViewModel {
     content: String,
     deadline: Date,
     errandFee: Int
-  ) async -> ProposalDetail? {
+  ) async -> Proposal? {
     guard !isSubmitting else {
       return nil
     }

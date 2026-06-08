@@ -46,9 +46,9 @@ final class MyProposalDetailViewModel {
     offers.filter { $0.status == .waiting || $0.status == .accepted }.count
   }
 
-  /// 매칭된 (수락된) offer. 매칭이 완료된 proposal 에서 매칭 러너 카드 표시에 사용.
+  /// 매칭된 offer. 진행중(ACCEPTED)·완료(COMPLETED) proposal 의 매칭 러너 카드 표시에 사용.
   var matchedOffer: Offer? {
-    offers.first(where: { $0.status == .accepted })
+    offers.first(where: { $0.status == .accepted || $0.status == .complete })
   }
 
   private let fetchDetailUseCase: FetchProposalDetailUseCase
@@ -79,15 +79,38 @@ final class MyProposalDetailViewModel {
     self.cancelProposalUseCase = cancelProposalUseCase
   }
 
+  /// proposal 상태별로 조회할 offer status 필터.
+  /// 미입금(HOLDING)은 offer 목록을 조회하지 않으므로 `nil`.
+  private func offerStatusFilter(for status: ProposalStatus) -> [OfferStatus]? {
+    switch status {
+    case .holding:
+      return nil
+    case .posted, .offered:
+      return [.waiting]
+    case .matched:
+      return [.accepted]
+    case .complete:
+      return [.complete]
+    case .cancelled:
+      return [.cancelled]
+    }
+  }
+
   @MainActor
   func load() async {
     isLoading = true
     errorMessage = nil
     do {
-      async let proposalTask = fetchDetailUseCase.execute(id: proposalID)
-      async let offersTask = fetchOffersUseCase.execute(proposalID: proposalID)
-      proposal = try await proposalTask
-      offers = try await offersTask
+      // offer 조회 status 필터가 proposal 상태에 의존하므로 proposal 을 먼저 조회한다.
+      let loaded = try await fetchDetailUseCase.execute(id: proposalID)
+      proposal = loaded
+
+      // 미입금(HOLDING)은 offer 목록을 조회하지 않고, 그 외 상태는 상태별 필터로 조회.
+      if let filter = offerStatusFilter(for: loaded.status) {
+        offers = try await fetchOffersUseCase.execute(proposalID: proposalID, status: filter)
+      } else {
+        offers = []
+      }
 
       if let matchedOffer {
         async let detailTask = fetchOfferDetailUseCase.execute(offerID: matchedOffer.id)

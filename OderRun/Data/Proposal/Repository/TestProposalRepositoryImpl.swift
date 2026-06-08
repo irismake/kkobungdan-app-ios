@@ -27,7 +27,7 @@ struct TestProposalRepositoryImpl: ProposalRepositoryProtocol {
     content: String,
     deadline: String,
     errandFee: Int
-  ) async throws -> ProposalDetail {
+  ) async throws -> Proposal {
     try await Task.sleep(nanoseconds: Self.simulatedLatency)
     return await store.createProposal(
       ordererID: DummySession.currentUserID,

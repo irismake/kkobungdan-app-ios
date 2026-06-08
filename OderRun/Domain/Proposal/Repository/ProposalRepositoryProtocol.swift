@@ -16,7 +16,7 @@ protocol ProposalRepositoryProtocol: Sendable {
     content: String,
     deadline: String,
     errandFee: Int
-  ) async throws -> ProposalDetail
+  ) async throws -> Proposal
   func updateProposal(
     id: Int64,
     title: String,

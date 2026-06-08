@@ -48,8 +48,8 @@ final class ProposalRepository: ProposalRepositoryProtocol {
     content: String,
     deadline: String,
     errandFee: Int
-  ) async throws -> ProposalDetail {
-    let dto: ProposalDetailResponseDTO = try await client.post(
+  ) async throws -> Proposal {
+    let dto: ProposalResponseDTO = try await client.post(
       "/v1/proposal",
       body: ProposalCreateBody(
         title: title,
