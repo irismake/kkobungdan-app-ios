@@ -86,8 +86,6 @@ struct HomeView: View {
       .onChange(of: activityPath) { _, newPath in
         if newPath.isEmpty {
           Task {
-            await myProposalsViewModel.load()
-            await myOffersViewModel.load()
             await viewModel.load()
           }
         }
