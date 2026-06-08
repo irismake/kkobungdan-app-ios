@@ -14,7 +14,7 @@ struct ApplicantListView: View {
   var onSelectApplicant: (_ proposalID: Int64, _ offerID: Int64) -> Void = { _, _ in }
 
   @State private var isSelectModalPresented: Bool = false
-  @State private var selectedEntry: ApplicantEntry?
+  @State private var selectedApplicant: Offer?
 
   init(
     viewModel: ApplicantListViewModel,
@@ -37,15 +37,15 @@ struct ApplicantListView: View {
           VStack(alignment: .leading, spacing: 12) {
             headerSection
 
-            if viewModel.isLoading, viewModel.entries.isEmpty {
+            if viewModel.isLoading, viewModel.applicants.isEmpty {
               ProgressView().padding(.top, 20)
-            } else if let errorMessage = viewModel.errorMessage, viewModel.entries.isEmpty {
+            } else if let errorMessage = viewModel.errorMessage, viewModel.applicants.isEmpty {
               Text(errorMessage)
                 .textStyle(.body3)
                 .foregroundColor(Color.rose500)
             } else {
-              ForEach(viewModel.entries) { entry in
-                applicantEntryCard(entry: entry)
+              ForEach(viewModel.applicants) { applicant in
+                applicantCard(applicant)
               }
             }
           }
@@ -61,18 +61,18 @@ struct ApplicantListView: View {
         await viewModel.load()
       }
 
-      if isSelectModalPresented, let selectedEntry {
+      if isSelectModalPresented, let selectedApplicant {
         ApplicantSelectModal(
           onCancel: {
             isSelectModalPresented = false
-            self.selectedEntry = nil
+            self.selectedApplicant = nil
           },
           onConfirm: {
             Task {
-              await viewModel.acceptOffer(offerID: selectedEntry.offerDetail.id)
+              await viewModel.acceptOffer(offerID: selectedApplicant.id)
               if viewModel.didAcceptOffer {
                 isSelectModalPresented = false
-                self.selectedEntry = nil
+                self.selectedApplicant = nil
                 onAccepted()
               }
             }
@@ -82,15 +82,13 @@ struct ApplicantListView: View {
     }
   }
 
-  private func applicantEntryCard(entry: ApplicantEntry) -> some View {
+  private func applicantCard(_ applicant: Offer) -> some View {
     VStack(spacing: 8) {
       ApplicantCard(
-        nickname: entry.runnerProfile.nickname,
-        level: entry.runnerProfile.level,
-        grade: entry.runnerProfile.grade,
-        appliedAt: ProposalDisplay.appliedAtString(entry.offerDetail.createdAt),
+        nickname: applicant.runnerName,
+        appliedAt: ProposalDisplay.appliedAtString(applicant.createdAt),
         onSelect: {
-          selectedEntry = entry
+          selectedApplicant = applicant
           isSelectModalPresented = true
         }
       )
@@ -105,7 +103,7 @@ struct ApplicantListView: View {
         .foregroundColor(Color.gray600)
 
       HStack(spacing: 0) {
-        Text("\(viewModel.entries.count)명")
+        Text("\(viewModel.applicants.count)명")
           .textStyle(.heading3, weight: .bold)
           .foregroundColor(Color.indigo500)
 

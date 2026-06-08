@@ -7,21 +7,12 @@
 
 import Foundation
 
-struct ApplicantEntry: Identifiable {
-  var id: Int64 {
-    offerDetail.id
-  }
-
-  let offerDetail: OfferDetail
-  let runnerProfile: RunnerProfile
-}
-
 @Observable
 final class ApplicantListViewModel {
   let proposalID: Int64
 
   var proposal: Proposal?
-  var entries: [ApplicantEntry] = []
+  var applicants: [Offer] = []
   var isLoading: Bool = false
   var errorMessage: String?
   var isRejecting: Bool = false
@@ -30,23 +21,17 @@ final class ApplicantListViewModel {
 
   private let fetchDetailUseCase: FetchProposalDetailUseCase
   private let fetchOffersUseCase: FetchOffersByProposalUseCase
-  private let fetchOfferDetailUseCase: FetchOfferDetailUseCase
-  private let fetchRunnerProfileUseCase: FetchRunnerProfileUseCase
   private let acceptOfferUseCase: AcceptOfferUseCase
 
   init(
     proposalID: Int64,
     fetchDetailUseCase: FetchProposalDetailUseCase,
     fetchOffersUseCase: FetchOffersByProposalUseCase,
-    fetchOfferDetailUseCase: FetchOfferDetailUseCase,
-    fetchRunnerProfileUseCase: FetchRunnerProfileUseCase,
     acceptOfferUseCase: AcceptOfferUseCase
   ) {
     self.proposalID = proposalID
     self.fetchDetailUseCase = fetchDetailUseCase
     self.fetchOffersUseCase = fetchOffersUseCase
-    self.fetchOfferDetailUseCase = fetchOfferDetailUseCase
-    self.fetchRunnerProfileUseCase = fetchRunnerProfileUseCase
     self.acceptOfferUseCase = acceptOfferUseCase
   }
 
@@ -59,15 +44,7 @@ final class ApplicantListViewModel {
       async let offersTask = fetchOffersUseCase.execute(proposalID: proposalID)
       let (proposal, offers) = try await (proposalTask, offersTask)
       self.proposal = proposal
-
-      var built: [ApplicantEntry] = []
-      for offer in offers where offer.status == .waiting || offer.status == .accepted {
-        async let detailTask = fetchOfferDetailUseCase.execute(offerID: offer.id)
-        async let profileTask = fetchRunnerProfileUseCase.execute(runnerID: offer.runnerID)
-        let (detail, profile) = try await (detailTask, profileTask)
-        built.append(ApplicantEntry(offerDetail: detail, runnerProfile: profile))
-      }
-      entries = built
+      applicants = offers.filter { $0.status == .waiting || $0.status == .accepted }
     } catch {
       errorMessage = "지원자 목록을 불러오지 못했어요."
     }

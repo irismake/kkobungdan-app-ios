@@ -31,9 +31,4 @@ final class UserRepository: UserRepositoryProtocol {
     )
     return dto.toDomain()
   }
-
-  func fetchRunner(id: String) async throws -> RunnerProfile {
-    let dto: RunnerProfileResponseDTO = try await client.get("/v1/user/\(id)")
-    return dto.toDomain()
-  }
 }

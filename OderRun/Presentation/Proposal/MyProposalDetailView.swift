@@ -72,14 +72,10 @@ struct MyProposalDetailView: View {
                 )
               }
 
-              if let detail = viewModel.matchedOfferDetail,
-                 let profile = viewModel.matchedRunnerProfile
-              {
+              if let matched = viewModel.matchedOffer {
                 MatchedRunnerSection(
-                  nickname: profile.nickname,
-                  level: profile.level,
-                  grade: profile.grade,
-                  appliedAt: ProposalDisplay.appliedAtString(detail.createdAt)
+                  nickname: matched.runnerName,
+                  appliedAt: ProposalDisplay.appliedAtString(matched.createdAt)
                 )
               }
             }

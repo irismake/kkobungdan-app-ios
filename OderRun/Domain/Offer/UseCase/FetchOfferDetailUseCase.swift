@@ -2,7 +2,7 @@
 //  FetchOfferDetailUseCase.swift
 //  OderRun
 //
-//  Created by 김가희 on 5/26/26.
+//  Created by 김가희 on 5/19/26.
 //
 
 import Foundation

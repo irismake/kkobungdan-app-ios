@@ -125,6 +125,7 @@ actor DummyBackendStore {
       id: newID,
       proposalID: proposalID,
       runnerID: runnerID,
+      runnerName: MissionParticipant.dummy(for: runnerID).name,
       status: .waiting,
       createdAt: Date()
     )
@@ -148,6 +149,7 @@ actor DummyBackendStore {
       id: offer.id,
       proposalID: offer.proposalID,
       runnerID: offer.runnerID,
+      runnerName: offer.runnerName,
       status: offer.status,
       createdAt: offer.createdAt
     )
@@ -440,6 +442,7 @@ actor DummyBackendStore {
       id: offer.id,
       proposalID: offer.proposalID,
       runnerID: offer.runnerID,
+      runnerName: offer.runnerName,
       status: status,
       createdAt: offer.createdAt
     )

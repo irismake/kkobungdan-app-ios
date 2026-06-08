@@ -16,7 +16,7 @@ final class ApplyDetailViewModel {
   var isLoading: Bool = false
   var errorMessage: String?
 
-  var myOffer: MyOffer?
+  var offer: OfferDetail?
   var mission: Mission?
   var isCompletingMission: Bool = false
   var isCancelling: Bool = false
@@ -26,7 +26,7 @@ final class ApplyDetailViewModel {
   /// 내 offer 가 ACCEPTED 이고, 미션이 아직 내(러너) 확인을 받지 않은 상태일 때만 노출.
   /// (이미 내가 확인했다면 상대방 대기 상태이므로 다시 누를 수 없다.)
   var canCompleteDelivery: Bool {
-    guard myOffer?.status == .accepted, let mission else {
+    guard offer?.status == .accepted, let mission else {
       return false
     }
     switch mission.status {
@@ -39,16 +39,16 @@ final class ApplyDetailViewModel {
 
   /// 러너가 "만났어요!"를 이미 눌렀고, 요청자(의뢰자) 확인을 기다리는 중인지 여부.
   var isWaitingForOrdererConfirm: Bool {
-    myOffer?.status == .accepted && mission?.status == .deliveryCompleted
+    offer?.status == .accepted && mission?.status == .deliveryCompleted
   }
 
   /// 매칭 전(WAITING) 지원만 취소할 수 있다. (디자인: "매칭되기 전에는 지원 취소 버튼 제공")
   var canCancelOffer: Bool {
-    myOffer?.status == .waiting
+    offer?.status == .waiting
   }
 
   private let fetchDetailUseCase: FetchProposalDetailUseCase
-  private let fetchMyOffersUseCase: FetchMyOffersUseCase
+  private let fetchOfferDetailUseCase: FetchOfferDetailUseCase
   private let fetchMissionByOfferUseCase: FetchMissionByOfferUseCase
   private let updateMissionActionUseCase: UpdateMissionActionUseCase
   private let cancelOfferUseCase: CancelOfferUseCase
@@ -57,7 +57,7 @@ final class ApplyDetailViewModel {
     proposalID: Int64,
     offerID: Int64,
     fetchDetailUseCase: FetchProposalDetailUseCase,
-    fetchMyOffersUseCase: FetchMyOffersUseCase,
+    fetchOfferDetailUseCase: FetchOfferDetailUseCase,
     fetchMissionByOfferUseCase: FetchMissionByOfferUseCase,
     updateMissionActionUseCase: UpdateMissionActionUseCase,
     cancelOfferUseCase: CancelOfferUseCase
@@ -65,7 +65,7 @@ final class ApplyDetailViewModel {
     self.proposalID = proposalID
     self.offerID = offerID
     self.fetchDetailUseCase = fetchDetailUseCase
-    self.fetchMyOffersUseCase = fetchMyOffersUseCase
+    self.fetchOfferDetailUseCase = fetchOfferDetailUseCase
     self.fetchMissionByOfferUseCase = fetchMissionByOfferUseCase
     self.updateMissionActionUseCase = updateMissionActionUseCase
     self.cancelOfferUseCase = cancelOfferUseCase
@@ -79,9 +79,9 @@ final class ApplyDetailViewModel {
       let proposal = try await fetchDetailUseCase.execute(id: proposalID)
       self.proposal = proposal
 
-      let mine = try await fetchMyOffersUseCase.execute()
-      myOffer = mine.first { $0.proposalID == proposalID }
-      if myOffer?.status == .accepted || myOffer?.status == .complete {
+      let offer = try await fetchOfferDetailUseCase.execute(offerID: offerID)
+      self.offer = offer
+      if offer.status == .accepted || offer.status == .complete {
         mission = try await fetchMissionByOfferUseCase.execute(offerID: offerID)
       } else {
         mission = nil
