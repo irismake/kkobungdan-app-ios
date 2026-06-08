@@ -19,9 +19,6 @@ struct OfferAcceptResponseDTO: Decodable {
   let missionStatus: String
   let ordererID: String
   let runnerID: String
-  let runFee: Int
-  let itemPrice: Int
-  let totalAmount: Int
   let createdAt: String
 
   enum CodingKeys: String, CodingKey {
@@ -34,9 +31,6 @@ struct OfferAcceptResponseDTO: Decodable {
     case missionStatus
     case ordererID = "ordererId"
     case runnerID = "runnerId"
-    case runFee
-    case itemPrice
-    case totalAmount
     case createdAt
   }
 }
@@ -53,9 +47,6 @@ extension OfferAcceptResponseDTO {
       missionStatus: MissionStatus(rawValue: missionStatus) ?? .created,
       ordererID: ordererID,
       runnerID: runnerID,
-      runFee: runFee,
-      itemPrice: itemPrice,
-      totalAmount: totalAmount,
       createdAt: DateFormatters.parse(createdAt)
     )
   }

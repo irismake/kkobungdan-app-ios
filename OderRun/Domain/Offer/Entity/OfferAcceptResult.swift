@@ -19,8 +19,5 @@ struct OfferAcceptResult {
   let missionStatus: MissionStatus
   let ordererID: String
   let runnerID: String
-  let runFee: Int
-  let itemPrice: Int
-  let totalAmount: Int
   let createdAt: Date
 }
