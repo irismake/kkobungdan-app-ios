@@ -40,6 +40,7 @@ enum TextStyle {
   case inputBody1 // Pretendard-Regular 16/20/-0.2
   case inputBody2 // Pretendard-Medium 14/17/-0.2
   case inputBody3 // Pretendard-Medium 16/19/-0.2
+  case inputBody4 // Pretendard-Regular 16/16/-0.2 (입력 힌트, line-height 100%)
   case interHeading1 // Medium 16/24/-0.312
   case interBody1 // Regular 16/24/-0.312
 
@@ -51,7 +52,7 @@ enum TextStyle {
       return "Pretendard-SemiBold"
     case .body1, .body2, .caption1, .caption3, .inputBody2, .inputBody3, .button1:
       return "Pretendard-Medium"
-    case .body3, .body4, .caption2, .caption5, .caption6, .inputBody1:
+    case .body3, .body4, .caption2, .caption5, .caption6, .inputBody1, .inputBody4:
       return "Pretendard-Regular"
     case .interHeading1:
       return "Inter-Medium"
@@ -65,7 +66,7 @@ enum TextStyle {
     case .display: return 30
     case .heading1, .heading2: return 24
     case .heading3, .title1: return 18
-    case .heading4, .heading5, .body1, .body4, .interHeading1, .interBody1, .inputBody1, .inputBody3: return 16
+    case .heading4, .heading5, .body1, .body4, .interHeading1, .interBody1, .inputBody1, .inputBody3, .inputBody4: return 16
     case .title2, .title3, .body2, .body3, .inputBody2, .button1: return 14
     case .caption1, .caption3, .caption2, .caption4, .caption5, .caption6: return 12
     }
@@ -94,6 +95,7 @@ enum TextStyle {
     case .caption5: return 16
     case .caption6: return 14
     case .inputBody1: return 20
+    case .inputBody4: return 16
     case .inputBody2: return 17
     case .inputBody3: return 19
     case .interHeading1, .interBody1: return 24
@@ -107,7 +109,7 @@ enum TextStyle {
       return -0.4
     case .body4, .interHeading1, .interBody1: return -0.312
     case .body1: return -0.3
-    case .heading4, .inputBody1, .inputBody2, .inputBody3, .button1: return -0.2
+    case .heading4, .inputBody1, .inputBody2, .inputBody3, .inputBody4, .button1: return -0.2
     case .caption2: return -0.15
     case .body2, .body3, .caption1, .caption6: return -0.1
     case .caption3, .caption5: return 0

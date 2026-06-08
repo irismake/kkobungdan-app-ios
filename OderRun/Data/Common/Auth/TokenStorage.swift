@@ -36,5 +36,11 @@ final class TokenStorage {
     defaults.removeObject(forKey: userIDKey)
   }
 
-  private init() {}
+  private init() {
+    // 더미 모드에서는 로그인 응답이 없어 userID 가 비어 있다.
+    // 더미 데이터가 모두 DummySession.currentUserID 기준이므로 본인 식별자를 맞춰 저장한다.
+    if DIContainer.isDummy, userID == nil {
+      userID = DummySession.currentUserID
+    }
+  }
 }

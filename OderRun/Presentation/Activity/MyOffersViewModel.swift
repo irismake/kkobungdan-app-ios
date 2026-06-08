@@ -18,27 +18,22 @@ final class MyOffersViewModel {
   var proposalByOfferID: [Int64: Proposal] = [:]
   var isLoading: Bool = false
   var errorMessage: String?
-  var isCancellingOfferID: Int64?
 
   private let fetchMyOffersUseCase: FetchMyOffersUseCase
   private let fetchProposalDetailUseCase: FetchProposalDetailUseCase
-  private let cancelOfferUseCase: CancelOfferUseCase
 
   init(
     fetchMyOffersUseCase: FetchMyOffersUseCase,
-    fetchProposalDetailUseCase: FetchProposalDetailUseCase,
-    cancelOfferUseCase: CancelOfferUseCase
+    fetchProposalDetailUseCase: FetchProposalDetailUseCase
   ) {
     self.fetchMyOffersUseCase = fetchMyOffersUseCase
     self.fetchProposalDetailUseCase = fetchProposalDetailUseCase
-    self.cancelOfferUseCase = cancelOfferUseCase
   }
 
   static func preview() -> MyOffersViewModel {
     MyOffersViewModel(
       fetchMyOffersUseCase: FetchMyOffersUseCase(repository: DIContainer.activityRepository),
-      fetchProposalDetailUseCase: FetchProposalDetailUseCase(repository: DIContainer.proposalRepository),
-      cancelOfferUseCase: CancelOfferUseCase(repository: DIContainer.offerRepository)
+      fetchProposalDetailUseCase: FetchProposalDetailUseCase(repository: DIContainer.proposalRepository)
     )
   }
 
@@ -67,22 +62,5 @@ final class MyOffersViewModel {
       errorMessage = "웨이팅 기록을 불러오지 못했어요."
     }
     isLoading = false
-  }
-
-  /// 러너가 본인이 제출한 지원(WAITING)을 취소한다. 성공 시 목록을 다시 로드한다.
-  @MainActor
-  func cancelMyOffer(offerID: Int64) async {
-    guard isCancellingOfferID == nil else {
-      return
-    }
-    isCancellingOfferID = offerID
-    errorMessage = nil
-    do {
-      try await cancelOfferUseCase.execute(offerID: offerID)
-      await load()
-    } catch {
-      errorMessage = "지원을 취소하지 못했어요."
-    }
-    isCancellingOfferID = nil
   }
 }

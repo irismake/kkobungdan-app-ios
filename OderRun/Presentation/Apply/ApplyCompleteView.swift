@@ -62,7 +62,7 @@ struct ApplyCompleteView: View {
           onConfirm()
         }
 
-        CancelButton(title: "지원 내역 보기") {
+        OutlineButton(title: "지원 내역 보기") {
           onViewHistory()
         }
       }

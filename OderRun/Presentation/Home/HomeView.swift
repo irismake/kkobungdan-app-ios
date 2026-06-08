@@ -168,6 +168,15 @@ struct HomeView: View {
         viewModel: AppRouteFactory.makeProposalDetailViewModel(proposalID: proposalID),
         onBack: { popLast(path: path) },
         onApply: {
+          path.wrappedValue.append(.accountRegister(proposalID: proposalID))
+        }
+      )
+      .navigationBarBackButtonHidden(true)
+    case let .accountRegister(proposalID):
+      AccountRegisterView(
+        viewModel: AppRouteFactory.makeAccountRegisterViewModel(proposalID: proposalID),
+        onBack: { popLast(path: path) },
+        onApplied: {
           path.wrappedValue.append(.applyComplete(proposalID: proposalID))
         }
       )
@@ -224,6 +233,15 @@ struct HomeView: View {
         }
       )
       .navigationBarBackButtonHidden(true)
+    case .addProposalDraft, .addProposalDateTime, .addProposalFee:
+      addProposalDestination(for: route, path: path)
+    }
+  }
+
+  /// 새 의뢰 작성(3단계) 라우팅. `destination(for:path:)` 길이 분산을 위해 분리.
+  @ViewBuilder
+  private func addProposalDestination(for route: AppRoute, path: Binding<[AppRoute]>) -> some View {
+    switch route {
     case .addProposalDraft:
       AddProposalView(
         onBack: { popLast(path: path) },
@@ -256,6 +274,8 @@ struct HomeView: View {
         }
       )
       .navigationBarBackButtonHidden(true)
+    default:
+      EmptyView()
     }
   }
 
