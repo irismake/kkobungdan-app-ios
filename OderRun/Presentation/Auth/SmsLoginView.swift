@@ -10,7 +10,8 @@ import SwiftUI
 /// 휴대폰 번호 로그인 진입 화면. 등록된 번호를 입력해 인증 단계로 넘어간다.
 struct SmsLoginView: View {
   let onClose: () -> Void
-  let onNext: () -> Void
+  /// 인증번호 단계로 넘어갈 때 숫자만 추린 휴대폰 번호를 전달한다.
+  let onNext: (_ phone: String) -> Void
   let onFindAccount: () -> Void
 
   @State private var viewModel = SmsLoginViewModel()
@@ -48,7 +49,7 @@ struct SmsLoginView: View {
     .ignoresSafeArea(.keyboard, edges: .bottom)
     .safeAreaInset(edge: .bottom, spacing: 0) {
       BottomActionBar(title: "다음", isEnabled: viewModel.canProceed) {
-        onNext()
+        onNext(viewModel.phoneNumber.filter(\.isNumber))
       }
     }
     .navigationBarBackButtonHidden(true)
@@ -74,5 +75,5 @@ struct SmsLoginView: View {
 }
 
 #Preview {
-  SmsLoginView(onClose: {}, onNext: {}, onFindAccount: {})
+  SmsLoginView(onClose: {}, onNext: { _ in }, onFindAccount: {})
 }

@@ -19,6 +19,9 @@ enum DIContainer {
   static let authRepository: AuthRepositoryProtocol =
     isDummy ? TestAuthRepositoryImpl() : AuthRepository(client: .shared, tokenStorage: .shared)
 
+  static let oauthRepository: OauthRepositoryProtocol =
+    isDummy ? TestOauthRepositoryImpl() : OauthRepository(client: .shared, tokenStorage: .shared)
+
   static let proposalRepository: ProposalRepositoryProtocol =
     isDummy ? TestProposalRepositoryImpl(store: dummyStore) : ProposalRepository(client: .shared)
 

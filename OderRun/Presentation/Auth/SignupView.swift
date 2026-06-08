@@ -10,8 +10,8 @@ import SwiftUI
 /// 회원가입 본인인증 플로우. 하나의 화면에서 입력을 마칠 때마다 다음 필드가 위에서부터 하나씩 나타난다.
 struct SignupView: View {
   let onClose: () -> Void
-  /// 약관 동의까지 마쳐 인증번호 단계로 넘어갈 때.
-  let onComplete: () -> Void
+  /// 약관 동의까지 마쳐 인증번호 단계로 넘어갈 때. (이름·숫자만 추린 휴대폰 번호·통신사 전달)
+  let onComplete: (_ name: String, _ phone: String, _ carrier: String) -> Void
 
   @State private var viewModel = SignupViewModel()
 
@@ -57,7 +57,11 @@ struct SignupView: View {
           onClose: { viewModel.dismissTermsSheet() },
           onConfirm: {
             viewModel.completeTermsAgreement()
-            onComplete()
+            onComplete(
+              viewModel.name,
+              viewModel.phoneNumber.filter(\.isNumber),
+              viewModel.carrier ?? ""
+            )
           }
         )
       }
@@ -123,5 +127,5 @@ struct SignupView: View {
 }
 
 #Preview {
-  SignupView(onClose: {}, onComplete: {})
+  SignupView(onClose: {}, onComplete: { _, _, _ in })
 }

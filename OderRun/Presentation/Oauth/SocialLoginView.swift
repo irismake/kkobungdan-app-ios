@@ -145,9 +145,9 @@ struct SocialLoginView: View {
 #Preview {
   SocialLoginView(
     viewModel: SocialLoginViewModel(
-      emailLoginUseCase: EmailLoginUseCase(authRepository: DIContainer.authRepository),
-      appleLoginUseCase: AppleLoginUseCase(authRepository: DIContainer.authRepository),
-      kakaoLoginUseCase: KakaoLoginUseCase(authRepository: DIContainer.authRepository)
+      emailLoginUseCase: EmailLoginUseCase(oauthRepository: DIContainer.oauthRepository),
+      appleLoginUseCase: AppleLoginUseCase(oauthRepository: DIContainer.oauthRepository),
+      kakaoLoginUseCase: KakaoLoginUseCase(oauthRepository: DIContainer.oauthRepository)
     )
   )
 }

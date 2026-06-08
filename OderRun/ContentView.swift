@@ -11,20 +11,16 @@ struct ContentView: View {
   /// 로그인 진입 화면에서 분기되는 인증 경로.
   private enum AuthRoute: Hashable {
     case signup
-    case verification
+    case verification(VerificationCodeViewModel.Flow)
     case login
   }
 
-  @State private var socialLoginViewModel = SocialLoginViewModel(
-    emailLoginUseCase: EmailLoginUseCase(authRepository: DIContainer.authRepository),
-    appleLoginUseCase: AppleLoginUseCase(authRepository: AuthRepository()),
-    kakaoLoginUseCase: KakaoLoginUseCase(authRepository: AuthRepository())
-  )
+  @Environment(SessionViewModel.self) private var session
   @State private var authPath: [AuthRoute] = []
 
   var body: some View {
     Group {
-      if socialLoginViewModel.isLoginSuccess {
+      if session.isLoggedIn {
         HomeView(
           viewModel: HomeViewModel(
             fetchProposalsUseCase: FetchProposalsUseCase(repository: DIContainer.proposalRepository)
@@ -40,7 +36,7 @@ struct ContentView: View {
             fetchUserDetailUseCase: FetchUserDetailUseCase(userRepository: DIContainer.userRepository),
             updateAlarmUseCase: UpdateAlarmUseCase(userRepository: DIContainer.userRepository),
             logoutUseCase: LogoutUseCase(authRepository: AuthRepository()),
-            onLogout: { socialLoginViewModel.isLoginSuccess = false }
+            onLogout: { session.isLoggedIn = false }
           ),
           notificationViewModel: NotificationViewModel(
             fetchNotificationsUseCase: FetchNotificationsUseCase(repository: DIContainer.notificationRepository),
@@ -58,20 +54,28 @@ struct ContentView: View {
             case .signup:
               SignupView(
                 onClose: { authPath.removeAll() },
-                onComplete: { authPath.append(.verification) }
+                onComplete: { name, phone, carrier in
+                  authPath.append(.verification(.signup(name: name, phone: phone, carrier: carrier)))
+                }
               )
-            case .verification:
+            case let .verification(flow):
               VerificationCodeView(
+                viewModel: VerificationCodeViewModel(
+                  flow: flow,
+                  sendSignupCodeUseCase: SendSignupCodeUseCase(authRepository: AuthRepository()),
+                  confirmSignupCodeUseCase: ConfirmSignupCodeUseCase(authRepository: AuthRepository()),
+                  sendLoginCodeUseCase: SendLoginCodeUseCase(authRepository: AuthRepository()),
+                  confirmLoginCodeUseCase: ConfirmLoginCodeUseCase(authRepository: AuthRepository())
+                ),
                 onClose: { authPath.removeAll() },
                 onComplete: {
-                  // TODO: 인증 완료 후 실제 가입/로그인 처리 연동
-                  socialLoginViewModel.isLoginSuccess = true
+                  session.isLoggedIn = true
                 }
               )
             case .login:
               SmsLoginView(
                 onClose: { authPath.removeAll() },
-                onNext: { authPath.append(.verification) },
+                onNext: { phone in authPath.append(.verification(.login(phone: phone))) },
                 onFindAccount: {
                   // TODO: 내 계정 찾기 — 회원가입과 같은 본인인증 flow 진행
                 }
@@ -82,11 +86,12 @@ struct ContentView: View {
       }
     }
     .onReceive(NotificationCenter.default.publisher(for: .authForcedLogout)) { _ in
-      socialLoginViewModel.isLoginSuccess = false
+      session.isLoggedIn = false
     }
   }
 }
 
 #Preview {
   ContentView()
+    .environment(SessionViewModel())
 }
