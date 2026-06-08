@@ -112,7 +112,7 @@ final class MyProposalDetailViewModel {
     isLoading = false
   }
 
-  /// 오더 수령 확인. `PUT /v1/mission/{id}` — `CONFIRM_RECEIVED`
+  /// 오더 수령 확인. `POST /v1/mission/{id}/confirm-received`
   @MainActor
   func confirmReceived() async {
     guard let mission, canConfirmReceived, !isCompletingMission else {

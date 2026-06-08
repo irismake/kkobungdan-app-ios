@@ -7,19 +7,14 @@
 
 import Foundation
 
-struct MissionActionBody: Encodable {
-  let action: String
-  // TODO: proofImageUrl — COMPLETE_DELIVERY UI 연동 전까지 stub 값 전송
-  var proofImageUrl: String? = MissionActionBody.stubProofImageUrl
-  // TODO: disputeReason — DISPUTE UI 연동 전까지 stub 값 전송
-  var disputeReason: String? = MissionActionBody.stubDisputeReason
+/// `POST /v1/mission/{id}/complete-delivery` 요청 바디. proofImageUrl 은 서버 optional.
+private struct CompleteDeliveryBody: Encodable {
+  let proofImageUrl: String?
 }
 
-extension MissionActionBody {
-  // TODO: proofImageUrl UI 반영 시 호출부에서 실제 값 전달로 교체
-  static let stubProofImageUrl: String? = nil
-  // TODO: disputeReason UI 반영 시 호출부에서 실제 값 전달로 교체
-  static let stubDisputeReason: String? = nil
+/// `POST /v1/mission/{id}/dispute` 요청 바디. disputeReason 은 서버 required.
+private struct DisputeBody: Encodable {
+  let disputeReason: String
 }
 
 final class MissionRepository: MissionRepositoryProtocol {
@@ -49,16 +44,29 @@ final class MissionRepository: MissionRepositoryProtocol {
     }
   }
 
+  /// 행위별로 분리된 POST 엔드포인트로 미션 상태를 전이한다.
+  /// (구 `PUT /v1/mission/{id}` 은 deprecated.)
   func updateMissionAction(
     id: Int64,
     action: MissionAction,
     proofImageURL: String?,
     disputeReason: String?
   ) async throws -> Mission {
-    let dto: MissionResponseDTO = try await client.put(
-      "/v1/mission/\(id)",
-      body: MissionActionBody(action: action.rawValue, proofImageUrl: proofImageURL, disputeReason: disputeReason)
-    )
+    let dto: MissionResponseDTO
+    switch action {
+    case .completeDelivery:
+      dto = try await client.post(
+        "/v1/mission/\(id)/complete-delivery",
+        body: CompleteDeliveryBody(proofImageUrl: proofImageURL)
+      )
+    case .confirmReceived:
+      dto = try await client.post("/v1/mission/\(id)/confirm-received", body: nil as String?)
+    case .dispute:
+      dto = try await client.post(
+        "/v1/mission/\(id)/dispute",
+        body: DisputeBody(disputeReason: disputeReason ?? "")
+      )
+    }
     return dto.toDomain()
   }
 }

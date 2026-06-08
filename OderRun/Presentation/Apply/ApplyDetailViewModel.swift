@@ -92,7 +92,7 @@ final class ApplyDetailViewModel {
     isLoading = false
   }
 
-  /// 러너 전달 완료. `PUT /v1/mission/{id}` — `COMPLETE_DELIVERY`
+  /// 러너 전달 완료. `POST /v1/mission/{id}/complete-delivery`
   @MainActor
   func completeDelivery() async {
     guard let mission, canCompleteDelivery, !isCompletingMission else {

@@ -7,8 +7,9 @@
 
 import Foundation
 
+/// 미션 상태 전이 행위. 행위별로 분리된 POST 엔드포인트(`complete-delivery` /
+/// `confirm-received` / `dispute`)에 매핑된다.
 enum MissionAction: String {
-  case startProgress = "START_PROGRESS"
   case completeDelivery = "COMPLETE_DELIVERY"
   case confirmReceived = "CONFIRM_RECEIVED"
   case dispute = "DISPUTE"

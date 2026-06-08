@@ -250,14 +250,6 @@ actor DummyBackendStore {
     let existing = missions[index]
 
     switch action {
-    case .startProgress:
-      guard existing.status == .created else {
-        throw RepositoryError.conflict
-      }
-      let updated = with(existing, status: .inProgress)
-      missions[index] = updated
-      return updated
-
     case .completeDelivery:
       guard let proofImageURL, !proofImageURL.isEmpty else {
         throw RepositoryError.conflict
