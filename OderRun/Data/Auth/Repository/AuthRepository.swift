@@ -40,26 +40,11 @@ extension LoginConfirmRequestBody {
   static let stubFCMToken: String? = nil
 }
 
-private struct EmailLoginRequestBody: Encodable {
-  let email: String
-  let password: String
-}
-
 private struct SignupRequestBody: Encodable {
   let email: String
   let password: String
   let name: String
   let phone: String
-}
-
-private struct AppleLoginRequestBody: Encodable {
-  let identityToken: String
-  let name: String?
-  let email: String?
-}
-
-private struct KakaoLoginRequestBody: Encodable {
-  let kakaoAccessToken: String
 }
 
 private struct RefreshRequestBody: Encodable {
@@ -128,38 +113,6 @@ final class AuthRepository: AuthRepositoryProtocol {
       "/v1/auth/signup",
       body: SignupRequestBody(email: email, password: password, name: name, phone: phone)
     )
-  }
-
-  func emailLogin(email: String, password: String) async throws -> AuthTokens {
-    let response: LoginResponseDTO = try await client.post(
-      "/v1/auth/login",
-      body: EmailLoginRequestBody(email: email, password: password)
-    )
-    tokenStorage.accessToken = response.accessToken
-    tokenStorage.refreshToken = response.refreshToken
-    return response.toDomain()
-  }
-
-  func loginWithApple(identityToken: String, name: String?, email: String?) async throws -> AppleLoginResult {
-    let response: AppleLoginResponseDTO = try await client.post(
-      "/v1/auth/oauth/apple",
-      body: AppleLoginRequestBody(identityToken: identityToken, name: name, email: email)
-    )
-    tokenStorage.accessToken = response.accessToken
-    tokenStorage.refreshToken = response.refreshToken
-    tokenStorage.userID = response.userID
-    return response.toDomain()
-  }
-
-  func loginWithKakao(accessToken: String) async throws -> KakaoLoginResult {
-    let response: KakaoLoginResponseDTO = try await client.post(
-      "/v1/auth/oauth/kakao",
-      body: KakaoLoginRequestBody(kakaoAccessToken: accessToken)
-    )
-    tokenStorage.accessToken = response.accessToken
-    tokenStorage.refreshToken = response.refreshToken
-    tokenStorage.userID = response.userID
-    return response.toDomain()
   }
 
   func refresh(refreshToken: String) async throws -> String {
