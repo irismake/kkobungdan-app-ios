@@ -7,8 +7,12 @@
 
 import Foundation
 
-private struct AlarmUpdateBody: Encodable {
-  let enabled: Bool
+private struct UserAlarmRequest: Encodable {
+  let alarmEnabled: Bool
+}
+
+private struct UserFcmTokenRequest: Encodable {
+  let fcmToken: String
 }
 
 final class UserRepository: UserRepositoryProtocol {
@@ -25,10 +29,18 @@ final class UserRepository: UserRepositoryProtocol {
   }
 
   func updateAlarm(enabled: Bool) async throws -> User {
-    let dto: UserDetailResponseDTO = try await client.post(
+    // 응답이 `{success, message}` 평문(data 없음)이라 디코드하지 않고 상태코드만 확인 후 재조회한다.
+    try await client.patchVoid(
       "/v1/user/alarm",
-      body: AlarmUpdateBody(enabled: enabled)
+      body: UserAlarmRequest(alarmEnabled: enabled)
     )
-    return dto.toDomain()
+    return try await fetchUserDetail()
+  }
+
+  func updateFcmToken(_ token: String) async throws {
+    try await client.patchVoid(
+      "/v1/user/fcm-token",
+      body: UserFcmTokenRequest(fcmToken: token)
+    )
   }
 }

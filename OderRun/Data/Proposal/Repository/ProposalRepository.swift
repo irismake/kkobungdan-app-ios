@@ -39,7 +39,7 @@ final class ProposalRepository: ProposalRepositoryProtocol {
   }
 
   func fetchProposal(id: Int64) async throws -> Proposal {
-    let dto: ProposalResponseDTO = try await client.get("/v1/proposal/\(id)")
+    let dto: ProposalDetailResponseDTO = try await client.get("/v1/proposal/\(id)")
     return dto.toDomain()
   }
 
@@ -70,8 +70,22 @@ final class ProposalRepository: ProposalRepositoryProtocol {
   }
 
   func cancelProposal(id: Int64) async throws -> Proposal {
-    let dto: ProposalCancelResponseDTO =
+    let dto: ProposalResponseDTO =
       try await client.post("/v1/proposal/\(id)/cancel", body: nil as String?)
+    return dto.toDomain()
+  }
+
+  func confirmReceived(proposalID: Int64) async throws -> Proposal {
+    let dto: ConfirmReceivedResponseDTO =
+      try await client.post("/v1/proposal/\(proposalID)/confirm-received", body: nil as String?)
+    return dto.toDomain()
+  }
+
+  func raiseDispute(proposalID: Int64, reason: String) async throws -> Proposal {
+    let dto: ProposalDisputeResponseDTO = try await client.post(
+      "/v1/proposal/\(proposalID)/dispute",
+      body: ProofDisputeRequest(disputeReason: reason)
+    )
     return dto.toDomain()
   }
 }

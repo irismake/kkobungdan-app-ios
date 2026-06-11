@@ -15,11 +15,6 @@ private struct CreateOfferBody: Encodable {
   }
 }
 
-private struct AcceptOfferBody: Encodable {
-  let runFee: Int
-  let itemPrice: Int
-}
-
 final class OfferRepository: OfferRepositoryProtocol {
   private let client: HTTPClient
 
@@ -55,10 +50,27 @@ final class OfferRepository: OfferRepositoryProtocol {
     try await client.delete("/v1/offer/\(offerID)")
   }
 
-  func acceptOffer(offerID: Int64, runFee: Int, itemPrice: Int) async throws -> OfferAcceptResult {
+  /// 제안 수락. 무바디 POST 로 proposal/offer cascade 가 서버에서 처리된다.
+  func acceptOffer(offerID: Int64) async throws -> OfferAcceptResult {
     let dto: OfferAcceptResponseDTO = try await client.post(
       "/v1/offer/\(offerID)/accept",
-      body: AcceptOfferBody(runFee: runFee, itemPrice: itemPrice)
+      body: nil as String?
+    )
+    return dto.toDomain()
+  }
+
+  func completeDelivery(offerID: Int64, proofImageURL: String?) async throws -> Offer {
+    let dto: OfferDeliveryResponseDTO = try await client.post(
+      "/v1/offer/\(offerID)/complete-delivery",
+      body: ProofDeliveryRequest(proofImageUrl: proofImageURL)
+    )
+    return dto.toDomain()
+  }
+
+  func raiseDispute(offerID: Int64, reason: String) async throws -> Offer {
+    let dto: OfferDisputeResponseDTO = try await client.post(
+      "/v1/offer/\(offerID)/dispute",
+      body: ProofDisputeRequest(disputeReason: reason)
     )
     return dto.toDomain()
   }

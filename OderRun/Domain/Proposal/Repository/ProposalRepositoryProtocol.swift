@@ -25,4 +25,8 @@ protocol ProposalRepositoryProtocol: Sendable {
     errandFee: String
   ) async throws -> Proposal
   func cancelProposal(id: Int64) async throws -> Proposal
+  /// 오더러 수령 확인. `POST /v1/proposal/{id}/confirm-received`
+  func confirmReceived(proposalID: Int64) async throws -> Proposal
+  /// 오더러 분쟁 제기. `POST /v1/proposal/{id}/dispute`
+  func raiseDispute(proposalID: Int64, reason: String) async throws -> Proposal
 }

@@ -13,5 +13,10 @@ protocol OfferRepositoryProtocol: Sendable {
   func fetchOffersByProposal(proposalID: Int64, status: [OfferStatus]) async throws -> [Offer]
   func fetchOfferDetail(offerID: Int64) async throws -> OfferDetail
   func cancelOffer(offerID: Int64) async throws
-  func acceptOffer(offerID: Int64, runFee: Int, itemPrice: Int) async throws -> OfferAcceptResult
+  /// 제안 수락. `POST /v1/offer/{id}/accept` (무바디)
+  func acceptOffer(offerID: Int64) async throws -> OfferAcceptResult
+  /// 러너 배달 완료 처리. `POST /v1/offer/{id}/complete-delivery`
+  func completeDelivery(offerID: Int64, proofImageURL: String?) async throws -> Offer
+  /// 러너 분쟁 제기. `POST /v1/offer/{id}/dispute`
+  func raiseDispute(offerID: Int64, reason: String) async throws -> Offer
 }
