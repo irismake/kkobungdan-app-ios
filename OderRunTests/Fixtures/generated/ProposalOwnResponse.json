@@ -1,0 +1,21 @@
+{
+  "id": 0,
+  "ordererId": "string",
+  "title": "string",
+  "content": "string",
+  "deadline": "2026-06-12T18:00:00",
+  "errandFee": 0,
+  "status": "HOLDING",
+  "offerCount": 0,
+  "offers": [
+    {
+      "id": 0,
+      "proposalId": 0,
+      "runnerId": "string",
+      "status": "WAITING",
+      "createdAt": "2026-06-12T18:00:00"
+    }
+  ],
+  "createdAt": "2026-06-12T18:00:00",
+  "updatedAt": "2026-06-12T18:00:00"
+}

@@ -1,0 +1,10 @@
+{
+  "proposalId": 0,
+  "offerId": 0,
+  "proposalStatus": "HOLDING",
+  "acceptedOfferStatus": "WAITING",
+  "rejectedOfferCount": 0,
+  "ordererId": "string",
+  "runnerId": "string",
+  "acceptedAt": "2026-06-12T18:00:00"
+}

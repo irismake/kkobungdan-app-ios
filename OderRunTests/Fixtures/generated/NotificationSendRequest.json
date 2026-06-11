@@ -1,0 +1,8 @@
+{
+  "notification_type": "proposal_new",
+  "title": "string",
+  "body": "string",
+  "data": {},
+  "related_entity_type": "string",
+  "related_entity_id": 0
+}

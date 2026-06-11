@@ -1,0 +1,23 @@
+{
+  "id": 0,
+  "title": "string",
+  "content": "string",
+  "deadline": "2026-06-12T18:00:00",
+  "errandFee": 0,
+  "ordererId": "string",
+  "status": "HOLDING",
+  "matchedAt": "2026-06-12T18:00:00",
+  "deliveryReportedAt": "2026-06-12T18:00:00",
+  "receivedConfirmedAt": "2026-06-12T18:00:00",
+  "disputedAt": "2026-06-12T18:00:00",
+  "refundedAt": "2026-06-12T18:00:00",
+  "offers": [
+    {
+      "id": 0,
+      "proposalId": 0,
+      "runnerId": "string",
+      "status": "WAITING",
+      "createdAt": "2026-06-12T18:00:00"
+    }
+  ]
+}

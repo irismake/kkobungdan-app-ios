@@ -1,0 +1,746 @@
+{
+  "ApiResponse_AuthAccessTokenResponse_": {
+    "required": [],
+    "properties": {
+      "data": "anyOf(ref:AuthAccessTokenResponse|null)",
+      "message": "anyOf(string|null)",
+      "success": "boolean"
+    }
+  },
+  "ApiResponse_AuthTokenResponse_": {
+    "required": [],
+    "properties": {
+      "data": "anyOf(ref:AuthTokenResponse|null)",
+      "message": "anyOf(string|null)",
+      "success": "boolean"
+    }
+  },
+  "ApiResponse_AuthVerificationSendResponse_": {
+    "required": [],
+    "properties": {
+      "data": "anyOf(ref:AuthVerificationSendResponse|null)",
+      "message": "anyOf(string|null)",
+      "success": "boolean"
+    }
+  },
+  "ApiResponse_NotificationListResponse_": {
+    "required": [
+      "success"
+    ],
+    "properties": {
+      "data": "anyOf(ref:NotificationListResponse|null)",
+      "message": "anyOf(string|null)",
+      "success": "boolean"
+    }
+  },
+  "ApiResponse_NotificationMarkReadResponse_": {
+    "required": [
+      "success"
+    ],
+    "properties": {
+      "data": "anyOf(ref:NotificationMarkReadResponse|null)",
+      "message": "anyOf(string|null)",
+      "success": "boolean"
+    }
+  },
+  "ApiResponse_NotificationResponse_": {
+    "required": [
+      "success"
+    ],
+    "properties": {
+      "data": "anyOf(ref:NotificationResponse|null)",
+      "message": "anyOf(string|null)",
+      "success": "boolean"
+    }
+  },
+  "ApiResponse_NotificationStatsResponse_": {
+    "required": [
+      "success"
+    ],
+    "properties": {
+      "data": "anyOf(ref:NotificationStatsResponse|null)",
+      "message": "anyOf(string|null)",
+      "success": "boolean"
+    }
+  },
+  "ApiResponse_OfferAcceptResponse_": {
+    "required": [
+      "success"
+    ],
+    "properties": {
+      "data": "anyOf(ref:OfferAcceptResponse|null)",
+      "message": "anyOf(string|null)",
+      "success": "boolean"
+    }
+  },
+  "ApiResponse_OfferResponse_": {
+    "required": [
+      "success"
+    ],
+    "properties": {
+      "data": "anyOf(ref:OfferResponse|null)",
+      "message": "anyOf(string|null)",
+      "success": "boolean"
+    }
+  },
+  "ApiResponse_PageResponse_OfferResponse__": {
+    "required": [
+      "success"
+    ],
+    "properties": {
+      "data": "anyOf(ref:PageResponse_OfferResponse_|null)",
+      "message": "anyOf(string|null)",
+      "success": "boolean"
+    }
+  },
+  "ApiResponse_PageResponse_ProposalOwnResponse__": {
+    "required": [
+      "success"
+    ],
+    "properties": {
+      "data": "anyOf(ref:PageResponse_ProposalOwnResponse_|null)",
+      "message": "anyOf(string|null)",
+      "success": "boolean"
+    }
+  },
+  "ApiResponse_PageResponse_ProposalResponse__": {
+    "required": [
+      "success"
+    ],
+    "properties": {
+      "data": "anyOf(ref:PageResponse_ProposalResponse_|null)",
+      "message": "anyOf(string|null)",
+      "success": "boolean"
+    }
+  },
+  "ApiResponse_ProposalDetailResponse_": {
+    "required": [
+      "success"
+    ],
+    "properties": {
+      "data": "anyOf(ref:ProposalDetailResponse|null)",
+      "message": "anyOf(string|null)",
+      "success": "boolean"
+    }
+  },
+  "ApiResponse_ProposalResponse_": {
+    "required": [
+      "success"
+    ],
+    "properties": {
+      "data": "anyOf(ref:ProposalResponse|null)",
+      "message": "anyOf(string|null)",
+      "success": "boolean"
+    }
+  },
+  "ApiResponse_SettlementAccountResponse_": {
+    "required": [
+      "success"
+    ],
+    "properties": {
+      "data": "anyOf(ref:SettlementAccountResponse|null)",
+      "message": "anyOf(string|null)",
+      "success": "boolean"
+    }
+  },
+  "ApiResponse_TermsAgreementResponse_": {
+    "required": [],
+    "properties": {
+      "data": "anyOf(ref:TermsAgreementResponse|null)",
+      "message": "anyOf(string|null)",
+      "success": "boolean"
+    }
+  },
+  "ApiResponse_UserDetailResponse_": {
+    "required": [],
+    "properties": {
+      "data": "anyOf(ref:UserDetailResponse|null)",
+      "message": "anyOf(string|null)",
+      "success": "boolean"
+    }
+  },
+  "ApiResponse_dict_str__str__": {
+    "required": [
+      "success"
+    ],
+    "properties": {
+      "data": "anyOf(object|null)",
+      "message": "anyOf(string|null)",
+      "success": "boolean"
+    }
+  },
+  "ApiResponse_list_OfferResponse__": {
+    "required": [
+      "success"
+    ],
+    "properties": {
+      "data": "anyOf(array<ref:OfferResponse>|null)",
+      "message": "anyOf(string|null)",
+      "success": "boolean"
+    }
+  },
+  "AuthAccessTokenResponse": {
+    "required": [
+      "accessToken",
+      "expiresIn"
+    ],
+    "properties": {
+      "accessToken": "string",
+      "expiresIn": "integer"
+    }
+  },
+  "AuthLoginConfirmRequest": {
+    "required": [
+      "code",
+      "phone"
+    ],
+    "properties": {
+      "code": "string",
+      "fcmToken": "anyOf(string|null)",
+      "phone": "string"
+    }
+  },
+  "AuthLoginSendRequest": {
+    "required": [
+      "phone"
+    ],
+    "properties": {
+      "phone": "string"
+    }
+  },
+  "AuthLogoutRequest": {
+    "required": [
+      "refreshToken"
+    ],
+    "properties": {
+      "refreshToken": "string"
+    }
+  },
+  "AuthPhoneConfirmRequest": {
+    "required": [
+      "code",
+      "phone"
+    ],
+    "properties": {
+      "code": "string",
+      "phone": "string"
+    }
+  },
+  "AuthRefreshRequest": {
+    "required": [
+      "refreshToken"
+    ],
+    "properties": {
+      "refreshToken": "string"
+    }
+  },
+  "AuthSignupSendRequest": {
+    "required": [
+      "carrier",
+      "name",
+      "phone"
+    ],
+    "properties": {
+      "carrier": "string",
+      "name": "string",
+      "phone": "string"
+    }
+  },
+  "AuthTokenResponse": {
+    "required": [
+      "accessToken",
+      "expiresIn",
+      "refreshToken",
+      "userId"
+    ],
+    "properties": {
+      "accessToken": "string",
+      "expiresIn": "integer",
+      "refreshToken": "string",
+      "tokenType": "string",
+      "userId": "string"
+    }
+  },
+  "AuthVerificationSendResponse": {
+    "required": [
+      "expiresAt",
+      "phone"
+    ],
+    "properties": {
+      "expiresAt": "string",
+      "phone": "string"
+    }
+  },
+  "ErrorDetail": {
+    "required": [
+      "code",
+      "message"
+    ],
+    "properties": {
+      "code": "string",
+      "details": "anyOf(string|null)",
+      "message": "string"
+    }
+  },
+  "ErrorResponse": {
+    "required": [
+      "error"
+    ],
+    "properties": {
+      "error": "ref:ErrorDetail",
+      "success": "boolean",
+      "timestamp": "string"
+    }
+  },
+  "HTTPValidationError": {
+    "required": [],
+    "properties": {
+      "detail": "array<ref:ValidationError>"
+    }
+  },
+  "NotificationListResponse": {
+    "required": [
+      "notifications",
+      "page",
+      "page_size",
+      "total"
+    ],
+    "properties": {
+      "notifications": "array<ref:NotificationResponse>",
+      "page": "integer",
+      "page_size": "integer",
+      "total": "integer"
+    }
+  },
+  "NotificationMarkReadRequest": {
+    "required": [
+      "notification_ids"
+    ],
+    "properties": {
+      "notification_ids": "array<integer>"
+    }
+  },
+  "NotificationMarkReadResponse": {
+    "required": [
+      "marked_count"
+    ],
+    "properties": {
+      "marked_count": "integer"
+    }
+  },
+  "NotificationResponse": {
+    "required": [
+      "body",
+      "created_at",
+      "data",
+      "delivered_at",
+      "error_message",
+      "fcm_message_id",
+      "id",
+      "notification_type",
+      "read_at",
+      "related_entity_id",
+      "related_entity_type",
+      "sent_at",
+      "status",
+      "title",
+      "user_id"
+    ],
+    "properties": {
+      "body": "string",
+      "created_at": "string",
+      "data": "anyOf(string|null)",
+      "delivered_at": "anyOf(string|null)",
+      "error_message": "anyOf(string|null)",
+      "fcm_message_id": "anyOf(string|null)",
+      "id": "integer",
+      "notification_type": "ref:NotificationType",
+      "read_at": "anyOf(string|null)",
+      "related_entity_id": "anyOf(integer|null)",
+      "related_entity_type": "anyOf(string|null)",
+      "sent_at": "anyOf(string|null)",
+      "status": "ref:NotificationStatus",
+      "title": "string",
+      "user_id": "string"
+    }
+  },
+  "NotificationSendRequest": {
+    "required": [
+      "body",
+      "notification_type",
+      "title"
+    ],
+    "properties": {
+      "body": "string",
+      "data": "anyOf(object|null)",
+      "notification_type": "ref:NotificationType",
+      "related_entity_id": "anyOf(integer|null)",
+      "related_entity_type": "anyOf(string|null)",
+      "title": "string"
+    }
+  },
+  "NotificationStatsResponse": {
+    "required": [
+      "failed_count",
+      "read_count",
+      "total_notifications",
+      "unread_count"
+    ],
+    "properties": {
+      "failed_count": "integer",
+      "read_count": "integer",
+      "total_notifications": "integer",
+      "unread_count": "integer"
+    }
+  },
+  "NotificationStatus": {
+    "required": [],
+    "properties": {}
+  },
+  "NotificationType": {
+    "required": [],
+    "properties": {}
+  },
+  "OfferAcceptResponse": {
+    "required": [
+      "acceptedAt",
+      "acceptedOfferStatus",
+      "offerId",
+      "ordererId",
+      "proposalId",
+      "proposalStatus",
+      "rejectedOfferCount",
+      "runnerId"
+    ],
+    "properties": {
+      "acceptedAt": "string",
+      "acceptedOfferStatus": "ref:OfferStatus",
+      "offerId": "integer",
+      "ordererId": "string",
+      "proposalId": "integer",
+      "proposalStatus": "ref:ProposalStatus",
+      "rejectedOfferCount": "integer",
+      "runnerId": "string"
+    }
+  },
+  "OfferCreate": {
+    "required": [
+      "proposalId"
+    ],
+    "properties": {
+      "proposalId": "integer"
+    }
+  },
+  "OfferResponse": {
+    "required": [
+      "createdAt",
+      "id",
+      "proposalId",
+      "runnerId",
+      "runnerName",
+      "status"
+    ],
+    "properties": {
+      "acceptedAt": "anyOf(string|null)",
+      "createdAt": "string",
+      "deliveryCompletedAt": "anyOf(string|null)",
+      "disputedAt": "anyOf(string|null)",
+      "id": "integer",
+      "proposalId": "integer",
+      "receiptConfirmedAt": "anyOf(string|null)",
+      "refundedAt": "anyOf(string|null)",
+      "runnerId": "string",
+      "runnerName": "string",
+      "status": "ref:OfferStatus"
+    }
+  },
+  "OfferStatus": {
+    "required": [],
+    "properties": {}
+  },
+  "PageResponse_OfferResponse_": {
+    "required": [
+      "content",
+      "first",
+      "last",
+      "pageNumber",
+      "pageSize",
+      "totalElements",
+      "totalPages"
+    ],
+    "properties": {
+      "content": "array<ref:OfferResponse>",
+      "first": "boolean",
+      "last": "boolean",
+      "pageNumber": "integer",
+      "pageSize": "integer",
+      "totalElements": "integer",
+      "totalPages": "integer"
+    }
+  },
+  "PageResponse_ProposalOwnResponse_": {
+    "required": [
+      "content",
+      "first",
+      "last",
+      "pageNumber",
+      "pageSize",
+      "totalElements",
+      "totalPages"
+    ],
+    "properties": {
+      "content": "array<ref:ProposalOwnResponse>",
+      "first": "boolean",
+      "last": "boolean",
+      "pageNumber": "integer",
+      "pageSize": "integer",
+      "totalElements": "integer",
+      "totalPages": "integer"
+    }
+  },
+  "PageResponse_ProposalResponse_": {
+    "required": [
+      "content",
+      "first",
+      "last",
+      "pageNumber",
+      "pageSize",
+      "totalElements",
+      "totalPages"
+    ],
+    "properties": {
+      "content": "array<ref:ProposalResponse>",
+      "first": "boolean",
+      "last": "boolean",
+      "pageNumber": "integer",
+      "pageSize": "integer",
+      "totalElements": "integer",
+      "totalPages": "integer"
+    }
+  },
+  "ProofDeliveryRequest": {
+    "required": [],
+    "properties": {
+      "proofImageUrl": "anyOf(string|null)"
+    }
+  },
+  "ProofDisputeRequest": {
+    "required": [
+      "disputeReason"
+    ],
+    "properties": {
+      "disputeReason": "string"
+    }
+  },
+  "ProposalDetailResponse": {
+    "required": [
+      "content",
+      "deadline",
+      "errandFee",
+      "id",
+      "ordererId",
+      "status",
+      "title"
+    ],
+    "properties": {
+      "content": "string",
+      "deadline": "string",
+      "deliveryReportedAt": "anyOf(string|null)",
+      "disputedAt": "anyOf(string|null)",
+      "errandFee": "integer",
+      "id": "integer",
+      "matchedAt": "anyOf(string|null)",
+      "offers": "array<ref:ProposalOwnOfferResponse>",
+      "ordererId": "string",
+      "receivedConfirmedAt": "anyOf(string|null)",
+      "refundedAt": "anyOf(string|null)",
+      "status": "ref:ProposalStatus",
+      "title": "string"
+    }
+  },
+  "ProposalOwnOfferResponse": {
+    "required": [
+      "createdAt",
+      "id",
+      "proposalId",
+      "runnerId",
+      "status"
+    ],
+    "properties": {
+      "createdAt": "string",
+      "id": "integer",
+      "proposalId": "integer",
+      "runnerId": "string",
+      "status": "ref:OfferStatus"
+    }
+  },
+  "ProposalOwnResponse": {
+    "required": [
+      "content",
+      "createdAt",
+      "deadline",
+      "errandFee",
+      "id",
+      "offerCount",
+      "offers",
+      "ordererId",
+      "status",
+      "title",
+      "updatedAt"
+    ],
+    "properties": {
+      "content": "string",
+      "createdAt": "string",
+      "deadline": "string",
+      "errandFee": "integer",
+      "id": "integer",
+      "offerCount": "integer",
+      "offers": "array<ref:ProposalOwnOfferResponse>",
+      "ordererId": "string",
+      "status": "ref:ProposalStatus",
+      "title": "string",
+      "updatedAt": "string"
+    }
+  },
+  "ProposalRequest": {
+    "required": [
+      "content",
+      "deadline",
+      "errandFee",
+      "title"
+    ],
+    "properties": {
+      "content": "string",
+      "deadline": "string",
+      "errandFee": "integer",
+      "title": "string"
+    }
+  },
+  "ProposalResponse": {
+    "required": [
+      "content",
+      "deadline",
+      "errandFee",
+      "id",
+      "status",
+      "title"
+    ],
+    "properties": {
+      "content": "string",
+      "deadline": "string",
+      "errandFee": "integer",
+      "id": "integer",
+      "status": "ref:ProposalStatus",
+      "title": "string"
+    }
+  },
+  "ProposalStatus": {
+    "required": [],
+    "properties": {}
+  },
+  "SettlementAccountRequest": {
+    "required": [
+      "accountHolder",
+      "accountNumber",
+      "bankCode",
+      "bankName"
+    ],
+    "properties": {
+      "accountHolder": "string",
+      "accountNumber": "string",
+      "bankCode": "string",
+      "bankName": "string"
+    }
+  },
+  "SettlementAccountResponse": {
+    "required": [
+      "accountHolder",
+      "bankCode",
+      "bankName",
+      "maskedAccountNumber",
+      "updatedAt"
+    ],
+    "properties": {
+      "accountHolder": "string",
+      "bankCode": "string",
+      "bankName": "string",
+      "maskedAccountNumber": "string",
+      "updatedAt": "string"
+    }
+  },
+  "TermsAgreementRequest": {
+    "required": [
+      "paymentRefundPolicy",
+      "privacyPolicy",
+      "termsOfService"
+    ],
+    "properties": {
+      "paymentRefundPolicy": "boolean",
+      "privacyPolicy": "boolean",
+      "termsOfService": "boolean"
+    }
+  },
+  "TermsAgreementResponse": {
+    "required": [
+      "agreedAt",
+      "paymentRefundPolicy",
+      "privacyPolicy",
+      "termsOfService",
+      "userId"
+    ],
+    "properties": {
+      "agreedAt": "string",
+      "paymentRefundPolicy": "boolean",
+      "privacyPolicy": "boolean",
+      "termsOfService": "boolean",
+      "userId": "string"
+    }
+  },
+  "UserAlarmRequest": {
+    "required": [
+      "alarmEnabled"
+    ],
+    "properties": {
+      "alarmEnabled": "boolean"
+    }
+  },
+  "UserDetailResponse": {
+    "required": [
+      "alarmEnabled",
+      "createdAt",
+      "id",
+      "name"
+    ],
+    "properties": {
+      "alarmEnabled": "boolean",
+      "createdAt": "string",
+      "id": "string",
+      "lastLoginAt": "anyOf(string|null)",
+      "name": "string",
+      "phone": "anyOf(string|null)",
+      "phoneVerifiedAt": "anyOf(string|null)"
+    }
+  },
+  "UserFcmTokenRequest": {
+    "required": [
+      "fcmToken"
+    ],
+    "properties": {
+      "fcmToken": "string"
+    }
+  },
+  "ValidationError": {
+    "required": [
+      "loc",
+      "msg",
+      "type"
+    ],
+    "properties": {
+      "ctx": "object",
+      "input": "unknown",
+      "loc": "array<anyOf(string|integer)>",
+      "msg": "string",
+      "type": "string"
+    }
+  }
+}

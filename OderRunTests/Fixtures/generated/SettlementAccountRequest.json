@@ -1,0 +1,6 @@
+{
+  "bankCode": "string",
+  "bankName": "string",
+  "accountNumber": "string",
+  "accountHolder": "string"
+}
