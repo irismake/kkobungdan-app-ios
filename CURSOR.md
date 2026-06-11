@@ -11,6 +11,7 @@
 | 더미 백엔드 | [`.cursor/rules/dummy-backend-store.mdc`](.cursor/rules/dummy-backend-store.mdc) | [`.claude/rules/dummy-backend-store.md`](.claude/rules/dummy-backend-store.md) |
 | DTO 스키마별 분리 / 엔티티 공유 | [`.cursor/rules/separate-dto-entity.mdc`](.cursor/rules/separate-dto-entity.mdc) | [`.claude/rules/separate-dto-entity.md`](.claude/rules/separate-dto-entity.md) |
 | DTO·엔티티 서버 일치 | [`.cursor/rules/dto-entity-server-align.mdc`](.cursor/rules/dto-entity-server-align.mdc) | [`.claude/rules/dto-entity-server-align.md`](.claude/rules/dto-entity-server-align.md) |
+| DTO 계약 테스트 등록 | [`.cursor/rules/contract-test-dto.mdc`](.cursor/rules/contract-test-dto.mdc) | [`.claude/rules/contract-test-dto.md`](.claude/rules/contract-test-dto.md) |
 | 로깅 (`Logger`) | [`.cursor/rules/logging.mdc`](.cursor/rules/logging.mdc) | [`.claude/rules/logging.md`](.claude/rules/logging.md) |
 
 > Claude 인덱스: [`CLAUDE.md`](CLAUDE.md)
