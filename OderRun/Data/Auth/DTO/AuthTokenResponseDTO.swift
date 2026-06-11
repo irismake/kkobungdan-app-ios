@@ -24,9 +24,6 @@ struct AuthTokenResponseDTO: Decodable {
 }
 
 extension AuthTokenResponseDTO {
-  // TODO: expiresIn UI/로직 반영 시 엔티티에 추가
-  static let stubExpiresIn: Int = 0
-
   func toDomain() -> AuthTokens {
     // TODO: expiresIn — UI 반영 시 엔티티에 추가
     AuthTokens(

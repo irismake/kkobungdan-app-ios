@@ -13,20 +13,34 @@ struct MyOfferResponseDTO: Decodable {
   let id: Int64
   let proposalID: Int64
   let runnerID: String
+  let runnerName: String
   let status: String
+  let acceptedAt: String?
+  let deliveryCompletedAt: String?
+  let receiptConfirmedAt: String?
+  let disputedAt: String?
+  let refundedAt: String?
   let createdAt: String
 
   enum CodingKeys: String, CodingKey {
     case id
     case proposalID = "proposalId"
     case runnerID = "runnerId"
+    case runnerName
     case status
+    case acceptedAt
+    case deliveryCompletedAt
+    case receiptConfirmedAt
+    case disputedAt
+    case refundedAt
     case createdAt
   }
 }
 
 extension MyOfferResponseDTO {
   func toDomain() -> MyOffer {
+    // TODO: runnerName, acceptedAt, deliveryCompletedAt, receiptConfirmedAt, disputedAt, refundedAt
+    //       — UI 반영 시 MyOffer 엔티티에 추가.
     MyOffer(
       id: id,
       proposalID: proposalID,

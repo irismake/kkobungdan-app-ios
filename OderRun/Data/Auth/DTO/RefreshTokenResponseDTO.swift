@@ -9,10 +9,6 @@ import Foundation
 
 struct RefreshTokenResponseDTO: Decodable {
   let accessToken: String
+  // expiresIn: 서버 응답 스펙 일치를 위해 둠. 현재 미사용(토큰 갱신은 accessToken 만 사용).
   let expiresIn: Int
-}
-
-extension RefreshTokenResponseDTO {
-  // TODO: expiresIn UI/로직 반영 시 엔티티에 추가
-  static let stubExpiresIn: Int = 0
 }
