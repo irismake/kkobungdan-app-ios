@@ -90,7 +90,7 @@ extension Proposal {
         content: "인천공항 1터미널에서 가족 픽업 후 자택까지 동행 부탁드립니다.",
         deadline: now.addingTimeInterval(-4 * 86400),
         errandFee: 5000,
-        status: .complete
+        status: .allCompleted
       ),
       Proposal(
         id: 9,
@@ -114,7 +114,7 @@ extension Proposal {
         content: "관악구립도서관에 도서 3권 반납 부탁드립니다.",
         deadline: now.addingTimeInterval(-10 * 86400),
         errandFee: 2000,
-        status: .complete
+        status: .allCompleted
       ),
       Proposal(
         id: 12,
@@ -122,7 +122,7 @@ extension Proposal {
         content: "역삼동 크린토피아에서 세탁물 수령 후 자택 전달 부탁드립니다.",
         deadline: now.addingTimeInterval(-12 * 86400),
         errandFee: 3500,
-        status: .complete
+        status: .refunded
       ),
       Proposal(
         id: 13,

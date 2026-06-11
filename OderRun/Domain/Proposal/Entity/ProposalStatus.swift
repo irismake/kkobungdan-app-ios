@@ -14,12 +14,16 @@ enum ProposalStatus: String {
   case posted = "POSTED"
   /// 지원 옴
   case offered = "OFFERED"
-  /// 지원자 선택
+  /// 지원자 선택 (매칭)
   case matched = "MATCHED"
-  /// 진행 완료
-  // TODO: 서버 status enum 에 아직 누락됨(현재 HOLDING/POSTED/OFFERED/MATCHED/CANCELLED 만 허용).
-  //       서버 반영 전까지 COMPLETED 필터 조회는 400 이 날 수 있음.
-  case complete = "COMPLETED"
+  /// 오더러 수령 확인 완료 (러너 완료 대기)
+  case orderCompleted = "ORDER_COMPLETED"
+  /// 양측 완료 (정산)
+  case allCompleted = "ALL_COMPLETED"
+  /// 분쟁 제기됨
+  case disputed = "DISPUTED"
+  /// 환불 완료
+  case refunded = "REFUNDED"
   /// 오더 취소
   case cancelled = "CANCELLED"
 }

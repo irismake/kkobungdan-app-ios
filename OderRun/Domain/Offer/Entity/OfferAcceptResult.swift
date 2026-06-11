@@ -12,12 +12,10 @@ import Foundation
 struct OfferAcceptResult {
   let proposalID: Int64
   let offerID: Int64
-  let missionID: Int64
   let proposalStatus: ProposalStatus
   let acceptedOfferStatus: OfferStatus
   let rejectedOfferCount: Int
-  let missionStatus: MissionStatus
   let ordererID: String
   let runnerID: String
-  let createdAt: Date
+  let acceptedAt: Date
 }

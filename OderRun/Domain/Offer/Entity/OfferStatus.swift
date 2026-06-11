@@ -10,11 +10,16 @@ import Foundation
 enum OfferStatus: String {
   /// 선택 기다리는중
   case waiting = "WAITING"
-  /// 선택 받음
+  /// 선택 받음 (매칭)
   case accepted = "ACCEPTED"
-  /// 진행 완료
-  // TODO: proposal 과 동일하게 서버 status enum 에 누락됨. 서버 반영 전까지 COMPLETED 필터 조회는 400 가능.
-  case complete = "COMPLETED"
+  /// 러너 완료 (배달 완료 처리)
+  case runnerCompleted = "RUNNER_COMPLETED"
+  /// 양측 완료 (정산)
+  case allCompleted = "ALL_COMPLETED"
+  /// 분쟁 제기됨
+  case disputed = "DISPUTED"
+  /// 환불 완료
+  case refunded = "REFUNDED"
   /// 다른 지원자가 선택됨 / 요청 자체가 취소됨
   case rejected = "REJECTED"
   /// 요청 취소함
