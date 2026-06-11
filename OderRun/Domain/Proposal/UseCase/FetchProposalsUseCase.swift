@@ -14,7 +14,11 @@ struct FetchProposalsUseCase {
     self.repository = repository
   }
 
-  func execute(page: Int = 0, size: Int = 20) async throws -> [Proposal] {
-    try await repository.fetchProposals(page: page, size: size)
+  func execute(
+    status: [ProposalStatus] = [],
+    page: Int = 0,
+    size: Int = 20
+  ) async throws -> [Proposal] {
+    try await repository.fetchProposals(status: status, page: page, size: size)
   }
 }

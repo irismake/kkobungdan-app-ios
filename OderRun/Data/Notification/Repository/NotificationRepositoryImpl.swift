@@ -4,7 +4,7 @@
 //
 //  Created by 김가희 on 4/22/26.
 //
-//  TODO: API 미정 — 더미 전용. 실제 스펙 확정 시 교체.
+//  더미 전용 인메모리 구현. 실 API 는 `NotificationRepository` 사용.
 //
 
 import Foundation
@@ -19,18 +19,20 @@ actor NotificationRepositoryImpl: NotificationRepositoryProtocol {
     return notifications.sorted { $0.createdAt > $1.createdAt }
   }
 
-  func markAsRead(id: String) async throws {
+  func markAsRead(ids: [Int]) async throws {
     try await Task.sleep(nanoseconds: Self.simulatedLatency)
-    guard let index = notifications.firstIndex(where: { $0.id == id }) else {
-      throw RepositoryError.notFound
+    for id in ids {
+      guard let index = notifications.firstIndex(where: { $0.id == id }) else {
+        continue
+      }
+      let existing = notifications[index]
+      notifications[index] = AppNotification(
+        id: existing.id,
+        title: existing.title,
+        body: existing.body,
+        createdAt: existing.createdAt,
+        isRead: true
+      )
     }
-    let existing = notifications[index]
-    notifications[index] = AppNotification(
-      id: existing.id,
-      title: existing.title,
-      body: existing.body,
-      createdAt: existing.createdAt,
-      isRead: true
-    )
   }
 }

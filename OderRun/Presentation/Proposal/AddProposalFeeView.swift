@@ -22,13 +22,13 @@ struct AddProposalFeeView: View {
   }
 
   let onBack: () -> Void
-  let onCreated: (ProposalDetail) -> Void
+  let onCreated: (Proposal) -> Void
 
   init(
     draft: AddProposalDraft,
     viewModel: AddProposalViewModel,
     onBack: @escaping () -> Void = {},
-    onCreated: @escaping (ProposalDetail) -> Void = { _ in }
+    onCreated: @escaping (Proposal) -> Void = { _ in }
   ) {
     self.draft = draft
     _viewModel = State(initialValue: viewModel)
@@ -98,13 +98,13 @@ struct AddProposalFeeView: View {
       return
     }
     Task {
-      if let detail = await viewModel.submit(
+      if let proposal = await viewModel.submit(
         title: draft.title,
         content: draft.content,
         deadline: deadline,
         errandFee: fee
       ) {
-        onCreated(detail)
+        onCreated(proposal)
       }
     }
   }

@@ -47,9 +47,9 @@ final class NotificationViewModel {
   }
 
   @MainActor
-  func markAsRead(id: String) async {
+  func markAsRead(id: Int) async {
     do {
-      try await repository.markAsRead(id: id)
+      try await repository.markAsRead(ids: [id])
       if let index = notifications.firstIndex(where: { $0.id == id }) {
         let existing = notifications[index]
         notifications[index] = AppNotification(

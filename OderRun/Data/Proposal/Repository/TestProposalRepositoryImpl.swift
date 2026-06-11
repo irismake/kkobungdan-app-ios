@@ -12,9 +12,9 @@ struct TestProposalRepositoryImpl: ProposalRepositoryProtocol {
 
   let store: DummyBackendStore
 
-  func fetchProposals(page: Int, size: Int) async throws -> [Proposal] {
+  func fetchProposals(status: [ProposalStatus], page: Int, size: Int) async throws -> [Proposal] {
     try await Task.sleep(nanoseconds: Self.simulatedLatency)
-    return await store.fetchProposals(page: page, size: size)
+    return await store.fetchProposals(status: status, page: page, size: size)
   }
 
   func fetchProposal(id: Int64) async throws -> Proposal {
@@ -27,7 +27,7 @@ struct TestProposalRepositoryImpl: ProposalRepositoryProtocol {
     content: String,
     deadline: String,
     errandFee: Int
-  ) async throws -> ProposalDetail {
+  ) async throws -> Proposal {
     try await Task.sleep(nanoseconds: Self.simulatedLatency)
     return await store.createProposal(
       ordererID: DummySession.currentUserID,
@@ -58,5 +58,15 @@ struct TestProposalRepositoryImpl: ProposalRepositoryProtocol {
   func cancelProposal(id: Int64) async throws -> Proposal {
     try await Task.sleep(nanoseconds: Self.simulatedLatency)
     return try await store.cancelProposal(id: id)
+  }
+
+  func confirmReceived(proposalID: Int64) async throws -> Proposal {
+    try await Task.sleep(nanoseconds: Self.simulatedLatency)
+    return try await store.confirmReceived(proposalID: proposalID)
+  }
+
+  func raiseDispute(proposalID: Int64, reason: String) async throws -> Proposal {
+    try await Task.sleep(nanoseconds: Self.simulatedLatency)
+    return try await store.raiseProposalDispute(proposalID: proposalID, reason: reason)
   }
 }

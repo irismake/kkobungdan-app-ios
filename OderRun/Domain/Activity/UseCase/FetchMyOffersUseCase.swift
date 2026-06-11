@@ -15,7 +15,7 @@ struct FetchMyOffersUseCase {
   }
 
   func execute(
-    status: OfferStatus? = nil,
+    status: [OfferStatus] = [],
     page: Int = 0,
     size: Int = 20
   ) async throws -> [MyOffer] {

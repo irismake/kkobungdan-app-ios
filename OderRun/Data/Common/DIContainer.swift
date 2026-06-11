@@ -9,9 +9,9 @@ import Foundation
 
 enum DIContainer {
   /// ← true: 더미 데이터 / false: 실 API
-  static let isDummy: Bool = true
+  static let isDummy: Bool = false
 
-  /// 더미 환경에서 proposal / offer / mission 을 공유하는 단일 인메모리 백엔드.
+  /// 더미 환경에서 proposal / offer 를 공유하는 단일 인메모리 백엔드.
   /// 실 API 모드에서는 사용되지 않는다.
   private static let dummyStore = DummyBackendStore()
 
@@ -28,15 +28,18 @@ enum DIContainer {
   static let offerRepository: OfferRepositoryProtocol =
     isDummy ? TestOfferRepositoryImpl(store: dummyStore) : OfferRepository(client: .shared)
 
-  static let missionRepository: MissionRepositoryProtocol =
-    isDummy ? TestMissionRepositoryImpl(store: dummyStore) : MissionRepository(client: .shared)
-
   static let activityRepository: ActivityRepositoryProtocol =
     isDummy ? TestActivityRepositoryImpl(store: dummyStore) : ActivityRepository(client: .shared)
 
   static let userRepository: UserRepositoryProtocol =
     isDummy ? TestUserRepositoryImpl() : UserRepository(client: .shared)
 
+  static let termsRepository: TermsRepositoryProtocol =
+    isDummy ? TestTermsRepositoryImpl() : TermsRepository(client: .shared)
+
+  static let settlementRepository: SettlementRepositoryProtocol =
+    isDummy ? TestSettlementRepositoryImpl() : SettlementRepository(client: .shared)
+
   static let notificationRepository: NotificationRepositoryProtocol =
-    NotificationRepositoryImpl() // TODO: API 스펙 확정 시 교체
+    isDummy ? NotificationRepositoryImpl() : NotificationRepository(client: .shared)
 }

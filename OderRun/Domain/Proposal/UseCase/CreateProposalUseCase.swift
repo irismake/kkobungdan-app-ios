@@ -19,7 +19,7 @@ struct CreateProposalUseCase {
     content: String,
     deadline: String,
     errandFee: Int
-  ) async throws -> ProposalDetail {
+  ) async throws -> Proposal {
     try await repository.createProposal(
       title: title,
       content: content,

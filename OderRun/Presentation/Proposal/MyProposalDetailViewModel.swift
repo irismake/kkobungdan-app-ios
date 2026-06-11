@@ -13,70 +13,68 @@ final class MyProposalDetailViewModel {
 
   var proposal: Proposal?
   var offers: [Offer] = []
-  var matchedOfferDetail: OfferDetail?
-  var matchedRunnerProfile: RunnerProfile?
   var isLoading: Bool = false
   var errorMessage: String?
   var isCancelling: Bool = false
   var didCancel: Bool = false
-  var mission: Mission?
-  var isCompletingMission: Bool = false
+  var isConfirming: Bool = false
 
-  /// "만났어요!" 버튼 노출 여부.
-  /// proposal 이 MATCHED 이고, 미션이 아직 내(요청자) 확인을 받지 않은 상태일 때만 노출.
-  /// (이미 내가 확인했다면 상대방 대기 상태이므로 다시 누를 수 없다.)
+  /// "만났어요!"(수령 확인) 버튼 노출 여부.
+  /// proposal 이 MATCHED.
   var canConfirmReceived: Bool {
-    guard proposal?.status == .matched, let mission else {
-      return false
-    }
-    switch mission.status {
-    case .created, .inProgress, .deliveryCompleted:
-      return true
-    default:
-      return false
-    }
+    proposal?.status == .matched
   }
 
-  /// 의뢰자가 "만났어요!"를 이미 눌렀고, 러너 확인을 기다리는 중인지 여부.
+  /// 오더러가 수령 확인을 마쳤고, 러너 완료 처리를 기다리는 중인지 여부.
   var isWaitingForRunnerConfirm: Bool {
-    proposal?.status == .matched && mission?.status == .receivedConfirmed
+    proposal?.status == .orderCompleted
   }
 
   var applicantCount: Int {
     offers.filter { $0.status == .waiting || $0.status == .accepted }.count
   }
 
-  /// 매칭된 (수락된) offer. 매칭이 완료된 proposal 에서 매칭 러너 카드 표시에 사용.
+  /// 매칭된 offer. 진행중·완료 proposal 의 매칭 러너 카드 표시에 사용.
   var matchedOffer: Offer? {
-    offers.first(where: { $0.status == .accepted })
+    offers.first(where: {
+      $0.status == .accepted || $0.status == .runnerCompleted || $0.status == .allCompleted
+    })
   }
 
   private let fetchDetailUseCase: FetchProposalDetailUseCase
   private let fetchOffersUseCase: FetchOffersByProposalUseCase
-  private let fetchOfferDetailUseCase: FetchOfferDetailUseCase
-  private let fetchRunnerProfileUseCase: FetchRunnerProfileUseCase
-  private let fetchMissionByProposalUseCase: FetchMissionByProposalUseCase
-  private let updateMissionActionUseCase: UpdateMissionActionUseCase
+  private let confirmReceivedUseCase: ConfirmReceivedUseCase
   private let cancelProposalUseCase: CancelProposalUseCase
 
   init(
     proposalID: Int64,
     fetchDetailUseCase: FetchProposalDetailUseCase,
     fetchOffersUseCase: FetchOffersByProposalUseCase,
-    fetchOfferDetailUseCase: FetchOfferDetailUseCase,
-    fetchRunnerProfileUseCase: FetchRunnerProfileUseCase,
-    fetchMissionByProposalUseCase: FetchMissionByProposalUseCase,
-    updateMissionActionUseCase: UpdateMissionActionUseCase,
+    confirmReceivedUseCase: ConfirmReceivedUseCase,
     cancelProposalUseCase: CancelProposalUseCase
   ) {
     self.proposalID = proposalID
     self.fetchDetailUseCase = fetchDetailUseCase
     self.fetchOffersUseCase = fetchOffersUseCase
-    self.fetchOfferDetailUseCase = fetchOfferDetailUseCase
-    self.fetchRunnerProfileUseCase = fetchRunnerProfileUseCase
-    self.fetchMissionByProposalUseCase = fetchMissionByProposalUseCase
-    self.updateMissionActionUseCase = updateMissionActionUseCase
+    self.confirmReceivedUseCase = confirmReceivedUseCase
     self.cancelProposalUseCase = cancelProposalUseCase
+  }
+
+  /// proposal 상태별로 조회할 offer status 필터.
+  /// 미입금(HOLDING)·종료(취소/환불) 상태는 offer 목록을 조회하지 않으므로 `nil`.
+  private func offerStatusFilter(for status: ProposalStatus) -> [OfferStatus]? {
+    switch status {
+    case .holding, .cancelled, .refunded:
+      return nil
+    case .posted, .offered:
+      return [.waiting]
+    case .matched, .orderCompleted:
+      return [.accepted, .runnerCompleted]
+    case .allCompleted:
+      return [.allCompleted]
+    case .disputed:
+      return [.disputed]
+    }
   }
 
   @MainActor
@@ -84,27 +82,14 @@ final class MyProposalDetailViewModel {
     isLoading = true
     errorMessage = nil
     do {
-      async let proposalTask = fetchDetailUseCase.execute(id: proposalID)
-      async let offersTask = fetchOffersUseCase.execute(proposalID: proposalID)
-      proposal = try await proposalTask
-      offers = try await offersTask
+      // offer 조회 status 필터가 proposal 상태에 의존하므로 proposal 을 먼저 조회한다.
+      let loaded = try await fetchDetailUseCase.execute(id: proposalID)
+      proposal = loaded
 
-      if let matchedOffer {
-        async let detailTask = fetchOfferDetailUseCase.execute(offerID: matchedOffer.id)
-        async let profileTask = fetchRunnerProfileUseCase.execute(runnerID: matchedOffer.runnerID)
-        let (detail, profile) = try await (detailTask, profileTask)
-        matchedOfferDetail = detail
-        matchedRunnerProfile = profile
+      if let filter = offerStatusFilter(for: loaded.status) {
+        offers = try await fetchOffersUseCase.execute(proposalID: proposalID, status: filter)
       } else {
-        matchedOfferDetail = nil
-        matchedRunnerProfile = nil
-      }
-
-      // proposal 이 MATCHED 이후라면 미션이 존재한다. 그 외 상태에서는 nil.
-      if proposal?.status == .matched || proposal?.status == .complete {
-        mission = try await fetchMissionByProposalUseCase.execute(proposalID: proposalID)
-      } else {
-        mission = nil
+        offers = []
       }
     } catch {
       errorMessage = "내 요청 상세를 불러오지 못했어요."
@@ -112,24 +97,21 @@ final class MyProposalDetailViewModel {
     isLoading = false
   }
 
-  /// 오더 수령 확인. `PUT /v1/mission/{id}` — `CONFIRM_RECEIVED`
+  /// 오더 수령 확인. `POST /v1/proposal/{id}/confirm-received`
   @MainActor
   func confirmReceived() async {
-    guard let mission, canConfirmReceived, !isCompletingMission else {
+    guard canConfirmReceived, !isConfirming else {
       return
     }
-    isCompletingMission = true
+    isConfirming = true
     errorMessage = nil
     do {
-      _ = try await updateMissionActionUseCase.execute(
-        id: mission.id,
-        action: .confirmReceived
-      )
+      _ = try await confirmReceivedUseCase.execute(proposalID: proposalID)
       await load()
     } catch {
       errorMessage = "진행 완료 처리에 실패했어요. 잠시 후 다시 시도해주세요."
     }
-    isCompletingMission = false
+    isConfirming = false
   }
 
   @MainActor

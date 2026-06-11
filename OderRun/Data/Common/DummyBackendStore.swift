@@ -5,7 +5,7 @@
 //  Created by 김가희 on 5/18/26.
 //
 //  더미 환경에서 실제 백엔드의 단일 DB + 트랜잭션 cascade 를 흉내내는 인메모리 저장소.
-//  proposal / offer / mission 데이터가 한 actor 안에서 관리되어, 상태 전이가
+//  proposal / offer 데이터가 한 actor 안에서 관리되어, 상태 전이가
 //  여러 Test*RepositoryImpl 로 흩어지지 않고 이 곳에 모인다.
 //
 
@@ -15,18 +15,22 @@ actor DummyBackendStore {
   private var proposals: [Proposal] = Proposal.dummyList
   private var ordererIDByProposalID: [Int64: String] = Proposal.dummyOrdererIDByProposalID
   private var offers: [Offer] = Offer.dummyList
-  private var missions: [Mission] = Mission.dummyList
   private var nextProposalID: Int64 = 100
   private var nextOfferID: Int64 = 1000
-  private var nextMissionID: Int64 = 1000
 
   // MARK: - Proposal
 
-  /// 홈 피드용 proposal 목록. 서버는 아직 의뢰자가 수락하지 않아 다른 러너가 지원할 수 있는
-  /// 활성 상태(`.posted` = 등록 완료 / `.waiting` = 대기중 / `.offered` = 새로운 지원 도착)만 반환한다.
-  func fetchProposals(page: Int, size: Int) -> [Proposal] {
-    let filtered = proposals.filter {
-      $0.status == .posted || $0.status == .waiting || $0.status == .offered
+  /// 홈 피드용 proposal 목록. `status` 가 비어 있으면 아직 의뢰자가 수락하지 않아 다른 러너가
+  /// 지원할 수 있는 활성 상태(`.posted` = 등록 완료·지원 대기 / `.offered` = 새로운 지원 도착)만
+  /// 반환하고, 지정되면 해당 상태들로 필터한다.
+  func fetchProposals(status: [ProposalStatus], page: Int, size: Int) -> [Proposal] {
+    let filtered: [Proposal]
+    if status.isEmpty {
+      filtered = proposals.filter {
+        $0.status == .posted || $0.status == .offered
+      }
+    } else {
+      filtered = proposals.filter { status.contains($0.status) }
     }
     return paginate(filtered, page: page, size: size)
   }
@@ -44,7 +48,7 @@ actor DummyBackendStore {
     content: String,
     deadline: Date,
     errandFee: Int
-  ) -> ProposalDetail {
+  ) -> Proposal {
     let newID = nextProposalID
     nextProposalID += 1
     let stub = Proposal(
@@ -57,18 +61,7 @@ actor DummyBackendStore {
     )
     ordererIDByProposalID[newID] = ordererID
     proposals.insert(stub, at: 0)
-    // TODO: 서버에서 meetingAt/itemPrice/deposit 필드 제거되면 ProposalDetail에서도 삭제
-    return ProposalDetail(
-      id: newID,
-      title: title,
-      content: content,
-      deadline: deadline,
-      meetingAt: deadline,
-      errandFee: errandFee,
-      itemPrice: 1000,
-      deposit: 1000,
-      status: .holding
-    )
+    return stub
   }
 
   func updateProposal(
@@ -112,6 +105,44 @@ actor DummyBackendStore {
     return cancelled
   }
 
+  /// 오더러 수령 확인. `POST /v1/proposal/{id}/confirm-received`
+  /// 러너가 이미 완료(RUNNER_COMPLETED)했으면 양측 정산(ALL_COMPLETED), 아니면 ORDER_COMPLETED.
+  func confirmReceived(proposalID: Int64) throws -> Proposal {
+    guard let proposalIndex = proposals.firstIndex(where: { $0.id == proposalID }) else {
+      throw RepositoryError.notFound
+    }
+    let proposal = proposals[proposalIndex]
+    guard proposal.status == .matched else {
+      throw RepositoryError.conflict
+    }
+    if let offerIndex = offers.firstIndex(where: {
+      $0.proposalID == proposalID && $0.status == .runnerCompleted
+    }) {
+      offers[offerIndex] = with(offers[offerIndex], status: .allCompleted)
+      let done = with(proposal, status: .allCompleted)
+      proposals[proposalIndex] = done
+      return done
+    }
+    let updated = with(proposal, status: .orderCompleted)
+    proposals[proposalIndex] = updated
+    return updated
+  }
+
+  /// 오더러 분쟁 제기. `POST /v1/proposal/{id}/dispute`
+  func raiseProposalDispute(proposalID: Int64, reason _: String) throws -> Proposal {
+    guard let proposalIndex = proposals.firstIndex(where: { $0.id == proposalID }) else {
+      throw RepositoryError.notFound
+    }
+    let updated = with(proposals[proposalIndex], status: .disputed)
+    proposals[proposalIndex] = updated
+    if let offerIndex = offers.firstIndex(where: {
+      $0.proposalID == proposalID && ($0.status == .accepted || $0.status == .runnerCompleted)
+    }) {
+      offers[offerIndex] = with(offers[offerIndex], status: .disputed)
+    }
+    return updated
+  }
+
   // MARK: - Offer
 
   /// 첫 offer 면 proposal POSTED/WAITING → OFFERED 로 같이 전이.
@@ -130,6 +161,7 @@ actor DummyBackendStore {
       id: newID,
       proposalID: proposalID,
       runnerID: runnerID,
+      runnerName: DummySession.displayName(for: runnerID),
       status: .waiting,
       createdAt: Date()
     )
@@ -138,9 +170,9 @@ actor DummyBackendStore {
     return offer
   }
 
-  func fetchOffersByProposal(proposalID: Int64) -> [Offer] {
+  func fetchOffersByProposal(proposalID: Int64, status: [OfferStatus]) -> [Offer] {
     offers
-      .filter { $0.proposalID == proposalID }
+      .filter { $0.proposalID == proposalID && (status.isEmpty || status.contains($0.status)) }
       .sorted { $0.createdAt > $1.createdAt }
   }
 
@@ -153,6 +185,7 @@ actor DummyBackendStore {
       id: offer.id,
       proposalID: offer.proposalID,
       runnerID: offer.runnerID,
+      runnerName: offer.runnerName,
       status: offer.status,
       createdAt: offer.createdAt
     )
@@ -169,12 +202,8 @@ actor DummyBackendStore {
   }
 
   /// `POST /v1/offer/{offerId}/accept` 의 인메모리 흉내.
-  /// offer ACCEPTED, 같은 proposal 의 나머지 WAITING offer REJECTED, proposal MATCHED 로 전이하고
-  /// 미션을 생성한다.
-  func acceptOffer(offerID: Int64, runFee: Int, itemPrice: Int) throws -> OfferAcceptResult {
-    if missions.contains(where: { $0.offerID == offerID }) {
-      throw RepositoryError.conflict
-    }
+  /// offer ACCEPTED, 같은 proposal 의 나머지 WAITING offer REJECTED, proposal MATCHED 로 전이.
+  func acceptOffer(offerID: Int64) throws -> OfferAcceptResult {
     guard let offerIndex = offers.firstIndex(where: { $0.id == offerID }) else {
       throw RepositoryError.notFound
     }
@@ -190,21 +219,6 @@ actor DummyBackendStore {
       throw RepositoryError.conflict
     }
 
-    let now = Date()
-    let newID = nextMissionID
-    nextMissionID += 1
-    let ordererID = ordererIDByProposalID[proposal.id] ?? ""
-    let mission = Mission(
-      id: newID,
-      offerID: offerID,
-      proposalID: offer.proposalID,
-      orderer: .dummy(for: ordererID),
-      runner: .dummy(for: offer.runnerID),
-      status: .created,
-      runFee: runFee
-    )
-    missions.append(mission)
-
     let rejectedCount = acceptOfferAndRejectOthers(acceptedOfferID: offerID, proposalID: offer.proposalID)
     let matched = with(proposal, status: .matched)
     proposals[proposalIndex] = matched
@@ -212,130 +226,64 @@ actor DummyBackendStore {
     return OfferAcceptResult(
       proposalID: matched.id,
       offerID: offerID,
-      missionID: newID,
       proposalStatus: .matched,
       acceptedOfferStatus: .accepted,
       rejectedOfferCount: rejectedCount,
-      missionStatus: .created,
       ordererID: ordererIDByProposalID[proposal.id] ?? "",
       runnerID: offer.runnerID,
-      runFee: runFee,
-      itemPrice: itemPrice,
-      totalAmount: runFee + itemPrice,
-      createdAt: now
+      acceptedAt: Date()
     )
   }
 
-  // MARK: - Mission
-
-  /// proposal 에 매칭된 미션 1건. accept 시 cascade 로 1개만 만들어지므로 첫 매치를 반환.
-  func fetchMission(proposalID: Int64) -> Mission? {
-    missions.first(where: { $0.proposalID == proposalID })
-  }
-
-  /// 수락된 offer 로 생성된 미션 1건.
-  func fetchMission(offerID: Int64) -> Mission? {
-    missions.first(where: { $0.offerID == offerID })
-  }
-
-  func updateMissionAction(
-    id: Int64,
-    action: MissionAction,
-    proofImageURL: String?,
-    disputeReason: String?
-  ) throws -> Mission {
-    guard let index = missions.firstIndex(where: { $0.id == id }) else {
+  /// 러너 배달 완료. `POST /v1/offer/{id}/complete-delivery`
+  /// 오더러가 이미 수령 확인(ORDER_COMPLETED)했으면 양측 정산(ALL_COMPLETED), 아니면 RUNNER_COMPLETED.
+  func completeDelivery(offerID: Int64, proofImageURL _: String?) throws -> Offer {
+    guard let offerIndex = offers.firstIndex(where: { $0.id == offerID }) else {
       throw RepositoryError.notFound
     }
-    let existing = missions[index]
-
-    switch action {
-    case .startProgress:
-      guard existing.status == .created else {
-        throw RepositoryError.conflict
-      }
-      let updated = with(existing, status: .inProgress)
-      missions[index] = updated
-      return updated
-
-    case .completeDelivery:
-      guard let proofImageURL, !proofImageURL.isEmpty else {
-        throw RepositoryError.conflict
-      }
-      switch existing.status {
-      case .created, .inProgress:
-        let updated = with(existing, status: .deliveryCompleted)
-        missions[index] = updated
-        return updated
-      case .receivedConfirmed:
-        return try completeMissionCascade(
-          at: index,
-          mission: with(existing, status: .settled)
-        )
-      default:
-        throw RepositoryError.conflict
-      }
-
-    case .confirmReceived:
-      switch existing.status {
-      case .created, .inProgress:
-        let updated = with(existing, status: .receivedConfirmed)
-        missions[index] = updated
-        return updated
-      case .deliveryCompleted:
-        return try completeMissionCascade(
-          at: index,
-          mission: with(existing, status: .settled)
-        )
-      default:
-        throw RepositoryError.conflict
-      }
-
-    case .dispute:
-      guard let disputeReason, !disputeReason.isEmpty else {
-        throw RepositoryError.conflict
-      }
-      let updated = with(existing, status: .disputed)
-      missions[index] = updated
-      return updated
+    let offer = offers[offerIndex]
+    guard offer.status == .accepted else {
+      throw RepositoryError.conflict
     }
+    guard let proposalIndex = proposals.firstIndex(where: { $0.id == offer.proposalID }) else {
+      throw RepositoryError.notFound
+    }
+    let proposal = proposals[proposalIndex]
+    if proposal.status == .orderCompleted {
+      let done = with(offer, status: .allCompleted)
+      offers[offerIndex] = done
+      proposals[proposalIndex] = with(proposal, status: .allCompleted)
+      return done
+    }
+    let updated = with(offer, status: .runnerCompleted)
+    offers[offerIndex] = updated
+    return updated
   }
 
-  private func completeMissionCascade(at index: Int, mission: Mission) throws -> Mission {
-    missions[index] = mission
-    if let offerIndex = offers.firstIndex(where: { $0.id == mission.offerID }) {
-      offers[offerIndex] = with(offers[offerIndex], status: .complete)
+  /// 러너 분쟁 제기. `POST /v1/offer/{id}/dispute`
+  func raiseOfferDispute(offerID: Int64, reason _: String) throws -> Offer {
+    guard let offerIndex = offers.firstIndex(where: { $0.id == offerID }) else {
+      throw RepositoryError.notFound
     }
-    if let proposalIndex = proposals.firstIndex(where: { $0.id == mission.proposalID }) {
-      proposals[proposalIndex] = with(proposals[proposalIndex], status: .complete)
+    let updated = with(offers[offerIndex], status: .disputed)
+    offers[offerIndex] = updated
+    if let proposalIndex = proposals.firstIndex(where: { $0.id == updated.proposalID }) {
+      proposals[proposalIndex] = with(proposals[proposalIndex], status: .disputed)
     }
-    return mission
-  }
-
-  private func with(_ mission: Mission, status: MissionStatus) -> Mission {
-    Mission(
-      id: mission.id,
-      offerID: mission.offerID,
-      proposalID: mission.proposalID,
-      orderer: mission.orderer,
-      runner: mission.runner,
-      status: status,
-      runFee: mission.runFee
-    )
+    return updated
   }
 
   // MARK: - Activity
 
   /// 내 proposal 활동. /v1/proposal/own 의 인메모리 흉내.
-  /// 각 MyProposal 에는 그 proposal 에 달린 offer 목록이 함께 포함된다.
   func fetchMyProposals(
     userID: String,
-    status: ProposalStatus?,
+    status: [ProposalStatus],
     page: Int,
     size: Int
   ) -> [MyProposal] {
     let mine = proposals.filter { ordererIDByProposalID[$0.id] == userID }
-    let filtered = status.map { filter in mine.filter { $0.status == filter } } ?? mine
+    let filtered = status.isEmpty ? mine : mine.filter { status.contains($0.status) }
     return paginate(filtered, page: page, size: size).map { proposal in
       MyProposal(
         id: proposal.id,
@@ -349,15 +297,14 @@ actor DummyBackendStore {
   }
 
   /// 내 offer 활동. /v1/offer/own 의 인메모리 흉내.
-  /// 응답에 proposal 정보(title 등)가 함께 내려오는 모양을 따라 join 결과를 반환한다.
   func fetchMyOffers(
     userID: String,
-    status: OfferStatus?,
+    status: [OfferStatus],
     page: Int,
     size: Int
   ) -> [MyOffer] {
     let mine = offers.filter { $0.runnerID == userID }
-    let filtered = status.map { filter in mine.filter { $0.status == filter } } ?? mine
+    let filtered = status.isEmpty ? mine : mine.filter { status.contains($0.status) }
     return paginate(filtered, page: page, size: size).map { offer in
       MyOffer(
         id: offer.id,
@@ -367,24 +314,6 @@ actor DummyBackendStore {
         createdAt: offer.createdAt
       )
     }
-  }
-
-  /// 미션 단위 목록 조회. `/v1/mission/own` 의 인메모리 흉내.
-  func fetchMyMissions(
-    userID: String,
-    role: MissionRole,
-    status: MissionStatus?,
-    page: Int,
-    size: Int
-  ) -> [Mission] {
-    let mine = missions.filter {
-      switch role {
-      case .orderer: return $0.orderer.id == userID
-      case .runner: return $0.runner.id == userID
-      }
-    }
-    let filtered = status.map { status in mine.filter { $0.status == status } } ?? mine
-    return paginate(filtered, page: page, size: size)
   }
 
   private func paginate<T>(_ items: [T], page: Int, size: Int) -> [T] {
@@ -398,7 +327,7 @@ actor DummyBackendStore {
   // MARK: - Private cascade helpers
 
   private func canEditOrCancel(_ status: ProposalStatus) -> Bool {
-    status == .holding || status == .posted || status == .waiting || status == .offered
+    status == .holding || status == .posted || status == .offered
   }
 
   private func rejectActiveOffers(forProposalID proposalID: Int64) {
@@ -416,7 +345,7 @@ actor DummyBackendStore {
       return
     }
     let proposal = proposals[index]
-    guard proposal.status == .posted || proposal.status == .waiting else {
+    guard proposal.status == .posted else {
       return
     }
     proposals[index] = with(proposal, status: .offered)
@@ -453,6 +382,7 @@ actor DummyBackendStore {
       id: offer.id,
       proposalID: offer.proposalID,
       runnerID: offer.runnerID,
+      runnerName: offer.runnerName,
       status: status,
       createdAt: offer.createdAt
     )

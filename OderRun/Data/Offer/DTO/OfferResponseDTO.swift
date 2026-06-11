@@ -11,6 +11,7 @@ struct OfferResponseDTO: Decodable {
   let id: Int64
   let proposalID: Int64
   let runnerID: String
+  let runnerName: String
   let status: String
   let createdAt: String
 
@@ -18,6 +19,7 @@ struct OfferResponseDTO: Decodable {
     case id
     case proposalID = "proposalId"
     case runnerID = "runnerId"
+    case runnerName
     case status
     case createdAt
   }
@@ -29,6 +31,7 @@ extension OfferResponseDTO {
       id: id,
       proposalID: proposalID,
       runnerID: runnerID,
+      runnerName: runnerName,
       status: OfferStatus(rawValue: status) ?? .waiting,
       createdAt: DateFormatters.parse(createdAt)
     )

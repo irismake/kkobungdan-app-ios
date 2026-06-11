@@ -61,10 +61,7 @@ enum AppRouteFactory {
       proposalID: proposalID,
       fetchDetailUseCase: FetchProposalDetailUseCase(repository: DIContainer.proposalRepository),
       fetchOffersUseCase: FetchOffersByProposalUseCase(repository: DIContainer.offerRepository),
-      fetchOfferDetailUseCase: FetchOfferDetailUseCase(repository: DIContainer.offerRepository),
-      fetchRunnerProfileUseCase: FetchRunnerProfileUseCase(repository: DIContainer.userRepository),
-      fetchMissionByProposalUseCase: FetchMissionByProposalUseCase(repository: DIContainer.missionRepository),
-      updateMissionActionUseCase: UpdateMissionActionUseCase(repository: DIContainer.missionRepository),
+      confirmReceivedUseCase: ConfirmReceivedUseCase(repository: DIContainer.proposalRepository),
       cancelProposalUseCase: CancelProposalUseCase(repository: DIContainer.proposalRepository)
     )
   }
@@ -79,9 +76,8 @@ enum AppRouteFactory {
       proposalID: proposalID,
       offerID: offerID,
       fetchDetailUseCase: FetchProposalDetailUseCase(repository: DIContainer.proposalRepository),
-      fetchMyOffersUseCase: FetchMyOffersUseCase(repository: DIContainer.activityRepository),
-      fetchMissionByOfferUseCase: FetchMissionByOfferUseCase(repository: DIContainer.missionRepository),
-      updateMissionActionUseCase: UpdateMissionActionUseCase(repository: DIContainer.missionRepository),
+      fetchOfferDetailUseCase: FetchOfferDetailUseCase(repository: DIContainer.offerRepository),
+      completeDeliveryUseCase: CompleteDeliveryUseCase(repository: DIContainer.offerRepository),
       cancelOfferUseCase: CancelOfferUseCase(repository: DIContainer.offerRepository)
     )
   }
@@ -93,8 +89,6 @@ enum AppRouteFactory {
       proposalID: proposalID,
       fetchDetailUseCase: FetchProposalDetailUseCase(repository: DIContainer.proposalRepository),
       fetchOffersUseCase: FetchOffersByProposalUseCase(repository: DIContainer.offerRepository),
-      fetchOfferDetailUseCase: FetchOfferDetailUseCase(repository: DIContainer.offerRepository),
-      fetchRunnerProfileUseCase: FetchRunnerProfileUseCase(repository: DIContainer.userRepository),
       acceptOfferUseCase: AcceptOfferUseCase(repository: DIContainer.offerRepository)
     )
   }

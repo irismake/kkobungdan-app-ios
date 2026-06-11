@@ -21,21 +21,13 @@ actor TestUserRepositoryImpl: UserRepositoryProtocol {
     try await Task.sleep(nanoseconds: Self.simulatedLatency)
     currentUser = User(
       id: currentUser.id,
-      email: currentUser.email,
       name: currentUser.name,
-      phone: currentUser.phone,
-      createdAt: currentUser.createdAt,
-      lastLoginAt: currentUser.lastLoginAt,
       alarmEnabled: enabled
     )
     return currentUser
   }
 
-  func fetchRunner(id: String) async throws -> RunnerProfile {
+  func updateFcmToken(_: String) async throws {
     try await Task.sleep(nanoseconds: Self.simulatedLatency)
-    guard let profile = RunnerProfile.dummyByID[id] else {
-      throw RepositoryError.notFound
-    }
-    return profile
   }
 }

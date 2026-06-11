@@ -66,9 +66,11 @@ final class VerificationCodeViewModel {
     }
   }
 
-  /// 화면 진입 시 인증번호를 발송하고 만료 타이머를 시작한다.
+  /// 인증번호를 발송하고 만료 타이머를 시작한다. 성공하면 true 를 반환한다.
+  /// 인증번호 입력 화면 진입 전에 호출해 응답(만료 시각)을 받은 뒤 이동한다.
   @MainActor
-  func sendCode() async {
+  @discardableResult
+  func sendCode() async -> Bool {
     errorMessage = nil
     do {
       let verification: PhoneVerification
@@ -79,8 +81,10 @@ final class VerificationCodeViewModel {
         verification = try await sendLoginCodeUseCase.execute(phone: phone)
       }
       startTimer(until: verification.expiresAt)
+      return true
     } catch {
       errorMessage = "인증번호 발송에 실패했습니다. 다시 시도해주세요."
+      return false
     }
   }
 
@@ -115,9 +119,10 @@ final class VerificationCodeViewModel {
     }
   }
 
-  /// 서버 만료 시각으로 남은 시간을 설정한다. (0 ~ 기본 제한 사이로 보정)
+  /// 서버 만료 시각으로 남은 시간을 설정한다. (기본 제한 이하로 보정)
+  /// 방금 발송한 코드의 남은 시간이 0 이하로 계산되면(만료 시각 파싱 실패 등) 기본 제한시간으로 폴백한다.
   private func startTimer(until expiresAt: Date) {
     let remaining = Int(expiresAt.timeIntervalSinceNow.rounded())
-    remainingSeconds = max(0, min(Self.timeoutSeconds, remaining))
+    remainingSeconds = remaining > 0 ? min(Self.timeoutSeconds, remaining) : Self.timeoutSeconds
   }
 }

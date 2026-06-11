@@ -20,9 +20,9 @@ struct TestOfferRepositoryImpl: OfferRepositoryProtocol {
     )
   }
 
-  func fetchOffersByProposal(proposalID: Int64) async throws -> [Offer] {
+  func fetchOffersByProposal(proposalID: Int64, status: [OfferStatus]) async throws -> [Offer] {
     try await Task.sleep(nanoseconds: Self.simulatedLatency)
-    return await store.fetchOffersByProposal(proposalID: proposalID)
+    return await store.fetchOffersByProposal(proposalID: proposalID, status: status)
   }
 
   func fetchOfferDetail(offerID: Int64) async throws -> OfferDetail {
@@ -35,8 +35,18 @@ struct TestOfferRepositoryImpl: OfferRepositoryProtocol {
     try await store.cancelOffer(offerID: offerID)
   }
 
-  func acceptOffer(offerID: Int64, runFee: Int, itemPrice: Int) async throws -> OfferAcceptResult {
+  func acceptOffer(offerID: Int64) async throws -> OfferAcceptResult {
     try await Task.sleep(nanoseconds: Self.simulatedLatency)
-    return try await store.acceptOffer(offerID: offerID, runFee: runFee, itemPrice: itemPrice)
+    return try await store.acceptOffer(offerID: offerID)
+  }
+
+  func completeDelivery(offerID: Int64, proofImageURL: String?) async throws -> Offer {
+    try await Task.sleep(nanoseconds: Self.simulatedLatency)
+    return try await store.completeDelivery(offerID: offerID, proofImageURL: proofImageURL)
+  }
+
+  func raiseDispute(offerID: Int64, reason: String) async throws -> Offer {
+    try await Task.sleep(nanoseconds: Self.simulatedLatency)
+    return try await store.raiseOfferDispute(offerID: offerID, reason: reason)
   }
 }

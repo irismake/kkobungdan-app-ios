@@ -19,25 +19,14 @@ API 응답 DTO와 Domain 엔티티는 서버 스펙을 기준으로 맞춘다. (
 
 ### 3. 미사용 필드 처리 (응답 DTO 있음 / 엔티티 없음)
 
-DTO에는 있지만 엔티티에 없는 필드는 아래를 모두 지킨다.
+DTO에는 있지만 엔티티에 없는 필드는 **별도 stub 상수를 만들지 않는다.** 매핑하지 않는 필드 목록을 `toDomain()` 상단에 한 줄 TODO 주석으로만 남긴다.
 
-1. **DTO에 전역 테스트 값 선언**: DTO 파일 하단 `extension`에 `static` 상수로 테스트·더미용 기본값을 전역 접근 가능하게 추가한다.
-
-   ```swift
-   extension MissionResponseDTO {
-     // TODO: itemPrice UI 반영 시 Mission 엔티티에 추가
-     static let stubItemPrice: Int = 0
-   }
-   ```
-
-2. **`toDomain()` 에 TODO 주석**: 매핑하지 않는 필드 목록을 `toDomain()` 상단에 한 줄로 남긴다.
-
-   ```swift
-   func toDomain() -> Mission {
-     // TODO: itemPrice, totalAmount … UI 반영 시 엔티티에 추가
-     Mission(id: id, ...)
-   }
-   ```
+```swift
+func toDomain() -> Mission {
+  // TODO: itemPrice, totalAmount … UI 반영 시 엔티티에 추가
+  Mission(id: id, ...)
+}
+```
 
 ---
 
@@ -77,7 +66,9 @@ DTO에는 있지만 엔티티에 없는 필드는 아래를 모두 지킨다.
 
 ## TODO 정리 시점
 
-UI 반영·서버 연동이 완료되면 해당 필드를 엔티티에 추가(응답) 또는 호출부에서 실제 값 전달(요청)로 교체하고, `stubXxx` 상수와 TODO를 함께 제거한다.
+UI 반영·서버 연동이 완료되면:
+- **응답**: 해당 필드를 엔티티에 추가하고 `toDomain()` TODO 주석을 제거한다.
+- **요청**: 호출부에서 실제 값 전달로 교체하고 `stubXxx` 상수와 TODO를 함께 제거한다.
 
 ---
 
@@ -90,12 +81,8 @@ struct MissionResponseDTO: Decodable {
   let itemPrice: Int         // required → non-optional
   let disputeReason: String? // optional → ?
 }
-extension MissionResponseDTO {
-  // TODO: itemPrice UI 반영 시 Mission 엔티티에 추가
-  static let stubItemPrice: Int = 0
-}
 func toDomain() -> Mission {
-  // TODO: itemPrice, disputeReason — UI 반영 시 엔티티에 추가
+  // TODO: itemPrice, disputeReason — UI 반영 시 엔티티에 추가 (stub 상수 만들지 않음)
   Mission(runFee: runFee, ...)
 }
 struct Mission { let runFee: Int } // 사용 필드만

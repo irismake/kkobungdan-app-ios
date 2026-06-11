@@ -51,6 +51,12 @@ final class HTTPClient {
     return try await perform(request, isRetry: false)
   }
 
+  /// envelope 의 `data` 가 없을 수 있는 조회(예: 정산 계좌 미등록 시 `{success, message}` 만 반환) 전용.
+  func getOptional<T: Decodable>(_ path: String, params: [String: Any] = [:]) async throws -> T? {
+    let request = try buildRequest(method: "GET", path: path, params: params, body: nil as String?)
+    return try await performOptional(request, isRetry: false)
+  }
+
   func post<T: Decodable, B: Encodable>(_ path: String, body: B? = nil as String?) async throws -> T {
     let request = try buildRequest(method: "POST", path: path, params: [:], body: body)
     return try await perform(request, isRetry: false)
@@ -63,6 +69,11 @@ final class HTTPClient {
 
   func postVoid<B: Encodable>(_ path: String, body: B? = nil as String?) async throws {
     let request = try buildRequest(method: "POST", path: path, params: [:], body: body)
+    try await performVoid(request, isRetry: false)
+  }
+
+  func patchVoid<B: Encodable>(_ path: String, body: B? = nil as String?) async throws {
+    let request = try buildRequest(method: "PATCH", path: path, params: [:], body: body)
     try await performVoid(request, isRetry: false)
   }
 
@@ -81,7 +92,13 @@ final class HTTPClient {
   ) throws -> URLRequest {
     var components = URLComponents(string: Self.baseURL + path)!
     if !params.isEmpty {
-      components.queryItems = params.map { URLQueryItem(name: $0.key, value: "\($0.value)") }
+      // 배열 값은 같은 키를 반복해 다중값 쿼리(`status=A&status=B`)로 직렬화한다.
+      components.queryItems = params.flatMap { key, value -> [URLQueryItem] in
+        if let array = value as? [Any] {
+          return array.map { URLQueryItem(name: key, value: "\($0)") }
+        }
+        return [URLQueryItem(name: key, value: "\(value)")]
+      }
     }
     var request = URLRequest(url: components.url!)
     request.httpMethod = method
@@ -96,7 +113,9 @@ final class HTTPClient {
     return request
   }
 
-  private func perform<T: Decodable>(_ request: URLRequest, isRetry: Bool) async throws -> T {
+  /// 요청 전송 → 로깅 → 401 refresh 재시도 → 상태코드 매핑까지 처리하고 본문 `Data` 를 반환한다.
+  /// 디코딩은 각 호출자(`perform`/`performOptional`)에서 분기한다.
+  private func sendAndValidate(_ request: URLRequest, isRetry: Bool) async throws -> Data {
     let method = request.httpMethod ?? "?"
     let url = request.url?.absoluteString ?? "?"
     if let body = request.httpBody, let bodyStr = String(data: body, encoding: .utf8) {
@@ -117,16 +136,21 @@ final class HTTPClient {
     }
 
     if try await shouldRetryAfterRefresh(request: request, response: response, isRetry: isRetry) {
-      return try await perform(rebuiltRequest(from: request), isRetry: true)
+      return try await sendAndValidate(rebuiltRequest(from: request), isRetry: true)
     }
 
     try mapHTTPError(response: response)
+    return data
+  }
+
+  private func perform<T: Decodable>(_ request: URLRequest, isRetry: Bool) async throws -> T {
+    let data = try await sendAndValidate(request, isRetry: isRetry)
     do {
       let envelope = try decoder.decode(ApiResponseDTO<T>.self, from: data)
-      guard let data = envelope.data else {
+      guard let payload = envelope.data else {
         throw RepositoryError.network
       }
-      return data
+      return payload
     } catch let error as RepositoryError {
       throw error
     } catch {
@@ -134,15 +158,19 @@ final class HTTPClient {
     }
   }
 
-  private func performVoid(_ request: URLRequest, isRetry: Bool) async throws {
-    let (_, response) = try await session.data(for: request)
-
-    if try await shouldRetryAfterRefresh(request: request, response: response, isRetry: isRetry) {
-      try await performVoid(rebuiltRequest(from: request), isRetry: true)
-      return
+  /// envelope 의 `data` 가 없으면 `nil` 을 반환한다(에러로 보지 않음).
+  private func performOptional<T: Decodable>(_ request: URLRequest, isRetry: Bool) async throws -> T? {
+    let data = try await sendAndValidate(request, isRetry: isRetry)
+    do {
+      let envelope = try decoder.decode(ApiResponseDTO<T>.self, from: data)
+      return envelope.data
+    } catch {
+      throw RepositoryError.network
     }
+  }
 
-    try mapHTTPError(response: response)
+  private func performVoid(_ request: URLRequest, isRetry: Bool) async throws {
+    _ = try await sendAndValidate(request, isRetry: isRetry)
   }
 
   /// 401 응답을 받았을 때 refresh 를 시도하고, 호출자가 동일 요청을 재시도해야 하는지 반환한다.

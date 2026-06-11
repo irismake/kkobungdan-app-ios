@@ -12,21 +12,6 @@ private struct ProposalCreateBody: Encodable {
   let content: String
   let deadline: String
   let errandFee: Int
-  // TODO: meetingAt UI 연동 전까지 stub 값 전송
-  let meetingAt: String = ProposalCreateBody.stubMeetingAt
-  // TODO: itemPrice UI 연동 전까지 stub 값 전송
-  let itemPrice: Int = ProposalCreateBody.stubItemPrice
-  // TODO: deposit UI 연동 전까지 stub 값 전송
-  let deposit: Int = ProposalCreateBody.stubDeposit
-}
-
-extension ProposalCreateBody {
-  // TODO: meetingAt UI 반영 시 호출부에서 실제 값 전달로 교체
-  static let stubMeetingAt: String = ""
-  // TODO: itemPrice UI 반영 시 호출부에서 실제 값 전달로 교체
-  static let stubItemPrice: Int = 0
-  // TODO: deposit UI 반영 시 호출부에서 실제 값 전달로 교체
-  static let stubDeposit: Int = 0
 }
 
 private struct ProposalUpdateBody: Encodable {
@@ -43,14 +28,18 @@ final class ProposalRepository: ProposalRepositoryProtocol {
     self.client = client
   }
 
-  func fetchProposals(page: Int, size: Int) async throws -> [Proposal] {
+  func fetchProposals(status: [ProposalStatus], page: Int, size: Int) async throws -> [Proposal] {
+    var params: [String: Any] = ["page": page, "size": size]
+    if !status.isEmpty {
+      params["status"] = status.map(\.rawValue)
+    }
     let pageDTO: PageDTO<ProposalResponseDTO> =
-      try await client.get("/v1/proposal", params: ["page": page, "size": size])
+      try await client.get("/v1/proposal", params: params)
     return pageDTO.content.map { $0.toDomain() }
   }
 
   func fetchProposal(id: Int64) async throws -> Proposal {
-    let dto: ProposalResponseDTO = try await client.get("/v1/proposal/\(id)")
+    let dto: ProposalDetailResponseDTO = try await client.get("/v1/proposal/\(id)")
     return dto.toDomain()
   }
 
@@ -59,8 +48,8 @@ final class ProposalRepository: ProposalRepositoryProtocol {
     content: String,
     deadline: String,
     errandFee: Int
-  ) async throws -> ProposalDetail {
-    let dto: ProposalDetailResponseDTO = try await client.post(
+  ) async throws -> Proposal {
+    let dto: ProposalResponseDTO = try await client.post(
       "/v1/proposal",
       body: ProposalCreateBody(
         title: title,
@@ -81,8 +70,22 @@ final class ProposalRepository: ProposalRepositoryProtocol {
   }
 
   func cancelProposal(id: Int64) async throws -> Proposal {
-    let dto: ProposalCancelResponseDTO =
+    let dto: ProposalResponseDTO =
       try await client.post("/v1/proposal/\(id)/cancel", body: nil as String?)
+    return dto.toDomain()
+  }
+
+  func confirmReceived(proposalID: Int64) async throws -> Proposal {
+    let dto: ConfirmReceivedResponseDTO =
+      try await client.post("/v1/proposal/\(proposalID)/confirm-received", body: nil as String?)
+    return dto.toDomain()
+  }
+
+  func raiseDispute(proposalID: Int64, reason: String) async throws -> Proposal {
+    let dto: ProposalDisputeResponseDTO = try await client.post(
+      "/v1/proposal/\(proposalID)/dispute",
+      body: ProofDisputeRequest(disputeReason: reason)
+    )
     return dto.toDomain()
   }
 }

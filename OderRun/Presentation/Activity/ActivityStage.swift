@@ -21,10 +21,10 @@ extension MyProposal {
   var stage: ActivityStage {
     switch status {
     case .holding: return .unpaid
-    case .posted, .waiting, .offered: return .waiting
-    case .matched: return .inProgress
-    case .complete: return .completed
-    case .cancelled: return .cancelled
+    case .posted, .offered: return .waiting
+    case .matched, .orderCompleted, .disputed: return .inProgress
+    case .allCompleted: return .completed
+    case .cancelled, .refunded: return .cancelled
     }
   }
 }
@@ -33,9 +33,9 @@ extension MyOffer {
   var stage: ActivityStage {
     switch status {
     case .waiting: return .waiting
-    case .accepted: return .inProgress
-    case .complete: return .completed
-    case .rejected, .cancelled: return .cancelled
+    case .accepted, .runnerCompleted, .disputed: return .inProgress
+    case .allCompleted: return .completed
+    case .rejected, .cancelled, .refunded: return .cancelled
     }
   }
 }
