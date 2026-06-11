@@ -1,13 +1,26 @@
 ---
-description: API 응답마다 별도 DTO/엔티티 — 다른 응답 형태에 같은 타입 재사용 금지
+description: API 응답 DTO는 엔드포인트별 1:1 매칭, Domain 엔티티는 최대한 공유
 globs: OderRun/Data/**/*.swift,OderRun/Domain/**/*.swift
 alwaysApply: true
 ---
 
-## API 응답마다 별도 DTO/엔티티
+## 응답 DTO는 API 1:1, 엔티티는 공유
 
-API 응답 형태가 다르면 DTO와 Domain 엔티티를 별도로 만들어야 한다. 기존 타입에 Optional 필드를 추가해서 재사용하지 말 것.
+### 1. 응답 DTO = 엔드포인트별 1:1 매칭 (무조건)
 
-**Why:** 목록/상세/생성 응답이 필드 구성이 다른데 같은 DTO+엔티티를 쓰면 스파게티 코드가 된다.
+API 응답 형태가 다르면 응답 DTO를 **반드시 엔드포인트별로 1:1 분리**한다. 하나의 DTO에 Optional 필드를 추가해 여러 응답에 재사용하지 말 것.
 
-**How to apply:** 예를 들어 `POST /v1/proposal` 응답에 새 필드(meetingAt, itemPrice, deposit)가 생기면 `ProposalResponseDTO/Proposal`을 수정하지 말고 `ProposalDetailResponseDTO/ProposalDetail` 같은 별도 타입을 추가한다.
+**Why:** 여러 응답을 한 DTO로 묶어 optional 로 떡칠하면, 어떤 필드가 어느 응답에 오는지 추적이 안 되고 나중에 관리가 불가능해진다.
+
+**How to apply:** 예를 들어 `GET /v1/proposal/{id}` · `confirm-received` · `dispute` 가 응답 필드 구성이 다르면, `ProposalDetailResponseDTO` 하나에 optional 로 합치지 말고 `ProposalDetailResponseDTO` / `ConfirmReceivedResponseDTO` / `ProposalDisputeResponseDTO` 로 각각 만든다.
+
+### 2. Domain 엔티티 = 최대한 공유
+
+엔티티는 반대로 **최대한 공유**한다. 응답 DTO마다 무조건 새 엔티티를 만들지 않는다.
+
+- 클라이언트가 실제 사용하는 필드가 같으면 여러 DTO의 `toDomain()` 이 **같은 엔티티**(예: `Proposal`)로 매핑한다.
+- 응답별로 다른 필드를 **클라이언트가 실제로 화면/로직에서 사용할 때만** 새 엔티티(예: `ProposalDetail`)로 분리한다.
+- 클라이언트가 안 쓰는 응답 전용 필드는 엔티티에 넣지 말고 `dto-entity-server-align` 규칙(`toDomain()` TODO 주석)으로 처리한다.
+- 여러 응답에 공통으로 임베드되는 nested DTO(예: `ProposalOwnOfferResponseDTO`)도 하나로 공유한다.
+
+**예시:** 세 응답 DTO가 모두 클라이언트는 `id/title/content/deadline/errandFee/status` 만 쓰면 → 응답 DTO 3개, `toDomain()` 은 셋 다 `Proposal` 로 매핑.
