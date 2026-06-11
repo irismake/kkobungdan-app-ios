@@ -59,4 +59,14 @@ struct TestProposalRepositoryImpl: ProposalRepositoryProtocol {
     try await Task.sleep(nanoseconds: Self.simulatedLatency)
     return try await store.cancelProposal(id: id)
   }
+
+  func confirmReceived(proposalID: Int64) async throws -> Proposal {
+    try await Task.sleep(nanoseconds: Self.simulatedLatency)
+    return try await store.confirmReceived(proposalID: proposalID)
+  }
+
+  func raiseDispute(proposalID: Int64, reason: String) async throws -> Proposal {
+    try await Task.sleep(nanoseconds: Self.simulatedLatency)
+    return try await store.raiseProposalDispute(proposalID: proposalID, reason: reason)
+  }
 }

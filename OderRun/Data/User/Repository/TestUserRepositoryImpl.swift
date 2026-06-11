@@ -21,13 +21,13 @@ actor TestUserRepositoryImpl: UserRepositoryProtocol {
     try await Task.sleep(nanoseconds: Self.simulatedLatency)
     currentUser = User(
       id: currentUser.id,
-      email: currentUser.email,
       name: currentUser.name,
-      phone: currentUser.phone,
-      createdAt: currentUser.createdAt,
-      lastLoginAt: currentUser.lastLoginAt,
       alarmEnabled: enabled
     )
     return currentUser
+  }
+
+  func updateFcmToken(_: String) async throws {
+    try await Task.sleep(nanoseconds: Self.simulatedLatency)
   }
 }
