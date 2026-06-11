@@ -121,7 +121,7 @@ struct MyProposalDetailView: View {
   @ViewBuilder
   private var bottomActionSection: some View {
     switch viewModel.proposal?.status {
-    case .matched where viewModel.canConfirmReceived:
+    case .matched:
       VStack(spacing: 8) {
         MeetButton { isMissionCompleted = true }
 
@@ -129,7 +129,7 @@ struct MyProposalDetailView: View {
           // TODO: 분쟁 기능 추가
         }
       }
-    case .matched where viewModel.isWaitingForRunnerConfirm:
+    case .orderCompleted:
       Text("지원자 확인 대기 중")
         .textStyle(.heading4)
         .foregroundColor(.gray400)
@@ -138,7 +138,7 @@ struct MyProposalDetailView: View {
         .frame(height: 56)
         .background(Color.gray200)
         .clipShape(RoundedRectangle(cornerRadius: 12))
-    case .complete, .cancelled:
+    case .allCompleted, .disputed, .cancelled, .refunded:
       EmptyView()
     default:
       VStack(spacing: 8) {

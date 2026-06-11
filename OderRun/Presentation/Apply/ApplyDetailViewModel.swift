@@ -17,29 +17,19 @@ final class ApplyDetailViewModel {
   var errorMessage: String?
 
   var offer: OfferDetail?
-  var mission: Mission?
-  var isCompletingMission: Bool = false
+  var isCompletingDelivery: Bool = false
   var isCancelling: Bool = false
   var didCancel: Bool = false
 
-  /// "만났어요!" 버튼 노출 여부.
-  /// 내 offer 가 ACCEPTED 이고, 미션이 아직 내(러너) 확인을 받지 않은 상태일 때만 노출.
-  /// (이미 내가 확인했다면 상대방 대기 상태이므로 다시 누를 수 없다.)
+  /// "만났어요!"(배달 완료) 버튼 노출 여부.
+  /// 내 offer 가 ACCEPTED.
   var canCompleteDelivery: Bool {
-    guard offer?.status == .accepted, let mission else {
-      return false
-    }
-    switch mission.status {
-    case .created, .inProgress, .receivedConfirmed:
-      return true
-    default:
-      return false
-    }
+    offer?.status == .accepted
   }
 
-  /// 러너가 "만났어요!"를 이미 눌렀고, 요청자(의뢰자) 확인을 기다리는 중인지 여부.
+  /// 러너가 완료 처리를 마쳤고, 요청자(의뢰자) 확인을 기다리는 중인지 여부.
   var isWaitingForOrdererConfirm: Bool {
-    offer?.status == .accepted && mission?.status == .deliveryCompleted
+    offer?.status == .runnerCompleted
   }
 
   /// 매칭 전(WAITING) 지원만 취소할 수 있다. (디자인: "매칭되기 전에는 지원 취소 버튼 제공")
@@ -49,8 +39,7 @@ final class ApplyDetailViewModel {
 
   private let fetchDetailUseCase: FetchProposalDetailUseCase
   private let fetchOfferDetailUseCase: FetchOfferDetailUseCase
-  private let fetchMissionByOfferUseCase: FetchMissionByOfferUseCase
-  private let updateMissionActionUseCase: UpdateMissionActionUseCase
+  private let completeDeliveryUseCase: CompleteDeliveryUseCase
   private let cancelOfferUseCase: CancelOfferUseCase
 
   init(
@@ -58,16 +47,14 @@ final class ApplyDetailViewModel {
     offerID: Int64,
     fetchDetailUseCase: FetchProposalDetailUseCase,
     fetchOfferDetailUseCase: FetchOfferDetailUseCase,
-    fetchMissionByOfferUseCase: FetchMissionByOfferUseCase,
-    updateMissionActionUseCase: UpdateMissionActionUseCase,
+    completeDeliveryUseCase: CompleteDeliveryUseCase,
     cancelOfferUseCase: CancelOfferUseCase
   ) {
     self.proposalID = proposalID
     self.offerID = offerID
     self.fetchDetailUseCase = fetchDetailUseCase
     self.fetchOfferDetailUseCase = fetchOfferDetailUseCase
-    self.fetchMissionByOfferUseCase = fetchMissionByOfferUseCase
-    self.updateMissionActionUseCase = updateMissionActionUseCase
+    self.completeDeliveryUseCase = completeDeliveryUseCase
     self.cancelOfferUseCase = cancelOfferUseCase
   }
 
@@ -79,39 +66,30 @@ final class ApplyDetailViewModel {
       let proposal = try await fetchDetailUseCase.execute(id: proposalID)
       self.proposal = proposal
 
-      let offer = try await fetchOfferDetailUseCase.execute(offerID: offerID)
-      self.offer = offer
-      if offer.status == .accepted || offer.status == .complete {
-        mission = try await fetchMissionByOfferUseCase.execute(offerID: offerID)
-      } else {
-        mission = nil
-      }
+      offer = try await fetchOfferDetailUseCase.execute(offerID: offerID)
     } catch {
       errorMessage = "지원 상세를 불러오지 못했어요."
     }
     isLoading = false
   }
 
-  /// 러너 전달 완료. `POST /v1/mission/{id}/complete-delivery`
+  /// 러너 배달 완료. `POST /v1/offer/{id}/complete-delivery`
   @MainActor
   func completeDelivery() async {
-    guard let mission, canCompleteDelivery, !isCompletingMission else {
+    guard canCompleteDelivery, !isCompletingDelivery else {
       return
     }
-    isCompletingMission = true
+    isCompletingDelivery = true
     errorMessage = nil
     do {
-      let proofURL = "https://cdn.orderrun.com/proofs/mission-\(mission.id).jpg"
-      _ = try await updateMissionActionUseCase.execute(
-        id: mission.id,
-        action: .completeDelivery,
-        proofImageURL: proofURL
-      )
+      // TODO: proofImageUrl UI 연동 전까지 stub URL 전송.
+      // let proofURL = "https://cdn.orderrun.com/proofs/offer-\(offerID).jpg"
+      _ = try await completeDeliveryUseCase.execute(offerID: offerID, proofImageURL: nil)
       await load()
     } catch {
       errorMessage = "진행 완료 처리에 실패했어요. 잠시 후 다시 시도해주세요."
     }
-    isCompletingMission = false
+    isCompletingDelivery = false
   }
 
   /// 러너가 본인 지원(WAITING)을 취소한다. 성공 시 `didCancel` 을 올려 화면을 닫는다.

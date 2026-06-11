@@ -80,6 +80,8 @@ enum ProposalDisplay {
   static let completedBadge = BadgeItem(text: "완료", textColor: .emerald500, bgColor: .emerald000)
   static let cancelledBadge = BadgeItem(text: "취소", textColor: .gray500, bgColor: .gray100)
   static let unpaidBadge = BadgeItem(text: "미입금", textColor: .rose500, bgColor: .rose000)
+  // TODO: 분쟁 배찌 UI 반영
+  static let disputedBadge = BadgeItem(text: "분쟁", textColor: .rose500, bgColor: .rose000)
 
   /// proposal / offer 상태로 배지를 결정한다.
   /// - myOfferStatus: 러너 본인이 이 proposal 에 제출한 offer 상태. 있으면 offer 상태가 우선.
@@ -91,11 +93,13 @@ enum ProposalDisplay {
       switch myOfferStatus {
       case .waiting:
         return [waitingBadge]
-      case .accepted:
+      case .accepted, .runnerCompleted:
         return [inProgressBadge]
-      case .complete:
+      case .allCompleted:
         return [completedBadge]
-      case .rejected, .cancelled:
+      case .disputed:
+        return [disputedBadge]
+      case .rejected, .cancelled, .refunded:
         return [cancelledBadge]
       }
     }
@@ -107,11 +111,13 @@ enum ProposalDisplay {
       return [waitingBadge]
     case .offered:
       return [waitingBadge, newOfferBadge]
-    case .matched:
+    case .matched, .orderCompleted:
       return [inProgressBadge]
-    case .complete:
+    case .allCompleted:
       return [completedBadge]
-    case .cancelled:
+    case .disputed:
+      return [disputedBadge]
+    case .cancelled, .refunded:
       return [cancelledBadge]
     }
   }
@@ -125,11 +131,13 @@ enum ProposalDisplay {
       return [waitingBadge]
     case .offered:
       return [waitingBadge, newOfferBadge]
-    case .matched:
+    case .matched, .orderCompleted:
       return [inProgressBadge]
-    case .complete:
+    case .allCompleted:
       return [completedBadge]
-    case .cancelled:
+    case .disputed:
+      return [disputedBadge]
+    case .cancelled, .refunded:
       return [cancelledBadge]
     }
   }
@@ -140,11 +148,13 @@ enum ProposalDisplay {
     switch myOffer.status {
     case .waiting:
       return [waitingBadge]
-    case .accepted:
+    case .accepted, .runnerCompleted:
       return [inProgressBadge]
-    case .complete:
+    case .allCompleted:
       return [completedBadge]
-    case .rejected, .cancelled:
+    case .disputed:
+      return [disputedBadge]
+    case .rejected, .cancelled, .refunded:
       return [cancelledBadge]
     }
   }

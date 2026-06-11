@@ -38,9 +38,9 @@ enum ActivityFilter: String {
     case .all: return []
     case .unpaid: return [.holding]
     case .waiting: return [.posted, .offered]
-    case .inProgress: return [.matched]
-    case .completed: return [.complete]
-    case .cancelled: return [.cancelled]
+    case .inProgress: return [.matched, .orderCompleted, .disputed]
+    case .completed: return [.allCompleted]
+    case .cancelled: return [.cancelled, .refunded]
     }
   }
 
@@ -49,9 +49,9 @@ enum ActivityFilter: String {
     switch self {
     case .all, .unpaid: return []
     case .waiting: return [.waiting]
-    case .inProgress: return [.accepted]
-    case .completed: return [.complete]
-    case .cancelled: return [.rejected, .cancelled]
+    case .inProgress: return [.accepted, .runnerCompleted, .disputed]
+    case .completed: return [.allCompleted]
+    case .cancelled: return [.rejected, .cancelled, .refunded]
     }
   }
 }

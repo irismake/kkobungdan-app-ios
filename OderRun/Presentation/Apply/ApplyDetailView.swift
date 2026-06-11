@@ -105,7 +105,8 @@ struct ApplyDetailView: View {
 
   @ViewBuilder
   private var bottomActionSection: some View {
-    if viewModel.canCompleteDelivery {
+    switch viewModel.offer?.status {
+    case .accepted:
       VStack(spacing: 8) {
         MeetButton { isMissionCompleted = true }
 
@@ -114,7 +115,7 @@ struct ApplyDetailView: View {
         }
       }
 
-    } else if viewModel.isWaitingForOrdererConfirm {
+    case .runnerCompleted:
       Text("요청자 확인 대기 중")
         .textStyle(.heading4)
         .foregroundColor(.gray400)
@@ -123,10 +124,14 @@ struct ApplyDetailView: View {
         .frame(height: 56)
         .background(Color.gray200)
         .clipShape(RoundedRectangle(cornerRadius: 12))
-    } else if viewModel.canCancelOffer {
+
+    case .waiting:
       OutlineButton(title: viewModel.isCancelling ? "취소 중..." : "지원 취소") {
         isCancelConfirmPresented = true
       }
+
+    default:
+      EmptyView()
     }
   }
 

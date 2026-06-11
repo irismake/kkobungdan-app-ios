@@ -29,7 +29,8 @@ final class NotificationRepository: NotificationRepositoryProtocol {
   }
 
   func markAsRead(ids: [Int]) async throws {
-    // mark-read 응답 본문은 사용하지 않으므로 상태코드만 확인한다.
+    // MARK: - read 응답 본문은 사용하지 않으므로 상태코드만 확인한다.
+
     try await client.postVoid(
       "/api/v1/notifications/mark-read",
       body: NotificationMarkReadRequest(notificationIDs: ids)

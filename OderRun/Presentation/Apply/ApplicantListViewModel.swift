@@ -51,11 +51,10 @@ final class ApplicantListViewModel {
     isLoading = false
   }
 
-  /// 의뢰자가 지원자를 선택(수락)한다. `POST /v1/offer/{offerId}/accept` 호출로 cascade 가
-  /// 일어나며 미션은 서버에서 함께 생성된다. runFee/itemPrice 는 추후 의뢰자가 입력할 값이지만
-  /// 현재는 proposal 의 errandFee 로 기본값 처리.
+  /// 의뢰자가 지원자를 선택(수락)한다. `POST /v1/offer/{offerId}/accept` (무바디) 호출로
+  /// proposal/offer 상태 전이 cascade 가 서버에서 처리된다.
   @MainActor
-  func acceptOffer(offerID: Int64, runFee: Int? = nil, itemPrice: Int = 0) async {
+  func acceptOffer(offerID: Int64) async {
     guard !isAccepting else {
       return
     }
@@ -63,12 +62,7 @@ final class ApplicantListViewModel {
     didAcceptOffer = false
     errorMessage = nil
     do {
-      let resolvedFee = runFee ?? proposal?.errandFee ?? 0
-      _ = try await acceptOfferUseCase.execute(
-        offerID: offerID,
-        runFee: resolvedFee,
-        itemPrice: itemPrice
-      )
+      _ = try await acceptOfferUseCase.execute(offerID: offerID)
       didAcceptOffer = true
     } catch {
       errorMessage = "지원자 수락에 실패했어요. 잠시 후 다시 시도해주세요."

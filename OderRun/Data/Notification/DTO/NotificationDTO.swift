@@ -32,8 +32,8 @@ struct NotificationDTO: Decodable {
   let deliveredAt: String?
   let readAt: String?
 
-  // 전역 디코더가 .convertFromSnakeCase 라 키는 camelCase 기준으로 매핑된다.
-  // (user_id → userId) "ID" 접미사 프로퍼티만 변환 결과와 어긋나므로 명시 매핑한다.
+  /// 전역 디코더가 .convertFromSnakeCase 라 키는 camelCase 기준으로 매핑된다.
+  /// (user_id → userId) "ID" 접미사 프로퍼티만 변환 결과와 어긋나므로 명시 매핑한다.
   enum CodingKeys: String, CodingKey {
     case id
     case userID = "userId"
