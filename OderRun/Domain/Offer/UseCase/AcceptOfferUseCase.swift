@@ -14,7 +14,7 @@ struct AcceptOfferUseCase {
     self.repository = repository
   }
 
-  func execute(offerID: Int64, runFee: Int, itemPrice: Int) async throws -> OfferAcceptResult {
-    try await repository.acceptOffer(offerID: offerID, runFee: runFee, itemPrice: itemPrice)
+  func execute(offerID: Int64) async throws -> OfferAcceptResult {
+    try await repository.acceptOffer(offerID: offerID)
   }
 }
