@@ -76,13 +76,14 @@ final class ProposalRepository: ProposalRepositoryProtocol {
   }
 
   func confirmReceived(proposalID: Int64) async throws -> Proposal {
-    let dto: ConfirmReceivedResponseDTO =
+    // confirm-received·dispute 모두 상세조회와 동일한 ProposalDetailResponse 를 반환한다.
+    let dto: ProposalDetailResponseDTO =
       try await client.post("/v1/proposal/\(proposalID)/confirm-received", body: nil as String?)
     return dto.toDomain()
   }
 
   func raiseDispute(proposalID: Int64, reason: String) async throws -> Proposal {
-    let dto: ProposalDisputeResponseDTO = try await client.post(
+    let dto: ProposalDetailResponseDTO = try await client.post(
       "/v1/proposal/\(proposalID)/dispute",
       body: ProofDisputeRequest(disputeReason: reason)
     )

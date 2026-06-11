@@ -10,10 +10,10 @@ import Foundation
 struct UserDetailResponseDTO: Decodable {
   let id: String
   let name: String
-  let phone: String
-  let phoneVerifiedAt: String
+  let phone: String?
+  let phoneVerifiedAt: String?
   let createdAt: String
-  let lastLoginAt: String
+  let lastLoginAt: String?
   let alarmEnabled: Bool
 }
 

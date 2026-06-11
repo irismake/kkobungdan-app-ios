@@ -60,7 +60,8 @@ final class OfferRepository: OfferRepositoryProtocol {
   }
 
   func completeDelivery(offerID: Int64, proofImageURL: String?) async throws -> Offer {
-    let dto: OfferDeliveryResponseDTO = try await client.post(
+    // complete-delivery·dispute 모두 OfferResponse 를 반환한다.
+    let dto: OfferResponseDTO = try await client.post(
       "/v1/offer/\(offerID)/complete-delivery",
       body: ProofDeliveryRequest(proofImageUrl: proofImageURL)
     )
@@ -68,7 +69,7 @@ final class OfferRepository: OfferRepositoryProtocol {
   }
 
   func raiseDispute(offerID: Int64, reason: String) async throws -> Offer {
-    let dto: OfferDisputeResponseDTO = try await client.post(
+    let dto: OfferResponseDTO = try await client.post(
       "/v1/offer/\(offerID)/dispute",
       body: ProofDisputeRequest(disputeReason: reason)
     )

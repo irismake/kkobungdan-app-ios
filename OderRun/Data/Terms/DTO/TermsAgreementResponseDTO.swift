@@ -13,6 +13,14 @@ struct TermsAgreementResponseDTO: Decodable {
   let privacyPolicy: Bool
   let paymentRefundPolicy: Bool
   let agreedAt: String
+
+  enum CodingKeys: String, CodingKey {
+    case userID = "userId"
+    case termsOfService
+    case privacyPolicy
+    case paymentRefundPolicy
+    case agreedAt
+  }
 }
 
 extension TermsAgreementResponseDTO {
