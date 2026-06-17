@@ -14,8 +14,8 @@ import Foundation
 @Observable
 final class MyOffersViewModel {
   var myOffers: [MyOffer] = []
-  /// offer 카드 표시용. offerID → Proposal
-  var proposalByOfferID: [Int64: Proposal] = [:]
+  /// offer 카드 표시용. offerID → ProposalDetail
+  var proposalByOfferID: [Int64: ProposalDetail] = [:]
   var isLoading: Bool = false
   var errorMessage: String?
 
@@ -45,8 +45,8 @@ final class MyOffersViewModel {
       let offers = try await fetchMyOffersUseCase.execute(status: status)
       myOffers = offers
 
-      var map: [Int64: Proposal] = [:]
-      try await withThrowingTaskGroup(of: (Int64, Proposal).self) { group in
+      var map: [Int64: ProposalDetail] = [:]
+      try await withThrowingTaskGroup(of: (Int64, ProposalDetail).self) { group in
         for offer in offers {
           group.addTask {
             let proposal = try await self.fetchProposalDetailUseCase.execute(id: offer.proposalID)

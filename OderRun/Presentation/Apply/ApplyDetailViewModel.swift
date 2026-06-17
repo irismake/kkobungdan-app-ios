@@ -12,7 +12,7 @@ final class ApplyDetailViewModel {
   let proposalID: Int64
   let offerID: Int64
 
-  var proposal: Proposal?
+  var proposal: ProposalDetail?
   var isLoading: Bool = false
   var errorMessage: String?
 

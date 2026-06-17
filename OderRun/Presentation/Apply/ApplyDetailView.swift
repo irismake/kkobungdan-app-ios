@@ -51,13 +51,6 @@ struct ApplyDetailView: View {
         ScrollView {
           VStack(alignment: .leading, spacing: 12) {
             proposalCardSection
-
-            if let errorMessage = viewModel.errorMessage {
-              Text(errorMessage)
-                .textStyle(.body3)
-                .foregroundColor(Color.rose500)
-                .padding(.horizontal, 16)
-            }
           }
           .padding(.horizontal, Layout.screenHorizontalPadding)
           .padding(.vertical, 12)
@@ -139,6 +132,7 @@ struct ApplyDetailView: View {
   private var proposalCardSection: some View {
     if let proposal = viewModel.proposal {
       OrdererInfoHeader(name: proposal.ordererName, level: proposal.ordererLevel)
+        .padding(.leading, 16)
 
       ProposalCard(
         title: proposal.title,

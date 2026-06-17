@@ -35,11 +35,26 @@ actor DummyBackendStore {
     return paginate(filtered, page: page, size: size)
   }
 
-  func fetchProposal(id: Int64) throws -> Proposal {
+  func fetchProposal(id: Int64) throws -> ProposalDetail {
     guard let proposal = proposals.first(where: { $0.id == id }) else {
       throw RepositoryError.notFound
     }
-    return proposal
+    return detail(proposal)
+  }
+
+  /// 내부 저장 타입 Proposal → 상세 응답 엔티티 ProposalDetail. 요청자 레벨은 ordererID 로 채운다.
+  private func detail(_ proposal: Proposal) -> ProposalDetail {
+    let ordererID = ordererIDByProposalID[proposal.id] ?? ""
+    return ProposalDetail(
+      id: proposal.id,
+      title: proposal.title,
+      content: proposal.content,
+      deadline: proposal.deadline,
+      errandFee: proposal.errandFee,
+      status: proposal.status,
+      ordererName: DummySession.displayName(for: ordererID),
+      ordererLevel: DummySession.level(for: ordererID)
+    )
   }
 
   func createProposal(
@@ -107,7 +122,7 @@ actor DummyBackendStore {
 
   /// 오더러 수령 확인. `POST /v1/proposal/{id}/confirm-received`
   /// 러너가 이미 완료(RUNNER_COMPLETED)했으면 양측 정산(ALL_COMPLETED), 아니면 ORDER_COMPLETED.
-  func confirmReceived(proposalID: Int64) throws -> Proposal {
+  func confirmReceived(proposalID: Int64) throws -> ProposalDetail {
     guard let proposalIndex = proposals.firstIndex(where: { $0.id == proposalID }) else {
       throw RepositoryError.notFound
     }
@@ -121,15 +136,15 @@ actor DummyBackendStore {
       offers[offerIndex] = with(offers[offerIndex], status: .allCompleted)
       let done = with(proposal, status: .allCompleted)
       proposals[proposalIndex] = done
-      return done
+      return detail(done)
     }
     let updated = with(proposal, status: .orderCompleted)
     proposals[proposalIndex] = updated
-    return updated
+    return detail(updated)
   }
 
   /// 오더러 분쟁 제기. `POST /v1/proposal/{id}/dispute`
-  func raiseProposalDispute(proposalID: Int64, reason _: String) throws -> Proposal {
+  func raiseProposalDispute(proposalID: Int64, reason _: String) throws -> ProposalDetail {
     guard let proposalIndex = proposals.firstIndex(where: { $0.id == proposalID }) else {
       throw RepositoryError.notFound
     }
@@ -140,7 +155,7 @@ actor DummyBackendStore {
     }) {
       offers[offerIndex] = with(offers[offerIndex], status: .disputed)
     }
-    return updated
+    return detail(updated)
   }
 
   // MARK: - Offer
@@ -162,6 +177,7 @@ actor DummyBackendStore {
       proposalID: proposalID,
       runnerID: runnerID,
       runnerName: DummySession.displayName(for: runnerID),
+      runnerLevel: DummySession.level(for: runnerID),
       status: .waiting,
       createdAt: Date()
     )
@@ -383,6 +399,7 @@ actor DummyBackendStore {
       proposalID: offer.proposalID,
       runnerID: offer.runnerID,
       runnerName: offer.runnerName,
+      runnerLevel: offer.runnerLevel,
       status: status,
       createdAt: offer.createdAt
     )

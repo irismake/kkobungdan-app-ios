@@ -11,7 +11,7 @@ import Foundation
 final class ProposalDetailViewModel {
   let proposalID: Int64
 
-  var proposal: Proposal?
+  var proposal: ProposalDetail?
   var isLoading: Bool = false
   var errorMessage: String?
   var isApplying: Bool = false

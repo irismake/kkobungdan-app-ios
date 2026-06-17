@@ -11,7 +11,7 @@ import Foundation
 final class MyProposalDetailViewModel {
   let proposalID: Int64
 
-  var proposal: Proposal?
+  var proposal: ProposalDetail?
   var offers: [Offer] = []
   var isLoading: Bool = false
   var errorMessage: String?
@@ -122,7 +122,8 @@ final class MyProposalDetailViewModel {
     isCancelling = true
     errorMessage = nil
     do {
-      proposal = try await cancelProposalUseCase.execute(id: proposalID)
+      // 취소 응답(Proposal)은 화면을 닫기 때문에 보관하지 않는다. 상세는 ProposalDetail 로 별도 조회.
+      _ = try await cancelProposalUseCase.execute(id: proposalID)
       didCancel = true
     } catch {
       errorMessage = "요청을 취소하지 못했어요."

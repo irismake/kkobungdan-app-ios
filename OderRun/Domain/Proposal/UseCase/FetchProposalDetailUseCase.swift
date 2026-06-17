@@ -14,7 +14,7 @@ struct FetchProposalDetailUseCase {
     self.repository = repository
   }
 
-  func execute(id: Int64) async throws -> Proposal {
+  func execute(id: Int64) async throws -> ProposalDetail {
     try await repository.fetchProposal(id: id)
   }
 }

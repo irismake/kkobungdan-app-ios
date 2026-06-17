@@ -17,7 +17,7 @@ struct TestProposalRepositoryImpl: ProposalRepositoryProtocol {
     return await store.fetchProposals(status: status, page: page, size: size)
   }
 
-  func fetchProposal(id: Int64) async throws -> Proposal {
+  func fetchProposal(id: Int64) async throws -> ProposalDetail {
     try await Task.sleep(nanoseconds: Self.simulatedLatency)
     return try await store.fetchProposal(id: id)
   }
@@ -60,12 +60,12 @@ struct TestProposalRepositoryImpl: ProposalRepositoryProtocol {
     return try await store.cancelProposal(id: id)
   }
 
-  func confirmReceived(proposalID: Int64) async throws -> Proposal {
+  func confirmReceived(proposalID: Int64) async throws -> ProposalDetail {
     try await Task.sleep(nanoseconds: Self.simulatedLatency)
     return try await store.confirmReceived(proposalID: proposalID)
   }
 
-  func raiseDispute(proposalID: Int64, reason: String) async throws -> Proposal {
+  func raiseDispute(proposalID: Int64, reason: String) async throws -> ProposalDetail {
     try await Task.sleep(nanoseconds: Self.simulatedLatency)
     return try await store.raiseProposalDispute(proposalID: proposalID, reason: reason)
   }
