@@ -185,7 +185,7 @@ struct AddProposalDateTimeView: View {
       return Color.gray200
     }
     if isToday {
-      return Color.rose400
+      return Color.indigo500
     }
     return Color.gray800
   }

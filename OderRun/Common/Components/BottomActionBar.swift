@@ -21,7 +21,7 @@ struct BottomActionBar: View {
       ScreenContainer {
         ConfirmButton(title: title, isEnabled: isEnabled, action: action)
           .padding(.top, 16)
-          .padding(.bottom, 32)
+          .padding(.bottom, 20)
       }
     }
     .background(Color.white)

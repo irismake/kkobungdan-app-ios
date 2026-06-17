@@ -27,8 +27,9 @@ struct BottomNavBar: View {
         tabItem(tab: .profile, imageName: "tab_profile", label: "프로필")
       }
       .padding(.top, 16)
-      .padding(.bottom, 32)
+      .padding(.bottom, 20)
       .padding(.horizontal, 16)
+      .frame(height: 80)
     }
     .background(Color.white)
   }
