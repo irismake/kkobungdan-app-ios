@@ -78,7 +78,7 @@ struct MissionCompleteModal: View {
         HStack(spacing: 8) {
           Button(action: onCancel) {
             Text("취소")
-              .textStyle(.interHeading1)
+              .textStyle(.body1)
               .foregroundColor(Color.gray700)
               .multilineTextAlignment(.center)
               .frame(maxWidth: .infinity)
@@ -94,7 +94,7 @@ struct MissionCompleteModal: View {
 
           Button(action: onConfirm) {
             Text("확인")
-              .textStyle(.interHeading1)
+              .textStyle(.body1)
               .foregroundColor(.white)
               .multilineTextAlignment(.center)
               .frame(maxWidth: .infinity)

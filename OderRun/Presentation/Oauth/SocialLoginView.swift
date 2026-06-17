@@ -57,7 +57,7 @@ struct SocialLoginView: View {
           .multilineTextAlignment(.center)
 
         Text("내용")
-          .textStyle(.interBody1)
+          .textStyle(.body4)
           .foregroundColor(Color.gray600)
           .multilineTextAlignment(.center)
       }
