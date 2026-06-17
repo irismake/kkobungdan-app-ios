@@ -16,7 +16,8 @@ enum AppRouteFactory {
       proposalID: proposalID,
       fetchDetailUseCase: FetchProposalDetailUseCase(repository: DIContainer.proposalRepository),
       createOfferUseCase: CreateOfferUseCase(repository: DIContainer.offerRepository),
-      fetchOffersByProposalUseCase: FetchOffersByProposalUseCase(repository: DIContainer.offerRepository)
+      fetchOffersByProposalUseCase: FetchOffersByProposalUseCase(repository: DIContainer.offerRepository),
+      fetchSettlementAccountUseCase: FetchSettlementAccountUseCase(settlementRepository: DIContainer.settlementRepository)
     )
   }
 
@@ -25,6 +26,7 @@ enum AppRouteFactory {
   static func makeAccountRegisterViewModel(proposalID: Int64) -> AccountRegisterViewModel {
     AccountRegisterViewModel(
       proposalID: proposalID,
+      saveSettlementAccountUseCase: SaveSettlementAccountUseCase(settlementRepository: DIContainer.settlementRepository),
       createOfferUseCase: CreateOfferUseCase(repository: DIContainer.offerRepository)
     )
   }

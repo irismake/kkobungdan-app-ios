@@ -138,6 +138,7 @@ struct AccountRegisterView: View {
   AccountRegisterView(
     viewModel: AccountRegisterViewModel(
       proposalID: 1,
+      saveSettlementAccountUseCase: SaveSettlementAccountUseCase(settlementRepository: DIContainer.settlementRepository),
       createOfferUseCase: CreateOfferUseCase(repository: DIContainer.offerRepository)
     )
   )

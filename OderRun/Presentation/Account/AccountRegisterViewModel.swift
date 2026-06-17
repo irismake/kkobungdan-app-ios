@@ -20,13 +20,16 @@ final class AccountRegisterViewModel {
   /// 임무 수행비를 받을 은행 목록.
   let banks: [String] = BankSelectSheet.banks
 
+  private let saveSettlementAccountUseCase: SaveSettlementAccountUseCase
   private let createOfferUseCase: CreateOfferUseCase
 
   init(
     proposalID: Int64,
+    saveSettlementAccountUseCase: SaveSettlementAccountUseCase,
     createOfferUseCase: CreateOfferUseCase
   ) {
     self.proposalID = proposalID
+    self.saveSettlementAccountUseCase = saveSettlementAccountUseCase
     self.createOfferUseCase = createOfferUseCase
   }
 
@@ -48,8 +51,7 @@ final class AccountRegisterViewModel {
     isBankSheetPresented = false
   }
 
-  /// 임무 지원하기. 계좌 등록 후 실제 offer 를 생성한다.
-  /// (더미 환경에서는 계좌번호·은행은 서버 스펙이 없어 UI 상태로만 보관한다.)
+  /// 임무 지원하기. 정산 계좌 등록(PUT)을 먼저 마친 뒤 offer 를 생성(POST)한다.
   @MainActor
   func offer() async -> Bool {
     guard canOffer else {
@@ -57,14 +59,29 @@ final class AccountRegisterViewModel {
     }
     isOffering = true
     errorMessage = nil
+    defer { isApplying = false }
     do {
+      _ = try await saveSettlementAccountUseCase.execute(
+        bankCode: Self.stubBankCode,
+        bankName: selectedBank,
+        accountNumber: accountNumber,
+        accountHolder: Self.stubAccountHolder
+      )
       _ = try await createOfferUseCase.execute(proposalID: proposalID)
       isOffering = false
       return true
     } catch {
       errorMessage = "지원에 실패했어요. 잠시 후 다시 시도해주세요."
+      return false
     }
     isOffering = false
     return false
   }
+}
+
+extension AccountRegisterViewModel {
+  // TODO: bankCode·accountHolder UI 미구현 — 입력 연동 전까지 stub 값 전송.
+  //       (은행 선택 UI는 코드 없이 이름만 수집, 예금주 입력 화면은 아직 없음)
+  static let stubBankCode: String = ""
+  static let stubAccountHolder: String = ""
 }
