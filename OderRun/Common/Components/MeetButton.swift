@@ -9,7 +9,7 @@ import SwiftUI
 
 /// 의뢰자가 러너를 만났음을 확정하는 버튼. ConfirmButton 과 동일한 레이아웃에 emerald 강조 색상을 사용한다.
 struct MeetButton: View {
-  var title: String = "만났어요!"
+  var title: String = "임무 수행 완료"
   let action: () -> Void
 
   var body: some View {
