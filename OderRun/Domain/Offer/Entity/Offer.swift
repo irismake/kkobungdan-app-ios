@@ -12,6 +12,7 @@ struct Offer: Equatable, Identifiable {
   let proposalID: Int64
   let runnerID: String
   let runnerName: String
+  let runnerLevel: Int
   let status: OfferStatus
   let createdAt: Date
 }

@@ -10,5 +10,6 @@ import Foundation
 struct User: Equatable {
   let id: String
   let name: String
+  let level: Int
   let alarmEnabled: Bool
 }

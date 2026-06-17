@@ -17,6 +17,7 @@ extension Offer {
         proposalID: proposalID,
         runnerID: runnerID,
         runnerName: DummySession.displayName(for: runnerID),
+        runnerLevel: DummySession.level(for: runnerID),
         status: status,
         createdAt: createdAt
       )

@@ -20,10 +20,11 @@ struct UserDetailResponseDTO: Decodable {
 
 extension UserDetailResponseDTO {
   func toDomain() -> User {
-    // TODO: level, phone, phoneVerifiedAt, createdAt, lastLoginAt — UI 반영 시 엔티티에 추가
+    // TODO: phone, phoneVerifiedAt, createdAt, lastLoginAt — UI 반영 시 엔티티에 추가
     User(
       id: id,
       name: name,
+      level: level,
       alarmEnabled: alarmEnabled
     )
   }
