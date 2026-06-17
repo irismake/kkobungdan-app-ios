@@ -407,20 +407,28 @@
       "acceptedOfferStatus",
       "offerId",
       "ordererId",
+      "ordererLevel",
+      "ordererName",
       "proposalId",
       "proposalStatus",
       "rejectedOfferCount",
-      "runnerId"
+      "runnerId",
+      "runnerLevel",
+      "runnerName"
     ],
     "properties": {
       "acceptedAt": "string",
       "acceptedOfferStatus": "ref:OfferStatus",
       "offerId": "integer",
       "ordererId": "string",
+      "ordererLevel": "integer",
+      "ordererName": "string",
       "proposalId": "integer",
       "proposalStatus": "ref:ProposalStatus",
       "rejectedOfferCount": "integer",
-      "runnerId": "string"
+      "runnerId": "string",
+      "runnerLevel": "integer",
+      "runnerName": "string"
     }
   },
   "OfferCreate": {
@@ -435,8 +443,12 @@
     "required": [
       "createdAt",
       "id",
+      "ordererId",
+      "ordererLevel",
+      "ordererName",
       "proposalId",
       "runnerId",
+      "runnerLevel",
       "runnerName",
       "status"
     ],
@@ -446,10 +458,14 @@
       "deliveryCompletedAt": "anyOf(string|null)",
       "disputedAt": "anyOf(string|null)",
       "id": "integer",
+      "ordererId": "string",
+      "ordererLevel": "integer",
+      "ordererName": "string",
       "proposalId": "integer",
       "receiptConfirmedAt": "anyOf(string|null)",
       "refundedAt": "anyOf(string|null)",
       "runnerId": "string",
+      "runnerLevel": "integer",
       "runnerName": "string",
       "status": "ref:OfferStatus"
     }
@@ -539,6 +555,8 @@
       "errandFee",
       "id",
       "ordererId",
+      "ordererLevel",
+      "ordererName",
       "status",
       "title"
     ],
@@ -552,6 +570,8 @@
       "matchedAt": "anyOf(string|null)",
       "offers": "array<ref:ProposalOwnOfferResponse>",
       "ordererId": "string",
+      "ordererLevel": "integer",
+      "ordererName": "string",
       "receivedConfirmedAt": "anyOf(string|null)",
       "refundedAt": "anyOf(string|null)",
       "status": "ref:ProposalStatus",
@@ -564,6 +584,8 @@
       "id",
       "proposalId",
       "runnerId",
+      "runnerLevel",
+      "runnerName",
       "status"
     ],
     "properties": {
@@ -571,6 +593,8 @@
       "id": "integer",
       "proposalId": "integer",
       "runnerId": "string",
+      "runnerLevel": "integer",
+      "runnerName": "string",
       "status": "ref:OfferStatus"
     }
   },
@@ -584,6 +608,8 @@
       "offerCount",
       "offers",
       "ordererId",
+      "ordererLevel",
+      "ordererName",
       "status",
       "title",
       "updatedAt"
@@ -597,6 +623,8 @@
       "offerCount": "integer",
       "offers": "array<ref:ProposalOwnOfferResponse>",
       "ordererId": "string",
+      "ordererLevel": "integer",
+      "ordererName": "string",
       "status": "ref:ProposalStatus",
       "title": "string",
       "updatedAt": "string"
@@ -709,6 +737,7 @@
       "alarmEnabled",
       "createdAt",
       "id",
+      "level",
       "name"
     ],
     "properties": {
@@ -716,6 +745,7 @@
       "createdAt": "string",
       "id": "string",
       "lastLoginAt": "anyOf(string|null)",
+      "level": "integer",
       "name": "string",
       "phone": "anyOf(string|null)",
       "phoneVerifiedAt": "anyOf(string|null)"

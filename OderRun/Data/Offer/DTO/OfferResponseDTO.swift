@@ -10,8 +10,12 @@ import Foundation
 struct OfferResponseDTO: Decodable {
   let id: Int64
   let proposalID: Int64
+  let ordererID: String
+  let ordererName: String
+  let ordererLevel: Int
   let runnerID: String
   let runnerName: String
+  let runnerLevel: Int
   let status: String
   let acceptedAt: String?
   let deliveryCompletedAt: String?
@@ -23,8 +27,12 @@ struct OfferResponseDTO: Decodable {
   enum CodingKeys: String, CodingKey {
     case id
     case proposalID = "proposalId"
+    case ordererID = "ordererId"
+    case ordererName
+    case ordererLevel
     case runnerID = "runnerId"
     case runnerName
+    case runnerLevel
     case status
     case acceptedAt
     case deliveryCompletedAt
@@ -37,7 +45,7 @@ struct OfferResponseDTO: Decodable {
 
 extension OfferResponseDTO {
   func toDomain() -> Offer {
-    // TODO: acceptedAt, deliveryCompletedAt, receiptConfirmedAt, disputedAt, refundedAt — UI 반영 시 Offer 엔티티에 추가
+    // TODO: ordererID, ordererName, ordererLevel, runnerLevel, acceptedAt, deliveryCompletedAt, receiptConfirmedAt, disputedAt, refundedAt — UI 반영 시 Offer 엔티티에 추가
     Offer(
       id: id,
       proposalID: proposalID,

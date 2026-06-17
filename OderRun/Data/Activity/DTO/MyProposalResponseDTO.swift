@@ -12,6 +12,8 @@ import Foundation
 struct MyProposalResponseDTO: Decodable {
   let id: Int64
   let ordererID: String
+  let ordererName: String
+  let ordererLevel: Int
   let title: String
   let content: String
   let deadline: String
@@ -25,6 +27,8 @@ struct MyProposalResponseDTO: Decodable {
   enum CodingKeys: String, CodingKey {
     case id
     case ordererID = "ordererId"
+    case ordererName
+    case ordererLevel
     case title
     case content
     case deadline
@@ -39,7 +43,7 @@ struct MyProposalResponseDTO: Decodable {
 
 extension MyProposalResponseDTO {
   func toDomain() -> MyProposal {
-    // TODO: ordererId, offerCount, offers, createdAt, updatedAt — UI 반영 시 MyProposal 엔티티에 추가.
+    // TODO: ordererId, ordererName, ordererLevel, offerCount, offers, createdAt, updatedAt — UI 반영 시 MyProposal 엔티티에 추가.
     MyProposal(
       id: id,
       title: title,

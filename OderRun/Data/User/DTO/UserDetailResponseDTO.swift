@@ -10,6 +10,7 @@ import Foundation
 struct UserDetailResponseDTO: Decodable {
   let id: String
   let name: String
+  let level: Int
   let phone: String?
   let phoneVerifiedAt: String?
   let createdAt: String
@@ -19,7 +20,7 @@ struct UserDetailResponseDTO: Decodable {
 
 extension UserDetailResponseDTO {
   func toDomain() -> User {
-    // TODO: phone, phoneVerifiedAt, createdAt, lastLoginAt — UI 반영 시 엔티티에 추가
+    // TODO: level, phone, phoneVerifiedAt, createdAt, lastLoginAt — UI 반영 시 엔티티에 추가
     User(
       id: id,
       name: name,
