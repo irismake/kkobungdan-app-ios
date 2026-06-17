@@ -7,11 +7,30 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		0BA453AEE46497A9D196B702 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EC4B64719BF76ECF765355C1 /* Foundation.framework */; };
+		12E3ED250D00487962861138 /* Contract in Resources */ = {isa = PBXBuildFile; fileRef = B6AFA8466E90BB29072E4AFB /* Contract */; };
 		17998B892FB327F500519818 /* KakaoSDK in Frameworks */ = {isa = PBXBuildFile; productRef = 17998B882FB327F500519818 /* KakaoSDK */; };
+		51C3EC1C17DD888E91B05D34 /* OpenAPIContractTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 769A8E30735BE0CF6AAD18CD /* OpenAPIContractTests.swift */; };
+		A00E989D86E760420C109F8D /* generated in Resources */ = {isa = PBXBuildFile; fileRef = F08BF9D1714EBF74399CB740 /* generated */; };
 /* End PBXBuildFile section */
 
+/* Begin PBXContainerItemProxy section */
+		8FBE4306BD5DB45A1710446A /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 7F6958902F5863060051C58F /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 7F6958972F5863060051C58F;
+			remoteInfo = OderRun;
+		};
+/* End PBXContainerItemProxy section */
+
 /* Begin PBXFileReference section */
+		4CCDB922354A64DABBCBDCD9 /* OderRunTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = OderRunTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		769A8E30735BE0CF6AAD18CD /* OpenAPIContractTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = OpenAPIContractTests.swift; sourceTree = "<group>"; };
 		7F6958982F5863060051C58F /* OderRun.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = OderRun.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		B6AFA8466E90BB29072E4AFB /* Contract */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = folder; path = Contract; sourceTree = "<group>"; };
+		EC4B64719BF76ECF765355C1 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS18.0.sdk/System/Library/Frameworks/Foundation.framework; sourceTree = DEVELOPER_DIR; };
+		F08BF9D1714EBF74399CB740 /* generated */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = folder; name = generated; path = Fixtures/generated; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
@@ -44,14 +63,34 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		94E6FCA952700A82B95A009C /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				0BA453AEE46497A9D196B702 /* Foundation.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		4F91F07D7F9DB1D105D00983 /* OderRunTests */ = {
+			isa = PBXGroup;
+			children = (
+				B6AFA8466E90BB29072E4AFB /* Contract */,
+				F08BF9D1714EBF74399CB740 /* generated */,
+				769A8E30735BE0CF6AAD18CD /* OpenAPIContractTests.swift */,
+			);
+			path = OderRunTests;
+			sourceTree = "<group>";
+		};
 		7F69588F2F5863060051C58F = {
 			isa = PBXGroup;
 			children = (
 				7F69589A2F5863060051C58F /* OderRun */,
 				7F6958992F5863060051C58F /* Products */,
+				9105D7AD189A4C1147306A47 /* Frameworks */,
+				4F91F07D7F9DB1D105D00983 /* OderRunTests */,
 			);
 			sourceTree = "<group>";
 		};
@@ -59,13 +98,48 @@
 			isa = PBXGroup;
 			children = (
 				7F6958982F5863060051C58F /* OderRun.app */,
+				4CCDB922354A64DABBCBDCD9 /* OderRunTests.xctest */,
 			);
 			name = Products;
+			sourceTree = "<group>";
+		};
+		8547015C8C36EAF32007CED3 /* iOS */ = {
+			isa = PBXGroup;
+			children = (
+				EC4B64719BF76ECF765355C1 /* Foundation.framework */,
+			);
+			name = iOS;
+			sourceTree = "<group>";
+		};
+		9105D7AD189A4C1147306A47 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				8547015C8C36EAF32007CED3 /* iOS */,
+			);
+			name = Frameworks;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
+		66A2B7D45FA4DD6540153B49 /* OderRunTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 6AA39B4FEDF6E78DDC50A75C /* Build configuration list for PBXNativeTarget "OderRunTests" */;
+			buildPhases = (
+				F20A2153C8CB8E93B2D047BF /* Sources */,
+				94E6FCA952700A82B95A009C /* Frameworks */,
+				A9193A3B2A4F58F994BA4CA8 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				C61A67A213A1AFD77E20E8B7 /* PBXTargetDependency */,
+			);
+			name = OderRunTests;
+			productName = OderRunTests;
+			productReference = 4CCDB922354A64DABBCBDCD9 /* OderRunTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
 		7F6958972F5863060051C58F /* OderRun */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 7F6958A32F5863070051C58F /* Build configuration list for PBXNativeTarget "OderRun" */;
@@ -124,6 +198,7 @@
 			projectRoot = "";
 			targets = (
 				7F6958972F5863060051C58F /* OderRun */,
+				66A2B7D45FA4DD6540153B49 /* OderRunTests */,
 			);
 		};
 /* End PBXProject section */
@@ -133,6 +208,15 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		A9193A3B2A4F58F994BA4CA8 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				12E3ED250D00487962861138 /* Contract in Resources */,
+				A00E989D86E760420C109F8D /* generated in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -187,7 +271,24 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		F20A2153C8CB8E93B2D047BF /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				51C3EC1C17DD888E91B05D34 /* OpenAPIContractTests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		C61A67A213A1AFD77E20E8B7 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = OderRun;
+			target = 7F6958972F5863060051C58F /* OderRun */;
+			targetProxy = 8FBE4306BD5DB45A1710446A /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
 		7F6958A12F5863070051C58F /* Debug */ = {
@@ -406,9 +507,51 @@
 			};
 			name = Release;
 		};
+		B22814F55DB1A8896511300B /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				CODE_SIGN_STYLE = Automatic;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.6;
+				PRODUCT_BUNDLE_IDENTIFIER = com.oderrun.OderRunTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SWIFT_VERSION = 5.0;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/OderRun.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/OderRun";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		B4BE4D2D04C35032767080BE /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				CODE_SIGN_STYLE = Automatic;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.6;
+				PRODUCT_BUNDLE_IDENTIFIER = com.oderrun.OderRunTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SWIFT_VERSION = 5.0;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/OderRun.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/OderRun";
+			};
+			name = Debug;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		6AA39B4FEDF6E78DDC50A75C /* Build configuration list for PBXNativeTarget "OderRunTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				B22814F55DB1A8896511300B /* Release */,
+				B4BE4D2D04C35032767080BE /* Debug */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 		7F6958932F5863060051C58F /* Build configuration list for PBXProject "OderRun" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (

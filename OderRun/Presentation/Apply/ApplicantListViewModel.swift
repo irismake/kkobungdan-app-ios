@@ -11,7 +11,7 @@ import Foundation
 final class ApplicantListViewModel {
   let proposalID: Int64
 
-  var proposal: Proposal?
+  var proposal: ProposalDetail?
   var applicants: [Offer] = []
   var isLoading: Bool = false
   var errorMessage: String?

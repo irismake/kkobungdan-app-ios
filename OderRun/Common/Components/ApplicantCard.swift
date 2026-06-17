@@ -9,6 +9,7 @@ import SwiftUI
 
 struct ApplicantCard: View {
   let nickname: String
+  let level: Int
   let appliedAt: String
   let onSelect: () -> Void
 
@@ -16,11 +17,7 @@ struct ApplicantCard: View {
     VStack(alignment: .leading, spacing: 12) {
       // 상단 콘텐츠 영역
       VStack(alignment: .leading, spacing: 24) {
-        // 닉네임
-        Text(nickname)
-          .textStyle(.title1)
-          .foregroundColor(.black)
-          .frame(width: 163, alignment: .topLeading)
+        OrdererInfoHeader(name: nickname, level: level)
 
         // 지원 일시
         Text(appliedAt)
@@ -55,11 +52,13 @@ struct ApplicantCard: View {
   VStack(spacing: 12) {
     ApplicantCard(
       nickname: "카야잼",
+      level: 7,
       appliedAt: "2026. 1. 22. 오후 10:05:17 지원",
       onSelect: {}
     )
     ApplicantCard(
       nickname: "닉네임",
+      level: 3,
       appliedAt: "2026. 1. 22. 오후 10:05:17 지원",
       onSelect: {}
     )

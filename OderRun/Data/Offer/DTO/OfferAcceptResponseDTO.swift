@@ -16,7 +16,11 @@ struct OfferAcceptResponseDTO: Decodable {
   let acceptedOfferStatus: String
   let rejectedOfferCount: Int
   let ordererID: String
+  let ordererName: String
+  let ordererLevel: Int
   let runnerID: String
+  let runnerName: String
+  let runnerLevel: Int
   let acceptedAt: String
 
   enum CodingKeys: String, CodingKey {
@@ -26,13 +30,18 @@ struct OfferAcceptResponseDTO: Decodable {
     case acceptedOfferStatus
     case rejectedOfferCount
     case ordererID = "ordererId"
+    case ordererName
+    case ordererLevel
     case runnerID = "runnerId"
+    case runnerName
+    case runnerLevel
     case acceptedAt
   }
 }
 
 extension OfferAcceptResponseDTO {
   func toDomain() -> OfferAcceptResult {
+    // TODO: ordererName, ordererLevel, runnerName, runnerLevel — UI 반영 시 OfferAcceptResult 엔티티에 추가
     OfferAcceptResult(
       proposalID: proposalID,
       offerID: offerID,

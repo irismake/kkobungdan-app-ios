@@ -89,6 +89,21 @@ enum ProposalDisplay {
     proposal: Proposal,
     myOfferStatus: OfferStatus? = nil
   ) -> [BadgeItem] {
+    badges(status: proposal.status, myOfferStatus: myOfferStatus)
+  }
+
+  /// 상세(ProposalDetail) 응답용 오버로드. 목록 응답과 배지 규칙이 동일하다.
+  static func badges(
+    proposal: ProposalDetail,
+    myOfferStatus: OfferStatus? = nil
+  ) -> [BadgeItem] {
+    badges(status: proposal.status, myOfferStatus: myOfferStatus)
+  }
+
+  private static func badges(
+    status: ProposalStatus,
+    myOfferStatus: OfferStatus? = nil
+  ) -> [BadgeItem] {
     if let myOfferStatus {
       switch myOfferStatus {
       case .waiting:
@@ -104,7 +119,7 @@ enum ProposalDisplay {
       }
     }
 
-    switch proposal.status {
+    switch status {
     case .holding:
       return [unpaidBadge]
     case .posted:

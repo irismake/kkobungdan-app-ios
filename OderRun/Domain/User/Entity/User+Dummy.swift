@@ -11,6 +11,7 @@ extension User {
   static let dummy = User(
     id: DummySession.currentUserID,
     name: "홍길동",
+    level: DummySession.level(for: DummySession.currentUserID),
     alarmEnabled: true
   )
 }

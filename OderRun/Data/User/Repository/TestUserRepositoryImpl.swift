@@ -22,6 +22,7 @@ actor TestUserRepositoryImpl: UserRepositoryProtocol {
     currentUser = User(
       id: currentUser.id,
       name: currentUser.name,
+      level: currentUser.level,
       alarmEnabled: enabled
     )
     return currentUser

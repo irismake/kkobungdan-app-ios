@@ -10,10 +10,11 @@ import Foundation
 struct UserDetailResponseDTO: Decodable {
   let id: String
   let name: String
-  let phone: String
-  let phoneVerifiedAt: String
+  let level: Int
+  let phone: String?
+  let phoneVerifiedAt: String?
   let createdAt: String
-  let lastLoginAt: String
+  let lastLoginAt: String?
   let alarmEnabled: Bool
 }
 
@@ -23,6 +24,7 @@ extension UserDetailResponseDTO {
     User(
       id: id,
       name: name,
+      level: level,
       alarmEnabled: alarmEnabled
     )
   }

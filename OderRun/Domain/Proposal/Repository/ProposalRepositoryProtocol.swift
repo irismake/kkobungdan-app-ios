@@ -10,7 +10,7 @@ import Foundation
 protocol ProposalRepositoryProtocol: Sendable {
   /// 홈 피드 proposal 목록. `status` 다중값 필터(`status=A&status=B`), 빈 배열이면 필터 미적용.
   func fetchProposals(status: [ProposalStatus], page: Int, size: Int) async throws -> [Proposal]
-  func fetchProposal(id: Int64) async throws -> Proposal
+  func fetchProposal(id: Int64) async throws -> ProposalDetail
   func createProposal(
     title: String,
     content: String,
@@ -25,8 +25,8 @@ protocol ProposalRepositoryProtocol: Sendable {
     errandFee: String
   ) async throws -> Proposal
   func cancelProposal(id: Int64) async throws -> Proposal
-  /// 오더러 수령 확인. `POST /v1/proposal/{id}/confirm-received`
-  func confirmReceived(proposalID: Int64) async throws -> Proposal
-  /// 오더러 분쟁 제기. `POST /v1/proposal/{id}/dispute`
-  func raiseDispute(proposalID: Int64, reason: String) async throws -> Proposal
+  /// 오더러 수령 확인. `POST /v1/proposal/{id}/confirm-received` (상세와 동일한 ProposalDetailResponse 반환)
+  func confirmReceived(proposalID: Int64) async throws -> ProposalDetail
+  /// 오더러 분쟁 제기. `POST /v1/proposal/{id}/dispute` (상세와 동일한 ProposalDetailResponse 반환)
+  func raiseDispute(proposalID: Int64, reason: String) async throws -> ProposalDetail
 }

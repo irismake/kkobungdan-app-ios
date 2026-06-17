@@ -16,8 +16,24 @@ struct ProposalDetailResponseDTO: Decodable {
   let content: String
   let deadline: String
   let errandFee: Int
+  let ordererID: String
+  let ordererName: String
+  let ordererLevel: Int
   let status: String
-  let offers: [ProposalOwnOfferResponseDTO]
+  let matchedAt: String?
+  let deliveryReportedAt: String?
+  let receivedConfirmedAt: String?
+  let disputedAt: String?
+  let refundedAt: String?
+  /// 서버 스펙상 optional (`array | null`). 미전송 시에도 디코딩되도록 `?`.
+  let offers: [ProposalOwnOfferResponseDTO]?
+
+  enum CodingKeys: String, CodingKey {
+    case id, title, content, deadline, errandFee
+    case ordererID = "ordererId"
+    case ordererName, ordererLevel
+    case status, matchedAt, deliveryReportedAt, receivedConfirmedAt, disputedAt, refundedAt, offers
+  }
 }
 
 /// 상세 응답에 임베드되는 offer 요약. (서버: `ProposalOwnOfferResponse`)
@@ -26,6 +42,8 @@ struct ProposalOwnOfferResponseDTO: Decodable {
   let id: Int64
   let proposalID: Int64
   let runnerID: String
+  let runnerName: String
+  let runnerLevel: Int
   let status: String
   let createdAt: String
 
@@ -33,21 +51,25 @@ struct ProposalOwnOfferResponseDTO: Decodable {
     case id
     case proposalID = "proposalId"
     case runnerID = "runnerId"
+    case runnerName
+    case runnerLevel
     case status
     case createdAt
   }
 }
 
 extension ProposalDetailResponseDTO {
-  func toDomain() -> Proposal {
-    // TODO: offers — UI 반영 시 Proposal 엔티티에 추가
-    Proposal(
+  func toDomain() -> ProposalDetail {
+    // TODO: ordererID, matchedAt, deliveryReportedAt, receivedConfirmedAt, disputedAt, refundedAt, offers — UI 반영 시 ProposalDetail 엔티티에 추가
+    ProposalDetail(
       id: id,
       title: title,
       content: content,
       deadline: DateFormatters.parse(deadline),
       errandFee: errandFee,
-      status: ProposalStatus(rawValue: status) ?? .posted
+      status: ProposalStatus(rawValue: status) ?? .posted,
+      ordererName: ordererName,
+      ordererLevel: ordererLevel
     )
   }
 }

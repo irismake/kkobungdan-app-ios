@@ -29,4 +29,20 @@ enum DummySession {
     default: return "러너"
     }
   }
+
+  /// userID → 웨이팅 레벨. 서버 응답의 runnerLevel/ordererLevel 등을 더미에서 채울 때 사용한다.
+  static func level(for userID: String) -> Int {
+    switch userID {
+    case currentUserID: return 5
+    case "user-r001": return 7
+    case "user-r002": return 3
+    case "user-r003": return 4
+    case "user-r004": return 9
+    case "user-a001": return 6
+    case "user-a002": return 2
+    case "user-a003": return 8
+    case "user-a004": return 1
+    default: return 1
+    }
+  }
 }

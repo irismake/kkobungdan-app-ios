@@ -10,14 +10,12 @@ import SwiftUI
 /// 매칭이 완료된 proposal 의 의뢰자(orderer) 화면에 노출되는 매칭 러너 카드.
 struct MatchedRunnerSection: View {
   let nickname: String
+  let level: Int
   let appliedAt: String
 
   var body: some View {
     VStack(alignment: .leading, spacing: 24) {
-      Text(nickname)
-        .textStyle(.title1)
-        .foregroundColor(.black)
-        .frame(width: 163, alignment: .topLeading)
+      OrdererInfoHeader(name: nickname, level: level)
 
       Text(appliedAt)
         .textStyle(.caption5)
@@ -37,6 +35,7 @@ struct MatchedRunnerSection: View {
 #Preview {
   MatchedRunnerSection(
     nickname: "카야잼",
+    level: 7,
     appliedAt: "2026. 1. 22. 오후 10:05:17 지원"
   )
   .padding(16)

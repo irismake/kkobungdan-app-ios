@@ -38,7 +38,7 @@ final class ProposalRepository: ProposalRepositoryProtocol {
     return pageDTO.content.map { $0.toDomain() }
   }
 
-  func fetchProposal(id: Int64) async throws -> Proposal {
+  func fetchProposal(id: Int64) async throws -> ProposalDetail {
     let dto: ProposalDetailResponseDTO = try await client.get("/v1/proposal/\(id)")
     return dto.toDomain()
   }
@@ -75,14 +75,15 @@ final class ProposalRepository: ProposalRepositoryProtocol {
     return dto.toDomain()
   }
 
-  func confirmReceived(proposalID: Int64) async throws -> Proposal {
-    let dto: ConfirmReceivedResponseDTO =
+  func confirmReceived(proposalID: Int64) async throws -> ProposalDetail {
+    // confirm-received·dispute 모두 상세조회와 동일한 ProposalDetailResponse 를 반환한다.
+    let dto: ProposalDetailResponseDTO =
       try await client.post("/v1/proposal/\(proposalID)/confirm-received", body: nil as String?)
     return dto.toDomain()
   }
 
-  func raiseDispute(proposalID: Int64, reason: String) async throws -> Proposal {
-    let dto: ProposalDisputeResponseDTO = try await client.post(
+  func raiseDispute(proposalID: Int64, reason: String) async throws -> ProposalDetail {
+    let dto: ProposalDetailResponseDTO = try await client.post(
       "/v1/proposal/\(proposalID)/dispute",
       body: ProofDisputeRequest(disputeReason: reason)
     )

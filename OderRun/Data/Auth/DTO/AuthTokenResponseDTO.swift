@@ -10,7 +10,7 @@ import Foundation
 struct AuthTokenResponseDTO: Decodable {
   let accessToken: String
   let refreshToken: String
-  let tokenType: String
+  let tokenType: String?
   let expiresIn: Int
   let userID: String
 
@@ -30,7 +30,7 @@ extension AuthTokenResponseDTO {
       accessToken: accessToken,
       refreshToken: refreshToken,
       userID: userID,
-      tokenType: tokenType
+      tokenType: tokenType ?? "Bearer"
     )
   }
 }

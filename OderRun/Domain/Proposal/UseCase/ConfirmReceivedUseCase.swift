@@ -16,7 +16,7 @@ struct ConfirmReceivedUseCase {
     self.repository = repository
   }
 
-  func execute(proposalID: Int64) async throws -> Proposal {
+  func execute(proposalID: Int64) async throws -> ProposalDetail {
     try await repository.confirmReceived(proposalID: proposalID)
   }
 }
