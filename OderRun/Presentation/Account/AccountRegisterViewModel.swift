@@ -18,7 +18,7 @@ final class AccountRegisterViewModel {
   var errorMessage: String?
 
   /// 임무 수행비를 받을 은행 목록.
-  let banks: [String] = BankSelectSheet.banks
+  let banks: [String] = Bank.displayNames
 
   private let saveSettlementAccountUseCase: SaveSettlementAccountUseCase
   private let createOfferUseCase: CreateOfferUseCase
@@ -62,7 +62,7 @@ final class AccountRegisterViewModel {
     defer { isApplying = false }
     do {
       _ = try await saveSettlementAccountUseCase.execute(
-        bankCode: Self.stubBankCode,
+        bankCode: Bank.code(for: selectedBank) ?? "",
         bankName: selectedBank,
         accountNumber: accountNumber,
         accountHolder: Self.stubAccountHolder
@@ -80,8 +80,6 @@ final class AccountRegisterViewModel {
 }
 
 extension AccountRegisterViewModel {
-  // TODO: bankCode·accountHolder UI 미구현 — 입력 연동 전까지 stub 값 전송.
-  //       (은행 선택 UI는 코드 없이 이름만 수집, 예금주 입력 화면은 아직 없음)
-  static let stubBankCode: String = ""
-  static let stubAccountHolder: String = ""
+  // TODO: accountHolder UI 미구현 — 예금주 입력 화면 연동 전까지 stub 값 전송.
+  static let stubAccountHolder: String = "꼬봉단"
 }

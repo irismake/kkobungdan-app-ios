@@ -79,7 +79,7 @@ struct AddProposalFeeView: View {
     .overlay {
       if isBankSheetPresented {
         BankSelectSheet(
-          banks: BankSelectSheet.banks,
+          banks: Bank.displayNames,
           onClose: { isBankSheetPresented = false },
           onSelect: { selectBank($0) }
         )
