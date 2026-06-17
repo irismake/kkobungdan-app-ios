@@ -10,10 +10,13 @@ struct ProfileView: View {
     _viewModel = State(initialValue: viewModel)
   }
 
-  // TODO: 서버 응답에 nickname/level/grade 추가 시 viewModel.user에서 가져오도록 교체
-  @State private var nickname: String = "길동이"
-  private let level: Int = 5
-  private let grade: String = "B등급"
+  private var nickname: String {
+    viewModel.user?.name ?? ""
+  }
+
+  private var level: Int {
+    viewModel.user?.level ?? 0
+  }
 
   @State private var isEditingProfile = false
 
@@ -58,9 +61,8 @@ struct ProfileView: View {
       ProfileEditView(
         initialNickname: nickname,
         onClose: { isEditingProfile = false },
-        onSave: { newNickname in
-          // TODO: 서버 연동 시 닉네임 수정 API 호출로 교체
-          nickname = newNickname
+        onSave: { _ in
+          // TODO: 서버 연동 시 닉네임 수정 API 호출 후 viewModel.load() 로 갱신
           isEditingProfile = false
         }
       )
@@ -70,59 +72,15 @@ struct ProfileView: View {
   // MARK: - Profile Card
 
   private var profileCard: some View {
-    VStack(alignment: .leading, spacing: 12) {
-      VStack(alignment: .leading, spacing: 24) {
-        Text(nickname)
-          .textStyle(.title1)
-          .foregroundColor(Color.black)
-
-        VStack(alignment: .leading, spacing: 2) {
-          Text("웨이팅 레벨")
-            .textStyle(.caption2)
-            .foregroundColor(Color.gray500)
-
-          HStack(spacing: 6) {
-            Image("icon_users")
-              .renderingMode(.template)
-              .resizable()
-              .scaledToFit()
-              .frame(width: 16, height: 16)
-              .foregroundColor(Color.amber500)
-
-            Text("Lv \(level): \(grade)")
-              .textStyle(.body2)
-              .kerning(-0.15)
-              .foregroundColor(Color.gray900)
-          }
-        }
-      }
-
-      editProfileButton
-        .padding(.top, 8)
-    }
-    .padding(16)
-    .frame(maxWidth: .infinity, alignment: .leading)
-    .background(Color.white)
-    .clipShape(RoundedRectangle(cornerRadius: 10))
-    .overlay(
-      RoundedRectangle(cornerRadius: 10)
-        .stroke(Color.gray200, lineWidth: 1)
-    )
-  }
-
-  private var editProfileButton: some View {
-    Button {
-      isEditingProfile = true
-    } label: {
-      Text("프로필 수정")
-        .textStyle(.button1)
-        .foregroundColor(Color.gray800)
-        .frame(maxWidth: .infinity)
-        .frame(height: 32)
-        .background(Color.gray100)
-        .clipShape(RoundedRectangle(cornerRadius: 4))
-    }
-    .buttonStyle(.plain)
+    OrdererInfoHeader(name: nickname, level: level, spacing: 24)
+      .padding(16)
+      .frame(maxWidth: .infinity, alignment: .leading)
+      .background(Color.white)
+      .clipShape(RoundedRectangle(cornerRadius: 10))
+      .overlay(
+        RoundedRectangle(cornerRadius: 10)
+          .stroke(Color.gray200, lineWidth: 1)
+      )
   }
 
   // MARK: - Menu Rows

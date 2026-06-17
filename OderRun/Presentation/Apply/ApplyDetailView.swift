@@ -138,6 +138,8 @@ struct ApplyDetailView: View {
   @ViewBuilder
   private var proposalCardSection: some View {
     if let proposal = viewModel.proposal {
+      OrdererInfoHeader(name: proposal.ordererName, level: proposal.ordererLevel)
+
       ProposalCard(
         title: proposal.title,
         description: proposal.content,

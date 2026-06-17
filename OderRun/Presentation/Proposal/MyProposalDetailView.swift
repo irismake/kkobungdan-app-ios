@@ -75,6 +75,7 @@ struct MyProposalDetailView: View {
               if let matched = viewModel.matchedOffer {
                 MatchedRunnerSection(
                   nickname: matched.runnerName,
+                  level: matched.runnerLevel,
                   appliedAt: ProposalDisplay.appliedAtString(matched.createdAt)
                 )
               }

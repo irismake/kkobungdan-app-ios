@@ -68,6 +68,9 @@ struct ProposalDetailView: View {
   @ViewBuilder
   private var proposalCardSection: some View {
     if let proposal = viewModel.proposal {
+      OrdererInfoHeader(name: proposal.ordererName, level: proposal.ordererLevel)
+        .padding(.leading, 16)
+
       ProposalCard(
         title: proposal.title,
         description: proposal.content,

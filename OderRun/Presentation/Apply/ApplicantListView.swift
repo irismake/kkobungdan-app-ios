@@ -86,6 +86,7 @@ struct ApplicantListView: View {
     VStack(spacing: 8) {
       ApplicantCard(
         nickname: applicant.runnerName,
+        level: applicant.runnerLevel,
         appliedAt: ProposalDisplay.appliedAtString(applicant.createdAt),
         onSelect: {
           selectedApplicant = applicant
