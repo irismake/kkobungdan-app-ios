@@ -27,7 +27,7 @@ struct ApplyDetailView: View {
 
       if isMissionCompleted {
         MissionCompleteModal(
-          title: "진행 완료 처리하시겠습니까?",
+          title: "임무 완료 처리하시겠습니까?",
           isApplicant: true,
           infoTitle: "취소 안내",
           infoContent: "완료 처리 후 취소가 불가능하며 문제 발생 시 고객센터 이메일로 문의 부탁드립니다.",

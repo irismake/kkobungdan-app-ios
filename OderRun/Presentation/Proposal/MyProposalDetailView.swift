@@ -143,11 +143,19 @@ struct MyProposalDetailView: View {
       EmptyView()
     default:
       VStack(spacing: 8) {
-        ConfirmButton(
-          title: "지원 보기(\(viewModel.applicantCount))",
-          isEnabled: viewModel.applicantCount > 0
-        ) {
-          onShowApplicants()
+        if viewModel.applicantCount > 0 {
+          ConfirmButton(title: "꼬붕 지원자(\(viewModel.applicantCount))") {
+            onShowApplicants()
+          }
+        } else {
+          Text("아직 지원한 꼬붕이 없습니다")
+            .textStyle(.heading4)
+            .foregroundColor(.gray400)
+            .multilineTextAlignment(.center)
+            .frame(maxWidth: .infinity)
+            .frame(height: 56)
+            .background(Color.gray200)
+            .clipShape(RoundedRectangle(cornerRadius: 12))
         }
 
         OutlineButton(title: viewModel.isCancelling ? "취소 중..." : "요청 취소") {

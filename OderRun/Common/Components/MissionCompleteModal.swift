@@ -10,8 +10,8 @@ struct MissionCompleteModal: View {
 
   private var description: String {
     isApplicant
-      ? "요청자와 만나셨나요?\n요청자가 만남 확인 버튼을 누르면 웨이팅비가 지급됩니다."
-      : "지원자와 만나셨나요?\n지원자가 만남 확인 버튼을 누르면 보증금이 환급됩니다."
+      ? "행님을 만나셨나요?\n행님이 만났어요! 버튼을 누르면 웨이팅비가 지급됩니다."
+      : "꼬붕과 만나셨나요?\n만났어요! 버튼을 누르면 보증금이 환급됩니다."
   }
 
   var body: some View {
@@ -116,7 +116,7 @@ struct MissionCompleteModal: View {
 
 #Preview {
   MissionCompleteModal(
-    title: "진행 완료 처리하시겠습니까?",
+    title: "임무 완료 처리하시겠습니까?",
     isApplicant: false,
     infoTitle: "취소 안내",
     infoContent: "완료 처리 후 취소가 불가능하며 문제 발생 시 고객센터 이메일로 문의 부탁드립니다.",

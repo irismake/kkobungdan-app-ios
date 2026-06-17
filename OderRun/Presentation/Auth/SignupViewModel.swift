@@ -52,7 +52,7 @@ final class SignupViewModel {
     case .phoneNumber: "휴대폰 정보를 입력해 주세요"
     case .carrier: "통신사를 선택해 주세요"
     case .name: "이름을 입력해주세요"
-    case .birthDate: "생년월일을 입력해주세요"
+    case .birthDate: "생년월일을 입력해 주세요"
     }
   }
 

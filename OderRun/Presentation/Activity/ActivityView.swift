@@ -14,7 +14,7 @@ enum ActivitySegment: String, CaseIterable {
   var title: String {
     switch self {
     case .orderer: return "요청"
-    case .runner: return "웨이팅 기록"
+    case .runner: return "수행 기록"
     }
   }
 }

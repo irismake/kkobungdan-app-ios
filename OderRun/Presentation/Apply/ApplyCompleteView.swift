@@ -39,7 +39,7 @@ struct ApplyCompleteView: View {
             .multilineTextAlignment(.center)
             .frame(maxWidth: .infinity)
 
-          Text("요청자가 검토 중이에요.\n선택되면 알림으로 알려드릴게요.")
+          Text("행님이 검토 중이에요.\n선택되면 알림으로 알려드릴게요.")
             .textStyle(.body3)
             .kerning(-0.4)
             .foregroundColor(Color.gray600)

@@ -8,11 +8,17 @@
 import SwiftUI
 
 struct ApplicantSelectModal: View {
+  let applicantName: String
   let onCancel: () -> Void
   let onConfirm: () -> Void
 
-  private let title: String = "이 지원자를 선택하시겠습니까?"
-  private let description: String = "지원자 선택 시 카카오톡 채팅방이 자동 개설되며,\n입장 코드는 알림을 통해 안내됩니다."
+  private var title: String {
+    let name = applicantName.count > 6 ? "\(applicantName.prefix(6))…" : applicantName
+    let particle = applicantName.hasBatchim ? "을" : "를"
+    return "\(name)\(particle) 선택하시겠습니까?"
+  }
+
+  private let description: String = "꼬붕 선택 시 카카오톡 채팅방이 자동 개설되며,\n입장 코드는 알림을 통해 안내됩니다."
   private let infoTitle: String = "💡 카카오 채팅방 이용방법"
   private let infoItems: [String] = [
     "선택 후 안내되는 채팅방 링크로 이동해 주세요.",
@@ -117,6 +123,7 @@ struct ApplicantSelectModal: View {
 
 #Preview {
   ApplicantSelectModal(
+    applicantName: "꼬붕이",
     onCancel: {},
     onConfirm: {}
   )

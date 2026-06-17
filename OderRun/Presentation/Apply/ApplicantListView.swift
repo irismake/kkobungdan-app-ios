@@ -63,6 +63,7 @@ struct ApplicantListView: View {
 
       if isSelectModalPresented, let selectedApplicant {
         ApplicantSelectModal(
+          applicantName: selectedApplicant.runnerName,
           onCancel: {
             isSelectModalPresented = false
             self.selectedApplicant = nil

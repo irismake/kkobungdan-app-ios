@@ -87,7 +87,7 @@ final class ApplyDetailViewModel {
       _ = try await completeDeliveryUseCase.execute(offerID: offerID, proofImageURL: nil)
       await load()
     } catch {
-      errorMessage = "진행 완료 처리에 실패했어요. 잠시 후 다시 시도해주세요."
+      errorMessage = "임무 완료 처리에 실패했어요. 잠시 후 다시 시도해주세요."
     }
     isCompletingDelivery = false
   }

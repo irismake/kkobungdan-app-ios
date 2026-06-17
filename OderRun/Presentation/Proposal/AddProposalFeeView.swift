@@ -114,12 +114,12 @@ struct AddProposalFeeView: View {
       AppBar(isProgress: true, onBack: onBack)
 
       VStack(alignment: .leading, spacing: 8) {
-        Text("웨이팅비 입력")
+        Text("수행비 입력")
           .textStyle(.heading3)
           .foregroundColor(Color.gray900)
           .padding(.horizontal, 16)
 
-        Text("원하는 웨이팅비를 제시해 주세요")
+        Text("꼬붕에게 전달할 수행비를 제시해 주세요")
           .textStyle(.body3)
           .foregroundColor(Color.gray600)
           .padding(.horizontal, 16)
