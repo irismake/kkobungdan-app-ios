@@ -6,6 +6,9 @@
 //
 
 import Foundation
+import OSLog
+
+private let authLogger = Logger(subsystem: "com.oderrun.OderRun", category: "Auth")
 
 private struct SignupSendRequestBody: Encodable {
   let carrier: String
@@ -125,11 +128,17 @@ final class AuthRepository: AuthRepositoryProtocol {
     return response.accessToken
   }
 
+  /// 로그아웃은 항상 로컬 토큰을 정리한다. 서버 통지는 best-effort 로, 실패해도
+  /// 로컬 세션은 강제 종료한다(예: refreshToken 만료로 서버가 거부하는 경우).
   func logout(refreshToken: String) async throws {
-    try await client.postVoid(
-      "/v1/auth/logout",
-      body: LogoutRequestBody(refreshToken: refreshToken)
-    )
-    tokenStorage.clear()
+    defer { tokenStorage.clear() }
+    do {
+      try await client.postVoid(
+        "/v1/auth/logout",
+        body: LogoutRequestBody(refreshToken: refreshToken)
+      )
+    } catch {
+      authLogger.warning("로그아웃 서버 통지 실패, 로컬 토큰만 정리: \(error.localizedDescription)")
+    }
   }
 }

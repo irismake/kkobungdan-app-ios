@@ -10,6 +10,12 @@ import Foundation
 actor TestAuthRepositoryImpl: AuthRepositoryProtocol {
   private static let simulatedLatency: UInt64 = 800_000_000
 
+  private let tokenStorage: TokenStorage
+
+  init(tokenStorage: TokenStorage = .shared) {
+    self.tokenStorage = tokenStorage
+  }
+
   /// SMS 회원가입/로그인은 실 API 전용 — ContentView 에서 AuthRepository() 를 직접 주입한다.
   func sendSignupCode(name _: String, phone _: String, carrier _: String) async throws -> PhoneVerification {
     throw RepositoryError.notImplemented
@@ -45,8 +51,9 @@ actor TestAuthRepositoryImpl: AuthRepositoryProtocol {
     return DummySession.accessToken
   }
 
-  /// 로그아웃도 실 API 전용 — ContentView 에서 AuthRepository() 를 직접 주입한다.
+  /// 더미 로그아웃: 지연 시뮬레이션 후 로컬 토큰을 정리한다.
   func logout(refreshToken _: String) async throws {
-    throw RepositoryError.notImplemented
+    try await Task.sleep(nanoseconds: Self.simulatedLatency)
+    tokenStorage.clear()
   }
 }

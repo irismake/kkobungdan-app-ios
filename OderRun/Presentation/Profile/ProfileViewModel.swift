@@ -6,6 +6,9 @@
 //
 
 import Foundation
+import OSLog
+
+private let profileLogger = Logger(subsystem: "com.oderrun.OderRun", category: "Profile")
 
 @Observable
 final class ProfileViewModel {
@@ -75,10 +78,12 @@ final class ProfileViewModel {
     let refreshToken = tokenStorage.refreshToken ?? ""
     do {
       try await logoutUseCase.execute(refreshToken: refreshToken)
-      onLogout()
     } catch {
-      errorMessage = "로그아웃에 실패했어요."
+      // 서버 로그아웃 실패해도 강제 로그아웃 진행 — 로컬 토큰을 정리하고 로그인 화면으로 복귀한다.
+      tokenStorage.clear()
+      profileLogger.warning("로그아웃 처리 실패, 강제 로그아웃 진행: \(error.localizedDescription)")
     }
+    onLogout()
     isLoading = false
   }
 }
