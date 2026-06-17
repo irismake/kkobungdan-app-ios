@@ -7,7 +7,8 @@
     "phoneVerifiedAt": "2026-06-12T18:00:00",
     "createdAt": "2026-06-12T18:00:00",
     "lastLoginAt": "2026-06-12T18:00:00",
-    "alarmEnabled": true
+    "alarmEnabled": true,
+    "level": 0
   },
   "message": "string"
 }

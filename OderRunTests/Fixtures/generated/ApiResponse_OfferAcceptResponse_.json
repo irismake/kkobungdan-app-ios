@@ -7,7 +7,11 @@
     "acceptedOfferStatus": "WAITING",
     "rejectedOfferCount": 0,
     "ordererId": "string",
+    "ordererName": "string",
+    "ordererLevel": 0,
     "runnerId": "string",
+    "runnerName": "string",
+    "runnerLevel": 0,
     "acceptedAt": "2026-06-12T18:00:00"
   },
   "message": "string"

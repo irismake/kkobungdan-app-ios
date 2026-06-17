@@ -27,6 +27,7 @@ import os
 import re
 import shutil
 import sys
+import urllib.parse
 import urllib.request
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -56,6 +57,18 @@ def read_dev_api_base_host(path: str):
     return None
 
 
+def openapi_url_from_host(host: str) -> str:
+    """host 값에서 OpenAPI 스펙 URL 을 만든다.
+
+    DEV_API_BASE_HOST 는 스킴(`http://`)·경로(`/docs`)가 붙어 있을 수도, 맨 호스트명일
+    수도 있다. 스킴/netloc 만 취해 `<scheme>://<netloc>/openapi.json` 으로 정규화한다.
+    """
+    if not re.match(r"^https?://", host):
+        host = "http://" + host
+    parts = urllib.parse.urlsplit(host)
+    return urllib.parse.urlunsplit((parts.scheme, parts.netloc, "/openapi.json", "", ""))
+
+
 def resolve_url(cli_url):
     """우선순위: --url > 환경변수 OPENAPI_URL > Secrets.xcconfig 의 DEV_API_BASE_HOST."""
     if cli_url:
@@ -64,7 +77,7 @@ def resolve_url(cli_url):
         return os.environ["OPENAPI_URL"]
     host = read_dev_api_base_host(SECRETS_XCCONFIG)
     if host:
-        return f"http://{host}/openapi.json"
+        return openapi_url_from_host(host)
     raise SystemExit(
         f"개발 서버 주소를 찾지 못했습니다. 계약 테스트는 실서버가 아닌 {DEV_HOST_KEY} 를 씁니다.\n"
         "다음 중 하나로 지정하세요:\n"

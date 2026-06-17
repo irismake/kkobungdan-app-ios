@@ -1,6 +1,8 @@
 {
   "id": 0,
   "ordererId": "string",
+  "ordererName": "string",
+  "ordererLevel": 0,
   "title": "string",
   "content": "string",
   "deadline": "2026-06-12T18:00:00",
@@ -12,6 +14,8 @@
       "id": 0,
       "proposalId": 0,
       "runnerId": "string",
+      "runnerName": "string",
+      "runnerLevel": 0,
       "status": "WAITING",
       "createdAt": "2026-06-12T18:00:00"
     }

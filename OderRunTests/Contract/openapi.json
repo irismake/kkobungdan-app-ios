@@ -847,7 +847,8 @@
                     "phoneVerifiedAt": "2026-06-01T12:00:00+09:00",
                     "createdAt": "2026-06-01T12:00:00+09:00",
                     "lastLoginAt": "2026-06-01T12:10:00+09:00",
-                    "alarmEnabled": false
+                    "alarmEnabled": false,
+                    "level": 0
                   }
                 }
               }
@@ -2092,12 +2093,16 @@
                         "errandFee": 5000,
                         "status": "POSTED",
                         "ordererId": "550e8400-e29b-41d4-a716-446655440000",
+                        "ordererName": "홍길동",
+                        "ordererLevel": 0,
                         "offerCount": 1,
                         "offers": [
                           {
                             "id": 10,
                             "proposalId": 1,
                             "runnerId": "550e8400-e29b-41d4-a716-446655440001",
+                            "runnerName": "Runner One",
+                            "runnerLevel": 3,
                             "status": "WAITING",
                             "createdAt": "2026-06-01T12:00:00+09:00"
                           }
@@ -2261,6 +2266,8 @@
                         "errandFee": 5000,
                         "status": "HOLDING",
                         "ordererId": "550e8400-e29b-41d4-a716-446655440000",
+                        "ordererName": "홍길동",
+                        "ordererLevel": 0,
                         "offers": []
                       }
                     }
@@ -2277,6 +2284,8 @@
                         "errandFee": 5000,
                         "status": "POSTED",
                         "ordererId": "550e8400-e29b-41d4-a716-446655440000",
+                        "ordererName": "홍길동",
+                        "ordererLevel": 0,
                         "offers": []
                       }
                     }
@@ -2293,11 +2302,15 @@
                         "errandFee": 5000,
                         "status": "OFFERED",
                         "ordererId": "550e8400-e29b-41d4-a716-446655440000",
+                        "ordererName": "홍길동",
+                        "ordererLevel": 0,
                         "offers": [
                           {
                             "id": 10,
                             "proposalId": 1,
                             "runnerId": "550e8400-e29b-41d4-a716-446655440001",
+                            "runnerName": "Runner One",
+                            "runnerLevel": 3,
                             "status": "WAITING",
                             "createdAt": "2026-06-01T12:00:00+09:00"
                           }
@@ -2317,12 +2330,16 @@
                         "errandFee": 5000,
                         "status": "MATCHED",
                         "ordererId": "550e8400-e29b-41d4-a716-446655440000",
+                        "ordererName": "홍길동",
+                        "ordererLevel": 0,
                         "matchedAt": "2026-06-01T12:10:00+09:00",
                         "offers": [
                           {
                             "id": 10,
                             "proposalId": 1,
                             "runnerId": "550e8400-e29b-41d4-a716-446655440001",
+                            "runnerName": "Runner One",
+                            "runnerLevel": 3,
                             "status": "ACCEPTED",
                             "createdAt": "2026-06-01T12:00:00+09:00"
                           }
@@ -2342,6 +2359,8 @@
                         "errandFee": 5000,
                         "status": "ORDER_COMPLETED",
                         "ordererId": "550e8400-e29b-41d4-a716-446655440000",
+                        "ordererName": "홍길동",
+                        "ordererLevel": 0,
                         "matchedAt": "2026-06-01T12:10:00+09:00",
                         "receivedConfirmedAt": "2026-06-01T12:10:00+09:00",
                         "offers": [
@@ -2349,6 +2368,8 @@
                             "id": 10,
                             "proposalId": 1,
                             "runnerId": "550e8400-e29b-41d4-a716-446655440001",
+                            "runnerName": "Runner One",
+                            "runnerLevel": 3,
                             "status": "ACCEPTED",
                             "createdAt": "2026-06-01T12:00:00+09:00"
                           }
@@ -2368,6 +2389,8 @@
                         "errandFee": 5000,
                         "status": "ALL_COMPLETED",
                         "ordererId": "550e8400-e29b-41d4-a716-446655440000",
+                        "ordererName": "홍길동",
+                        "ordererLevel": 0,
                         "matchedAt": "2026-06-01T12:10:00+09:00",
                         "deliveryReportedAt": "2026-06-01T12:10:00+09:00",
                         "receivedConfirmedAt": "2026-06-01T12:10:00+09:00",
@@ -2376,6 +2399,8 @@
                             "id": 10,
                             "proposalId": 1,
                             "runnerId": "550e8400-e29b-41d4-a716-446655440001",
+                            "runnerName": "Runner One",
+                            "runnerLevel": 3,
                             "status": "ALL_COMPLETED",
                             "createdAt": "2026-06-01T12:00:00+09:00"
                           }
@@ -2395,6 +2420,8 @@
                         "errandFee": 5000,
                         "status": "DISPUTED",
                         "ordererId": "550e8400-e29b-41d4-a716-446655440000",
+                        "ordererName": "홍길동",
+                        "ordererLevel": 0,
                         "matchedAt": "2026-06-01T12:10:00+09:00",
                         "disputedAt": "2026-06-01T12:10:00+09:00",
                         "offers": [
@@ -2402,6 +2429,8 @@
                             "id": 10,
                             "proposalId": 1,
                             "runnerId": "550e8400-e29b-41d4-a716-446655440001",
+                            "runnerName": "Runner One",
+                            "runnerLevel": 3,
                             "status": "DISPUTED",
                             "createdAt": "2026-06-01T12:00:00+09:00"
                           }
@@ -2421,6 +2450,8 @@
                         "errandFee": 5000,
                         "status": "REFUNDED",
                         "ordererId": "550e8400-e29b-41d4-a716-446655440000",
+                        "ordererName": "홍길동",
+                        "ordererLevel": 0,
                         "matchedAt": "2026-06-01T12:10:00+09:00",
                         "disputedAt": "2026-06-01T12:10:00+09:00",
                         "refundedAt": "2026-06-01T12:10:00+09:00",
@@ -2429,6 +2460,8 @@
                             "id": 10,
                             "proposalId": 1,
                             "runnerId": "550e8400-e29b-41d4-a716-446655440001",
+                            "runnerName": "Runner One",
+                            "runnerLevel": 3,
                             "status": "REFUNDED",
                             "createdAt": "2026-06-01T12:00:00+09:00"
                           }
@@ -2448,11 +2481,15 @@
                         "errandFee": 5000,
                         "status": "CANCELLED",
                         "ordererId": "550e8400-e29b-41d4-a716-446655440000",
+                        "ordererName": "홍길동",
+                        "ordererLevel": 0,
                         "offers": [
                           {
                             "id": 10,
                             "proposalId": 1,
                             "runnerId": "550e8400-e29b-41d4-a716-446655440001",
+                            "runnerName": "Runner One",
+                            "runnerLevel": 3,
                             "status": "CANCELLED",
                             "createdAt": "2026-06-01T12:00:00+09:00"
                           }
@@ -3064,6 +3101,8 @@
                         "errandFee": 5000,
                         "status": "ORDER_COMPLETED",
                         "ordererId": "550e8400-e29b-41d4-a716-446655440000",
+                        "ordererName": "홍길동",
+                        "ordererLevel": 0,
                         "matchedAt": "2026-06-01T12:10:00+09:00",
                         "receivedConfirmedAt": "2026-06-01T12:10:00+09:00",
                         "offers": [
@@ -3071,6 +3110,8 @@
                             "id": 10,
                             "proposalId": 1,
                             "runnerId": "550e8400-e29b-41d4-a716-446655440001",
+                            "runnerName": "Runner One",
+                            "runnerLevel": 3,
                             "status": "ACCEPTED",
                             "createdAt": "2026-06-01T12:00:00+09:00"
                           }
@@ -3091,6 +3132,8 @@
                         "errandFee": 5000,
                         "status": "ALL_COMPLETED",
                         "ordererId": "550e8400-e29b-41d4-a716-446655440000",
+                        "ordererName": "홍길동",
+                        "ordererLevel": 0,
                         "matchedAt": "2026-06-01T12:10:00+09:00",
                         "deliveryReportedAt": "2026-06-01T12:10:00+09:00",
                         "receivedConfirmedAt": "2026-06-01T12:10:00+09:00",
@@ -3099,6 +3142,8 @@
                             "id": 10,
                             "proposalId": 1,
                             "runnerId": "550e8400-e29b-41d4-a716-446655440001",
+                            "runnerName": "Runner One",
+                            "runnerLevel": 3,
                             "status": "ALL_COMPLETED",
                             "createdAt": "2026-06-01T12:00:00+09:00"
                           }
@@ -3322,6 +3367,8 @@
                     "errandFee": 5000,
                     "status": "DISPUTED",
                     "ordererId": "550e8400-e29b-41d4-a716-446655440000",
+                    "ordererName": "홍길동",
+                    "ordererLevel": 0,
                     "matchedAt": "2026-06-01T12:10:00+09:00",
                     "disputedAt": "2026-06-01T12:10:00+09:00",
                     "offers": [
@@ -3329,6 +3376,8 @@
                         "id": 10,
                         "proposalId": 1,
                         "runnerId": "550e8400-e29b-41d4-a716-446655440001",
+                        "runnerName": "Runner One",
+                        "runnerLevel": 3,
                         "status": "DISPUTED",
                         "createdAt": "2026-06-01T12:00:00+09:00"
                       }
@@ -3558,8 +3607,12 @@
                   "data": {
                     "id": 10,
                     "proposalId": 1,
+                    "ordererId": "550e8400-e29b-41d4-a716-446655440000",
+                    "ordererName": "홍길동",
+                    "ordererLevel": 0,
                     "runnerId": "550e8400-e29b-41d4-a716-446655440001",
                     "runnerName": "Runner One",
+                    "runnerLevel": 3,
                     "status": "WAITING",
                     "createdAt": "2026-06-01T12:00:00+09:00"
                   },
@@ -3793,19 +3846,186 @@
                 "schema": {
                   "$ref": "#/components/schemas/ApiResponse_list_OfferResponse__"
                 },
-                "example": {
-                  "success": true,
-                  "data": [
-                    {
-                      "id": 10,
-                      "proposalId": 1,
-                      "runnerId": "550e8400-e29b-41d4-a716-446655440001",
-                      "runnerName": "Runner One",
-                      "status": "WAITING",
-                      "createdAt": "2026-06-01T12:00:00+09:00"
+                "examples": {
+                  "waiting": {
+                    "summary": "waiting",
+                    "value": {
+                      "success": true,
+                      "data": [
+                        {
+                          "id": 10,
+                          "proposalId": 1,
+                          "ordererId": "550e8400-e29b-41d4-a716-446655440000",
+                          "ordererName": "홍길동",
+                          "ordererLevel": 0,
+                          "runnerId": "550e8400-e29b-41d4-a716-446655440001",
+                          "runnerName": "Runner One",
+                          "runnerLevel": 3,
+                          "status": "WAITING",
+                          "createdAt": "2026-06-01T12:00:00+09:00"
+                        }
+                      ],
+                      "message": "Success"
                     }
-                  ],
-                  "message": "Success"
+                  },
+                  "accepted": {
+                    "summary": "accepted",
+                    "value": {
+                      "success": true,
+                      "data": [
+                        {
+                          "id": 10,
+                          "proposalId": 1,
+                          "ordererId": "550e8400-e29b-41d4-a716-446655440000",
+                          "ordererName": "홍길동",
+                          "ordererLevel": 0,
+                          "runnerId": "550e8400-e29b-41d4-a716-446655440001",
+                          "runnerName": "Runner One",
+                          "runnerLevel": 3,
+                          "status": "ACCEPTED",
+                          "acceptedAt": "2026-06-01T12:10:00+09:00",
+                          "createdAt": "2026-06-01T12:00:00+09:00"
+                        }
+                      ],
+                      "message": "Success"
+                    }
+                  },
+                  "runner_completed": {
+                    "summary": "runner_completed",
+                    "value": {
+                      "success": true,
+                      "data": [
+                        {
+                          "id": 10,
+                          "proposalId": 1,
+                          "ordererId": "550e8400-e29b-41d4-a716-446655440000",
+                          "ordererName": "홍길동",
+                          "ordererLevel": 0,
+                          "runnerId": "550e8400-e29b-41d4-a716-446655440001",
+                          "runnerName": "Runner One",
+                          "runnerLevel": 3,
+                          "status": "RUNNER_COMPLETED",
+                          "acceptedAt": "2026-06-01T12:00:00+09:00",
+                          "deliveryCompletedAt": "2026-06-01T12:10:00+09:00",
+                          "createdAt": "2026-06-01T12:00:00+09:00"
+                        }
+                      ],
+                      "message": "Success"
+                    }
+                  },
+                  "all_completed": {
+                    "summary": "all_completed",
+                    "value": {
+                      "success": true,
+                      "data": [
+                        {
+                          "id": 10,
+                          "proposalId": 1,
+                          "ordererId": "550e8400-e29b-41d4-a716-446655440000",
+                          "ordererName": "홍길동",
+                          "ordererLevel": 0,
+                          "runnerId": "550e8400-e29b-41d4-a716-446655440001",
+                          "runnerName": "Runner One",
+                          "runnerLevel": 3,
+                          "status": "ALL_COMPLETED",
+                          "acceptedAt": "2026-06-01T12:00:00+09:00",
+                          "deliveryCompletedAt": "2026-06-01T12:10:00+09:00",
+                          "receiptConfirmedAt": "2026-06-01T12:10:00+09:00",
+                          "createdAt": "2026-06-01T12:00:00+09:00"
+                        }
+                      ],
+                      "message": "Success"
+                    }
+                  },
+                  "disputed": {
+                    "summary": "disputed",
+                    "value": {
+                      "success": true,
+                      "data": [
+                        {
+                          "id": 10,
+                          "proposalId": 1,
+                          "ordererId": "550e8400-e29b-41d4-a716-446655440000",
+                          "ordererName": "홍길동",
+                          "ordererLevel": 0,
+                          "runnerId": "550e8400-e29b-41d4-a716-446655440001",
+                          "runnerName": "Runner One",
+                          "runnerLevel": 3,
+                          "status": "DISPUTED",
+                          "acceptedAt": "2026-06-01T12:00:00+09:00",
+                          "disputedAt": "2026-06-01T12:10:00+09:00",
+                          "createdAt": "2026-06-01T12:00:00+09:00"
+                        }
+                      ],
+                      "message": "Success"
+                    }
+                  },
+                  "refunded": {
+                    "summary": "refunded",
+                    "value": {
+                      "success": true,
+                      "data": [
+                        {
+                          "id": 10,
+                          "proposalId": 1,
+                          "ordererId": "550e8400-e29b-41d4-a716-446655440000",
+                          "ordererName": "홍길동",
+                          "ordererLevel": 0,
+                          "runnerId": "550e8400-e29b-41d4-a716-446655440001",
+                          "runnerName": "Runner One",
+                          "runnerLevel": 3,
+                          "status": "REFUNDED",
+                          "acceptedAt": "2026-06-01T12:00:00+09:00",
+                          "disputedAt": "2026-06-01T12:10:00+09:00",
+                          "refundedAt": "2026-06-01T12:10:00+09:00",
+                          "createdAt": "2026-06-01T12:00:00+09:00"
+                        }
+                      ],
+                      "message": "Success"
+                    }
+                  },
+                  "rejected": {
+                    "summary": "rejected",
+                    "value": {
+                      "success": true,
+                      "data": [
+                        {
+                          "id": 10,
+                          "proposalId": 1,
+                          "ordererId": "550e8400-e29b-41d4-a716-446655440000",
+                          "ordererName": "홍길동",
+                          "ordererLevel": 0,
+                          "runnerId": "550e8400-e29b-41d4-a716-446655440001",
+                          "runnerName": "Runner One",
+                          "runnerLevel": 3,
+                          "status": "REJECTED",
+                          "createdAt": "2026-06-01T12:00:00+09:00"
+                        }
+                      ],
+                      "message": "Success"
+                    }
+                  },
+                  "cancelled": {
+                    "summary": "cancelled",
+                    "value": {
+                      "success": true,
+                      "data": [
+                        {
+                          "id": 10,
+                          "proposalId": 1,
+                          "ordererId": "550e8400-e29b-41d4-a716-446655440000",
+                          "ordererName": "홍길동",
+                          "ordererLevel": 0,
+                          "runnerId": "550e8400-e29b-41d4-a716-446655440001",
+                          "runnerName": "Runner One",
+                          "runnerLevel": 3,
+                          "status": "CANCELLED",
+                          "createdAt": "2026-06-01T12:00:00+09:00"
+                        }
+                      ],
+                      "message": "Success"
+                    }
+                  }
                 }
               }
             }
@@ -4004,27 +4224,250 @@
                 "schema": {
                   "$ref": "#/components/schemas/ApiResponse_PageResponse_OfferResponse__"
                 },
-                "example": {
-                  "success": true,
-                  "data": {
-                    "content": [
-                      {
-                        "id": 10,
-                        "proposalId": 1,
-                        "runnerId": "550e8400-e29b-41d4-a716-446655440001",
-                        "runnerName": "Runner One",
-                        "status": "WAITING",
-                        "createdAt": "2026-06-01T12:00:00+09:00"
-                      }
-                    ],
-                    "totalElements": 1,
-                    "totalPages": 1,
-                    "pageNumber": 0,
-                    "pageSize": 20,
-                    "first": true,
-                    "last": true
+                "examples": {
+                  "waiting": {
+                    "summary": "waiting",
+                    "value": {
+                      "success": true,
+                      "data": {
+                        "content": [
+                          {
+                            "id": 10,
+                            "proposalId": 1,
+                            "ordererId": "550e8400-e29b-41d4-a716-446655440000",
+                            "ordererName": "홍길동",
+                            "ordererLevel": 0,
+                            "runnerId": "550e8400-e29b-41d4-a716-446655440001",
+                            "runnerName": "Runner One",
+                            "runnerLevel": 3,
+                            "status": "WAITING",
+                            "createdAt": "2026-06-01T12:00:00+09:00"
+                          }
+                        ],
+                        "totalElements": 1,
+                        "totalPages": 1,
+                        "pageNumber": 0,
+                        "pageSize": 20,
+                        "first": true,
+                        "last": true
+                      },
+                      "message": "Success"
+                    }
                   },
-                  "message": "Success"
+                  "accepted": {
+                    "summary": "accepted",
+                    "value": {
+                      "success": true,
+                      "data": {
+                        "content": [
+                          {
+                            "id": 10,
+                            "proposalId": 1,
+                            "ordererId": "550e8400-e29b-41d4-a716-446655440000",
+                            "ordererName": "홍길동",
+                            "ordererLevel": 0,
+                            "runnerId": "550e8400-e29b-41d4-a716-446655440001",
+                            "runnerName": "Runner One",
+                            "runnerLevel": 3,
+                            "status": "ACCEPTED",
+                            "acceptedAt": "2026-06-01T12:10:00+09:00",
+                            "createdAt": "2026-06-01T12:00:00+09:00"
+                          }
+                        ],
+                        "totalElements": 1,
+                        "totalPages": 1,
+                        "pageNumber": 0,
+                        "pageSize": 20,
+                        "first": true,
+                        "last": true
+                      },
+                      "message": "Success"
+                    }
+                  },
+                  "runner_completed": {
+                    "summary": "runner_completed",
+                    "value": {
+                      "success": true,
+                      "data": {
+                        "content": [
+                          {
+                            "id": 10,
+                            "proposalId": 1,
+                            "ordererId": "550e8400-e29b-41d4-a716-446655440000",
+                            "ordererName": "홍길동",
+                            "ordererLevel": 0,
+                            "runnerId": "550e8400-e29b-41d4-a716-446655440001",
+                            "runnerName": "Runner One",
+                            "runnerLevel": 3,
+                            "status": "RUNNER_COMPLETED",
+                            "acceptedAt": "2026-06-01T12:00:00+09:00",
+                            "deliveryCompletedAt": "2026-06-01T12:10:00+09:00",
+                            "createdAt": "2026-06-01T12:00:00+09:00"
+                          }
+                        ],
+                        "totalElements": 1,
+                        "totalPages": 1,
+                        "pageNumber": 0,
+                        "pageSize": 20,
+                        "first": true,
+                        "last": true
+                      },
+                      "message": "Success"
+                    }
+                  },
+                  "all_completed": {
+                    "summary": "all_completed",
+                    "value": {
+                      "success": true,
+                      "data": {
+                        "content": [
+                          {
+                            "id": 10,
+                            "proposalId": 1,
+                            "ordererId": "550e8400-e29b-41d4-a716-446655440000",
+                            "ordererName": "홍길동",
+                            "ordererLevel": 0,
+                            "runnerId": "550e8400-e29b-41d4-a716-446655440001",
+                            "runnerName": "Runner One",
+                            "runnerLevel": 3,
+                            "status": "ALL_COMPLETED",
+                            "acceptedAt": "2026-06-01T12:00:00+09:00",
+                            "deliveryCompletedAt": "2026-06-01T12:10:00+09:00",
+                            "receiptConfirmedAt": "2026-06-01T12:10:00+09:00",
+                            "createdAt": "2026-06-01T12:00:00+09:00"
+                          }
+                        ],
+                        "totalElements": 1,
+                        "totalPages": 1,
+                        "pageNumber": 0,
+                        "pageSize": 20,
+                        "first": true,
+                        "last": true
+                      },
+                      "message": "Success"
+                    }
+                  },
+                  "disputed": {
+                    "summary": "disputed",
+                    "value": {
+                      "success": true,
+                      "data": {
+                        "content": [
+                          {
+                            "id": 10,
+                            "proposalId": 1,
+                            "ordererId": "550e8400-e29b-41d4-a716-446655440000",
+                            "ordererName": "홍길동",
+                            "ordererLevel": 0,
+                            "runnerId": "550e8400-e29b-41d4-a716-446655440001",
+                            "runnerName": "Runner One",
+                            "runnerLevel": 3,
+                            "status": "DISPUTED",
+                            "acceptedAt": "2026-06-01T12:00:00+09:00",
+                            "disputedAt": "2026-06-01T12:10:00+09:00",
+                            "createdAt": "2026-06-01T12:00:00+09:00"
+                          }
+                        ],
+                        "totalElements": 1,
+                        "totalPages": 1,
+                        "pageNumber": 0,
+                        "pageSize": 20,
+                        "first": true,
+                        "last": true
+                      },
+                      "message": "Success"
+                    }
+                  },
+                  "refunded": {
+                    "summary": "refunded",
+                    "value": {
+                      "success": true,
+                      "data": {
+                        "content": [
+                          {
+                            "id": 10,
+                            "proposalId": 1,
+                            "ordererId": "550e8400-e29b-41d4-a716-446655440000",
+                            "ordererName": "홍길동",
+                            "ordererLevel": 0,
+                            "runnerId": "550e8400-e29b-41d4-a716-446655440001",
+                            "runnerName": "Runner One",
+                            "runnerLevel": 3,
+                            "status": "REFUNDED",
+                            "acceptedAt": "2026-06-01T12:00:00+09:00",
+                            "disputedAt": "2026-06-01T12:10:00+09:00",
+                            "refundedAt": "2026-06-01T12:10:00+09:00",
+                            "createdAt": "2026-06-01T12:00:00+09:00"
+                          }
+                        ],
+                        "totalElements": 1,
+                        "totalPages": 1,
+                        "pageNumber": 0,
+                        "pageSize": 20,
+                        "first": true,
+                        "last": true
+                      },
+                      "message": "Success"
+                    }
+                  },
+                  "rejected": {
+                    "summary": "rejected",
+                    "value": {
+                      "success": true,
+                      "data": {
+                        "content": [
+                          {
+                            "id": 10,
+                            "proposalId": 1,
+                            "ordererId": "550e8400-e29b-41d4-a716-446655440000",
+                            "ordererName": "홍길동",
+                            "ordererLevel": 0,
+                            "runnerId": "550e8400-e29b-41d4-a716-446655440001",
+                            "runnerName": "Runner One",
+                            "runnerLevel": 3,
+                            "status": "REJECTED",
+                            "createdAt": "2026-06-01T12:00:00+09:00"
+                          }
+                        ],
+                        "totalElements": 1,
+                        "totalPages": 1,
+                        "pageNumber": 0,
+                        "pageSize": 20,
+                        "first": true,
+                        "last": true
+                      },
+                      "message": "Success"
+                    }
+                  },
+                  "cancelled": {
+                    "summary": "cancelled",
+                    "value": {
+                      "success": true,
+                      "data": {
+                        "content": [
+                          {
+                            "id": 10,
+                            "proposalId": 1,
+                            "ordererId": "550e8400-e29b-41d4-a716-446655440000",
+                            "ordererName": "홍길동",
+                            "ordererLevel": 0,
+                            "runnerId": "550e8400-e29b-41d4-a716-446655440001",
+                            "runnerName": "Runner One",
+                            "runnerLevel": 3,
+                            "status": "CANCELLED",
+                            "createdAt": "2026-06-01T12:00:00+09:00"
+                          }
+                        ],
+                        "totalElements": 1,
+                        "totalPages": 1,
+                        "pageNumber": 0,
+                        "pageSize": 20,
+                        "first": true,
+                        "last": true
+                      },
+                      "message": "Success"
+                    }
+                  }
                 }
               }
             }
@@ -4168,8 +4611,12 @@
                       "data": {
                         "id": 10,
                         "proposalId": 1,
+                        "ordererId": "550e8400-e29b-41d4-a716-446655440000",
+                        "ordererName": "홍길동",
+                        "ordererLevel": 0,
                         "runnerId": "550e8400-e29b-41d4-a716-446655440001",
                         "runnerName": "Runner One",
+                        "runnerLevel": 3,
                         "status": "WAITING",
                         "createdAt": "2026-06-01T12:00:00+09:00"
                       },
@@ -4183,10 +4630,138 @@
                       "data": {
                         "id": 10,
                         "proposalId": 1,
+                        "ordererId": "550e8400-e29b-41d4-a716-446655440000",
+                        "ordererName": "홍길동",
+                        "ordererLevel": 0,
                         "runnerId": "550e8400-e29b-41d4-a716-446655440001",
                         "runnerName": "Runner One",
+                        "runnerLevel": 3,
                         "status": "ACCEPTED",
                         "acceptedAt": "2026-06-01T12:10:00+09:00",
+                        "createdAt": "2026-06-01T12:00:00+09:00"
+                      },
+                      "message": "Success"
+                    }
+                  },
+                  "runner_completed": {
+                    "summary": "runner_completed",
+                    "value": {
+                      "success": true,
+                      "data": {
+                        "id": 10,
+                        "proposalId": 1,
+                        "ordererId": "550e8400-e29b-41d4-a716-446655440000",
+                        "ordererName": "홍길동",
+                        "ordererLevel": 0,
+                        "runnerId": "550e8400-e29b-41d4-a716-446655440001",
+                        "runnerName": "Runner One",
+                        "runnerLevel": 3,
+                        "status": "RUNNER_COMPLETED",
+                        "acceptedAt": "2026-06-01T12:00:00+09:00",
+                        "deliveryCompletedAt": "2026-06-01T12:10:00+09:00",
+                        "createdAt": "2026-06-01T12:00:00+09:00"
+                      },
+                      "message": "Success"
+                    }
+                  },
+                  "all_completed": {
+                    "summary": "all_completed",
+                    "value": {
+                      "success": true,
+                      "data": {
+                        "id": 10,
+                        "proposalId": 1,
+                        "ordererId": "550e8400-e29b-41d4-a716-446655440000",
+                        "ordererName": "홍길동",
+                        "ordererLevel": 0,
+                        "runnerId": "550e8400-e29b-41d4-a716-446655440001",
+                        "runnerName": "Runner One",
+                        "runnerLevel": 3,
+                        "status": "ALL_COMPLETED",
+                        "acceptedAt": "2026-06-01T12:00:00+09:00",
+                        "deliveryCompletedAt": "2026-06-01T12:10:00+09:00",
+                        "receiptConfirmedAt": "2026-06-01T12:10:00+09:00",
+                        "createdAt": "2026-06-01T12:00:00+09:00"
+                      },
+                      "message": "Success"
+                    }
+                  },
+                  "disputed": {
+                    "summary": "disputed",
+                    "value": {
+                      "success": true,
+                      "data": {
+                        "id": 10,
+                        "proposalId": 1,
+                        "ordererId": "550e8400-e29b-41d4-a716-446655440000",
+                        "ordererName": "홍길동",
+                        "ordererLevel": 0,
+                        "runnerId": "550e8400-e29b-41d4-a716-446655440001",
+                        "runnerName": "Runner One",
+                        "runnerLevel": 3,
+                        "status": "DISPUTED",
+                        "acceptedAt": "2026-06-01T12:00:00+09:00",
+                        "disputedAt": "2026-06-01T12:10:00+09:00",
+                        "createdAt": "2026-06-01T12:00:00+09:00"
+                      },
+                      "message": "Success"
+                    }
+                  },
+                  "refunded": {
+                    "summary": "refunded",
+                    "value": {
+                      "success": true,
+                      "data": {
+                        "id": 10,
+                        "proposalId": 1,
+                        "ordererId": "550e8400-e29b-41d4-a716-446655440000",
+                        "ordererName": "홍길동",
+                        "ordererLevel": 0,
+                        "runnerId": "550e8400-e29b-41d4-a716-446655440001",
+                        "runnerName": "Runner One",
+                        "runnerLevel": 3,
+                        "status": "REFUNDED",
+                        "acceptedAt": "2026-06-01T12:00:00+09:00",
+                        "disputedAt": "2026-06-01T12:10:00+09:00",
+                        "refundedAt": "2026-06-01T12:10:00+09:00",
+                        "createdAt": "2026-06-01T12:00:00+09:00"
+                      },
+                      "message": "Success"
+                    }
+                  },
+                  "rejected": {
+                    "summary": "rejected",
+                    "value": {
+                      "success": true,
+                      "data": {
+                        "id": 10,
+                        "proposalId": 1,
+                        "ordererId": "550e8400-e29b-41d4-a716-446655440000",
+                        "ordererName": "홍길동",
+                        "ordererLevel": 0,
+                        "runnerId": "550e8400-e29b-41d4-a716-446655440001",
+                        "runnerName": "Runner One",
+                        "runnerLevel": 3,
+                        "status": "REJECTED",
+                        "createdAt": "2026-06-01T12:00:00+09:00"
+                      },
+                      "message": "Success"
+                    }
+                  },
+                  "cancelled": {
+                    "summary": "cancelled",
+                    "value": {
+                      "success": true,
+                      "data": {
+                        "id": 10,
+                        "proposalId": 1,
+                        "ordererId": "550e8400-e29b-41d4-a716-446655440000",
+                        "ordererName": "홍길동",
+                        "ordererLevel": 0,
+                        "runnerId": "550e8400-e29b-41d4-a716-446655440001",
+                        "runnerName": "Runner One",
+                        "runnerLevel": 3,
+                        "status": "CANCELLED",
                         "createdAt": "2026-06-01T12:00:00+09:00"
                       },
                       "message": "Success"
@@ -4509,7 +5084,11 @@
                     "acceptedOfferStatus": "ACCEPTED",
                     "rejectedOfferCount": 1,
                     "ordererId": "550e8400-e29b-41d4-a716-446655440000",
+                    "ordererName": "홍길동",
+                    "ordererLevel": 0,
                     "runnerId": "550e8400-e29b-41d4-a716-446655440001",
+                    "runnerName": "Runner One",
+                    "runnerLevel": 3,
                     "acceptedAt": "2026-06-01T12:00:00+09:00"
                   },
                   "message": "제안이 수락되었습니다."
@@ -4747,8 +5326,12 @@
                   "data": {
                     "id": 10,
                     "proposalId": 1,
+                    "ordererId": "550e8400-e29b-41d4-a716-446655440000",
+                    "ordererName": "홍길동",
+                    "ordererLevel": 0,
                     "runnerId": "550e8400-e29b-41d4-a716-446655440001",
                     "runnerName": "Runner One",
+                    "runnerLevel": 3,
                     "status": "RUNNER_COMPLETED",
                     "acceptedAt": "2026-06-01T12:00:00+09:00",
                     "deliveryCompletedAt": "2026-06-01T12:10:00+09:00",
@@ -4977,8 +5560,12 @@
                   "data": {
                     "id": 10,
                     "proposalId": 1,
+                    "ordererId": "550e8400-e29b-41d4-a716-446655440000",
+                    "ordererName": "홍길동",
+                    "ordererLevel": 0,
                     "runnerId": "550e8400-e29b-41d4-a716-446655440001",
                     "runnerName": "Runner One",
+                    "runnerLevel": 3,
                     "status": "DISPUTED",
                     "acceptedAt": "2026-06-01T12:00:00+09:00",
                     "disputedAt": "2026-06-01T12:10:00+09:00",
@@ -6362,8 +6949,12 @@
                   "data": {
                     "id": 10,
                     "proposalId": 1,
+                    "ordererId": "550e8400-e29b-41d4-a716-446655440000",
+                    "ordererName": "홍길동",
+                    "ordererLevel": 0,
                     "runnerId": "550e8400-e29b-41d4-a716-446655440001",
                     "runnerName": "Runner One",
+                    "runnerLevel": 3,
                     "status": "REFUNDED",
                     "acceptedAt": "2026-06-01T12:00:00+09:00",
                     "disputedAt": "2026-06-01T12:10:00+09:00",
@@ -7964,9 +8555,25 @@
             "type": "string",
             "title": "Ordererid"
           },
+          "ordererName": {
+            "type": "string",
+            "title": "Orderername"
+          },
+          "ordererLevel": {
+            "type": "integer",
+            "title": "Ordererlevel"
+          },
           "runnerId": {
             "type": "string",
             "title": "Runnerid"
+          },
+          "runnerName": {
+            "type": "string",
+            "title": "Runnername"
+          },
+          "runnerLevel": {
+            "type": "integer",
+            "title": "Runnerlevel"
           },
           "acceptedAt": {
             "type": "string",
@@ -7982,7 +8589,11 @@
           "acceptedOfferStatus",
           "rejectedOfferCount",
           "ordererId",
+          "ordererName",
+          "ordererLevel",
           "runnerId",
+          "runnerName",
+          "runnerLevel",
           "acceptedAt"
         ],
         "title": "OfferAcceptResponse",
@@ -8014,6 +8625,18 @@
             "type": "integer",
             "title": "Proposalid"
           },
+          "ordererId": {
+            "type": "string",
+            "title": "Ordererid"
+          },
+          "ordererName": {
+            "type": "string",
+            "title": "Orderername"
+          },
+          "ordererLevel": {
+            "type": "integer",
+            "title": "Ordererlevel"
+          },
           "runnerId": {
             "type": "string",
             "title": "Runnerid"
@@ -8021,6 +8644,10 @@
           "runnerName": {
             "type": "string",
             "title": "Runnername"
+          },
+          "runnerLevel": {
+            "type": "integer",
+            "title": "Runnerlevel"
           },
           "status": {
             "$ref": "#/components/schemas/OfferStatus"
@@ -8095,8 +8722,12 @@
         "required": [
           "id",
           "proposalId",
+          "ordererId",
+          "ordererName",
+          "ordererLevel",
           "runnerId",
           "runnerName",
+          "runnerLevel",
           "status",
           "createdAt"
         ],
@@ -8338,6 +8969,14 @@
             "type": "string",
             "title": "Ordererid"
           },
+          "ordererName": {
+            "type": "string",
+            "title": "Orderername"
+          },
+          "ordererLevel": {
+            "type": "integer",
+            "title": "Ordererlevel"
+          },
           "status": {
             "$ref": "#/components/schemas/ProposalStatus"
           },
@@ -8417,6 +9056,8 @@
           "deadline",
           "errandFee",
           "ordererId",
+          "ordererName",
+          "ordererLevel",
           "status"
         ],
         "title": "ProposalDetailResponse",
@@ -8436,6 +9077,14 @@
             "type": "string",
             "title": "Runnerid"
           },
+          "runnerName": {
+            "type": "string",
+            "title": "Runnername"
+          },
+          "runnerLevel": {
+            "type": "integer",
+            "title": "Runnerlevel"
+          },
           "status": {
             "$ref": "#/components/schemas/OfferStatus"
           },
@@ -8450,6 +9099,8 @@
           "id",
           "proposalId",
           "runnerId",
+          "runnerName",
+          "runnerLevel",
           "status",
           "createdAt"
         ],
@@ -8465,6 +9116,14 @@
           "ordererId": {
             "type": "string",
             "title": "Ordererid"
+          },
+          "ordererName": {
+            "type": "string",
+            "title": "Orderername"
+          },
+          "ordererLevel": {
+            "type": "integer",
+            "title": "Ordererlevel"
           },
           "title": {
             "type": "string",
@@ -8512,6 +9171,8 @@
         "required": [
           "id",
           "ordererId",
+          "ordererName",
+          "ordererLevel",
           "title",
           "content",
           "deadline",
@@ -8811,6 +9472,11 @@
             "type": "boolean",
             "title": "Alarmenabled",
             "description": "알림 수신 여부"
+          },
+          "level": {
+            "type": "integer",
+            "title": "Level",
+            "description": "성공 완료한 러너 Offer 수 기반 레벨"
           }
         },
         "type": "object",
@@ -8818,7 +9484,8 @@
           "id",
           "name",
           "createdAt",
-          "alarmEnabled"
+          "alarmEnabled",
+          "level"
         ],
         "title": "UserDetailResponse"
       },
