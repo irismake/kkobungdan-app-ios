@@ -25,7 +25,7 @@ struct HomeContainerView: View {
       profileViewModel: ProfileViewModel(
         fetchUserDetailUseCase: FetchUserDetailUseCase(userRepository: DIContainer.userRepository),
         updateAlarmUseCase: UpdateAlarmUseCase(userRepository: DIContainer.userRepository),
-        logoutUseCase: LogoutUseCase(authRepository: AuthRepository()),
+        logoutUseCase: LogoutUseCase(authRepository: DIContainer.authRepository),
         onLogout: { session.isLoggedIn = false }
       ),
       notificationViewModel: NotificationViewModel(

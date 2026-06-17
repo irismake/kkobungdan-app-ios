@@ -72,15 +72,34 @@ struct ProfileView: View {
   // MARK: - Profile Card
 
   private var profileCard: some View {
-    OrdererInfoHeader(name: nickname, level: level, spacing: 24)
-      .padding(16)
-      .frame(maxWidth: .infinity, alignment: .leading)
-      .background(Color.white)
-      .clipShape(RoundedRectangle(cornerRadius: 10))
-      .overlay(
-        RoundedRectangle(cornerRadius: 10)
-          .stroke(Color.gray200, lineWidth: 1)
-      )
+    VStack(alignment: .leading, spacing: 20) {
+      OrdererInfoHeader(name: nickname, level: level, spacing: 24)
+
+      editProfileButton
+    }
+    .padding(16)
+    .frame(maxWidth: .infinity, alignment: .leading)
+    .background(Color.white)
+    .clipShape(RoundedRectangle(cornerRadius: 10))
+    .overlay(
+      RoundedRectangle(cornerRadius: 10)
+        .stroke(Color.gray200, lineWidth: 1)
+    )
+  }
+
+  private var editProfileButton: some View {
+    Button {
+      isEditingProfile = true
+    } label: {
+      Text("프로필 수정")
+        .textStyle(.button1)
+        .foregroundColor(Color.gray800)
+        .frame(maxWidth: .infinity)
+        .frame(height: 32)
+        .background(Color.gray100)
+        .clipShape(RoundedRectangle(cornerRadius: 4))
+    }
+    .buttonStyle(.plain)
   }
 
   // MARK: - Menu Rows
