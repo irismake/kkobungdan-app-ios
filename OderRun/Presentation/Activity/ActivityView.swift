@@ -104,12 +104,12 @@ struct ActivityView: View {
         .padding(.vertical, 16)
       }
       .background(Color.gray000)
+      .refreshable {
+        await reloadCurrentSegment()
+      }
     }
     // 세그먼트·카테고리가 바뀔 때마다 해당 목록을 status 필터를 적용해 다시 조회한다.
     .task(id: "\(segment.rawValue)-\(filter.rawValue)") {
-      await reloadCurrentSegment()
-    }
-    .refreshable {
       await reloadCurrentSegment()
     }
   }
