@@ -80,23 +80,7 @@ struct AccountRegisterView: View {
 
   private var header: some View {
     VStack(alignment: .leading, spacing: 12) {
-      HStack(spacing: 8) {
-        Text("계좌 등록")
-          .textStyle(.heading3)
-          .foregroundColor(.gray900)
-
-        Spacer(minLength: 0)
-
-        Button(action: onBack) {
-          Image("icon_close")
-            .resizable()
-            .scaledToFit()
-            .frame(width: 24, height: 24)
-            .padding(8)
-        }
-      }
-      .padding(.leading, 16)
-      .padding(.trailing, 8)
+      CloseHeader(title: "계좌 등록", closePosition: .trailing, onClose: onBack)
 
       Text("임무 수행비를 받을 계좌를 등록해 주세요")
         .textStyle(.body3)
