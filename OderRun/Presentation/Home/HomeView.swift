@@ -167,6 +167,12 @@ struct HomeView: View {
         onBack: { popLast(path: path) },
         onApply: {
           path.wrappedValue.append(.accountRegister(proposalID: proposalID))
+        },
+        onMine: {
+          // 홈에서 탭한 요청이 내 요청이면 내 요청 상세로 라우트를 교체한다.
+          if !path.wrappedValue.isEmpty {
+            path.wrappedValue[path.wrappedValue.count - 1] = .myProposalDetail(proposalID: proposalID)
+          }
         }
       )
       .navigationBarBackButtonHidden(true)

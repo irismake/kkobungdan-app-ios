@@ -17,6 +17,7 @@ struct ProposalDetail: Equatable, Identifiable {
   let deadline: Date
   let errandFee: Int
   let status: ProposalStatus
+  let ordererID: String
   let ordererName: String
   let ordererLevel: Int
 }
