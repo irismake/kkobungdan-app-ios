@@ -109,7 +109,7 @@ struct ApplyDetailView: View {
       }
 
     case .runnerCompleted:
-      Text("요청자 확인 대기 중")
+      Text("행님의 확인을 기다리는중...")
         .textStyle(.heading4)
         .foregroundColor(.gray400)
         .multilineTextAlignment(.center)

@@ -131,7 +131,7 @@ struct MyProposalDetailView: View {
         }
       }
     case .orderCompleted:
-      Text("지원자 확인 대기 중")
+      Text("꼬붕의 확인을 기다리는중...")
         .textStyle(.heading4)
         .foregroundColor(.gray400)
         .multilineTextAlignment(.center)
