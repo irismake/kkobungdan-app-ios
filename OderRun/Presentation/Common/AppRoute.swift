@@ -4,7 +4,7 @@
 //
 //  Created by 김가희 on 4/27/26.
 //
-//  HomeView 의 NavigationStack 에서 사용하는 push 라우팅 enum + ViewModel 팩토리.
+//  MainTabView 의 NavigationStack 에서 사용하는 push 라우팅 enum + ViewModel 팩토리.
 //  더미 데이터 환경에서는 DIContainer 싱글턴 레포지토리를 그대로 사용해 in-memory 상태가 화면 간 공유된다.
 //
 

@@ -15,25 +15,23 @@ final class ProfileViewModel {
   var user: User?
   var isLoading: Bool = false
   var errorMessage: String?
+  var didLogout: Bool = false
 
   private let fetchUserDetailUseCase: FetchUserDetailUseCase
   private let updateAlarmUseCase: UpdateAlarmUseCase
   private let logoutUseCase: LogoutUseCase
   private let tokenStorage: TokenStorage
-  private let onLogout: () -> Void
 
   init(
     fetchUserDetailUseCase: FetchUserDetailUseCase,
     updateAlarmUseCase: UpdateAlarmUseCase,
     logoutUseCase: LogoutUseCase,
-    tokenStorage: TokenStorage = .shared,
-    onLogout: @escaping () -> Void = {}
+    tokenStorage: TokenStorage = .shared
   ) {
     self.fetchUserDetailUseCase = fetchUserDetailUseCase
     self.updateAlarmUseCase = updateAlarmUseCase
     self.logoutUseCase = logoutUseCase
     self.tokenStorage = tokenStorage
-    self.onLogout = onLogout
   }
 
   static func preview() -> ProfileViewModel {
@@ -83,7 +81,7 @@ final class ProfileViewModel {
       tokenStorage.clear()
       profileLogger.warning("로그아웃 처리 실패, 강제 로그아웃 진행: \(error.localizedDescription)")
     }
-    onLogout()
+    didLogout = true
     isLoading = false
   }
 }
