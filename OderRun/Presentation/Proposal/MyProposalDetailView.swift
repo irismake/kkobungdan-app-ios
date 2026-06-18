@@ -139,7 +139,7 @@ struct MyProposalDetailView: View {
         .frame(height: 56)
         .background(Color.gray200)
         .clipShape(RoundedRectangle(cornerRadius: 12))
-    case .allCompleted, .disputed, .cancelled, .refunded:
+    case .allCompleted, .disputed, .cancelled, .resolved:
       EmptyView()
     default:
       VStack(spacing: 8) {

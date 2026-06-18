@@ -22,8 +22,8 @@ enum ProposalStatus: String {
   case allCompleted = "ALL_COMPLETED"
   /// 분쟁 제기됨
   case disputed = "DISPUTED"
-  /// 환불 완료
-  case refunded = "REFUNDED"
+  /// 분쟁 해결
+  case resolved = "RESOLVED"
   /// 오더 취소
   case cancelled = "CANCELLED"
 }

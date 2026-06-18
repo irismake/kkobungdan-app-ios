@@ -24,7 +24,7 @@ extension MyProposal {
     case .posted, .offered: return .waiting
     case .matched, .orderCompleted, .disputed: return .inProgress
     case .allCompleted: return .completed
-    case .cancelled, .refunded: return .cancelled
+    case .cancelled, .resolved: return .cancelled
     }
   }
 }
@@ -35,7 +35,7 @@ extension MyOffer {
     case .waiting: return .waiting
     case .accepted, .runnerCompleted, .disputed: return .inProgress
     case .allCompleted: return .completed
-    case .rejected, .cancelled, .refunded: return .cancelled
+    case .rejected, .cancelled, .resolved: return .cancelled
     }
   }
 }

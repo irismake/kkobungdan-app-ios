@@ -18,8 +18,8 @@ enum OfferStatus: String {
   case allCompleted = "ALL_COMPLETED"
   /// 분쟁 제기됨
   case disputed = "DISPUTED"
-  /// 환불 완료
-  case refunded = "REFUNDED"
+  /// 분쟁 해결
+  case resolved = "RESOLVED"
   /// 다른 지원자가 선택됨 / 요청 자체가 취소됨
   case rejected = "REJECTED"
   /// 요청 취소함

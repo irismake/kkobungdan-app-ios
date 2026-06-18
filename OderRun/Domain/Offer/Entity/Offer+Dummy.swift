@@ -48,8 +48,8 @@ extension Offer {
       make(id: 80, proposalID: 10, runnerID: DummySession.currentUserID, status: .accepted, createdAt: now.addingTimeInterval(-3600)),
       // proposal 11 (내 proposal, ALL_COMPLETED — 정산 완료)
       make(id: 81, proposalID: 11, runnerID: "user-r004", status: .allCompleted, createdAt: now.addingTimeInterval(-10 * 86400)),
-      // proposal 12 (남의 proposal, REFUNDED — 내가 RUNNER, 환불 terminal cascade)
-      make(id: 82, proposalID: 12, runnerID: DummySession.currentUserID, status: .refunded, createdAt: now.addingTimeInterval(-12 * 86400))
+      // proposal 12 (남의 proposal, RESOLVED — 내가 RUNNER, 분쟁 해결 terminal cascade)
+      make(id: 82, proposalID: 12, runnerID: DummySession.currentUserID, status: .resolved, createdAt: now.addingTimeInterval(-12 * 86400))
     ]
   }()
 

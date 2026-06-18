@@ -114,7 +114,7 @@ enum ProposalDisplay {
         return [completedBadge]
       case .disputed:
         return [disputedBadge]
-      case .rejected, .cancelled, .refunded:
+      case .rejected, .cancelled, .resolved:
         return [cancelledBadge]
       }
     }
@@ -132,7 +132,7 @@ enum ProposalDisplay {
       return [completedBadge]
     case .disputed:
       return [disputedBadge]
-    case .cancelled, .refunded:
+    case .cancelled, .resolved:
       return [cancelledBadge]
     }
   }
@@ -152,7 +152,7 @@ enum ProposalDisplay {
       return [completedBadge]
     case .disputed:
       return [disputedBadge]
-    case .cancelled, .refunded:
+    case .cancelled, .resolved:
       return [cancelledBadge]
     }
   }
@@ -169,7 +169,7 @@ enum ProposalDisplay {
       return [completedBadge]
     case .disputed:
       return [disputedBadge]
-    case .rejected, .cancelled, .refunded:
+    case .rejected, .cancelled, .resolved:
       return [cancelledBadge]
     }
   }
