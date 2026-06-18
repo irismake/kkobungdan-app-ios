@@ -45,7 +45,7 @@ struct AddProposalView: View {
 
   private var headerSection: some View {
     VStack(alignment: .leading, spacing: 12) {
-      AppBar(isProgress: true, onBack: onBack)
+      AppBar(progress: (1, 3), onBack: onBack)
 
       VStack(alignment: .leading, spacing: 8) {
         Text("기본 정보 작성")
@@ -78,26 +78,29 @@ struct AddProposalView: View {
   }
 
   private var titleField: some View {
-    TitleTextField(
-      title: "제목",
-      placeholder: "예: 성수동 OO 베이커리 소금빵 웨이팅",
-      text: $title,
-      maxLength: 50,
-      autoFocus: true
-    )
+    LabeledFieldContainer(label: "제목") {
+      FocusTextField(
+        text: $title,
+        placeholder: "예: 성수동 OO 베이커리 소금빵 웨이팅",
+        maxLength: 50,
+        autoFocus: true
+      )
+    }
   }
 
   private var contentField: some View {
-    ContentTextField(
-      title: "내용",
-      placeholder: "만남 장소를 포함한 요청 내용을 자세히 작성해주세요",
-      text: $content,
-      maxLength: 500
-    )
+    LabeledFieldContainer(label: "내용") {
+      ContentTextField(
+        placeholder: "만남 장소를 포함한 요청 내용을 자세히 작성해주세요",
+        text: $content,
+        maxLength: 500
+      )
+    }
   }
 
   private var bottomSection: some View {
     BottomActionBar(title: "다음", isEnabled: isNextEnabled) {
+      UIApplication.shared.endEditing()
       var updated = initialDraft
       updated.title = title
       updated.content = content

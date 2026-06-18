@@ -11,15 +11,18 @@ struct ProposalDetailView: View {
   @State private var viewModel: ProposalDetailViewModel
   var onBack: () -> Void = {}
   var onApply: () -> Void = {}
+  var onMine: () -> Void = {}
 
   init(
     viewModel: ProposalDetailViewModel,
     onBack: @escaping () -> Void = {},
-    onApply: @escaping () -> Void = {}
+    onApply: @escaping () -> Void = {},
+    onMine: @escaping () -> Void = {}
   ) {
     _viewModel = State(initialValue: viewModel)
     self.onBack = onBack
     self.onApply = onApply
+    self.onMine = onMine
   }
 
   var body: some View {
@@ -53,11 +56,14 @@ struct ProposalDetailView: View {
       }
       .padding(.horizontal, Layout.screenHorizontalPadding)
       .padding(.top, 16)
-      .padding(.bottom, 32)
+      .padding(.bottom, 20)
     }
     .background(Color.gray000)
     .task {
       await viewModel.load()
+      if viewModel.isMine {
+        onMine()
+      }
     }
   }
 

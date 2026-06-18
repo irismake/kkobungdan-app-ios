@@ -14,7 +14,7 @@ enum ActivitySegment: String, CaseIterable {
   var title: String {
     switch self {
     case .orderer: return "요청"
-    case .runner: return "웨이팅 기록"
+    case .runner: return "수행 기록"
     }
   }
 }
@@ -40,7 +40,7 @@ enum ActivityFilter: String {
     case .waiting: return [.posted, .offered]
     case .inProgress: return [.matched, .orderCompleted, .disputed]
     case .completed: return [.allCompleted]
-    case .cancelled: return [.cancelled, .refunded]
+    case .cancelled: return [.cancelled, .resolved]
     }
   }
 
@@ -51,7 +51,7 @@ enum ActivityFilter: String {
     case .waiting: return [.waiting]
     case .inProgress: return [.accepted, .runnerCompleted, .disputed]
     case .completed: return [.allCompleted]
-    case .cancelled: return [.rejected, .cancelled, .refunded]
+    case .cancelled: return [.rejected, .cancelled, .resolved]
     }
   }
 }
@@ -104,12 +104,12 @@ struct ActivityView: View {
         .padding(.vertical, 16)
       }
       .background(Color.gray000)
+      .refreshable {
+        await reloadCurrentSegment()
+      }
     }
     // 세그먼트·카테고리가 바뀔 때마다 해당 목록을 status 필터를 적용해 다시 조회한다.
     .task(id: "\(segment.rawValue)-\(filter.rawValue)") {
-      await reloadCurrentSegment()
-    }
-    .refreshable {
       await reloadCurrentSegment()
     }
   }

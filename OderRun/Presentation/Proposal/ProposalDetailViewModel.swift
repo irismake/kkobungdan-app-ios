@@ -17,6 +17,13 @@ final class ProposalDetailViewModel {
   var isApplying: Bool = false
   var hasApplied: Bool = false
 
+  var isMine: Bool {
+    guard let proposal else {
+      return false
+    }
+    return proposal.ordererID == tokenStorage.userID
+  }
+
   private let fetchDetailUseCase: FetchProposalDetailUseCase
   private let createOfferUseCase: CreateOfferUseCase
   private let fetchOffersByProposalUseCase: FetchOffersByProposalUseCase

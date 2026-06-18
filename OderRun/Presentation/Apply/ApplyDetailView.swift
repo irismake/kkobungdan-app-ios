@@ -27,7 +27,7 @@ struct ApplyDetailView: View {
 
       if isMissionCompleted {
         MissionCompleteModal(
-          title: "진행 완료 처리하시겠습니까?",
+          title: "임무 완료 처리하시겠습니까?",
           isApplicant: true,
           infoTitle: "취소 안내",
           infoContent: "완료 처리 후 취소가 불가능하며 문제 발생 시 고객센터 이메일로 문의 부탁드립니다.",
@@ -75,7 +75,7 @@ struct ApplyDetailView: View {
       bottomActionSection
         .padding(.horizontal, Layout.screenHorizontalPadding)
         .padding(.top, 16)
-        .padding(.bottom, 32)
+        .padding(.bottom, 20)
     }
     .background(Color.gray000)
     .task {
@@ -109,7 +109,7 @@ struct ApplyDetailView: View {
       }
 
     case .runnerCompleted:
-      Text("요청자 확인 대기 중")
+      Text("행님의 확인을 기다리는중...")
         .textStyle(.heading4)
         .foregroundColor(.gray400)
         .multilineTextAlignment(.center)

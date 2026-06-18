@@ -28,7 +28,7 @@ struct BirthDateField: View {
   }
 
   var body: some View {
-    SignupFieldContainer(label: "생년월일") {
+    LabeledFieldContainer(label: "생년월일") {
       ZStack(alignment: .leading) {
         display
 
@@ -44,7 +44,7 @@ struct BirthDateField: View {
       }
       .contentShape(Rectangle())
       .onTapGesture { focus.wrappedValue = .birth }
-      .signupFieldBox(isActive: focus.wrappedValue == .birth)
+      .textFieldBox(isActive: focus.wrappedValue == .birth)
     }
   }
 

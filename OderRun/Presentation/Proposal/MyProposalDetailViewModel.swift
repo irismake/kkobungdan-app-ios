@@ -64,7 +64,7 @@ final class MyProposalDetailViewModel {
   /// 미입금(HOLDING)·종료(취소/환불) 상태는 offer 목록을 조회하지 않으므로 `nil`.
   private func offerStatusFilter(for status: ProposalStatus) -> [OfferStatus]? {
     switch status {
-    case .holding, .cancelled, .refunded:
+    case .holding, .cancelled, .resolved:
       return nil
     case .posted, .offered:
       return [.waiting]

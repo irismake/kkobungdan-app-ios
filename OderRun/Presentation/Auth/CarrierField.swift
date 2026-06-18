@@ -15,7 +15,7 @@ struct CarrierField: View {
   let onTap: () -> Void
 
   var body: some View {
-    SignupFieldContainer(label: "통신사") {
+    LabeledFieldContainer(label: "통신사") {
       HStack(spacing: 0) {
         Text(carrier ?? "통신사 선택")
           .textStyle(.inputBody1)
@@ -30,7 +30,7 @@ struct CarrierField: View {
           .frame(width: 24, height: 24)
           .foregroundColor(Color.gray600)
       }
-      .signupFieldBox(isActive: isActive)
+      .textFieldBox(isActive: isActive)
       .contentShape(Rectangle())
       .onTapGesture(perform: onTap)
     }

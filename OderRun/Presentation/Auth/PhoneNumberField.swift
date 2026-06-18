@@ -14,15 +14,14 @@ struct PhoneNumberField: View {
   let onChange: (String) -> Void
 
   var body: some View {
-    SignupFieldContainer(label: "휴대폰 번호") {
-      SignupTextField(
-        text: $phoneNumber,
-        placeholder: "010-1234-5678",
-        keyboardType: .numberPad,
-        focus: focus,
-        focusValue: .phone,
-        onChange: onChange
-      )
-    }
+    // 라벨 없음 — 헤더("휴대폰 정보를 입력해 주세요")가 안내하므로 인증번호 필드와 동일하게 라벨 생략.
+    FocusTextField(
+      text: $phoneNumber,
+      placeholder: "010-1234-5678",
+      keyboardType: .numberPad,
+      focus: focus,
+      focusValue: .phone,
+      onChange: onChange
+    )
   }
 }

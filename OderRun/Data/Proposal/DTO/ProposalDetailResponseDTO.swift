@@ -60,7 +60,7 @@ struct ProposalOwnOfferResponseDTO: Decodable {
 
 extension ProposalDetailResponseDTO {
   func toDomain() -> ProposalDetail {
-    // TODO: ordererID, matchedAt, deliveryReportedAt, receivedConfirmedAt, disputedAt, refundedAt, offers — UI 반영 시 ProposalDetail 엔티티에 추가
+    // TODO: matchedAt, deliveryReportedAt, receivedConfirmedAt, disputedAt, refundedAt, offers — UI 반영 시 ProposalDetail 엔티티에 추가
     ProposalDetail(
       id: id,
       title: title,
@@ -68,6 +68,7 @@ extension ProposalDetailResponseDTO {
       deadline: DateFormatters.parse(deadline),
       errandFee: errandFee,
       status: ProposalStatus(rawValue: status) ?? .posted,
+      ordererID: ordererID,
       ordererName: ordererName,
       ordererLevel: ordererLevel
     )

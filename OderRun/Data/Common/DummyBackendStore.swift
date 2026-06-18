@@ -52,6 +52,7 @@ actor DummyBackendStore {
       deadline: proposal.deadline,
       errandFee: proposal.errandFee,
       status: proposal.status,
+      ordererID: ordererID,
       ordererName: DummySession.displayName(for: ordererID),
       ordererLevel: DummySession.level(for: ordererID)
     )

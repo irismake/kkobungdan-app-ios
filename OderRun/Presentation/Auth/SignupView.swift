@@ -27,6 +27,7 @@ struct SignupView: View {
         VStack(spacing: 32) {
           fields
         }
+        .padding(.horizontal, 16)
         .padding(.bottom, 32)
       }
       .scrollBounceBehavior(.basedOnSize)

@@ -29,7 +29,7 @@ struct SmsLoginView: View {
         .padding(.bottom, 32)
 
       VStack(spacing: 12) {
-        SignupTextField(
+        FocusTextField(
           text: $viewModel.phoneNumber,
           placeholder: "010-1234-5678",
           keyboardType: .numberPad,
