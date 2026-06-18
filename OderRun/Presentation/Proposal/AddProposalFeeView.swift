@@ -111,7 +111,7 @@ struct AddProposalFeeView: View {
 
   private var headerSection: some View {
     VStack(alignment: .leading, spacing: 12) {
-      AppBar(isProgress: true, onBack: onBack)
+      AppBar(progress: (3, 3), onBack: onBack)
 
       VStack(alignment: .leading, spacing: 8) {
         Text("수행비 입력")

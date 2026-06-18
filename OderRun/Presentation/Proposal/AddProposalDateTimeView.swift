@@ -64,7 +64,7 @@ struct AddProposalDateTimeView: View {
 
   private var headerSection: some View {
     VStack(alignment: .leading, spacing: 12) {
-      AppBar(isProgress: true, onBack: onBack)
+      AppBar(progress: (2, 3), onBack: onBack)
 
       VStack(alignment: .leading, spacing: 8) {
         Text("날짜 / 시간 설정")

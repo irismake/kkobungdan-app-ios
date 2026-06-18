@@ -45,7 +45,7 @@ struct AddProposalView: View {
 
   private var headerSection: some View {
     VStack(alignment: .leading, spacing: 12) {
-      AppBar(isProgress: true, onBack: onBack)
+      AppBar(progress: (1, 3), onBack: onBack)
 
       VStack(alignment: .leading, spacing: 8) {
         Text("기본 정보 작성")
@@ -100,6 +100,7 @@ struct AddProposalView: View {
 
   private var bottomSection: some View {
     BottomActionBar(title: "다음", isEnabled: isNextEnabled) {
+      UIApplication.shared.endEditing()
       var updated = initialDraft
       updated.title = title
       updated.content = content

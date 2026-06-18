@@ -9,7 +9,8 @@ import SwiftUI
 
 struct AppBar: View {
   var title: String?
-  var isProgress: Bool = false
+  /// 단계별 진행 표시 (현재 단계, 전체 단계). nil 이면 표시하지 않는다.
+  var progress: (current: Int, total: Int)?
   var onBack: (() -> Void)?
 
   var body: some View {
@@ -31,8 +32,8 @@ struct AppBar: View {
 
         Spacer()
         
-        if isProgress {
-          Text("1/3")
+        if let progress {
+          Text("\(progress.current)/\(progress.total)")
             .textStyle(.body2)
             .foregroundColor(Color.gray900)
         }
