@@ -55,6 +55,11 @@ struct AddProposalDateTimeView: View {
     }
     .background(Color.gray000)
     .navigationBarHidden(true)
+    .onAppear { enforceMinimumTime() }
+    .onChange(of: selectedDate) { _ in enforceMinimumTime() }
+    .onChange(of: isAM) { _ in enforceMinimumTime() }
+    .onChange(of: selectedHour) { _ in enforceMinimumTime() }
+    .onChange(of: selectedMinute) { _ in enforceMinimumTime() }
   }
 
   private var headerSection: some View {
@@ -240,10 +245,9 @@ struct AddProposalDateTimeView: View {
       Color.gray100
         .frame(height: 47)
       HStack(spacing: 8) {
-        TimePickerColumn(values: Array(1 ... 12), selection: $selectedHour, format: "%02d")
-        TimePickerColumn(values: Array(0 ... 59), selection: $selectedMinute, format: "%02d")
+        TimePickerColumn(values: Array(1 ... 12), selection: $selectedHour, format: "%02d", centerShift: 40)
+        TimePickerColumn(values: Array(0 ... 59), selection: $selectedMinute, format: "%02d", centerShift: -40)
       }
-      .padding(.horizontal, 80)
     }
     .padding(.vertical, 16)
   }
@@ -252,9 +256,15 @@ struct AddProposalDateTimeView: View {
     let values: [Int]
     @Binding var selection: Int
     let format: String
+    /// 가로 전체를 드래그 영역으로 두되, 숫자는 기존 디자인 위치(중앙 쪽으로 inset)로 보이게 하는 시각 보정값.
+    let centerShift: CGFloat
 
-    @GestureState private var dragOffset: CGFloat = 0
-    private let rowHeight: CGFloat = 31
+    /// 드래그 중 현재 행을 살짝 따라가게 하는 잔여 오프셋. 손을 떼면 0으로 스냅된다.
+    @State private var visualOffset: CGFloat = 0
+    /// 드래그 시작 시점의 인덱스. 누적 이동량을 이 기준으로 계산한다.
+    @State private var dragStartIndex: Int?
+    /// 행 간 실제 시각 간격(텍스트 24 + 상하 패딩 12 + VStack spacing 12 = 48).
+    private let rowHeight: CGFloat = 48
 
     private var currentIndex: Int {
       values.firstIndex(of: selection) ?? 0
@@ -272,25 +282,53 @@ struct AddProposalDateTimeView: View {
             .padding(.vertical, 6)
         }
       }
-      .offset(y: dragOffset)
-      .animation(.easeOut(duration: 0.15), value: selection)
+      .offset(x: centerShift, y: visualOffset)
+      .frame(maxWidth: .infinity)
       .frame(height: 130)
+      .contentShape(Rectangle())
       .clipped()
-      .gesture(
+      .highPriorityGesture(
         DragGesture()
-          .updating($dragOffset) { value, state, _ in
-            state = value.translation.height
+          .onChanged { value in
+            let start = dragStartIndex ?? currentIndex
+            if dragStartIndex == nil {
+              dragStartIndex = start
+            }
+            let steps = Int((-value.translation.height / rowHeight).rounded())
+            let newIdx = ((start + steps) % values.count + values.count) % values.count
+            if values[newIdx] != selection {
+              selection = values[newIdx]
+            }
+            // 가운데 정렬된 값을 기준으로 한 잔여 오프셋(±rowHeight/2 범위)만 손가락을 따라가게 한다.
+            visualOffset = value.translation.height + CGFloat(steps) * rowHeight
           }
-          .onEnded { value in
-            let steps = -Int((value.translation.height / rowHeight).rounded())
-            let newIdx = (currentIndex + steps + values.count * 100) % values.count
-            selection = values[newIdx]
+          .onEnded { _ in
+            dragStartIndex = nil
+            withAnimation(.easeOut(duration: 0.18)) {
+              visualOffset = 0
+            }
           }
       )
     }
   }
 
   // MARK: - Helpers
+
+  /// 오늘을 선택한 경우, 현재 시간 이전은 선택할 수 없도록 시간을 현재 시각으로 끌어올린다.
+  private func enforceMinimumTime() {
+    guard calendar.isDateInToday(selectedDate) else {
+      return
+    }
+    let now = Date()
+    guard composedDate() < now else {
+      return
+    }
+
+    let hour24 = calendar.component(.hour, from: now)
+    isAM = hour24 < 12
+    selectedHour = Self.toHour12(hour24: hour24)
+    selectedMinute = calendar.component(.minute, from: now)
+  }
 
   private func composedDate() -> Date {
     let hour24: Int
