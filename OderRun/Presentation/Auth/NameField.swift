@@ -13,8 +13,8 @@ struct NameField: View {
   var focus: FocusState<SignupViewModel.Focus?>.Binding
 
   var body: some View {
-    SignupFieldContainer(label: "이름") {
-      SignupTextField(
+    LabeledFieldContainer(label: "이름") {
+      FocusTextField(
         text: $name,
         placeholder: "휴대폰 명의자 이름을 입력해 주세요.",
         focus: focus,

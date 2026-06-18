@@ -7,20 +7,17 @@
 
 import SwiftUI
 
+/// 박스 스타일 여러 줄 텍스트 입력 필드. 라벨은 바깥 `LabeledFieldContainer` 로 붙인다.
 struct ContentTextField: View {
-  let title: String
   let placeholder: String
   @Binding var text: String
   let maxLength: Int
   var height: CGFloat = 160
+  var background: Color = .clear
   @FocusState private var isFocused: Bool
 
   var body: some View {
     VStack(alignment: .leading, spacing: 8) {
-      Text(title)
-        .textStyle(.body2)
-        .foregroundColor(Color.gray800)
-
       ZStack(alignment: .topLeading) {
         if text.isEmpty {
           Text(placeholder)
@@ -44,19 +41,17 @@ struct ContentTextField: View {
           .padding(.vertical, 8)
           .frame(height: height)
       }
-      .background(Color.white)
+      .background(background)
       .clipShape(RoundedRectangle(cornerRadius: 8))
       .overlay(
         RoundedRectangle(cornerRadius: 8)
           .stroke(isFocused ? Color.indigo500 : Color.gray200, lineWidth: 1)
       )
 
-      HStack {
-        Spacer()
-        Text("\(text.count)/\(maxLength)")
-          .textStyle(.caption5)
-          .foregroundColor(Color.gray500)
-      }
+      Text("\(text.count)/\(maxLength)")
+        .textStyle(.caption5)
+        .foregroundColor(Color.gray500)
+        .frame(maxWidth: .infinity, alignment: .trailing)
     }
   }
 }
@@ -67,14 +62,12 @@ struct ContentTextField: View {
 
   VStack(spacing: 24) {
     ContentTextField(
-      title: "내용",
       placeholder: "만남 장소를 포함한 요청 내용을 자세히 작성해주세요",
       text: $text,
       maxLength: 500
     )
 
     ContentTextField(
-      title: "내용 (입력됨)",
       placeholder: "만남 장소를 포함한 요청 내용을 자세히 작성해주세요",
       text: $filled,
       maxLength: 500

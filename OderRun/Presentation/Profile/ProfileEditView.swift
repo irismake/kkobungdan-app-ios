@@ -40,12 +40,13 @@ struct ProfileEditView: View {
         .padding(.top, 8)
         .padding(.bottom, 32)
 
-      TitleTextField(
-        title: "이름",
-        placeholder: "닉네임을 입력해 주세요",
-        text: $nickname,
-        autoFocus: true
-      )
+      LabeledFieldContainer(label: "이름") {
+        FocusTextField(
+          text: $nickname,
+          placeholder: "닉네임을 입력해 주세요",
+          autoFocus: true
+        )
+      }
       .padding(.horizontal, Layout.screenHorizontalPadding)
 
       Spacer(minLength: 0)

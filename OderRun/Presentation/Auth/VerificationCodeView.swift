@@ -41,7 +41,7 @@ struct VerificationCodeView: View {
         .padding(.bottom, 32)
 
       VStack(alignment: .trailing, spacing: 12) {
-        SignupTextField(
+        FocusTextField(
           text: $viewModel.code,
           placeholder: "인증번호 6자리",
           keyboardType: .numberPad,

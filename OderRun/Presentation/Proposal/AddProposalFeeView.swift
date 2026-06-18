@@ -134,21 +134,19 @@ struct AddProposalFeeView: View {
   }
 
   private var feeField: some View {
-    TitleTextField(
-      title: "수행비",
-      placeholder: "금액을 작성해 주세요",
-      text: $feeText,
-      autoFocus: true
-    )
+    LabeledFieldContainer(label: "수행비") {
+      FocusTextField(
+        text: $feeText,
+        placeholder: "금액을 작성해 주세요",
+        keyboardType: .numberPad,
+        autoFocus: true
+      )
+    }
   }
 
   private var accountNumberField: some View {
-    VStack(alignment: .leading, spacing: 8) {
-      Text("계좌번호")
-        .textStyle(.body2)
-        .foregroundColor(Color.gray800)
-
-      SignupTextField(
+    LabeledFieldContainer(label: "계좌번호") {
+      FocusTextField(
         text: $accountNumber,
         placeholder: "환불받을 계좌번호를 입력해 주세요",
         keyboardType: .numberPad,
@@ -159,11 +157,7 @@ struct AddProposalFeeView: View {
   }
 
   private var bankField: some View {
-    VStack(alignment: .leading, spacing: 8) {
-      Text("은행")
-        .textStyle(.body2)
-        .foregroundColor(Color.gray800)
-
+    LabeledFieldContainer(label: "은행") {
       Button {
         focus = nil
         isBankSheetPresented = true
@@ -180,7 +174,7 @@ struct AddProposalFeeView: View {
             .scaledToFit()
             .frame(width: 24, height: 24)
         }
-        .signupFieldBox(isActive: isBankSheetPresented)
+        .textFieldBox(isActive: isBankSheetPresented)
       }
       .buttonStyle(.plain)
     }

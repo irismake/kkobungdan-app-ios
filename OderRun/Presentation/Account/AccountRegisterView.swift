@@ -45,10 +45,9 @@ struct AccountRegisterView: View {
               .textStyle(.body3)
               .foregroundColor(Color.rose500)
               .frame(maxWidth: .infinity, alignment: .leading)
-              .padding(.horizontal, 16)
           }
         }
-        .padding(.vertical, 16)
+        .padding(16)
       }
       .scrollBounceBehavior(.basedOnSize)
     }
@@ -99,8 +98,8 @@ struct AccountRegisterView: View {
   // MARK: - Fields
 
   private var accountNumberField: some View {
-    SignupFieldContainer(label: "계좌번호") {
-      SignupTextField(
+    LabeledFieldContainer(label: "계좌번호") {
+      FocusTextField(
         text: $viewModel.accountNumber,
         placeholder: "환불받을 계좌번호를 입력해 주세요",
         keyboardType: .numberPad,
@@ -111,7 +110,7 @@ struct AccountRegisterView: View {
   }
 
   private var bankField: some View {
-    SignupFieldContainer(label: "은행") {
+    LabeledFieldContainer(label: "은행") {
       Button {
         focus = nil
         viewModel.openBankSheet()
@@ -128,7 +127,7 @@ struct AccountRegisterView: View {
             .scaledToFit()
             .frame(width: 24, height: 24)
         }
-        .signupFieldBox(isActive: viewModel.isBankSheetPresented)
+        .textFieldBox(isActive: viewModel.isBankSheetPresented)
       }
       .buttonStyle(.plain)
     }
