@@ -135,7 +135,7 @@ struct AddProposalFeeView: View {
 
   private var feeField: some View {
     TitleTextField(
-      title: "웨이팅비",
+      title: "수행비",
       placeholder: "금액을 작성해 주세요",
       text: $feeText,
       autoFocus: true

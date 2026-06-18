@@ -68,7 +68,7 @@ struct ApplyCompleteView: View {
       }
       .padding(.horizontal, Layout.screenHorizontalPadding)
       .padding(.top, 16)
-      .padding(.bottom, 32)
+      .padding(.bottom, 20)
     }
     .background(Color.gray000)
   }

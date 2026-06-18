@@ -92,7 +92,7 @@ struct LoginView: View {
           .buttonStyle(.plain)
         }
         .padding(.top, 16)
-        .padding(.bottom, 32)
+        .padding(.bottom, 20)
       }
     }
   }
