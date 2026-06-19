@@ -69,7 +69,6 @@ final class VerificationCodeViewModel {
   /// 인증번호를 발송하고 만료 타이머를 시작한다. 성공하면 true 를 반환한다.
   /// verification 화면 진입 시(`.task`) 호출해 응답(만료 시각)으로 타이머를 시작한다.
   @MainActor
-  @discardableResult
   func sendCode() async -> Bool {
     isLoading = true
     errorMessage = nil
@@ -95,7 +94,7 @@ final class VerificationCodeViewModel {
   func resend() async {
     code = ""
     remainingSeconds = Self.timeoutSeconds
-    await sendCode()
+    _ = await sendCode()
   }
 
   /// 인증번호를 확인한다. 성공하면 true 를 반환한다.

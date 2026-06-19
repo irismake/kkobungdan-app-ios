@@ -19,13 +19,17 @@ actor NotificationRepositoryImpl: NotificationRepositoryProtocol {
     return notifications.sorted { $0.createdAt > $1.createdAt }
   }
 
-  func markAsRead(ids: [Int]) async throws {
+  func markAsRead(ids: [Int]) async throws -> Int {
     try await Task.sleep(nanoseconds: Self.simulatedLatency)
+    var marked = 0
     for id in ids {
       guard let index = notifications.firstIndex(where: { $0.id == id }) else {
         continue
       }
       let existing = notifications[index]
+      if !existing.isRead {
+        marked += 1
+      }
       notifications[index] = AppNotification(
         id: existing.id,
         title: existing.title,
@@ -34,5 +38,17 @@ actor NotificationRepositoryImpl: NotificationRepositoryProtocol {
         isRead: true
       )
     }
+    return marked
+  }
+
+  func fetchStats() async throws -> NotificationStats {
+    try await Task.sleep(nanoseconds: Self.simulatedLatency)
+    let unread = notifications.filter { !$0.isRead }.count
+    return NotificationStats(
+      total: notifications.count,
+      unread: unread,
+      failed: 0,
+      read: notifications.count - unread
+    )
   }
 }

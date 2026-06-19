@@ -368,7 +368,6 @@ actor DummyBackendStore {
     proposals[index] = with(proposal, status: .offered)
   }
 
-  @discardableResult
   private func acceptOfferAndRejectOthers(acceptedOfferID: Int64, proposalID: Int64) -> Int {
     var rejectedCount = 0
     for index in offers.indices where offers[index].proposalID == proposalID {
