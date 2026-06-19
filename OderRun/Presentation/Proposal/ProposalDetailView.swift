@@ -80,10 +80,10 @@ struct ProposalDetailView: View {
       ProposalCard(
         title: proposal.title,
         description: proposal.content,
-        date: ProposalDisplay.dateString(proposal.deadline),
-        time: ProposalDisplay.timeString(proposal.deadline),
-        fee: ProposalDisplay.feeString(proposal.errandFee),
-        badges: ProposalDisplay.badges(proposal: proposal)
+        date: ProposalFormatter.dateString(proposal.deadline),
+        time: ProposalFormatter.timeString(proposal.deadline),
+        fee: ProposalFormatter.feeString(proposal.errandFee),
+        badges: ActivityStatusBadge.badges(proposal: proposal)
       )
     } else if let errorMessage = viewModel.errorMessage {
       Text(errorMessage)

@@ -88,7 +88,7 @@ struct OfferListView: View {
       RunnerCard(
         nickname: runner.runnerName,
         level: runner.runnerLevel,
-        appliedAt: ProposalDisplay.appliedAtString(runner.createdAt),
+        appliedAt: ProposalFormatter.appliedAtString(runner.createdAt),
         onSelect: {
           selectedRunner = runner
           isSelectModalPresented = true

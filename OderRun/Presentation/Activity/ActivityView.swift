@@ -11,7 +11,7 @@ struct ActivityView: View {
   @State private var proposalsViewModel: MyProposalsViewModel
   @State private var offersViewModel: MyOffersViewModel
   @State private var segment: ActivitySegment = .orderer
-  @State private var filter: ActivityFilter = .all
+  @State private var filter: ActivityStatusFilter = .all
 
   var onSelectOrdererProposal: (Int64) -> Void = { _ in }
   var onSelectRunnerItem: (_ proposalID: Int64, _ offerID: Int64) -> Void = { _, _ in }
@@ -178,7 +178,7 @@ struct ActivityView: View {
   }
 
   private var filterChips: some View {
-    let cases = segment == .orderer ? ActivityFilter.ordererCases : ActivityFilter.runnerCases
+    let cases = segment == .orderer ? ActivityStatusFilter.ordererCases : ActivityStatusFilter.runnerCases
     return ScrollView(.horizontal, showsIndicators: false) {
       HStack(spacing: 8) {
         ForEach(cases, id: \.self) { item in
@@ -208,10 +208,10 @@ struct ActivityView: View {
     ProposalCard(
       title: proposal.title,
       description: proposal.content,
-      date: ProposalDisplay.dateString(proposal.deadline),
-      time: ProposalDisplay.timeString(proposal.deadline),
-      fee: ProposalDisplay.feeString(proposal.errandFee),
-      badges: ProposalDisplay.badges(myProposal: proposal)
+      date: ProposalFormatter.dateString(proposal.deadline),
+      time: ProposalFormatter.timeString(proposal.deadline),
+      fee: ProposalFormatter.feeString(proposal.errandFee),
+      badges: ActivityStatusBadge.badges(myProposal: proposal)
     )
   }
 
@@ -220,10 +220,10 @@ struct ActivityView: View {
     return ProposalCard(
       title: proposal?.title ?? "",
       description: proposal?.content ?? "",
-      date: ProposalDisplay.dateString(proposal?.deadline ?? offer.createdAt),
-      time: ProposalDisplay.timeString(proposal?.deadline ?? offer.createdAt),
-      fee: proposal.map { ProposalDisplay.feeString($0.errandFee) } ?? "",
-      badges: ProposalDisplay.badges(myOffer: offer)
+      date: ProposalFormatter.dateString(proposal?.deadline ?? offer.createdAt),
+      time: ProposalFormatter.timeString(proposal?.deadline ?? offer.createdAt),
+      fee: proposal.map { ProposalFormatter.feeString($0.errandFee) } ?? "",
+      badges: ActivityStatusBadge.badges(myOffer: offer)
     )
   }
 }

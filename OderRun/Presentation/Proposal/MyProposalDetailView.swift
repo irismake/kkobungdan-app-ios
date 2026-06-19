@@ -30,7 +30,7 @@ struct MyProposalDetailView: View {
     guard let proposal = viewModel.proposal else {
       return []
     }
-    return ProposalDisplay.badges(proposal: proposal)
+    return ActivityStatusBadge.badges(proposal: proposal)
   }
 
   var body: some View {
@@ -76,7 +76,7 @@ struct MyProposalDetailView: View {
                 MatchedRunnerSection(
                   nickname: matched.runnerName,
                   level: matched.runnerLevel,
-                  appliedAt: ProposalDisplay.appliedAtString(matched.createdAt)
+                  appliedAt: ProposalFormatter.appliedAtString(matched.createdAt)
                 )
               }
             }
@@ -171,9 +171,9 @@ struct MyProposalDetailView: View {
       ProposalCard(
         title: proposal.title,
         description: proposal.content,
-        date: ProposalDisplay.dateString(proposal.deadline),
-        time: ProposalDisplay.timeString(proposal.deadline),
-        fee: ProposalDisplay.feeString(proposal.errandFee),
+        date: ProposalFormatter.dateString(proposal.deadline),
+        time: ProposalFormatter.timeString(proposal.deadline),
+        fee: ProposalFormatter.feeString(proposal.errandFee),
         badges: statusBadges
       )
     } else if viewModel.isLoading {
