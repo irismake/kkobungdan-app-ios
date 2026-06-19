@@ -15,7 +15,7 @@ struct MatchedRunnerSection: View {
 
   var body: some View {
     VStack(alignment: .leading, spacing: 24) {
-      OrdererInfoHeader(name: nickname, level: level)
+      UserInfoHeader(name: nickname, level: level)
 
       Text(appliedAt)
         .textStyle(.caption5)

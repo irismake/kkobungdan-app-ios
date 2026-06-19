@@ -58,7 +58,7 @@ struct OfferCompleteView: View {
 
       // Bottom buttons
       VStack(spacing: 8) {
-        ConfirmButton(title: "확인") {
+        FillButton(title: "확인") {
           onConfirm()
         }
 

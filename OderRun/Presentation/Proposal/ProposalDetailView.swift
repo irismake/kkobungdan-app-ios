@@ -46,7 +46,7 @@ struct ProposalDetailView: View {
       }
 
       VStack(spacing: 0) {
-        ConfirmButton(
+        FillButton(
           title: offerButtonTitle,
           isEnabled: !viewModel.hasApplied
         ) {
@@ -74,7 +74,7 @@ struct ProposalDetailView: View {
   @ViewBuilder
   private var proposalCardSection: some View {
     if let proposal = viewModel.proposal {
-      OrdererInfoHeader(name: proposal.ordererName, level: proposal.ordererLevel)
+      UserInfoHeader(name: proposal.ordererName, level: proposal.ordererLevel)
         .padding(.leading, 16)
 
       ProposalCard(

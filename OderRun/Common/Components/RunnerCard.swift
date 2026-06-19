@@ -17,7 +17,7 @@ struct RunnerCard: View {
     VStack(alignment: .leading, spacing: 12) {
       // 상단 콘텐츠 영역
       VStack(alignment: .leading, spacing: 24) {
-        OrdererInfoHeader(name: nickname, level: level)
+        UserInfoHeader(name: nickname, level: level)
 
         // 지원 일시
         Text(appliedAt)

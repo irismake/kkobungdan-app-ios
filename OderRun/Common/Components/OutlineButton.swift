@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-/// 흰 배경 + 회색 테두리의 보조 액션 버튼. ConfirmButton 의 대응 스타일.
+/// 흰 배경 + 회색 테두리의 보조 액션 버튼. FillButton 의 대응 스타일.
 struct OutlineButton: View {
   let title: String
   let action: () -> Void

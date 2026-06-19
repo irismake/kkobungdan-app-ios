@@ -79,7 +79,7 @@ struct ProfileView: View {
 
   private var profileCard: some View {
     VStack(alignment: .leading, spacing: 20) {
-      OrdererInfoHeader(name: nickname, level: level, spacing: 24)
+      UserInfoHeader(name: nickname, level: level, spacing: 24)
 
       editProfileButton
     }

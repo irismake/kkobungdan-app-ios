@@ -124,7 +124,7 @@ struct MyProposalDetailView: View {
     switch viewModel.proposal?.status {
     case .matched:
       VStack(spacing: 8) {
-        MeetButton { isMissionCompleted = true }
+        MissionCompleteButton { isMissionCompleted = true }
 
         OutlineButton(title: "임무 중단") {
           // TODO: 분쟁 기능 추가
@@ -144,7 +144,7 @@ struct MyProposalDetailView: View {
     default:
       VStack(spacing: 8) {
         if viewModel.runnerCount > 0 {
-          ConfirmButton(title: "꼬붕 지원자(\(viewModel.runnerCount))") {
+          FillButton(title: "꼬붕 지원자(\(viewModel.runnerCount))") {
             onShowRunners()
           }
         } else {

@@ -101,7 +101,7 @@ struct OfferDetailView: View {
     switch viewModel.offer?.status {
     case .accepted:
       VStack(spacing: 8) {
-        MeetButton { isMissionCompleted = true }
+        MissionCompleteButton { isMissionCompleted = true }
 
         OutlineButton(title: "임무 중단") {
           // TODO: 분쟁 기능 추가
@@ -131,7 +131,7 @@ struct OfferDetailView: View {
   @ViewBuilder
   private var proposalCardSection: some View {
     if let proposal = viewModel.proposal {
-      OrdererInfoHeader(name: proposal.ordererName, level: proposal.ordererLevel)
+      UserInfoHeader(name: proposal.ordererName, level: proposal.ordererLevel)
         .padding(.leading, 16)
 
       ProposalCard(
