@@ -27,6 +27,12 @@ final class SettlementRepository: SettlementRepositoryProtocol {
     return dto?.toDomain()
   }
 
+  func fetchBankNames() async throws -> [String] {
+    let dto: SettlementBankNamesResponseDTO =
+      try await client.get("/v1/settlement/banks")
+    return dto.toDomain()
+  }
+
   func saveAccount(
     bankName: String,
     accountNumber: String,

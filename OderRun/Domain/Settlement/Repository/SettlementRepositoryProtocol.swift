@@ -10,6 +10,7 @@ import Foundation
 protocol SettlementRepositoryProtocol: Sendable {
   /// 계좌 미등록 시 `nil` 을 반환한다.
   func fetchAccount() async throws -> SettlementAccount?
+  func fetchBankNames() async throws -> [String]
   func saveAccount(
     bankName: String,
     accountNumber: String,
