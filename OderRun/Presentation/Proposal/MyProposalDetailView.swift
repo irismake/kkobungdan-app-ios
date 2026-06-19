@@ -11,18 +11,18 @@ struct MyProposalDetailView: View {
   @State private var viewModel: MyProposalDetailViewModel
   @State private var isMissionCompleted: Bool = false
   var onBack: () -> Void = {}
-  var onShowApplicants: () -> Void = {}
+  var onShowRunners: () -> Void = {}
   var onAccepted: () -> Void = {}
 
   init(
     viewModel: MyProposalDetailViewModel,
     onBack: @escaping () -> Void = {},
-    onShowApplicants: @escaping () -> Void = {},
+    onShowRunners: @escaping () -> Void = {},
     onAccepted: @escaping () -> Void = {}
   ) {
     _viewModel = State(initialValue: viewModel)
     self.onBack = onBack
-    self.onShowApplicants = onShowApplicants
+    self.onShowRunners = onShowRunners
     self.onAccepted = onAccepted
   }
 
@@ -30,7 +30,7 @@ struct MyProposalDetailView: View {
     guard let proposal = viewModel.proposal else {
       return []
     }
-    return ProposalDisplay.badges(proposal: proposal)
+    return ActivityStatusBadge.badges(proposal: proposal)
   }
 
   var body: some View {
@@ -40,7 +40,7 @@ struct MyProposalDetailView: View {
       if isMissionCompleted {
         MissionCompleteModal(
           title: "진행 완료 처리하시겠습니까?",
-          isApplicant: false,
+          isRunner: false,
           infoTitle: "취소 안내",
           infoContent: "완료 처리 후 취소가 불가능하며 문제 발생 시 고객센터 이메일로 문의 부탁드립니다.",
           onCancel: { isMissionCompleted = false },
@@ -76,7 +76,7 @@ struct MyProposalDetailView: View {
                 MatchedRunnerSection(
                   nickname: matched.runnerName,
                   level: matched.runnerLevel,
-                  appliedAt: ProposalDisplay.appliedAtString(matched.createdAt)
+                  appliedAt: ProposalFormatter.appliedAtString(matched.createdAt)
                 )
               }
             }
@@ -124,7 +124,7 @@ struct MyProposalDetailView: View {
     switch viewModel.proposal?.status {
     case .matched:
       VStack(spacing: 8) {
-        MeetButton { isMissionCompleted = true }
+        MissionCompleteButton { isMissionCompleted = true }
 
         OutlineButton(title: "임무 중단") {
           // TODO: 분쟁 기능 추가
@@ -143,9 +143,9 @@ struct MyProposalDetailView: View {
       EmptyView()
     default:
       VStack(spacing: 8) {
-        if viewModel.applicantCount > 0 {
-          ConfirmButton(title: "꼬붕 지원자(\(viewModel.applicantCount))") {
-            onShowApplicants()
+        if viewModel.runnerCount > 0 {
+          FillButton(title: "꼬붕 지원자(\(viewModel.runnerCount))") {
+            onShowRunners()
           }
         } else {
           Text("아직 지원한 꼬붕이 없습니다")
@@ -171,9 +171,9 @@ struct MyProposalDetailView: View {
       ProposalCard(
         title: proposal.title,
         description: proposal.content,
-        date: ProposalDisplay.dateString(proposal.deadline),
-        time: ProposalDisplay.timeString(proposal.deadline),
-        fee: ProposalDisplay.feeString(proposal.errandFee),
+        date: ProposalFormatter.dateString(proposal.deadline),
+        time: ProposalFormatter.timeString(proposal.deadline),
+        fee: ProposalFormatter.feeString(proposal.errandFee),
         badges: statusBadges
       )
     } else if viewModel.isLoading {

@@ -75,7 +75,7 @@ struct LoginView: View {
 
       ScreenContainer {
         VStack(spacing: 10) {
-          ConfirmButton(title: "시작하기", action: { verificationIntent = .signup })
+          FillButton(title: "시작하기", action: { verificationIntent = .signup })
 
           Button(action: { verificationIntent = .login }) {
             HStack(spacing: 2) {

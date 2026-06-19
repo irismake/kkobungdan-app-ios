@@ -1,5 +1,5 @@
 //
-//  ApplyDetailViewModel.swift
+//  OfferDetailViewModel.swift
 //  OderRun
 //
 //  Created by 김가희 on 4/22/26.
@@ -8,7 +8,7 @@
 import Foundation
 
 @Observable
-final class ApplyDetailViewModel {
+final class OfferDetailViewModel {
   let proposalID: Int64
   let offerID: Int64
 

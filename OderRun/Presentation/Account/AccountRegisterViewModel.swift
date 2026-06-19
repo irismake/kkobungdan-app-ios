@@ -14,7 +14,7 @@ final class AccountRegisterViewModel {
   var accountNumber: String = ""
   var selectedBank: String?
   var isBankSheetPresented: Bool = false
-  var isApplying: Bool = false
+  var isOffering: Bool = false
   var errorMessage: String?
 
   /// 임무 수행비를 받을 은행 목록.
@@ -31,8 +31,8 @@ final class AccountRegisterViewModel {
   }
 
   /// 계좌번호 입력 + 은행 선택이 모두 끝나야 지원 가능.
-  var canApply: Bool {
-    !accountNumber.isEmpty && selectedBank != nil && !isApplying
+  var canOffer: Bool {
+    !accountNumber.isEmpty && selectedBank != nil && !isOffering
   }
 
   func openBankSheet() {
@@ -51,20 +51,20 @@ final class AccountRegisterViewModel {
   /// 임무 지원하기. 계좌 등록 후 실제 offer 를 생성한다.
   /// (더미 환경에서는 계좌번호·은행은 서버 스펙이 없어 UI 상태로만 보관한다.)
   @MainActor
-  func apply() async -> Bool {
-    guard canApply else {
+  func offer() async -> Bool {
+    guard canOffer else {
       return false
     }
-    isApplying = true
+    isOffering = true
     errorMessage = nil
     do {
       _ = try await createOfferUseCase.execute(proposalID: proposalID)
-      isApplying = false
+      isOffering = false
       return true
     } catch {
       errorMessage = "지원에 실패했어요. 잠시 후 다시 시도해주세요."
     }
-    isApplying = false
+    isOffering = false
     return false
   }
 }

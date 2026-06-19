@@ -19,7 +19,7 @@ struct BottomActionBar: View {
         .frame(height: 1)
 
       ScreenContainer {
-        ConfirmButton(title: title, isEnabled: isEnabled, action: action)
+        FillButton(title: title, isEnabled: isEnabled, action: action)
           .padding(.top, 16)
           .padding(.bottom, 20)
       }

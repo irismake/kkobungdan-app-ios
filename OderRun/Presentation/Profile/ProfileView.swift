@@ -1,6 +1,7 @@
 import SwiftUI
 
 struct ProfileView: View {
+  @Environment(SessionViewModel.self) private var session
   @State private var viewModel: ProfileViewModel
 
   private let appVersion = "v1.0.0"
@@ -57,6 +58,11 @@ struct ProfileView: View {
     .task {
       await viewModel.load()
     }
+    .onChange(of: viewModel.didLogout) { _, didLogout in
+      if didLogout {
+        session.isLoggedIn = false
+      }
+    }
     .fullScreenCover(isPresented: $isEditingProfile) {
       ProfileEditView(
         initialNickname: nickname,
@@ -73,7 +79,7 @@ struct ProfileView: View {
 
   private var profileCard: some View {
     VStack(alignment: .leading, spacing: 20) {
-      OrdererInfoHeader(name: nickname, level: level, spacing: 24)
+      UserInfoHeader(name: nickname, level: level, spacing: 24)
 
       editProfileButton
     }

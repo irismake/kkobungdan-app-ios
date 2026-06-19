@@ -7,60 +7,11 @@
 
 import SwiftUI
 
-enum ActivitySegment: String, CaseIterable {
-  case orderer
-  case runner
-
-  var title: String {
-    switch self {
-    case .orderer: return "요청"
-    case .runner: return "수행 기록"
-    }
-  }
-}
-
-enum ActivityFilter: String {
-  case all = "전체"
-  case unpaid = "미입금"
-  case waiting = "대기중"
-  case inProgress = "진행중"
-  case completed = "완료"
-  case cancelled = "취소"
-
-  /// orderer(요청) 세그먼트 카테고리.
-  static let ordererCases: [ActivityFilter] = [.all, .unpaid, .waiting, .inProgress, .completed, .cancelled]
-  /// runner(웨이팅 기록) 세그먼트 카테고리. 러너 offer 에는 '미입금' 상태가 없다.
-  static let runnerCases: [ActivityFilter] = [.all, .waiting, .inProgress, .completed, .cancelled]
-
-  /// `/v1/proposal/own` 조회 시 보낼 status 필터. `all` 은 빈 배열(전체).
-  var proposalStatuses: [ProposalStatus] {
-    switch self {
-    case .all: return []
-    case .unpaid: return [.holding]
-    case .waiting: return [.posted, .offered]
-    case .inProgress: return [.matched, .orderCompleted, .disputed]
-    case .completed: return [.allCompleted]
-    case .cancelled: return [.cancelled, .resolved]
-    }
-  }
-
-  /// `/v1/offer/own` 조회 시 보낼 status 필터. `all` 은 빈 배열(전체).
-  var offerStatuses: [OfferStatus] {
-    switch self {
-    case .all, .unpaid: return []
-    case .waiting: return [.waiting]
-    case .inProgress: return [.accepted, .runnerCompleted, .disputed]
-    case .completed: return [.allCompleted]
-    case .cancelled: return [.rejected, .cancelled, .resolved]
-    }
-  }
-}
-
 struct ActivityView: View {
   @State private var proposalsViewModel: MyProposalsViewModel
   @State private var offersViewModel: MyOffersViewModel
   @State private var segment: ActivitySegment = .orderer
-  @State private var filter: ActivityFilter = .all
+  @State private var filter: ActivityStatusFilter = .all
 
   var onSelectOrdererProposal: (Int64) -> Void = { _ in }
   var onSelectRunnerItem: (_ proposalID: Int64, _ offerID: Int64) -> Void = { _, _ in }
@@ -227,7 +178,7 @@ struct ActivityView: View {
   }
 
   private var filterChips: some View {
-    let cases = segment == .orderer ? ActivityFilter.ordererCases : ActivityFilter.runnerCases
+    let cases = segment == .orderer ? ActivityStatusFilter.ordererCases : ActivityStatusFilter.runnerCases
     return ScrollView(.horizontal, showsIndicators: false) {
       HStack(spacing: 8) {
         ForEach(cases, id: \.self) { item in
@@ -257,10 +208,10 @@ struct ActivityView: View {
     ProposalCard(
       title: proposal.title,
       description: proposal.content,
-      date: ProposalDisplay.dateString(proposal.deadline),
-      time: ProposalDisplay.timeString(proposal.deadline),
-      fee: ProposalDisplay.feeString(proposal.errandFee),
-      badges: ProposalDisplay.badges(myProposal: proposal)
+      date: ProposalFormatter.dateString(proposal.deadline),
+      time: ProposalFormatter.timeString(proposal.deadline),
+      fee: ProposalFormatter.feeString(proposal.errandFee),
+      badges: ActivityStatusBadge.badges(myProposal: proposal)
     )
   }
 
@@ -269,10 +220,10 @@ struct ActivityView: View {
     return ProposalCard(
       title: proposal?.title ?? "",
       description: proposal?.content ?? "",
-      date: ProposalDisplay.dateString(proposal?.deadline ?? offer.createdAt),
-      time: ProposalDisplay.timeString(proposal?.deadline ?? offer.createdAt),
-      fee: proposal.map { ProposalDisplay.feeString($0.errandFee) } ?? "",
-      badges: ProposalDisplay.badges(myOffer: offer)
+      date: ProposalFormatter.dateString(proposal?.deadline ?? offer.createdAt),
+      time: ProposalFormatter.timeString(proposal?.deadline ?? offer.createdAt),
+      fee: proposal.map { ProposalFormatter.feeString($0.errandFee) } ?? "",
+      badges: ActivityStatusBadge.badges(myOffer: offer)
     )
   }
 }

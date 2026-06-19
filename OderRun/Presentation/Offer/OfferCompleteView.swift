@@ -1,5 +1,5 @@
 //
-//  ApplyCompleteView.swift
+//  OfferCompleteView.swift
 //  OderRun
 //
 //  Created by 김가희 on 3/26/26.
@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-struct ApplyCompleteView: View {
+struct OfferCompleteView: View {
   var onConfirm: () -> Void = {}
   var onViewHistory: () -> Void = {}
 
@@ -58,7 +58,7 @@ struct ApplyCompleteView: View {
 
       // Bottom buttons
       VStack(spacing: 8) {
-        ConfirmButton(title: "확인") {
+        FillButton(title: "확인") {
           onConfirm()
         }
 
@@ -75,5 +75,5 @@ struct ApplyCompleteView: View {
 }
 
 #Preview {
-  ApplyCompleteView()
+  OfferCompleteView()
 }

@@ -1,5 +1,5 @@
 //
-//  OrdererInfoHeader.swift
+//  UserInfoHeader.swift
 //  OderRun
 //
 //  Created by 김가희 on 6/17/26.
@@ -9,7 +9,7 @@
 
 import SwiftUI
 
-struct OrdererInfoHeader: View {
+struct UserInfoHeader: View {
   let name: String
   let level: Int
   var spacing: CGFloat = 4
@@ -28,7 +28,7 @@ struct OrdererInfoHeader: View {
 }
 
 #Preview {
-  OrdererInfoHeader(name: "{닉네임}", level: 5)
+  UserInfoHeader(name: "{닉네임}", level: 5)
     .padding(16)
     .background(Color.gray000)
 }

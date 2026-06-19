@@ -25,7 +25,7 @@ struct NotificationView: View {
               NotificationItemView(
                 title: item.title,
                 message: item.body,
-                timeString: ProposalDisplay.relativeTimeString(item.createdAt),
+                timeString: ProposalFormatter.relativeTimeString(item.createdAt),
                 isRead: item.isRead
               )
               .onTapGesture {

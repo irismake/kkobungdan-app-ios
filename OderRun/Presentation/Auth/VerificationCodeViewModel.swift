@@ -67,11 +67,13 @@ final class VerificationCodeViewModel {
   }
 
   /// 인증번호를 발송하고 만료 타이머를 시작한다. 성공하면 true 를 반환한다.
-  /// 인증번호 입력 화면 진입 전에 호출해 응답(만료 시각)을 받은 뒤 이동한다.
+  /// verification 화면 진입 시(`.task`) 호출해 응답(만료 시각)으로 타이머를 시작한다.
   @MainActor
   @discardableResult
   func sendCode() async -> Bool {
+    isLoading = true
     errorMessage = nil
+    defer { isLoading = false }
     do {
       let verification: PhoneVerification
       switch flow {

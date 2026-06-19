@@ -30,7 +30,7 @@ final class MyProposalDetailViewModel {
     proposal?.status == .orderCompleted
   }
 
-  var applicantCount: Int {
+  var runnerCount: Int {
     offers.filter { $0.status == .waiting || $0.status == .accepted }.count
   }
 

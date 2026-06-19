@@ -1,5 +1,5 @@
 //
-//  ApplyDetailView.swift
+//  OfferDetailView.swift
 //  OderRun
 //
 //  Created by 김가희 on 3/26/26.
@@ -7,14 +7,14 @@
 
 import SwiftUI
 
-struct ApplyDetailView: View {
-  @State private var viewModel: ApplyDetailViewModel
+struct OfferDetailView: View {
+  @State private var viewModel: OfferDetailViewModel
   @State private var isMissionCompleted: Bool = false
   @State private var isCancelConfirmPresented: Bool = false
   var onBack: () -> Void = {}
 
   init(
-    viewModel: ApplyDetailViewModel,
+    viewModel: OfferDetailViewModel,
     onBack: @escaping () -> Void = {}
   ) {
     _viewModel = State(initialValue: viewModel)
@@ -28,7 +28,7 @@ struct ApplyDetailView: View {
       if isMissionCompleted {
         MissionCompleteModal(
           title: "임무 완료 처리하시겠습니까?",
-          isApplicant: true,
+          isRunner: true,
           infoTitle: "취소 안내",
           infoContent: "완료 처리 후 취소가 불가능하며 문제 발생 시 고객센터 이메일로 문의 부탁드립니다.",
           onCancel: { isMissionCompleted = false },
@@ -101,7 +101,7 @@ struct ApplyDetailView: View {
     switch viewModel.offer?.status {
     case .accepted:
       VStack(spacing: 8) {
-        MeetButton { isMissionCompleted = true }
+        MissionCompleteButton { isMissionCompleted = true }
 
         OutlineButton(title: "임무 중단") {
           // TODO: 분쟁 기능 추가
@@ -131,16 +131,16 @@ struct ApplyDetailView: View {
   @ViewBuilder
   private var proposalCardSection: some View {
     if let proposal = viewModel.proposal {
-      OrdererInfoHeader(name: proposal.ordererName, level: proposal.ordererLevel)
+      UserInfoHeader(name: proposal.ordererName, level: proposal.ordererLevel)
         .padding(.leading, 16)
 
       ProposalCard(
         title: proposal.title,
         description: proposal.content,
-        date: ProposalDisplay.dateString(proposal.deadline),
-        time: ProposalDisplay.timeString(proposal.deadline),
-        fee: ProposalDisplay.feeString(proposal.errandFee),
-        badges: ProposalDisplay.badges(proposal: proposal)
+        date: ProposalFormatter.dateString(proposal.deadline),
+        time: ProposalFormatter.timeString(proposal.deadline),
+        fee: ProposalFormatter.feeString(proposal.errandFee),
+        badges: ActivityStatusBadge.badges(proposal: proposal)
       )
     } else if let errorMessage = viewModel.errorMessage {
       Text(errorMessage)

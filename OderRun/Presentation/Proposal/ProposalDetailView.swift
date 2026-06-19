@@ -10,18 +10,18 @@ import SwiftUI
 struct ProposalDetailView: View {
   @State private var viewModel: ProposalDetailViewModel
   var onBack: () -> Void = {}
-  var onApply: () -> Void = {}
+  var onOffer: () -> Void = {}
   var onMine: () -> Void = {}
 
   init(
     viewModel: ProposalDetailViewModel,
     onBack: @escaping () -> Void = {},
-    onApply: @escaping () -> Void = {},
+    onOffer: @escaping () -> Void = {},
     onMine: @escaping () -> Void = {}
   ) {
     _viewModel = State(initialValue: viewModel)
     self.onBack = onBack
-    self.onApply = onApply
+    self.onOffer = onOffer
     self.onMine = onMine
   }
 
@@ -46,12 +46,12 @@ struct ProposalDetailView: View {
       }
 
       VStack(spacing: 0) {
-        ConfirmButton(
-          title: applyButtonTitle,
+        FillButton(
+          title: offerButtonTitle,
           isEnabled: !viewModel.hasApplied
         ) {
           // TODO: 계좌번호 여부에 따라 분기
-          onApply()
+          onOffer()
         }
       }
       .padding(.horizontal, Layout.screenHorizontalPadding)
@@ -67,23 +67,23 @@ struct ProposalDetailView: View {
     }
   }
 
-  private var applyButtonTitle: String {
+  private var offerButtonTitle: String {
     viewModel.hasApplied ? "지원 완료" : "지원하기"
   }
 
   @ViewBuilder
   private var proposalCardSection: some View {
     if let proposal = viewModel.proposal {
-      OrdererInfoHeader(name: proposal.ordererName, level: proposal.ordererLevel)
+      UserInfoHeader(name: proposal.ordererName, level: proposal.ordererLevel)
         .padding(.leading, 16)
 
       ProposalCard(
         title: proposal.title,
         description: proposal.content,
-        date: ProposalDisplay.dateString(proposal.deadline),
-        time: ProposalDisplay.timeString(proposal.deadline),
-        fee: ProposalDisplay.feeString(proposal.errandFee),
-        badges: ProposalDisplay.badges(proposal: proposal)
+        date: ProposalFormatter.dateString(proposal.deadline),
+        time: ProposalFormatter.timeString(proposal.deadline),
+        fee: ProposalFormatter.feeString(proposal.errandFee),
+        badges: ActivityStatusBadge.badges(proposal: proposal)
       )
     } else if let errorMessage = viewModel.errorMessage {
       Text(errorMessage)

@@ -1,5 +1,5 @@
 //
-//  ApplicantListView.swift
+//  OfferListView.swift
 //  OderRun
 //
 //  Created by 김가희 on 3/26/26.
@@ -7,25 +7,25 @@
 
 import SwiftUI
 
-struct ApplicantListView: View {
-  @State private var viewModel: ApplicantListViewModel
+struct OfferListView: View {
+  @State private var viewModel: OfferListViewModel
   var onBack: () -> Void = {}
   var onAccepted: () -> Void = {}
-  var onSelectApplicant: (_ proposalID: Int64, _ offerID: Int64) -> Void = { _, _ in }
+  var onSelectRunner: (_ proposalID: Int64, _ offerID: Int64) -> Void = { _, _ in }
 
   @State private var isSelectModalPresented: Bool = false
-  @State private var selectedApplicant: Offer?
+  @State private var selectedRunner: Offer?
 
   init(
-    viewModel: ApplicantListViewModel,
+    viewModel: OfferListViewModel,
     onBack: @escaping () -> Void = {},
     onAccepted: @escaping () -> Void = {},
-    onSelectApplicant: @escaping (_ proposalID: Int64, _ offerID: Int64) -> Void = { _, _ in }
+    onSelectRunner: @escaping (_ proposalID: Int64, _ offerID: Int64) -> Void = { _, _ in }
   ) {
     _viewModel = State(initialValue: viewModel)
     self.onBack = onBack
     self.onAccepted = onAccepted
-    self.onSelectApplicant = onSelectApplicant
+    self.onSelectRunner = onSelectRunner
   }
 
   var body: some View {
@@ -37,15 +37,15 @@ struct ApplicantListView: View {
           VStack(alignment: .leading, spacing: 12) {
             headerSection
 
-            if viewModel.isLoading, viewModel.applicants.isEmpty {
+            if viewModel.isLoading, viewModel.runners.isEmpty {
               ProgressView().padding(.top, 20)
-            } else if let errorMessage = viewModel.errorMessage, viewModel.applicants.isEmpty {
+            } else if let errorMessage = viewModel.errorMessage, viewModel.runners.isEmpty {
               Text(errorMessage)
                 .textStyle(.body3)
                 .foregroundColor(Color.rose500)
             } else {
-              ForEach(viewModel.applicants) { applicant in
-                applicantCard(applicant)
+              ForEach(viewModel.runners) { runner in
+                runnerCard(runner)
               }
             }
           }
@@ -61,19 +61,19 @@ struct ApplicantListView: View {
         await viewModel.load()
       }
 
-      if isSelectModalPresented, let selectedApplicant {
-        ApplicantSelectModal(
-          applicantName: selectedApplicant.runnerName,
+      if isSelectModalPresented, let selectedRunner {
+        RunnerSelectModal(
+          runnerName: selectedRunner.runnerName,
           onCancel: {
             isSelectModalPresented = false
-            self.selectedApplicant = nil
+            self.selectedRunner = nil
           },
           onConfirm: {
             Task {
-              await viewModel.acceptOffer(offerID: selectedApplicant.id)
+              await viewModel.acceptOffer(offerID: selectedRunner.id)
               if viewModel.didAcceptOffer {
                 isSelectModalPresented = false
-                self.selectedApplicant = nil
+                self.selectedRunner = nil
                 onAccepted()
               }
             }
@@ -83,14 +83,14 @@ struct ApplicantListView: View {
     }
   }
 
-  private func applicantCard(_ applicant: Offer) -> some View {
+  private func runnerCard(_ runner: Offer) -> some View {
     VStack(spacing: 8) {
-      ApplicantCard(
-        nickname: applicant.runnerName,
-        level: applicant.runnerLevel,
-        appliedAt: ProposalDisplay.appliedAtString(applicant.createdAt),
+      RunnerCard(
+        nickname: runner.runnerName,
+        level: runner.runnerLevel,
+        appliedAt: ProposalFormatter.appliedAtString(runner.createdAt),
         onSelect: {
-          selectedApplicant = applicant
+          selectedRunner = runner
           isSelectModalPresented = true
         }
       )
@@ -105,7 +105,7 @@ struct ApplicantListView: View {
         .foregroundColor(Color.gray600)
 
       HStack(spacing: 0) {
-        Text("\(viewModel.applicants.count)명")
+        Text("\(viewModel.runners.count)명")
           .textStyle(.heading3, weight: .bold)
           .foregroundColor(Color.indigo500)
 

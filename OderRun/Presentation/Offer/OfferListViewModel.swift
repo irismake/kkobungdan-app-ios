@@ -1,5 +1,5 @@
 //
-//  ApplicantListViewModel.swift
+//  OfferListViewModel.swift
 //  OderRun
 //
 //  Created by 김가희 on 4/22/26.
@@ -8,11 +8,11 @@
 import Foundation
 
 @Observable
-final class ApplicantListViewModel {
+final class OfferListViewModel {
   let proposalID: Int64
 
   var proposal: ProposalDetail?
-  var applicants: [Offer] = []
+  var runners: [Offer] = []
   var isLoading: Bool = false
   var errorMessage: String?
   var isRejecting: Bool = false
@@ -44,7 +44,7 @@ final class ApplicantListViewModel {
       async let offersTask = fetchOffersUseCase.execute(proposalID: proposalID)
       let (proposal, offers) = try await (proposalTask, offersTask)
       self.proposal = proposal
-      applicants = offers.filter { $0.status == .waiting || $0.status == .accepted }
+      runners = offers.filter { $0.status == .waiting || $0.status == .accepted }
     } catch {
       errorMessage = "지원자 목록을 불러오지 못했어요."
     }

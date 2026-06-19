@@ -76,6 +76,20 @@ struct VerificationCodeView: View {
     .toolbar(.hidden, for: .navigationBar)
     .onAppear { focus = .code }
     .onReceive(timer) { _ in viewModel.tick() }
+    .task { await viewModel.sendCode() }
+    .alert(
+      "오류",
+      isPresented: Binding(
+        get: { viewModel.errorMessage != nil },
+        set: { if !$0 {
+          viewModel.errorMessage = nil
+        } }
+      )
+    ) {
+      Button("확인", role: .cancel) { viewModel.errorMessage = nil }
+    } message: {
+      Text(viewModel.errorMessage ?? "")
+    }
   }
 
   private var resendButton: some View {
