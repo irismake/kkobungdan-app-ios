@@ -1,5 +1,5 @@
 //
-//  AuthNotifications.swift
+//  Notification.Name + Auth.swift
 //  OderRun
 //
 //  Created by 김가희 on 5/26/26.
