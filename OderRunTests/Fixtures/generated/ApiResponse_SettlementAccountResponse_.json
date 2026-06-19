@@ -1,10 +1,9 @@
 {
   "success": true,
   "data": {
-    "bankCode": "string",
     "bankName": "string",
-    "maskedAccountNumber": "string",
     "accountHolder": "string",
+    "maskedAccountNumber": "string",
     "updatedAt": "2026-06-12T18:00:00"
   },
   "message": "string"

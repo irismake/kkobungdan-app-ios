@@ -1,0 +1,17 @@
+{
+  "id": 0,
+  "proposalId": 0,
+  "ordererId": "string",
+  "ordererName": "string",
+  "ordererLevel": 0,
+  "runnerId": "string",
+  "runnerName": "string",
+  "runnerLevel": 0,
+  "status": "WAITING",
+  "acceptedAt": "2026-06-12T18:00:00",
+  "deliveryCompletedAt": "2026-06-12T18:00:00",
+  "receiptConfirmedAt": "2026-06-12T18:00:00",
+  "disputedAt": "2026-06-12T18:00:00",
+  "resolvedAt": "2026-06-12T18:00:00",
+  "createdAt": "2026-06-12T18:00:00"
+}

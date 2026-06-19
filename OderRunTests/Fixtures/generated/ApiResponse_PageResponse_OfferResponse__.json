@@ -16,7 +16,7 @@
         "deliveryCompletedAt": "2026-06-12T18:00:00",
         "receiptConfirmedAt": "2026-06-12T18:00:00",
         "disputedAt": "2026-06-12T18:00:00",
-        "refundedAt": "2026-06-12T18:00:00",
+        "resolvedAt": "2026-06-12T18:00:00",
         "createdAt": "2026-06-12T18:00:00"
       }
     ],
