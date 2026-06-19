@@ -16,5 +16,17 @@ struct ProofDeliveryRequest: Encodable {
 
 /// `POST /v1/offer/{id}/dispute` · `/v1/proposal/{id}/dispute` 요청 바디. disputeReason 은 서버 required.
 struct ProofDisputeRequest: Encodable {
+  // TODO: surveyQuestionID — 분쟁 설문 UI 연동 전까지 stub 값 전송
+  let surveyQuestionID: Int = ProofDisputeRequest.stubSurveyQuestionID
   let disputeReason: String
+
+  enum CodingKeys: String, CodingKey {
+    case surveyQuestionID = "surveyQuestionId"
+    case disputeReason
+  }
+}
+
+extension ProofDisputeRequest {
+  // TODO: surveyQuestionID UI 반영 시 호출부에서 실제 값 전달로 교체
+  static let stubSurveyQuestionID: Int = 0
 }

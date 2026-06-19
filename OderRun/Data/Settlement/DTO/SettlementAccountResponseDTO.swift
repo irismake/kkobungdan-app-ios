@@ -8,7 +8,6 @@
 import Foundation
 
 struct SettlementAccountResponseDTO: Decodable {
-  let bankCode: String
   let bankName: String
   let maskedAccountNumber: String
   let accountHolder: String
@@ -18,7 +17,6 @@ struct SettlementAccountResponseDTO: Decodable {
 extension SettlementAccountResponseDTO {
   func toDomain() -> SettlementAccount {
     SettlementAccount(
-      bankCode: bankCode,
       bankName: bankName,
       maskedAccountNumber: maskedAccountNumber,
       accountHolder: accountHolder,

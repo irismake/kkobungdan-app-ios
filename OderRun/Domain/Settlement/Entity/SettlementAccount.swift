@@ -8,7 +8,6 @@
 import Foundation
 
 struct SettlementAccount: Equatable {
-  let bankCode: String
   let bankName: String
   let maskedAccountNumber: String
   let accountHolder: String

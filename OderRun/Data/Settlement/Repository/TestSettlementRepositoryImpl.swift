@@ -18,7 +18,6 @@ actor TestSettlementRepositoryImpl: SettlementRepositoryProtocol {
   }
 
   func saveAccount(
-    bankCode: String,
     bankName: String,
     accountNumber: String,
     accountHolder: String
@@ -26,7 +25,6 @@ actor TestSettlementRepositoryImpl: SettlementRepositoryProtocol {
     try await Task.sleep(nanoseconds: Self.simulatedLatency)
     let masked = Self.mask(accountNumber)
     let saved = SettlementAccount(
-      bankCode: bankCode,
       bankName: bankName,
       maskedAccountNumber: masked,
       accountHolder: accountHolder,
