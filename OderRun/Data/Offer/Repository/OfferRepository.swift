@@ -15,6 +15,26 @@ private struct CreateOfferBody: Encodable {
   }
 }
 
+/// `POST /v1/offer/{id}/complete-delivery` 요청 바디. proofImageUrl 은 서버 optional. (서버: `ProofDeliveryRequest`)
+private struct ProofDeliveryRequest: Encodable {
+  let proofImageUrl: String?
+}
+
+/// `POST /v1/offer/{id}/dispute` 요청 바디. disputeReason 은 서버 required. (서버: `DisputeRequest`)
+private struct DisputeRequest: Encodable {
+  // TODO: surveyQuestionID — 분쟁 설문 UI 연동 전까지 stub 값 전송
+  let surveyQuestionID: Int = DisputeRequest.stubSurveyQuestionID
+  let disputeReason: String
+
+  enum CodingKeys: String, CodingKey {
+    case surveyQuestionID = "surveyQuestionId"
+    case disputeReason
+  }
+
+  // TODO: surveyQuestionID UI 반영 시 호출부에서 실제 값 전달로 교체
+  static let stubSurveyQuestionID: Int = 0
+}
+
 final class OfferRepository: OfferRepositoryProtocol {
   private let client: HTTPClient
 
@@ -35,7 +55,7 @@ final class OfferRepository: OfferRepositoryProtocol {
     if !status.isEmpty {
       params["status"] = status.map(\.rawValue)
     }
-    let dtos: [OfferResponseDTO] =
+    let dtos: [OfferSummaryResponseDTO] =
       try await client.get("/v1/offer", params: params)
     return dtos.map { $0.toDomain() }
   }
@@ -71,7 +91,7 @@ final class OfferRepository: OfferRepositoryProtocol {
   func raiseDispute(offerID: Int64, reason: String) async throws -> Offer {
     let dto: OfferResponseDTO = try await client.post(
       "/v1/offer/\(offerID)/dispute",
-      body: ProofDisputeRequest(disputeReason: reason)
+      body: DisputeRequest(disputeReason: reason)
     )
     return dto.toDomain()
   }
