@@ -15,6 +15,11 @@ private struct UserFcmTokenRequest: Encodable {
   let fcmToken: String
 }
 
+/// `PATCH /v1/user/name` 요청 바디. (서버: `UserNameUpdateRequest`)
+private struct UserNameUpdateRequest: Encodable {
+  let name: String
+}
+
 final class UserRepository: UserRepositoryProtocol {
   private let client: HTTPClient
 
@@ -26,6 +31,15 @@ final class UserRepository: UserRepositoryProtocol {
     let dto: UserDetailResponseDTO =
       try await client.get("/v1/user/detail")
     return dto.toDomain()
+  }
+
+  func updateName(_ name: String) async throws -> User {
+    // 응답이 평문(data 없음)이라 디코드하지 않고 상태코드만 확인 후 재조회한다.
+    try await client.patchVoid(
+      "/v1/user/name",
+      body: UserNameUpdateRequest(name: name)
+    )
+    return try await fetchUserDetail()
   }
 
   func updateAlarm(enabled: Bool) async throws -> User {

@@ -17,6 +17,17 @@ actor TestUserRepositoryImpl: UserRepositoryProtocol {
     return currentUser
   }
 
+  func updateName(_ name: String) async throws -> User {
+    try await Task.sleep(nanoseconds: Self.simulatedLatency)
+    currentUser = User(
+      id: currentUser.id,
+      name: name,
+      level: currentUser.level,
+      alarmEnabled: currentUser.alarmEnabled
+    )
+    return currentUser
+  }
+
   func updateAlarm(enabled: Bool) async throws -> User {
     try await Task.sleep(nanoseconds: Self.simulatedLatency)
     currentUser = User(
