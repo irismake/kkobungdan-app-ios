@@ -104,7 +104,7 @@ struct MainTabView: View {
               router.activityPath.append(.myProposalDetail(proposalID: proposalID))
             },
             onSelectRunnerItem: { proposalID, offerID in
-              router.activityPath.append(.runnerApplyDetail(proposalID: proposalID, offerID: offerID))
+              router.activityPath.append(.offerDetail(proposalID: proposalID, offerID: offerID))
             }
           )
           bottomBar

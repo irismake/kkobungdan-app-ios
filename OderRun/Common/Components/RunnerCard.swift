@@ -1,5 +1,5 @@
 //
-//  ApplicantCard.swift
+//  RunnerCard.swift
 //  OderRun
 //
 //  Created by 김가희 on 3/26/26.
@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-struct ApplicantCard: View {
+struct RunnerCard: View {
   let nickname: String
   let level: Int
   let appliedAt: String
@@ -50,13 +50,13 @@ struct ApplicantCard: View {
 
 #Preview {
   VStack(spacing: 12) {
-    ApplicantCard(
+    RunnerCard(
       nickname: "카야잼",
       level: 7,
       appliedAt: "2026. 1. 22. 오후 10:05:17 지원",
       onSelect: {}
     )
-    ApplicantCard(
+    RunnerCard(
       nickname: "닉네임",
       level: 3,
       appliedAt: "2026. 1. 22. 오후 10:05:17 지원",

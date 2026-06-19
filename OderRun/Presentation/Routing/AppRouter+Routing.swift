@@ -15,7 +15,7 @@ extension AppRouter {
       ProposalDetailView(
         viewModel: AppRouteFactory.makeProposalDetailViewModel(proposalID: proposalID),
         onBack: { self.popLast(path: path) },
-        onApply: {
+        onOffer: {
           path.wrappedValue.append(.accountRegister(proposalID: proposalID))
         },
         onMine: {
@@ -31,18 +31,18 @@ extension AppRouter {
         viewModel: AppRouteFactory.makeAccountRegisterViewModel(proposalID: proposalID),
         onBack: { self.popLast(path: path) },
         onApplied: {
-          path.wrappedValue.append(.applyComplete(proposalID: proposalID))
+          path.wrappedValue.append(.offerComplete(proposalID: proposalID))
         }
       )
       .navigationBarBackButtonHidden(true)
-    case .applyComplete:
-      ApplyCompleteView(
+    case .offerComplete:
+      OfferCompleteView(
         onConfirm: {
           path.wrappedValue.removeAll()
         },
         onViewHistory: {
           // home segment 에는 offer 가 보이는 곳이 없으므로 activity 탭으로 보낸다.
-          // 거기서 본인 offer 카드를 탭하면 `.runnerApplyDetail(proposalID:offerID:)` 로 진입.
+          // 거기서 본인 offer 카드를 탭하면 `.offerDetail(proposalID:offerID:)` 로 진입.
           path.wrappedValue.removeAll()
           self.selectedTab = .activity
         }
@@ -52,38 +52,38 @@ extension AppRouter {
       MyProposalDetailView(
         viewModel: AppRouteFactory.makeMyProposalDetailViewModel(proposalID: proposalID),
         onBack: { self.popLast(path: path) },
-        onShowApplicants: {
-          path.wrappedValue.append(.applicantList(proposalID: proposalID))
+        onShowRunners: {
+          path.wrappedValue.append(.runnerList(proposalID: proposalID))
         }
       )
       .navigationBarBackButtonHidden(true)
-    case let .runnerApplyDetail(proposalID, offerID):
-      ApplyDetailView(
-        viewModel: AppRouteFactory.makeApplyDetailViewModel(
+    case let .offerDetail(proposalID, offerID):
+      OfferDetailView(
+        viewModel: AppRouteFactory.makeOfferDetailViewModel(
           proposalID: proposalID,
           offerID: offerID
         ),
         onBack: { self.popLast(path: path) }
       )
       .navigationBarBackButtonHidden(true)
-    case let .applicantOfferDetail(proposalID, offerID):
-      ApplyDetailView(
-        viewModel: AppRouteFactory.makeApplyDetailViewModel(
+    case let .runnerDetail(proposalID, offerID):
+      OfferDetailView(
+        viewModel: AppRouteFactory.makeOfferDetailViewModel(
           proposalID: proposalID,
           offerID: offerID
         ),
         onBack: { self.popLast(path: path) }
       )
       .navigationBarBackButtonHidden(true)
-    case let .applicantList(proposalID):
-      ApplicantListView(
-        viewModel: AppRouteFactory.makeApplicantListViewModel(proposalID: proposalID),
+    case let .runnerList(proposalID):
+      OfferListView(
+        viewModel: AppRouteFactory.makeOfferListViewModel(proposalID: proposalID),
         onBack: { self.popLast(path: path) },
         onAccepted: {
           path.wrappedValue = [.myProposalDetail(proposalID: proposalID)]
         },
-        onSelectApplicant: { proposalID, offerID in
-          path.wrappedValue.append(.applicantOfferDetail(proposalID: proposalID, offerID: offerID))
+        onSelectRunner: { proposalID, offerID in
+          path.wrappedValue.append(.runnerDetail(proposalID: proposalID, offerID: offerID))
         }
       )
       .navigationBarBackButtonHidden(true)

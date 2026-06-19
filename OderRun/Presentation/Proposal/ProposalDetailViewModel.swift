@@ -14,7 +14,7 @@ final class ProposalDetailViewModel {
   var proposal: ProposalDetail?
   var isLoading: Bool = false
   var errorMessage: String?
-  var isApplying: Bool = false
+  var isOffering: Bool = false
   var hasApplied: Bool = false
 
   var isMine: Bool {
@@ -63,21 +63,21 @@ final class ProposalDetailViewModel {
   }
 
   @MainActor
-  func apply() async -> Bool {
-    guard !isApplying, !hasApplied else {
+  func onOffer() async -> Bool {
+    guard !isOffering, !hasApplied else {
       return false
     }
-    isApplying = true
+    isOffering = true
     errorMessage = nil
     do {
       _ = try await createOfferUseCase.execute(proposalID: proposalID)
       hasApplied = true
-      isApplying = false
+      isOffering = false
       return true
     } catch {
       errorMessage = "지원에 실패했어요. 잠시 후 다시 시도해주세요."
     }
-    isApplying = false
+    isOffering = false
     return false
   }
 }

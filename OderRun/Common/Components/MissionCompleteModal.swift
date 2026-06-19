@@ -2,14 +2,14 @@ import SwiftUI
 
 struct MissionCompleteModal: View {
   let title: String
-  let isApplicant: Bool
+  let isRunner: Bool
   let infoTitle: String
   var infoContent: String
   let onCancel: () -> Void
   let onConfirm: () -> Void
 
   private var description: String {
-    isApplicant
+    isRunner
       ? "행님을 만나셨나요?\n행님이 만났어요! 버튼을 누르면 웨이팅비가 지급됩니다."
       : "꼬붕과 만나셨나요?\n만났어요! 버튼을 누르면 보증금이 환급됩니다."
   }
@@ -117,7 +117,7 @@ struct MissionCompleteModal: View {
 #Preview {
   MissionCompleteModal(
     title: "임무 완료 처리하시겠습니까?",
-    isApplicant: false,
+    isRunner: false,
     infoTitle: "취소 안내",
     infoContent: "완료 처리 후 취소가 불가능하며 문제 발생 시 고객센터 이메일로 문의 부탁드립니다.",
     onCancel: {},

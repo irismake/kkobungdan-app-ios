@@ -41,13 +41,13 @@ enum AppRouteFactory {
     )
   }
 
-  // MARK: - Apply Detail (runner only)
+  // MARK: - offer Detail (runner only)
 
-  static func makeApplyDetailViewModel(
+  static func makeOfferDetailViewModel(
     proposalID: Int64,
     offerID: Int64
-  ) -> ApplyDetailViewModel {
-    ApplyDetailViewModel(
+  ) -> OfferDetailViewModel {
+    OfferDetailViewModel(
       proposalID: proposalID,
       offerID: offerID,
       fetchDetailUseCase: FetchProposalDetailUseCase(repository: DIContainer.proposalRepository),
@@ -57,10 +57,10 @@ enum AppRouteFactory {
     )
   }
 
-  // MARK: - Applicant List
+  // MARK: - Offer List
 
-  static func makeApplicantListViewModel(proposalID: Int64) -> ApplicantListViewModel {
-    ApplicantListViewModel(
+  static func makeOfferListViewModel(proposalID: Int64) -> OfferListViewModel {
+    OfferListViewModel(
       proposalID: proposalID,
       fetchDetailUseCase: FetchProposalDetailUseCase(repository: DIContainer.proposalRepository),
       fetchOffersUseCase: FetchOffersByProposalUseCase(repository: DIContainer.offerRepository),

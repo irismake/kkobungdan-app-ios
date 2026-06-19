@@ -54,9 +54,9 @@ struct AccountRegisterView: View {
     .frame(maxWidth: .infinity, maxHeight: .infinity)
     .background(Color.white)
     .safeAreaInset(edge: .bottom, spacing: 0) {
-      BottomActionBar(title: "임무 지원하기", isEnabled: viewModel.canApply) {
+      BottomActionBar(title: "임무 지원하기", isEnabled: viewModel.canOffer) {
         Task {
-          if await viewModel.apply() {
+          if await viewModel.offer() {
             onApplied()
           }
         }

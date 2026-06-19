@@ -1,5 +1,5 @@
 //
-//  ApplicantSelectModal.swift
+//  RunnerSelectModal.swift
 //  OderRun
 //
 //  Created by 김가희 on 3/27/26.
@@ -7,14 +7,14 @@
 
 import SwiftUI
 
-struct ApplicantSelectModal: View {
-  let applicantName: String
+struct RunnerSelectModal: View {
+  let runnerName: String
   let onCancel: () -> Void
   let onConfirm: () -> Void
 
   private var title: String {
-    let name = applicantName.count > 6 ? "\(applicantName.prefix(6))…" : applicantName
-    let particle = applicantName.hasBatchim ? "을" : "를"
+    let name = runnerName.count > 6 ? "\(runnerName.prefix(6))…" : runnerName
+    let particle = runnerName.hasBatchim ? "을" : "를"
     return "\(name)\(particle) 선택하시겠습니까?"
   }
 
@@ -122,8 +122,8 @@ struct ApplicantSelectModal: View {
 }
 
 #Preview {
-  ApplicantSelectModal(
-    applicantName: "꼬붕이",
+  RunnerSelectModal(
+    runnerName: "꼬붕이",
     onCancel: {},
     onConfirm: {}
   )
