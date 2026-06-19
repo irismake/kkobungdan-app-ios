@@ -1,0 +1,21 @@
+{
+  "AuthAccessTokenResponse": "POST /v1/auth/refresh",
+  "AuthTokenResponse": "POST /v1/auth/signup/confirm",
+  "AuthVerificationSendResponse": "POST /v1/auth/signup/send",
+  "DisputeSurveyQuestionResponse": "GET /v1/dispute-survey/questions",
+  "NotificationListResponse": "GET /v1/notifications",
+  "NotificationMarkReadResponse": "POST /v1/notifications/mark-read",
+  "NotificationResponse": "GET /v1/notifications/{notification_id}",
+  "NotificationStatsResponse": "GET /v1/notifications/stats/me",
+  "OfferAcceptResponse": "POST /v1/offer/{offer_id}/accept",
+  "OfferDetailResponse": "GET /v1/offer/{id}",
+  "OfferResponse": "POST /v1/offer",
+  "OfferSummaryResponse": "GET /v1/offer",
+  "ProposalDetailResponse": "GET /v1/proposal/{proposal_id}",
+  "ProposalOwnResponse": "GET /v1/proposal/own",
+  "ProposalResponse": "GET /v1/proposal",
+  "SettlementAccountResponse": "GET /v1/settlement/account",
+  "SettlementBankNamesResponse": "GET /v1/settlement/banks",
+  "TermsAgreementResponse": "POST /v1/terms",
+  "UserDetailResponse": "GET /v1/user/detail"
+}

@@ -10,52 +10,16 @@ import OSLog
 
 private let authLogger = Logger(subsystem: "com.oderrun.OderRun", category: "Auth")
 
-private struct SignupSendRequestBody: Encodable {
-  let carrier: String
-  let name: String
-  let phone: String
-}
+// 인증번호 발송/확인·refresh·logout 요청 바디는 서버 스키마 추적을 위해 `Data/Auth/DTO/` 에
+// internal DTO 로 분리되어 있다.
 
-private struct SignupConfirmRequestBody: Encodable {
-  let code: String
-  let phone: String
-}
-
-private struct LoginSendRequestBody: Encodable {
-  let phone: String
-}
-
-private struct LoginConfirmRequestBody: Encodable {
-  let code: String
-  // TODO: fcmToken — 푸시 연동 전까지 stub 값 전송
-  let fcmToken: String?
-  let phone: String
-
-  init(code: String, phone: String) {
-    self.code = code
-    self.phone = phone
-    fcmToken = LoginConfirmRequestBody.stubFCMToken
-  }
-}
-
-extension LoginConfirmRequestBody {
-  // TODO: fcmToken 푸시 연동 시 호출부에서 실제 값 전달로 교체
-  static let stubFCMToken: String? = nil
-}
-
+/// ⚠️ /v1/auth/signup(email/password) 은 현재 서버 OpenAPI 스펙에 없어 대조할 스키마가 없으므로
+///    DTO 로 승격하지 않고 private 으로 둔다. (서버 스펙에 추가되면 그때 분리·등록)
 private struct SignupRequestBody: Encodable {
   let email: String
   let password: String
   let name: String
   let phone: String
-}
-
-private struct RefreshRequestBody: Encodable {
-  let refreshToken: String
-}
-
-private struct LogoutRequestBody: Encodable {
-  let refreshToken: String
 }
 
 final class AuthRepository: AuthRepositoryProtocol {
@@ -70,7 +34,7 @@ final class AuthRepository: AuthRepositoryProtocol {
   func sendSignupCode(name: String, phone: String, carrier: String) async throws -> PhoneVerification {
     let response: PhoneVerificationResponseDTO = try await client.post(
       "/v1/auth/signup/send",
-      body: SignupSendRequestBody(carrier: carrier, name: name, phone: phone)
+      body: AuthSignupSendRequest(carrier: carrier, name: name, phone: phone)
     )
     return response.toDomain()
   }
@@ -78,7 +42,7 @@ final class AuthRepository: AuthRepositoryProtocol {
   func confirmSignupCode(code: String, phone: String) async throws -> AuthTokens {
     let response: AuthTokenResponseDTO = try await client.post(
       "/v1/auth/signup/confirm",
-      body: SignupConfirmRequestBody(code: code, phone: phone)
+      body: AuthPhoneConfirmRequest(code: code, phone: phone)
     )
     let tokens = response.toDomain()
     store(tokens)
@@ -88,7 +52,7 @@ final class AuthRepository: AuthRepositoryProtocol {
   func sendLoginCode(phone: String) async throws -> PhoneVerification {
     let response: PhoneVerificationResponseDTO = try await client.post(
       "/v1/auth/login/send",
-      body: LoginSendRequestBody(phone: phone)
+      body: AuthLoginSendRequest(phone: phone)
     )
     return response.toDomain()
   }
@@ -96,7 +60,7 @@ final class AuthRepository: AuthRepositoryProtocol {
   func confirmLoginCode(code: String, phone: String) async throws -> AuthTokens {
     let response: AuthTokenResponseDTO = try await client.post(
       "/v1/auth/login/confirm",
-      body: LoginConfirmRequestBody(code: code, phone: phone)
+      body: AuthLoginConfirmRequest(code: code, phone: phone)
     )
     let tokens = response.toDomain()
     store(tokens)
@@ -121,7 +85,7 @@ final class AuthRepository: AuthRepositoryProtocol {
   func refresh(refreshToken: String) async throws -> String {
     let response: RefreshTokenResponseDTO = try await client.post(
       "/v1/auth/refresh",
-      body: RefreshRequestBody(refreshToken: refreshToken)
+      body: AuthRefreshRequest(refreshToken: refreshToken)
     )
     // refreshToken은 서버 응답에 없으므로 기존 storage 값 유지
     tokenStorage.accessToken = response.accessToken
@@ -135,7 +99,7 @@ final class AuthRepository: AuthRepositoryProtocol {
     do {
       try await client.postVoid(
         "/v1/auth/logout",
-        body: LogoutRequestBody(refreshToken: refreshToken)
+        body: AuthLogoutRequest(refreshToken: refreshToken)
       )
     } catch {
       authLogger.warning("로그아웃 서버 통지 실패, 로컬 토큰만 정리: \(error.localizedDescription)")

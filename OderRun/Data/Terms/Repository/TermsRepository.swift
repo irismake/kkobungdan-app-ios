@@ -7,12 +7,6 @@
 
 import Foundation
 
-private struct TermsAgreementRequest: Encodable {
-  let termsOfService: Bool
-  let privacyPolicy: Bool
-  let paymentRefundPolicy: Bool
-}
-
 final class TermsRepository: TermsRepositoryProtocol {
   private let client: HTTPClient
 

@@ -7,19 +7,6 @@
 
 import Foundation
 
-private struct UserAlarmRequest: Encodable {
-  let alarmEnabled: Bool
-}
-
-private struct UserFcmTokenRequest: Encodable {
-  let fcmToken: String
-}
-
-/// `PATCH /v1/user/name` 요청 바디. (서버: `UserNameUpdateRequest`)
-private struct UserNameUpdateRequest: Encodable {
-  let name: String
-}
-
 final class UserRepository: UserRepositoryProtocol {
   private let client: HTTPClient
 

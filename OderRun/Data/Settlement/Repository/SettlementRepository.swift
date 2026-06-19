@@ -7,12 +7,6 @@
 
 import Foundation
 
-private struct SettlementAccountRequest: Encodable {
-  let bankName: String
-  let accountNumber: String
-  let accountHolder: String
-}
-
 final class SettlementRepository: SettlementRepositoryProtocol {
   private let client: HTTPClient
 

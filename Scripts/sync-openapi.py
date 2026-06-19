@@ -172,6 +172,58 @@ def example_for_object(name: str, schemas: dict, required_only: bool, seen: froz
     return out
 
 
+# ─────────────────────── 응답 payload 스키마 추출 ────────────────────────────
+# 엔드포인트 2xx 응답에서 ApiResponse_/PageResponse_/list_ 래퍼(data·content)를 벗겨
+# 클라이언트가 DTO 로 디코딩해야 할 "실제 payload 스키마"만 골라낸다.
+def refs_in(frag: dict) -> list:
+    out = []
+    if not isinstance(frag, dict):
+        return out
+    if "$ref" in frag:
+        out.append(frag["$ref"].split("/")[-1])
+    if "items" in frag:
+        out += refs_in(frag["items"])
+    for combiner in ("anyOf", "allOf", "oneOf"):
+        for o in frag.get(combiner, []):
+            out += refs_in(o)
+    return out
+
+
+def collect_payload_leaves(name: str, schemas: dict, seen: frozenset, acc: set) -> None:
+    if name in seen:
+        return
+    seen = seen | {name}
+    props = schemas.get(name, {}).get("properties", {})
+    inner = []
+    for key in ("data", "content"):  # ApiResponse.data / PageResponse.content
+        if key in props:
+            inner += refs_in(props[key])
+    if inner:
+        for n in inner:
+            collect_payload_leaves(n, schemas, seen, acc)
+    elif not (name.startswith("ApiResponse") or name.startswith("PageResponse")):
+        # 래퍼인데 payload 가 없으면(빈 응답) 무시, 그 외에는 실제 payload 스키마.
+        acc.add(name)
+
+
+def response_payload_schemas(spec: dict) -> dict:
+    """{ payload 스키마명: "GET /path" } — 응답 본문이 있는 엔드포인트만."""
+    schemas = spec.get("components", {}).get("schemas", {})
+    out = {}
+    for path, methods in spec.get("paths", {}).items():
+        for method, op in methods.items():
+            for code, resp in op.get("responses", {}).items():
+                if not str(code).startswith("2"):
+                    continue
+                sch = resp.get("content", {}).get("application/json", {}).get("schema", {})
+                acc: set = set()
+                for n in refs_in(sch):
+                    collect_payload_leaves(n, schemas, frozenset(), acc)
+                for n in acc:
+                    out.setdefault(n, f"{method.upper()} {path}")
+    return dict(sorted(out.items()))
+
+
 # ─────────────────────────────── 파일 쓰기 ───────────────────────────────────
 def write_json(path: str, obj) -> None:
     os.makedirs(os.path.dirname(path), exist_ok=True)
@@ -198,6 +250,11 @@ def main() -> int:
     # 2) 정규화 스냅샷
     current = normalize(schemas)
     write_json(os.path.join(CONTRACT_DIR, "contract.current.json"), current)
+
+    # 2-1) 응답 payload 스키마 매니페스트 (DTO 누락 감지용)
+    payloads = response_payload_schemas(spec)
+    write_json(os.path.join(CONTRACT_DIR, "response-schemas.json"), payloads)
+    print(f"  응답 payload 스키마 {len(payloads)}개")
 
     lock_path = os.path.join(CONTRACT_DIR, "contract.lock.json")
     if args.accept or not os.path.exists(lock_path):

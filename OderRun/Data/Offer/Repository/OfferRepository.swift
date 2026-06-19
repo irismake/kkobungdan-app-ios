@@ -7,34 +7,6 @@
 
 import Foundation
 
-private struct CreateOfferBody: Encodable {
-  let proposalID: Int64
-
-  enum CodingKeys: String, CodingKey {
-    case proposalID = "proposalId"
-  }
-}
-
-/// `POST /v1/offer/{id}/complete-delivery` 요청 바디. proofImageUrl 은 서버 optional. (서버: `ProofDeliveryRequest`)
-private struct ProofDeliveryRequest: Encodable {
-  let proofImageUrl: String?
-}
-
-/// `POST /v1/offer/{id}/dispute` 요청 바디. disputeReason 은 서버 required. (서버: `DisputeRequest`)
-private struct DisputeRequest: Encodable {
-  // TODO: surveyQuestionID — 분쟁 설문 UI 연동 전까지 stub 값 전송
-  let surveyQuestionID: Int = DisputeRequest.stubSurveyQuestionID
-  let disputeReason: String
-
-  enum CodingKeys: String, CodingKey {
-    case surveyQuestionID = "surveyQuestionId"
-    case disputeReason
-  }
-
-  // TODO: surveyQuestionID UI 반영 시 호출부에서 실제 값 전달로 교체
-  static let stubSurveyQuestionID: Int = 0
-}
-
 final class OfferRepository: OfferRepositoryProtocol {
   private let client: HTTPClient
 

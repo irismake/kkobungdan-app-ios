@@ -7,35 +7,6 @@
 
 import Foundation
 
-private struct ProposalCreateBody: Encodable {
-  let title: String
-  let content: String
-  let deadline: String
-  let errandFee: Int
-}
-
-private struct ProposalUpdateBody: Encodable {
-  let title: String
-  let content: String
-  let deadline: String
-  let errandFee: Int
-}
-
-/// `POST /v1/proposal/{id}/dispute` 요청 바디. disputeReason 은 서버 required. (서버: `DisputeRequest`)
-private struct DisputeRequest: Encodable {
-  // TODO: surveyQuestionID — 분쟁 설문 UI 연동 전까지 stub 값 전송
-  let surveyQuestionID: Int = DisputeRequest.stubSurveyQuestionID
-  let disputeReason: String
-
-  enum CodingKeys: String, CodingKey {
-    case surveyQuestionID = "surveyQuestionId"
-    case disputeReason
-  }
-
-  // TODO: surveyQuestionID UI 반영 시 호출부에서 실제 값 전달로 교체
-  static let stubSurveyQuestionID: Int = 0
-}
-
 final class ProposalRepository: ProposalRepositoryProtocol {
   private let client: HTTPClient
 
@@ -66,7 +37,7 @@ final class ProposalRepository: ProposalRepositoryProtocol {
   ) async throws -> Proposal {
     let dto: ProposalResponseDTO = try await client.post(
       "/v1/proposal",
-      body: ProposalCreateBody(
+      body: ProposalRequestBody(
         title: title,
         content: content,
         deadline: deadline,
@@ -79,7 +50,7 @@ final class ProposalRepository: ProposalRepositoryProtocol {
   func updateProposal(id: Int64, title: String, content: String, deadline: String, errandFee: String) async throws -> Proposal {
     let dto: ProposalResponseDTO = try await client.put(
       "/v1/proposal/\(id)",
-      body: ProposalUpdateBody(title: title, content: content, deadline: deadline, errandFee: Int(errandFee) ?? 0)
+      body: ProposalRequestBody(title: title, content: content, deadline: deadline, errandFee: Int(errandFee) ?? 0)
     )
     return dto.toDomain()
   }

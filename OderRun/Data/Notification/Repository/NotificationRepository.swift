@@ -7,14 +7,6 @@
 
 import Foundation
 
-private struct NotificationMarkReadRequest: Encodable {
-  let notificationIDs: [Int]
-
-  enum CodingKeys: String, CodingKey {
-    case notificationIDs = "notification_ids"
-  }
-}
-
 final class NotificationRepository: NotificationRepositoryProtocol {
   private let client: HTTPClient
 
