@@ -23,15 +23,18 @@ final class OpenAPIContractTests: XCTestCase {
         DecodeContract("ProposalDetailResponse", decoding(ProposalDetailResponseDTO.self)),
         DecodeContract("ProposalOwnOfferResponse", decoding(ProposalOwnOfferResponseDTO.self)),
         DecodeContract("ProposalOwnResponse", decoding(MyProposalResponseDTO.self)), // GET /v1/proposal/own
-        // Offer (GET 상세·목록·내 지원 모두 서버 스키마는 OfferResponse)
-        DecodeContract("OfferResponse", decoding(OfferResponseDTO.self)),
-        DecodeContract("OfferResponse", decoding(OfferDetailResponseDTO.self)), // GET /v1/offer/{id}
+        DecodeContract("OfferResponse", decoding(OfferResponseDTO.self)), // 액션(complete-delivery·dispute)
+        DecodeContract("OfferSummaryResponse", decoding(OfferSummaryResponseDTO.self)), // GET /v1/offer
+        DecodeContract("OfferDetailResponse", decoding(OfferDetailResponseDTO.self)), // GET /v1/offer/{id}
         DecodeContract("OfferResponse", decoding(MyOfferResponseDTO.self)), // GET /v1/offer/own
         DecodeContract("OfferAcceptResponse", decoding(OfferAcceptResponseDTO.self)),
         // User / Settlement / Terms
         DecodeContract("UserDetailResponse", decoding(UserDetailResponseDTO.self)),
         DecodeContract("SettlementAccountResponse", decoding(SettlementAccountResponseDTO.self)),
+        DecodeContract("SettlementBankNamesResponse", decoding(SettlementBankNamesResponseDTO.self)),
         DecodeContract("TermsAgreementResponse", decoding(TermsAgreementResponseDTO.self)),
+        // Dispute survey
+        DecodeContract("DisputeSurveyQuestionResponse", decoding(DisputeSurveyQuestionResponseDTO.self)),
         // Notification
         DecodeContract("NotificationListResponse", decoding(NotificationListResponseDTO.self)),
         DecodeContract("NotificationResponse", decoding(NotificationDTO.self)),
