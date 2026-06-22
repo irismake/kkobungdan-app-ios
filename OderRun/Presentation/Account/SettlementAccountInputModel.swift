@@ -12,6 +12,8 @@ import Foundation
 final class SettlementAccountInputModel {
   /// 계좌번호 입력값. 등록된 계좌가 있으면 마스킹된 번호로 채워진다.
   var accountNumber: String = ""
+  /// 예금주명 입력값. 등록된 계좌가 있으면 해당 예금주명으로 채워진다.
+  var accountHolder: String = ""
   /// 선택한 은행 표시명.
   var selectedBank: String?
   /// 은행 선택 시트 노출 여부.
@@ -47,9 +49,9 @@ final class SettlementAccountInputModel {
     existingAccount != nil
   }
 
-  /// 전송 가능 여부. 계좌가 이미 있거나, 새 입력(계좌번호+은행)을 다 채웠고 진행 중이 아니어야 한다.
+  /// 전송 가능 여부. 계좌가 이미 있거나, 새 입력(계좌번호+은행+예금주명)을 다 채웠고 진행 중이 아니어야 한다.
   var isValid: Bool {
-    !isRegistering && (hasAccount || (!accountNumber.isEmpty && selectedBank != nil))
+    !isRegistering && (hasAccount || (!accountNumber.isEmpty && selectedBank != nil && !accountHolder.isEmpty))
   }
 
   // MARK: - Bank sheet
@@ -78,6 +80,7 @@ final class SettlementAccountInputModel {
     if let account {
       accountNumber = account.maskedAccountNumber
       selectedBank = account.bankName
+      accountHolder = account.accountHolder
     } else {
       banks = (try? await fetchBankNamesUseCase.execute()) ?? []
     }
@@ -98,7 +101,7 @@ final class SettlementAccountInputModel {
       existingAccount = try await saveAccountUseCase.execute(
         bankName: selectedBank ?? "",
         accountNumber: accountNumber,
-        accountHolder: Self.stubAccountHolder
+        accountHolder: accountHolder
       )
       return true
     } catch {
@@ -106,9 +109,4 @@ final class SettlementAccountInputModel {
       return false
     }
   }
-}
-
-extension SettlementAccountInputModel {
-  // TODO: accountHolder UI 미구현 — 예금주 입력 화면 연동 전까지 stub 값 전송.
-  static let stubAccountHolder: String = "꼬봉단"
 }

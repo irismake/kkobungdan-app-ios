@@ -19,6 +19,7 @@ struct AddOfferView: View {
 
   private enum Field: Hashable {
     case account
+    case holder
   }
 
   init(
@@ -39,6 +40,7 @@ struct AddOfferView: View {
         VStack(spacing: 24) {
           accountNumberField
           bankField
+          accountHolderField
 
           if let errorMessage = viewModel.errorMessage ?? viewModel.account.errorMessage {
             Text(errorMessage)
@@ -133,6 +135,19 @@ struct AddOfferView: View {
         .textFieldBox(isActive: viewModel.account.isBankSheetPresented)
       }
       .buttonStyle(.plain)
+      .disabled(viewModel.account.hasAccount)
+    }
+  }
+
+  private var accountHolderField: some View {
+    @Bindable var account = viewModel.account
+    return LabeledFieldContainer(label: "예금주명") {
+      FocusTextField(
+        text: $account.accountHolder,
+        placeholder: "환불받을 계좌의 예금주명을 입력해 주세요",
+        focus: $focus,
+        focusValue: .holder
+      )
       .disabled(viewModel.account.hasAccount)
     }
   }

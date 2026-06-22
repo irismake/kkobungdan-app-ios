@@ -76,7 +76,8 @@ struct VerificationCodeView: View {
     .toolbar(.hidden, for: .navigationBar)
     .onAppear { focus = .code }
     .onReceive(timer) { _ in viewModel.tick() }
-    .task { _ = await viewModel.sendCode() }
+    // TODO: 임시 - 인증 코드 전송 API 호출 주석 처리 (API 없이 다음 화면으로 진행)
+    // .task { _ = await viewModel.sendCode() }
     .alert(
       "오류",
       isPresented: Binding(
