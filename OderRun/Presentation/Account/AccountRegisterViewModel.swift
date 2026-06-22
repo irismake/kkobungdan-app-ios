@@ -59,11 +59,9 @@ final class AccountRegisterViewModel {
     }
     isOffering = true
     errorMessage = nil
-    defer { isApplying = false }
     do {
       _ = try await saveSettlementAccountUseCase.execute(
-        bankCode: Bank.code(for: selectedBank) ?? "",
-        bankName: selectedBank,
+        bankName: selectedBank ?? "",
         accountNumber: accountNumber,
         accountHolder: Self.stubAccountHolder
       )
