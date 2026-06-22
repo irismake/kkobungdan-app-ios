@@ -34,6 +34,7 @@ struct MainTabView: View {
       profileViewModel: ProfileViewModel(
         fetchUserDetailUseCase: FetchUserDetailUseCase(userRepository: DIContainer.userRepository),
         updateAlarmUseCase: UpdateAlarmUseCase(userRepository: DIContainer.userRepository),
+        updateUserNameUseCase: UpdateUserNameUseCase(userRepository: DIContainer.userRepository),
         logoutUseCase: LogoutUseCase(authRepository: DIContainer.authRepository)
       ),
       notificationViewModel: NotificationViewModel(
@@ -100,6 +101,7 @@ struct MainTabView: View {
           ActivityView(
             proposalsViewModel: myProposalsViewModel,
             offersViewModel: myOffersViewModel,
+            segment: $router.activitySegment,
             onSelectOrdererProposal: { proposalID in
               router.activityPath.append(.myProposalDetail(proposalID: proposalID))
             },

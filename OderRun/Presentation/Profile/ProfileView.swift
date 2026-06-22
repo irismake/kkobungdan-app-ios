@@ -67,9 +67,9 @@ struct ProfileView: View {
       ProfileEditView(
         initialNickname: nickname,
         onClose: { isEditingProfile = false },
-        onSave: { _ in
-          // TODO: 서버 연동 시 닉네임 수정 API 호출 후 viewModel.load() 로 갱신
+        onSave: { newNickname in
           isEditingProfile = false
+          Task { await viewModel.updateName(newNickname) }
         }
       )
     }
