@@ -11,7 +11,7 @@ struct MissionCompleteModal: View {
   private var description: String {
     isRunner
       ? "행님을 만나셨나요?\n행님이 만났어요! 버튼을 누르면 웨이팅비가 지급됩니다."
-      : "꼬붕과 만나셨나요?\n만났어요! 버튼을 누르면 보증금이 환급됩니다."
+      : "꼬붕과 만나셨나요?\n확인 버튼을 누르면 수행비가 꼬붕에게 입금됩니다."
   }
 
   var body: some View {
