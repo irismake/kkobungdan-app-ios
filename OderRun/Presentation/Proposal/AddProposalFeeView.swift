@@ -54,11 +54,6 @@ struct AddProposalFeeView: View {
           accountNumberField
           bankField
 
-          AccountInfoCard(
-            bankName: "토스뱅크",
-            accountNumber: "1234-56-24687"
-          )
-
           if let errorMessage = viewModel.errorMessage ?? viewModel.account.errorMessage {
             Text(errorMessage)
               .textStyle(.body3)
