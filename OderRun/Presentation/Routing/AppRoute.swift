@@ -24,7 +24,7 @@ enum AppRoute: Hashable {
   /// 지원하기 → 계좌 등록 (임무 수행비 받을 계좌 입력)
   case addOffer(proposalID: Int64)
   /// 지원하기 성공 직후 안내 화면
-  case offerComplete(proposalID: Int64)
+  case offerComplete(proposalID: Int64, offerID: Int64)
   /// 새 의뢰 작성 — 1단계: 제목/내용
   case addProposalDraft
   /// 새 의뢰 작성 — 2단계: 날짜/시간

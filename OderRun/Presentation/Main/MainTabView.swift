@@ -101,6 +101,7 @@ struct MainTabView: View {
           ActivityView(
             proposalsViewModel: myProposalsViewModel,
             offersViewModel: myOffersViewModel,
+            segment: $router.activitySegment,
             onSelectOrdererProposal: { proposalID in
               router.activityPath.append(.myProposalDetail(proposalID: proposalID))
             },

@@ -35,23 +35,24 @@ final class AddOfferViewModel {
 
   /// 임무 지원하기. 정산 계좌 등록(PUT)을 먼저 마친 뒤 offer 를 생성(POST)한다.
   /// 계좌 등록은 `account.register()` 가 진행·에러 상태까지 담당한다.
+  /// 성공하면 생성된 offer ID 를, 실패하면 nil 을 반환한다.
   @MainActor
-  func offer() async -> Bool {
+  func offer() async -> Int64? {
     guard canOffer else {
-      return false
+      return nil
     }
     guard await account.register() else {
-      return false
+      return nil
     }
     isOffering = true
     errorMessage = nil
     defer { isOffering = false }
     do {
-      _ = try await createOfferUseCase.execute(proposalID: proposalID)
-      return true
+      let offer = try await createOfferUseCase.execute(proposalID: proposalID)
+      return offer.id
     } catch {
       errorMessage = "지원에 실패했어요. 잠시 후 다시 시도해주세요."
-      return false
+      return nil
     }
   }
 }

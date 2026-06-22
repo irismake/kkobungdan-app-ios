@@ -10,7 +10,7 @@ import SwiftUI
 struct ActivityView: View {
   @State private var proposalsViewModel: MyProposalsViewModel
   @State private var offersViewModel: MyOffersViewModel
-  @State private var segment: ActivitySegment = .orderer
+  @Binding var segment: ActivitySegment
   @State private var filter: ActivityStatusFilter = .all
 
   var onSelectOrdererProposal: (Int64) -> Void = { _ in }
@@ -30,11 +30,13 @@ struct ActivityView: View {
   init(
     proposalsViewModel: MyProposalsViewModel,
     offersViewModel: MyOffersViewModel,
+    segment: Binding<ActivitySegment> = .constant(.orderer),
     onSelectOrdererProposal: @escaping (Int64) -> Void = { _ in },
     onSelectRunnerItem: @escaping (_ proposalID: Int64, _ offerID: Int64) -> Void = { _, _ in }
   ) {
     _proposalsViewModel = State(initialValue: proposalsViewModel)
     _offersViewModel = State(initialValue: offersViewModel)
+    _segment = segment
     self.onSelectOrdererProposal = onSelectOrdererProposal
     self.onSelectRunnerItem = onSelectRunnerItem
   }

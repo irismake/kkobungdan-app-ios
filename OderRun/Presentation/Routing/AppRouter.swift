@@ -14,6 +14,7 @@ final class AppRouter {
   var selectedTab: HomeTab = .home
   var homePath: [AppRoute] = []
   var activityPath: [AppRoute] = []
+  var activitySegment: ActivitySegment = .orderer
 
   func popLast(path: Binding<[AppRoute]>) {
     if !path.wrappedValue.isEmpty {

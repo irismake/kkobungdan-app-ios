@@ -30,20 +30,20 @@ extension AppRouter {
       AddOfferView(
         viewModel: AppRouteFactory.makeAddOfferViewModel(proposalID: proposalID),
         onBack: { self.popLast(path: path) },
-        onApplied: {
-          path.wrappedValue.append(.offerComplete(proposalID: proposalID))
+        onApplied: { offerID in
+          path.wrappedValue.append(.offerComplete(proposalID: proposalID, offerID: offerID))
         }
       )
       .navigationBarBackButtonHidden(true)
-    case .offerComplete:
+    case let .offerComplete(proposalID, offerID):
       OfferCompleteView(
         onConfirm: {
           path.wrappedValue.removeAll()
         },
         onViewHistory: {
-          // home segment 에는 offer 가 보이는 곳이 없으므로 activity 탭으로 보낸다.
-          // 거기서 본인 offer 카드를 탭하면 `.offerDetail(proposalID:offerID:)` 로 진입.
           path.wrappedValue.removeAll()
+          self.activitySegment = .runner
+          self.activityPath = [.offerDetail(proposalID: proposalID, offerID: offerID)]
           self.selectedTab = .activity
         }
       )

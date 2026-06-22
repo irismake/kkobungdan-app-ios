@@ -13,7 +13,7 @@ import SwiftUI
 struct AddOfferView: View {
   @State private var viewModel: AddOfferViewModel
   var onBack: () -> Void = {}
-  var onApplied: () -> Void = {}
+  var onApplied: (Int64) -> Void = { _ in }
 
   @FocusState private var focus: Field?
 
@@ -25,7 +25,7 @@ struct AddOfferView: View {
   init(
     viewModel: AddOfferViewModel,
     onBack: @escaping () -> Void = {},
-    onApplied: @escaping () -> Void = {}
+    onApplied: @escaping (Int64) -> Void = { _ in }
   ) {
     _viewModel = State(initialValue: viewModel)
     self.onBack = onBack
@@ -58,8 +58,8 @@ struct AddOfferView: View {
     .safeAreaInset(edge: .bottom, spacing: 0) {
       BottomActionBar(title: "임무 지원하기", isEnabled: viewModel.canOffer) {
         Task {
-          if await viewModel.offer() {
-            onApplied()
+          if let offerID = await viewModel.offer() {
+            onApplied(offerID)
           }
         }
       }
