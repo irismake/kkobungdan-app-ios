@@ -42,4 +42,7 @@ enum DIContainer {
 
   static let notificationRepository: NotificationRepositoryProtocol =
     isDummy ? NotificationRepositoryImpl() : NotificationRepository(client: .shared)
+
+  static let disputeSurveyRepository: DisputeSurveyRepositoryProtocol =
+    isDummy ? TestDisputeSurveyRepositoryImpl() : DisputeSurveyRepository(client: .shared)
 }

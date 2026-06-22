@@ -15,13 +15,11 @@ struct SaveSettlementAccountUseCase {
   }
 
   func execute(
-    bankCode: String,
     bankName: String,
     accountNumber: String,
     accountHolder: String
   ) async throws -> SettlementAccount {
     try await settlementRepository.saveAccount(
-      bankCode: bankCode,
       bankName: bankName,
       accountNumber: accountNumber,
       accountHolder: accountHolder

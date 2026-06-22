@@ -14,7 +14,8 @@
     "deliveryReportedAt": "2026-06-12T18:00:00",
     "receivedConfirmedAt": "2026-06-12T18:00:00",
     "disputedAt": "2026-06-12T18:00:00",
-    "refundedAt": "2026-06-12T18:00:00",
+    "resolvedAt": "2026-06-12T18:00:00",
+    "openChatUrl": "string",
     "offers": [
       {
         "id": 0,

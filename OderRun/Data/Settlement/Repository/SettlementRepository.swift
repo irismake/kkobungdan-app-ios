@@ -7,13 +7,6 @@
 
 import Foundation
 
-private struct SettlementAccountRequest: Encodable {
-  let bankCode: String
-  let bankName: String
-  let accountNumber: String
-  let accountHolder: String
-}
-
 final class SettlementRepository: SettlementRepositoryProtocol {
   private let client: HTTPClient
 
@@ -28,8 +21,13 @@ final class SettlementRepository: SettlementRepositoryProtocol {
     return dto?.toDomain()
   }
 
+  func fetchBankNames() async throws -> [String] {
+    let dto: SettlementBankNamesResponseDTO =
+      try await client.get("/v1/settlement/banks")
+    return dto.toDomain()
+  }
+
   func saveAccount(
-    bankCode: String,
     bankName: String,
     accountNumber: String,
     accountHolder: String
@@ -37,7 +35,6 @@ final class SettlementRepository: SettlementRepositoryProtocol {
     let dto: SettlementAccountResponseDTO = try await client.put(
       "/v1/settlement/account",
       body: SettlementAccountRequest(
-        bankCode: bankCode,
         bankName: bankName,
         accountNumber: accountNumber,
         accountHolder: accountHolder

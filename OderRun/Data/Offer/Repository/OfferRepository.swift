@@ -7,14 +7,6 @@
 
 import Foundation
 
-private struct CreateOfferBody: Encodable {
-  let proposalID: Int64
-
-  enum CodingKeys: String, CodingKey {
-    case proposalID = "proposalId"
-  }
-}
-
 final class OfferRepository: OfferRepositoryProtocol {
   private let client: HTTPClient
 
@@ -35,7 +27,7 @@ final class OfferRepository: OfferRepositoryProtocol {
     if !status.isEmpty {
       params["status"] = status.map(\.rawValue)
     }
-    let dtos: [OfferResponseDTO] =
+    let dtos: [OfferSummaryResponseDTO] =
       try await client.get("/v1/offer", params: params)
     return dtos.map { $0.toDomain() }
   }
@@ -71,7 +63,7 @@ final class OfferRepository: OfferRepositoryProtocol {
   func raiseDispute(offerID: Int64, reason: String) async throws -> Offer {
     let dto: OfferResponseDTO = try await client.post(
       "/v1/offer/\(offerID)/dispute",
-      body: ProofDisputeRequest(disputeReason: reason)
+      body: DisputeRequest(disputeReason: reason)
     )
     return dto.toDomain()
   }

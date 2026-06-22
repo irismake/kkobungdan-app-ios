@@ -7,7 +7,7 @@
 
 import Foundation
 
-/// `GET /api/v1/notifications` 응답의 `data` 페이로드. (`{success, data, message}` envelope 으로 감싸져 온다)
+/// `GET /v1/notifications` 응답의 `data` 페이로드. (`{success, data, message}` envelope 으로 감싸져 온다)
 struct NotificationListResponseDTO: Decodable {
   let total: Int
   let notifications: [NotificationDTO]

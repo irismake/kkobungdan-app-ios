@@ -73,6 +73,16 @@
       "success": "boolean"
     }
   },
+  "ApiResponse_OfferDetailResponse_": {
+    "required": [
+      "success"
+    ],
+    "properties": {
+      "data": "anyOf(ref:OfferDetailResponse|null)",
+      "message": "anyOf(string|null)",
+      "success": "boolean"
+    }
+  },
   "ApiResponse_OfferResponse_": {
     "required": [
       "success"
@@ -143,6 +153,16 @@
       "success": "boolean"
     }
   },
+  "ApiResponse_SettlementBankNamesResponse_": {
+    "required": [
+      "success"
+    ],
+    "properties": {
+      "data": "anyOf(ref:SettlementBankNamesResponse|null)",
+      "message": "anyOf(string|null)",
+      "success": "boolean"
+    }
+  },
   "ApiResponse_TermsAgreementResponse_": {
     "required": [],
     "properties": {
@@ -169,12 +189,22 @@
       "success": "boolean"
     }
   },
-  "ApiResponse_list_OfferResponse__": {
+  "ApiResponse_list_DisputeSurveyQuestionResponse__": {
     "required": [
       "success"
     ],
     "properties": {
-      "data": "anyOf(array<ref:OfferResponse>|null)",
+      "data": "anyOf(array<ref:DisputeSurveyQuestionResponse>|null)",
+      "message": "anyOf(string|null)",
+      "success": "boolean"
+    }
+  },
+  "ApiResponse_list_OfferSummaryResponse__": {
+    "required": [
+      "success"
+    ],
+    "properties": {
+      "data": "anyOf(array<ref:OfferSummaryResponse>|null)",
       "message": "anyOf(string|null)",
       "success": "boolean"
     }
@@ -270,6 +300,24 @@
       "expiresAt": "string",
       "phone": "string"
     }
+  },
+  "DisputeSurveyQuestionResponse": {
+    "required": [
+      "displayOrder",
+      "id",
+      "questionText",
+      "targetType"
+    ],
+    "properties": {
+      "displayOrder": "integer",
+      "id": "integer",
+      "questionText": "string",
+      "targetType": "ref:DisputeSurveyTargetType"
+    }
+  },
+  "DisputeSurveyTargetType": {
+    "required": [],
+    "properties": {}
   },
   "ErrorDetail": {
     "required": [
@@ -439,6 +487,38 @@
       "proposalId": "integer"
     }
   },
+  "OfferDetailResponse": {
+    "required": [
+      "createdAt",
+      "id",
+      "ordererId",
+      "ordererLevel",
+      "ordererName",
+      "proposalId",
+      "runnerId",
+      "runnerLevel",
+      "runnerName",
+      "status"
+    ],
+    "properties": {
+      "acceptedAt": "anyOf(string|null)",
+      "createdAt": "string",
+      "deliveryCompletedAt": "anyOf(string|null)",
+      "disputedAt": "anyOf(string|null)",
+      "id": "integer",
+      "openChatUrl": "anyOf(string|null)",
+      "ordererId": "string",
+      "ordererLevel": "integer",
+      "ordererName": "string",
+      "proposalId": "integer",
+      "receiptConfirmedAt": "anyOf(string|null)",
+      "resolvedAt": "anyOf(string|null)",
+      "runnerId": "string",
+      "runnerLevel": "integer",
+      "runnerName": "string",
+      "status": "ref:OfferStatus"
+    }
+  },
   "OfferResponse": {
     "required": [
       "createdAt",
@@ -463,7 +543,7 @@
       "ordererName": "string",
       "proposalId": "integer",
       "receiptConfirmedAt": "anyOf(string|null)",
-      "refundedAt": "anyOf(string|null)",
+      "resolvedAt": "anyOf(string|null)",
       "runnerId": "string",
       "runnerLevel": "integer",
       "runnerName": "string",
@@ -473,6 +553,37 @@
   "OfferStatus": {
     "required": [],
     "properties": {}
+  },
+  "OfferSummaryResponse": {
+    "required": [
+      "createdAt",
+      "id",
+      "ordererId",
+      "ordererLevel",
+      "ordererName",
+      "proposalId",
+      "runnerId",
+      "runnerLevel",
+      "runnerName",
+      "status"
+    ],
+    "properties": {
+      "acceptedAt": "anyOf(string|null)",
+      "createdAt": "string",
+      "deliveryCompletedAt": "anyOf(string|null)",
+      "disputedAt": "anyOf(string|null)",
+      "id": "integer",
+      "ordererId": "string",
+      "ordererLevel": "integer",
+      "ordererName": "string",
+      "proposalId": "integer",
+      "receiptConfirmedAt": "anyOf(string|null)",
+      "resolvedAt": "anyOf(string|null)",
+      "runnerId": "string",
+      "runnerLevel": "integer",
+      "runnerName": "string",
+      "status": "ref:OfferStatus"
+    }
   },
   "PageResponse_OfferResponse_": {
     "required": [
@@ -542,10 +653,12 @@
   },
   "ProofDisputeRequest": {
     "required": [
-      "disputeReason"
+      "disputeReason",
+      "surveyQuestionId"
     ],
     "properties": {
-      "disputeReason": "string"
+      "disputeReason": "string",
+      "surveyQuestionId": "integer"
     }
   },
   "ProposalDetailResponse": {
@@ -569,11 +682,12 @@
       "id": "integer",
       "matchedAt": "anyOf(string|null)",
       "offers": "array<ref:ProposalOwnOfferResponse>",
+      "openChatUrl": "anyOf(string|null)",
       "ordererId": "string",
       "ordererLevel": "integer",
       "ordererName": "string",
       "receivedConfirmedAt": "anyOf(string|null)",
-      "refundedAt": "anyOf(string|null)",
+      "resolvedAt": "anyOf(string|null)",
       "status": "ref:ProposalStatus",
       "title": "string"
     }
@@ -670,30 +784,34 @@
     "required": [
       "accountHolder",
       "accountNumber",
-      "bankCode",
       "bankName"
     ],
     "properties": {
       "accountHolder": "string",
       "accountNumber": "string",
-      "bankCode": "string",
       "bankName": "string"
     }
   },
   "SettlementAccountResponse": {
     "required": [
       "accountHolder",
-      "bankCode",
       "bankName",
       "maskedAccountNumber",
       "updatedAt"
     ],
     "properties": {
       "accountHolder": "string",
-      "bankCode": "string",
       "bankName": "string",
       "maskedAccountNumber": "string",
       "updatedAt": "string"
+    }
+  },
+  "SettlementBankNamesResponse": {
+    "required": [
+      "bankNames"
+    ],
+    "properties": {
+      "bankNames": "array<string>"
     }
   },
   "TermsAgreementRequest": {
@@ -757,6 +875,14 @@
     ],
     "properties": {
       "fcmToken": "string"
+    }
+  },
+  "UserNameUpdateRequest": {
+    "required": [
+      "name"
+    ],
+    "properties": {
+      "name": "string"
     }
   },
   "ValidationError": {

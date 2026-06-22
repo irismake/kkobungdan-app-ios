@@ -7,20 +7,6 @@
 
 import Foundation
 
-private struct ProposalCreateBody: Encodable {
-  let title: String
-  let content: String
-  let deadline: String
-  let errandFee: Int
-}
-
-private struct ProposalUpdateBody: Encodable {
-  let title: String
-  let content: String
-  let deadline: String
-  let errandFee: Int
-}
-
 final class ProposalRepository: ProposalRepositoryProtocol {
   private let client: HTTPClient
 
@@ -51,7 +37,7 @@ final class ProposalRepository: ProposalRepositoryProtocol {
   ) async throws -> Proposal {
     let dto: ProposalResponseDTO = try await client.post(
       "/v1/proposal",
-      body: ProposalCreateBody(
+      body: ProposalRequestBody(
         title: title,
         content: content,
         deadline: deadline,
@@ -64,7 +50,7 @@ final class ProposalRepository: ProposalRepositoryProtocol {
   func updateProposal(id: Int64, title: String, content: String, deadline: String, errandFee: String) async throws -> Proposal {
     let dto: ProposalResponseDTO = try await client.put(
       "/v1/proposal/\(id)",
-      body: ProposalUpdateBody(title: title, content: content, deadline: deadline, errandFee: Int(errandFee) ?? 0)
+      body: ProposalRequestBody(title: title, content: content, deadline: deadline, errandFee: Int(errandFee) ?? 0)
     )
     return dto.toDomain()
   }
@@ -85,7 +71,7 @@ final class ProposalRepository: ProposalRepositoryProtocol {
   func raiseDispute(proposalID: Int64, reason: String) async throws -> ProposalDetail {
     let dto: ProposalDetailResponseDTO = try await client.post(
       "/v1/proposal/\(proposalID)/dispute",
-      body: ProofDisputeRequest(disputeReason: reason)
+      body: DisputeRequest(disputeReason: reason)
     )
     return dto.toDomain()
   }

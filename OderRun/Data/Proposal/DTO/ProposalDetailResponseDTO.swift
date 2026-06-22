@@ -24,7 +24,8 @@ struct ProposalDetailResponseDTO: Decodable {
   let deliveryReportedAt: String?
   let receivedConfirmedAt: String?
   let disputedAt: String?
-  let refundedAt: String?
+  let resolvedAt: String?
+  let openChatUrl: String?
   /// 서버 스펙상 optional (`array | null`). 미전송 시에도 디코딩되도록 `?`.
   let offers: [ProposalOwnOfferResponseDTO]?
 
@@ -32,7 +33,7 @@ struct ProposalDetailResponseDTO: Decodable {
     case id, title, content, deadline, errandFee
     case ordererID = "ordererId"
     case ordererName, ordererLevel
-    case status, matchedAt, deliveryReportedAt, receivedConfirmedAt, disputedAt, refundedAt, offers
+    case status, matchedAt, deliveryReportedAt, receivedConfirmedAt, disputedAt, resolvedAt, openChatUrl, offers
   }
 }
 
@@ -60,7 +61,7 @@ struct ProposalOwnOfferResponseDTO: Decodable {
 
 extension ProposalDetailResponseDTO {
   func toDomain() -> ProposalDetail {
-    // TODO: matchedAt, deliveryReportedAt, receivedConfirmedAt, disputedAt, refundedAt, offers — UI 반영 시 ProposalDetail 엔티티에 추가
+    // TODO: matchedAt, deliveryReportedAt, receivedConfirmedAt, disputedAt, resolvedAt, openChatUrl, offers — UI 반영 시 ProposalDetail 엔티티에 추가
     ProposalDetail(
       id: id,
       title: title,

@@ -76,7 +76,7 @@ struct VerificationCodeView: View {
     .toolbar(.hidden, for: .navigationBar)
     .onAppear { focus = .code }
     .onReceive(timer) { _ in viewModel.tick() }
-    .task { await viewModel.sendCode() }
+    .task { _ = await viewModel.sendCode() }
     .alert(
       "오류",
       isPresented: Binding(
