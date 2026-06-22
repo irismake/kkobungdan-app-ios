@@ -14,7 +14,6 @@ final class ProposalDetailViewModel {
   var proposal: ProposalDetail?
   var isLoading: Bool = false
   var errorMessage: String?
-  var isOffering: Bool = false
   var hasApplied: Bool = false
 
   var isMine: Bool {
@@ -25,20 +24,17 @@ final class ProposalDetailViewModel {
   }
 
   private let fetchDetailUseCase: FetchProposalDetailUseCase
-  private let createOfferUseCase: CreateOfferUseCase
   private let fetchOffersByProposalUseCase: FetchOffersByProposalUseCase
   private let tokenStorage: TokenStorage
 
   init(
     proposalID: Int64,
     fetchDetailUseCase: FetchProposalDetailUseCase,
-    createOfferUseCase: CreateOfferUseCase,
     fetchOffersByProposalUseCase: FetchOffersByProposalUseCase,
     tokenStorage: TokenStorage = .shared
   ) {
     self.proposalID = proposalID
     self.fetchDetailUseCase = fetchDetailUseCase
-    self.createOfferUseCase = createOfferUseCase
     self.fetchOffersByProposalUseCase = fetchOffersByProposalUseCase
     self.tokenStorage = tokenStorage
   }
@@ -60,24 +56,5 @@ final class ProposalDetailViewModel {
       errorMessage = "요청 상세를 불러오지 못했어요."
     }
     isLoading = false
-  }
-
-  @MainActor
-  func onOffer() async -> Bool {
-    guard !isOffering, !hasApplied else {
-      return false
-    }
-    isOffering = true
-    errorMessage = nil
-    do {
-      _ = try await createOfferUseCase.execute(proposalID: proposalID)
-      hasApplied = true
-      isOffering = false
-      return true
-    } catch {
-      errorMessage = "지원에 실패했어요. 잠시 후 다시 시도해주세요."
-    }
-    isOffering = false
-    return false
   }
 }

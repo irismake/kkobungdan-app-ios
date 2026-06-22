@@ -50,7 +50,6 @@ struct ProposalDetailView: View {
           title: offerButtonTitle,
           isEnabled: !viewModel.hasApplied
         ) {
-          // TODO: 계좌번호 여부에 따라 분기
           onOffer()
         }
       }

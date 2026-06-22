@@ -16,7 +16,7 @@ extension AppRouter {
         viewModel: AppRouteFactory.makeProposalDetailViewModel(proposalID: proposalID),
         onBack: { self.popLast(path: path) },
         onOffer: {
-          path.wrappedValue.append(.accountRegister(proposalID: proposalID))
+          path.wrappedValue.append(.addOffer(proposalID: proposalID))
         },
         onMine: {
           // 홈에서 탭한 요청이 내 요청이면 내 요청 상세로 라우트를 교체한다.
@@ -26,9 +26,9 @@ extension AppRouter {
         }
       )
       .navigationBarBackButtonHidden(true)
-    case let .accountRegister(proposalID):
-      AccountRegisterView(
-        viewModel: AppRouteFactory.makeAccountRegisterViewModel(proposalID: proposalID),
+    case let .addOffer(proposalID):
+      AddOfferView(
+        viewModel: AppRouteFactory.makeAddOfferViewModel(proposalID: proposalID),
         onBack: { self.popLast(path: path) },
         onApplied: {
           path.wrappedValue.append(.offerComplete(proposalID: proposalID))

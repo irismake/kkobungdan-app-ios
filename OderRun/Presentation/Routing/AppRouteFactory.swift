@@ -15,16 +15,16 @@ enum AppRouteFactory {
     ProposalDetailViewModel(
       proposalID: proposalID,
       fetchDetailUseCase: FetchProposalDetailUseCase(repository: DIContainer.proposalRepository),
-      createOfferUseCase: CreateOfferUseCase(repository: DIContainer.offerRepository),
       fetchOffersByProposalUseCase: FetchOffersByProposalUseCase(repository: DIContainer.offerRepository)
     )
   }
 
   // MARK: - Account Register (지원하기 → 계좌 등록)
 
-  static func makeAccountRegisterViewModel(proposalID: Int64) -> AccountRegisterViewModel {
-    AccountRegisterViewModel(
+  static func makeAddOfferViewModel(proposalID: Int64) -> AddOfferViewModel {
+    AddOfferViewModel(
       proposalID: proposalID,
+      account: makeSettlementAccountInputModel(),
       createOfferUseCase: CreateOfferUseCase(repository: DIContainer.offerRepository)
     )
   }
@@ -72,7 +72,18 @@ enum AppRouteFactory {
 
   static func makeAddProposalViewModel() -> AddProposalViewModel {
     AddProposalViewModel(
-      createProposalUseCase: CreateProposalUseCase(repository: DIContainer.proposalRepository)
+      createProposalUseCase: CreateProposalUseCase(repository: DIContainer.proposalRepository),
+      account: makeSettlementAccountInputModel()
+    )
+  }
+
+  // MARK: - 정산 계좌 입력 (공용 — offer·proposal 등에서 조합)
+
+  static func makeSettlementAccountInputModel() -> SettlementAccountInputModel {
+    SettlementAccountInputModel(
+      fetchAccountUseCase: FetchSettlementAccountUseCase(settlementRepository: DIContainer.settlementRepository),
+      saveAccountUseCase: SaveSettlementAccountUseCase(settlementRepository: DIContainer.settlementRepository),
+      fetchBankNamesUseCase: FetchSettlementBankNamesUseCase(settlementRepository: DIContainer.settlementRepository)
     )
   }
 
