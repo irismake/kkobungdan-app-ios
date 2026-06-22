@@ -19,17 +19,20 @@ final class ProfileViewModel {
 
   private let fetchUserDetailUseCase: FetchUserDetailUseCase
   private let updateAlarmUseCase: UpdateAlarmUseCase
+  private let updateUserNameUseCase: UpdateUserNameUseCase
   private let logoutUseCase: LogoutUseCase
   private let tokenStorage: TokenStorage
 
   init(
     fetchUserDetailUseCase: FetchUserDetailUseCase,
     updateAlarmUseCase: UpdateAlarmUseCase,
+    updateUserNameUseCase: UpdateUserNameUseCase,
     logoutUseCase: LogoutUseCase,
     tokenStorage: TokenStorage = .shared
   ) {
     self.fetchUserDetailUseCase = fetchUserDetailUseCase
     self.updateAlarmUseCase = updateAlarmUseCase
+    self.updateUserNameUseCase = updateUserNameUseCase
     self.logoutUseCase = logoutUseCase
     self.tokenStorage = tokenStorage
   }
@@ -39,6 +42,7 @@ final class ProfileViewModel {
     let viewModel = ProfileViewModel(
       fetchUserDetailUseCase: FetchUserDetailUseCase(userRepository: userRepo),
       updateAlarmUseCase: UpdateAlarmUseCase(userRepository: userRepo),
+      updateUserNameUseCase: UpdateUserNameUseCase(userRepository: userRepo),
       logoutUseCase: LogoutUseCase(authRepository: DIContainer.authRepository)
     )
     viewModel.user = User.dummy
@@ -63,6 +67,15 @@ final class ProfileViewModel {
       user = try await updateAlarmUseCase.execute(enabled: enabled)
     } catch {
       errorMessage = "알림 설정을 변경하지 못했어요."
+    }
+  }
+
+  @MainActor
+  func updateName(_ name: String) async {
+    do {
+      user = try await updateUserNameUseCase.execute(name: name)
+    } catch {
+      errorMessage = "닉네임을 변경하지 못했어요."
     }
   }
 
