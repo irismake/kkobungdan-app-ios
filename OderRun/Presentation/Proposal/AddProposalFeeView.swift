@@ -11,9 +11,6 @@ struct AddProposalFeeView: View {
   private let draft: AddProposalDraft
   @State private var viewModel: AddProposalViewModel
   @State private var feeText: String
-  @State private var accountNumber: String = ""
-  @State private var selectedBank: String?
-  @State private var isBankSheetPresented: Bool = false
 
   @FocusState private var focus: Field?
 
@@ -37,10 +34,14 @@ struct AddProposalFeeView: View {
     self.onCreated = onCreated
   }
 
+  /// 계좌 등록 또는 의뢰 생성이 진행 중인지.
+  private var isBusy: Bool {
+    viewModel.isSubmitting || viewModel.account.isRegistering
+  }
+
   private var isSubmitEnabled: Bool {
     !feeText.isEmpty && Int(feeText) != nil
-      && !accountNumber.isEmpty && selectedBank != nil
-      && draft.deadline != nil && !viewModel.isSubmitting
+      && draft.deadline != nil && viewModel.canSubmit
   }
 
   var body: some View {
@@ -58,7 +59,7 @@ struct AddProposalFeeView: View {
             accountNumber: "1234-56-24687"
           )
 
-          if let errorMessage = viewModel.errorMessage {
+          if let errorMessage = viewModel.errorMessage ?? viewModel.account.errorMessage {
             Text(errorMessage)
               .textStyle(.body3)
               .foregroundColor(Color.rose500)
@@ -68,7 +69,7 @@ struct AddProposalFeeView: View {
       }
 
       BottomActionBar(
-        title: viewModel.isSubmitting ? "등록 중..." : "등록하기",
+        title: isBusy ? "등록 중..." : "등록하기",
         isEnabled: isSubmitEnabled
       ) {
         submit()
@@ -77,27 +78,27 @@ struct AddProposalFeeView: View {
     .background(Color.gray000)
     // 시트는 BottomActionBar 위로 스택되도록 바깥 overlay 로 둔다.
     .overlay {
-      if isBankSheetPresented {
+      if viewModel.account.isBankSheetPresented {
         BankSelectSheet(
-          banks: Bank.displayNames,
-          onClose: { isBankSheetPresented = false },
-          onSelect: { selectBank($0) }
+          banks: viewModel.account.banks,
+          onClose: { viewModel.account.dismissBankSheet() },
+          onSelect: { viewModel.account.selectBank($0) }
         )
       }
     }
     .navigationBarHidden(true)
-  }
-
-  private func selectBank(_ bank: String) {
-    selectedBank = bank
-    isBankSheetPresented = false
+    .task { await viewModel.account.loadAccount() }
   }
 
   private func submit() {
-    guard let fee = Int(feeText), let deadline = draft.deadline else {
+    guard let fee = Int(feeText), let deadline = draft.deadline, !isBusy else {
       return
     }
     Task {
+      // 계좌가 없으면 먼저 계좌를 등록한 뒤 의뢰를 생성한다.
+      guard await viewModel.account.register() else {
+        return
+      }
       if let proposal = await viewModel.submit(
         title: draft.title,
         content: draft.content,
@@ -145,14 +146,16 @@ struct AddProposalFeeView: View {
   }
 
   private var accountNumberField: some View {
-    LabeledFieldContainer(label: "계좌번호") {
+    @Bindable var account = viewModel.account
+    return LabeledFieldContainer(label: "계좌번호") {
       FocusTextField(
-        text: $accountNumber,
+        text: $account.accountNumber,
         placeholder: "환불받을 계좌번호를 입력해 주세요",
         keyboardType: .numberPad,
         focus: $focus,
         focusValue: .account
       )
+      .disabled(viewModel.account.hasAccount)
     }
   }
 
@@ -160,12 +163,12 @@ struct AddProposalFeeView: View {
     LabeledFieldContainer(label: "은행") {
       Button {
         focus = nil
-        isBankSheetPresented = true
+        viewModel.account.openBankSheet()
       } label: {
         HStack(spacing: 8) {
-          Text(selectedBank ?? "은행을 선택해 주세요")
+          Text(viewModel.account.selectedBank ?? "은행을 선택해 주세요")
             .textStyle(.inputBody1)
-            .foregroundColor(selectedBank == nil ? Color.gray500 : Color.gray900)
+            .foregroundColor(viewModel.account.selectedBank == nil ? Color.gray500 : Color.gray900)
 
           Spacer(minLength: 0)
 
@@ -174,9 +177,10 @@ struct AddProposalFeeView: View {
             .scaledToFit()
             .frame(width: 24, height: 24)
         }
-        .textFieldBox(isActive: isBankSheetPresented)
+        .textFieldBox(isActive: viewModel.account.isBankSheetPresented)
       }
       .buttonStyle(.plain)
+      .disabled(viewModel.account.hasAccount)
     }
   }
 }

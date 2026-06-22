@@ -14,6 +14,7 @@ struct BankSelectSheet: View {
   let onSelect: (String) -> Void
 
   @State private var isShown = false
+  @State private var dragOffset: CGFloat = 0
 
   private let columnCount = 3
 
@@ -31,6 +32,18 @@ struct BankSelectSheet: View {
 
       if isShown {
         sheet
+          .offset(y: max(0, dragOffset))
+          .gesture(
+            DragGesture()
+              .onChanged { dragOffset = $0.translation.height }
+              .onEnded { value in
+                if value.translation.height > 80 {
+                  close(onClose)
+                } else {
+                  withAnimation(.easeOut(duration: 0.2)) { dragOffset = 0 }
+                }
+              }
+          )
           .transition(.move(edge: .bottom))
       }
     }
@@ -103,6 +116,7 @@ struct BankSelectSheet: View {
   private func close(_ completion: @escaping () -> Void) {
     withAnimation(.easeIn(duration: 0.2)) {
       isShown = false
+      dragOffset = 0
     } completion: {
       completion()
     }

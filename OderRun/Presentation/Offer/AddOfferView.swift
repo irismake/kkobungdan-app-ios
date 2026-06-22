@@ -1,5 +1,5 @@
 //
-//  AccountRegisterView.swift
+//  AddOfferView.swift
 //  OderRun
 //
 //  Created by 김가희 on 5/30/26.
@@ -10,8 +10,8 @@
 
 import SwiftUI
 
-struct AccountRegisterView: View {
-  @State private var viewModel: AccountRegisterViewModel
+struct AddOfferView: View {
+  @State private var viewModel: AddOfferViewModel
   var onBack: () -> Void = {}
   var onApplied: () -> Void = {}
 
@@ -22,7 +22,7 @@ struct AccountRegisterView: View {
   }
 
   init(
-    viewModel: AccountRegisterViewModel,
+    viewModel: AddOfferViewModel,
     onBack: @escaping () -> Void = {},
     onApplied: @escaping () -> Void = {}
   ) {
@@ -40,7 +40,7 @@ struct AccountRegisterView: View {
           accountNumberField
           bankField
 
-          if let errorMessage = viewModel.errorMessage {
+          if let errorMessage = viewModel.errorMessage ?? viewModel.account.errorMessage {
             Text(errorMessage)
               .textStyle(.body3)
               .foregroundColor(Color.rose500)
@@ -64,15 +64,16 @@ struct AccountRegisterView: View {
     }
     // 시트는 safeAreaInset(지원하기 버튼)보다 바깥의 overlay 라야 버튼 위로 스택된다.
     .overlay {
-      if viewModel.isBankSheetPresented {
+      if viewModel.account.isBankSheetPresented {
         BankSelectSheet(
-          banks: viewModel.banks,
-          onClose: { viewModel.dismissBankSheet() },
-          onSelect: { viewModel.selectBank($0) }
+          banks: viewModel.account.banks,
+          onClose: { viewModel.account.dismissBankSheet() },
+          onSelect: { viewModel.account.selectBank($0) }
         )
       }
     }
     .navigationBarBackButtonHidden(true)
+    .task { await viewModel.account.loadAccount() }
   }
 
   // MARK: - Header
@@ -98,14 +99,16 @@ struct AccountRegisterView: View {
   // MARK: - Fields
 
   private var accountNumberField: some View {
-    LabeledFieldContainer(label: "계좌번호") {
+    @Bindable var account = viewModel.account
+    return LabeledFieldContainer(label: "계좌번호") {
       FocusTextField(
-        text: $viewModel.accountNumber,
+        text: $account.accountNumber,
         placeholder: "환불받을 계좌번호를 입력해 주세요",
         keyboardType: .numberPad,
         focus: $focus,
         focusValue: .account
       )
+      .disabled(viewModel.account.hasAccount)
     }
   }
 
@@ -113,12 +116,12 @@ struct AccountRegisterView: View {
     LabeledFieldContainer(label: "은행") {
       Button {
         focus = nil
-        viewModel.openBankSheet()
+        viewModel.account.openBankSheet()
       } label: {
         HStack(spacing: 8) {
-          Text(viewModel.selectedBank ?? "은행을 선택해 주세요")
+          Text(viewModel.account.selectedBank ?? "은행을 선택해 주세요")
             .textStyle(.inputBody1)
-            .foregroundColor(viewModel.selectedBank == nil ? .gray500 : .gray900)
+            .foregroundColor(viewModel.account.selectedBank == nil ? .gray500 : .gray900)
 
           Spacer(minLength: 0)
 
@@ -127,19 +130,16 @@ struct AccountRegisterView: View {
             .scaledToFit()
             .frame(width: 24, height: 24)
         }
-        .textFieldBox(isActive: viewModel.isBankSheetPresented)
+        .textFieldBox(isActive: viewModel.account.isBankSheetPresented)
       }
       .buttonStyle(.plain)
+      .disabled(viewModel.account.hasAccount)
     }
   }
 }
 
 #Preview {
-  AccountRegisterView(
-    viewModel: AccountRegisterViewModel(
-      proposalID: 1,
-      saveSettlementAccountUseCase: SaveSettlementAccountUseCase(settlementRepository: DIContainer.settlementRepository),
-      createOfferUseCase: CreateOfferUseCase(repository: DIContainer.offerRepository)
-    )
+  AddOfferView(
+    viewModel: AppRouteFactory.makeAddOfferViewModel(proposalID: 1)
   )
 }
