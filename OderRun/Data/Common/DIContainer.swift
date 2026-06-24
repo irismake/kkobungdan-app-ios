@@ -45,4 +45,7 @@ enum DIContainer {
 
   static let disputeSurveyRepository: DisputeSurveyRepositoryProtocol =
     isDummy ? TestDisputeSurveyRepositoryImpl() : DisputeSurveyRepository(client: .shared)
+
+  static let reportRepository: ReportRepositoryProtocol =
+    isDummy ? TestReportRepositoryImpl() : ReportRepository(client: .shared)
 }
