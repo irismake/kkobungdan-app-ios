@@ -131,14 +131,20 @@ struct MyProposalDetailView: View {
         }
       }
     case .orderCompleted:
-      Text("꼬붕의 확인을 기다리는중...")
-        .textStyle(.heading4)
-        .foregroundColor(.gray400)
-        .multilineTextAlignment(.center)
-        .frame(maxWidth: .infinity)
-        .frame(height: 56)
-        .background(Color.gray200)
-        .clipShape(RoundedRectangle(cornerRadius: 12))
+      VStack(spacing: 8) {
+        Text("꼬붕의 확인을 기다리는중...")
+          .textStyle(.heading4)
+          .foregroundColor(.gray400)
+          .multilineTextAlignment(.center)
+          .frame(maxWidth: .infinity)
+          .frame(height: 56)
+          .background(Color.gray200)
+          .clipShape(RoundedRectangle(cornerRadius: 12))
+
+        OutlineButton(title: "임무 중단") {
+          // TODO: 분쟁 기능 추가
+        }
+      }
     case .allCompleted, .disputed, .cancelled, .resolved:
       EmptyView()
     default:
