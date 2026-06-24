@@ -76,12 +76,12 @@ struct ProposalDetailView: View {
   private var reportButton: some View {
     Button(action: onReport) {
       Text("신고하기")
-        .textStyle(.caption1)
-        .foregroundColor(Color.gray500)
-        .padding(.horizontal, 12)
-        .padding(.vertical, 6)
+        .textStyle(.button1)
+        .foregroundColor(Color.rose800)
+        .padding(.horizontal, 10)
+        .padding(.vertical, 4)
         .background(Color.gray100)
-        .clipShape(RoundedRectangle(cornerRadius: 8))
+        .clipShape(RoundedRectangle(cornerRadius: 4))
     }
     .buttonStyle(.plain)
   }

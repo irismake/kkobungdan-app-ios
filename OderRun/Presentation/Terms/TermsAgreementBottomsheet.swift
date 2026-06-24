@@ -164,8 +164,11 @@ struct TermsAgreementBottomsheet: View {
 
       // TODO: 체크 박스 완료된 이미지 반영
       if isChecked {
-        Image(systemName: "checkmark")
-          .font(.system(size: size * 0.55, weight: .bold))
+        Image("icon_check")
+          .renderingMode(.template)
+          .resizable()
+          .scaledToFit()
+          .frame(width: 12, height: 12)
           .foregroundColor(.white)
       }
     }

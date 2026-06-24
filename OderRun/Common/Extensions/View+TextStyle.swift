@@ -23,6 +23,7 @@ enum TextStyle {
   case heading3 // SemiBold 18/28/-0.4
   case heading4 // SemiBold 16/24/-0.2
   case heading5 // SemiBold 16/28/-0.4
+  case heading6 // Bold 20/28/-0.4
   case title1 // SemiBold 18/18/-0.4 (compact)
   case title2 // SemiBold 14/20/-0.4
   case title3 // SemiBold 14/14/-0.4 (tight menu labels)
@@ -44,7 +45,7 @@ enum TextStyle {
 
   var fontName: String {
     switch self {
-    case .display:
+    case .display, .heading6:
       return "Pretendard-Bold"
     case .heading1, .heading2, .heading3, .heading4, .heading5, .title1, .title2, .title3, .caption4:
       return "Pretendard-SemiBold"
@@ -59,6 +60,7 @@ enum TextStyle {
     switch self {
     case .display: return 30
     case .heading1, .heading2: return 24
+    case .heading6: return 20
     case .heading3, .title1: return 18
     case .heading4, .heading5, .body1, .body4, .inputBody1, .inputBody3, .inputBody4: return 16
     case .title2, .title3, .body2, .body3, .inputBody2, .button1: return 14
@@ -69,7 +71,7 @@ enum TextStyle {
   var lineHeight: CGFloat {
     switch self {
     case .display: return 36
-    case .heading1: return 28
+    case .heading1, .heading6: return 28
     case .heading2: return 24
     case .heading3: return 28
     case .heading4: return 24
@@ -98,7 +100,7 @@ enum TextStyle {
   var kerning: CGFloat {
     switch self {
     case .display: return 0.396
-    case .heading1, .heading2, .heading3, .heading5, .title1, .title2, .title3, .caption4:
+    case .heading1, .heading2, .heading3, .heading5, .heading6, .title1, .title2, .title3, .caption4:
       return -0.4
     case .body4: return -0.312
     case .body1: return -0.3
