@@ -23,6 +23,26 @@ extension AppRouter {
           if !path.wrappedValue.isEmpty {
             path.wrappedValue[path.wrappedValue.count - 1] = .myProposalDetail(proposalID: proposalID)
           }
+        },
+        onReport: {
+          path.wrappedValue.append(.report(proposalID: proposalID))
+        }
+      )
+      .navigationBarBackButtonHidden(true)
+    case let .report(proposalID):
+      ReportView(
+        viewModel: AppRouteFactory.makeReportViewModel(proposalID: proposalID),
+        onClose: { self.popLast(path: path) },
+        onSubmitted: {
+          path.wrappedValue.append(.reportComplete)
+        }
+      )
+      .navigationBarBackButtonHidden(true)
+    case .reportComplete:
+      ReportCompleteView(
+        onHome: {
+          path.wrappedValue.removeAll()
+          self.selectedTab = .home
         }
       )
       .navigationBarBackButtonHidden(true)

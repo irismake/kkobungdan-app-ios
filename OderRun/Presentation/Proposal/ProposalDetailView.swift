@@ -12,17 +12,20 @@ struct ProposalDetailView: View {
   var onBack: () -> Void = {}
   var onOffer: () -> Void = {}
   var onMine: () -> Void = {}
+  var onReport: () -> Void = {}
 
   init(
     viewModel: ProposalDetailViewModel,
     onBack: @escaping () -> Void = {},
     onOffer: @escaping () -> Void = {},
-    onMine: @escaping () -> Void = {}
+    onMine: @escaping () -> Void = {},
+    onReport: @escaping () -> Void = {}
   ) {
     _viewModel = State(initialValue: viewModel)
     self.onBack = onBack
     self.onOffer = onOffer
     self.onMine = onMine
+    self.onReport = onReport
   }
 
   var body: some View {
@@ -70,6 +73,19 @@ struct ProposalDetailView: View {
     viewModel.hasApplied ? "지원 완료" : "지원하기"
   }
 
+  private var reportButton: some View {
+    Button(action: onReport) {
+      Text("신고하기")
+        .textStyle(.button1)
+        .foregroundColor(Color.rose800)
+        .padding(.horizontal, 10)
+        .padding(.vertical, 4)
+        .background(Color.gray100)
+        .clipShape(RoundedRectangle(cornerRadius: 4))
+    }
+    .buttonStyle(.plain)
+  }
+
   @ViewBuilder
   private var proposalCardSection: some View {
     if let proposal = viewModel.proposal {
@@ -84,6 +100,9 @@ struct ProposalDetailView: View {
         fee: ProposalFormatter.feeString(proposal.errandFee),
         badges: ActivityStatusBadge.badges(proposal: proposal)
       )
+
+      reportButton
+        .frame(maxWidth: .infinity, alignment: .trailing)
     } else if let errorMessage = viewModel.errorMessage {
       Text(errorMessage)
         .textStyle(.body3)

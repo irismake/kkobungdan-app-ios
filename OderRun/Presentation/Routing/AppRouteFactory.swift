@@ -19,6 +19,16 @@ enum AppRouteFactory {
     )
   }
 
+  // MARK: - Report (의뢰 신고)
+
+  static func makeReportViewModel(proposalID: Int64) -> ReportViewModel {
+    ReportViewModel(
+      proposalID: proposalID,
+      fetchReasonsUseCase: FetchReportReasonsUseCase(repository: DIContainer.reportRepository),
+      submitReportUseCase: SubmitProposalReportUseCase(repository: DIContainer.reportRepository)
+    )
+  }
+
   // MARK: - Account Register (지원하기 → 계좌 등록)
 
   static func makeAddOfferViewModel(proposalID: Int64) -> AddOfferViewModel {

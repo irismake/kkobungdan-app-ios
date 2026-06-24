@@ -24,7 +24,7 @@ struct OfferCompleteView: View {
             .fill(Color.emerald000)
             .frame(width: 80, height: 80)
 
-          Image("icon_check")
+          Image("icon_check_overflow")
             .renderingMode(.template)
             .resizable()
             .frame(width: 48, height: 48)

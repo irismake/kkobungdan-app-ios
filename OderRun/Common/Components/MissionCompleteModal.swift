@@ -26,7 +26,7 @@ struct MissionCompleteModal: View {
             .fill(Color.emerald000)
             .frame(width: 48, height: 48)
 
-          Image("icon_circle_check")
+          Image("icon_small_circle_check")
             .renderingMode(.template)
             .resizable()
             .scaledToFit()

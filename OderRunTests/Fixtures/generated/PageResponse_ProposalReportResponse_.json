@@ -1,0 +1,21 @@
+{
+  "content": [
+    {
+      "id": 0,
+      "proposalId": 0,
+      "reporterId": "string",
+      "reasonQuestionId": 0,
+      "reasonQuestionText": "string",
+      "detailReason": "string",
+      "status": "PENDING",
+      "createdAt": "2026-06-12T18:00:00",
+      "reviewedAt": "2026-06-12T18:00:00"
+    }
+  ],
+  "totalElements": 0,
+  "totalPages": 0,
+  "pageNumber": 0,
+  "pageSize": 0,
+  "first": true,
+  "last": true
+}
