@@ -42,7 +42,8 @@ final class ReportViewModel {
   /// 선택한 사유가 상세 사유 작성을 요구하는지 여부.
   /// 서버 스키마에 별도 플래그가 없어 "기타" 텍스트로 판별한다.
   /// TODO: 서버가 필수 여부 플래그를 제공하면 그 값으로 교체한다.
-  private var selectedReasonRequiresDetail: Bool {
+  /// 상세 사유 입력은 "기타" 선택 시에만 가능하다(뷰에서 이 값으로 입력 활성화).
+  var isDetailRequired: Bool {
     selectedReason?.questionText.contains("기타") ?? false
   }
 
@@ -55,7 +56,7 @@ final class ReportViewModel {
     guard selectedReason != nil else {
       return false
     }
-    if selectedReasonRequiresDetail {
+    if isDetailRequired {
       return !trimmedDetail.isEmpty
     }
     return true
@@ -78,6 +79,10 @@ final class ReportViewModel {
 
   func select(_ reason: ReportReason) {
     selectedReasonID = reason.id
+    // 상세 사유는 "기타" 전용 — 다른 사유로 바꾸면 입력값을 비운다.
+    if !isDetailRequired {
+      detail = ""
+    }
   }
 
   @MainActor
@@ -91,7 +96,8 @@ final class ReportViewModel {
       try await submitReportUseCase.execute(
         proposalID: proposalID,
         reasonQuestionID: reasonID,
-        detailReason: trimmedDetail.isEmpty ? nil : trimmedDetail
+        // 상세 사유는 "기타" 선택 시에만 전송.
+        detailReason: isDetailRequired && !trimmedDetail.isEmpty ? trimmedDetail : nil
       )
       didSubmit = true
     } catch {
