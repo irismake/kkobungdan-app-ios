@@ -101,18 +101,18 @@ struct ReportView: View {
         radioCircle(isSelected: isSelected)
 
         Text(reason.questionText)
-          .textStyle(.body2, kerning: -0.2)
-          .foregroundColor(Color.gray800)
+          .textStyle(.body2, weight: isSelected ? .bold : nil, kerning: -0.2)
+          .foregroundColor(isSelected ? Color.indigo800 : Color.gray800)
 
         Spacer(minLength: 0)
       }
       .padding(16)
       .frame(maxWidth: .infinity, alignment: .leading)
-      .background(Color.white)
+      .background(isSelected ? Color.indigo000 : Color.white)
       .clipShape(RoundedRectangle(cornerRadius: 16))
       .overlay(
         RoundedRectangle(cornerRadius: 16)
-          .stroke(isSelected ? Color.indigo500 : Color.gray200, lineWidth: 1)
+          .stroke(isSelected ? Color.indigo400 : Color.gray200, lineWidth: 1)
       )
     }
     .buttonStyle(.plain)
@@ -121,17 +121,13 @@ struct ReportView: View {
   private func radioCircle(isSelected: Bool) -> some View {
     ZStack {
       Circle()
-        .fill(isSelected ? Color.indigo500 : Color.white)
-        .overlay(Circle().stroke(isSelected ? Color.clear : Color.gray300, lineWidth: 2))
+        .stroke(isSelected ? Color.indigo500 : Color.gray300, lineWidth: 2)
         .frame(width: 20, height: 20)
 
       if isSelected {
-        Image("icon_check")
-          .renderingMode(.template)
-          .resizable()
-          .scaledToFit()
-          .frame(width: 12, height: 12)
-          .foregroundColor(.white)
+        Circle()
+          .fill(Color.indigo500)
+          .frame(width: 10, height: 10)
       }
     }
   }
