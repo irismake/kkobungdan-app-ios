@@ -29,6 +29,10 @@ enum AppRoute: Hashable {
   case report(proposalID: Int64)
   /// 신고 접수 완료 안내 화면
   case reportComplete
+  /// 임무 중단(분쟁 제기) 사유 선택 화면
+  case missionAbort(target: MissionAbortTarget)
+  /// 임무 중단 신청 완료 안내 화면
+  case missionAbortComplete
   /// 새 의뢰 작성 — 1단계: 제목/내용
   case addProposalDraft
   /// 새 의뢰 작성 — 2단계: 날짜/시간

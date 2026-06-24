@@ -12,13 +12,16 @@ struct OfferDetailView: View {
   @State private var isMissionCompleted: Bool = false
   @State private var isCancelConfirmPresented: Bool = false
   var onBack: () -> Void = {}
+  var onAbort: () -> Void = {}
 
   init(
     viewModel: OfferDetailViewModel,
-    onBack: @escaping () -> Void = {}
+    onBack: @escaping () -> Void = {},
+    onAbort: @escaping () -> Void = {}
   ) {
     _viewModel = State(initialValue: viewModel)
     self.onBack = onBack
+    self.onAbort = onAbort
   }
 
   var body: some View {
@@ -104,7 +107,7 @@ struct OfferDetailView: View {
         MissionCompleteButton { isMissionCompleted = true }
 
         OutlineButton(title: "임무 중단") {
-          // TODO: 분쟁 기능 추가
+          onAbort()
         }
       }
 
@@ -120,7 +123,7 @@ struct OfferDetailView: View {
           .clipShape(RoundedRectangle(cornerRadius: 12))
 
         OutlineButton(title: "임무 중단") {
-          // TODO: 분쟁 기능 추가
+          onAbort()
         }
       }
 

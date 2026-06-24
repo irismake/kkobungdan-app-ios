@@ -34,10 +34,11 @@ final class MyProposalDetailViewModel {
     offers.filter { $0.status == .waiting || $0.status == .accepted }.count
   }
 
-  /// 매칭된 offer. 진행중·완료 proposal 의 매칭 러너 카드 표시에 사용.
+  /// 매칭된 offer. 진행중·완료·분쟁중 proposal 의 매칭 러너 카드 표시에 사용.
   var matchedOffer: Offer? {
     offers.first(where: {
-      $0.status == .accepted || $0.status == .runnerCompleted || $0.status == .allCompleted
+      $0.status == .accepted || $0.status == .runnerCompleted
+        || $0.status == .allCompleted || $0.status == .disputed
     })
   }
 

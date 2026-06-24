@@ -2,42 +2,24 @@
 //  MissionAbortView.swift
 //  OderRun
 //
-//  임무 중단 사유 선택 화면. 중단 사유 라디오 선택 + 상세 사유 작성 후 중단을 신청한다.
-//  TODO: ViewModel·UseCase 연동 — 현재는 뷰만 구현(로컬 상태)이다.
+//  임무 중단(분쟁 제기) 사유 선택 화면. 중단 사유 라디오 선택 + 상세 사유 작성 후 중단을 신청한다.
 //
 
 import SwiftUI
 
 struct MissionAbortView: View {
-  /// 중단 사유 목록. TODO: 서버 연동 시 ViewModel에서 주입.
-  private let reasons = [
-    "임무를 진행하기 어려워졌어요",
-    "꼬붕과 연락이 되지 않아요",
-    "임무 수행이 어렵다고 전달받았어요",
-    "직접 해결하게 되었어요",
-    "기타",
-  ]
-
-  @State private var selectedReason: String?
-  @State private var detail: String = ""
-
+  @State private var viewModel: MissionAbortViewModel
   var onClose: () -> Void = {}
-  var onSubmit: () -> Void = {}
+  var onSubmitted: () -> Void = {}
 
-  static let detailMaxLength = 500
-
-  private var requiresDetail: Bool {
-    selectedReason?.contains("기타") ?? false
-  }
-
-  private var canSubmit: Bool {
-    guard selectedReason != nil else {
-      return false
-    }
-    if requiresDetail {
-      return !detail.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
-    }
-    return true
+  init(
+    viewModel: MissionAbortViewModel,
+    onClose: @escaping () -> Void = {},
+    onSubmitted: @escaping () -> Void = {}
+  ) {
+    _viewModel = State(initialValue: viewModel)
+    self.onClose = onClose
+    self.onSubmitted = onSubmitted
   }
 
   var body: some View {
@@ -64,17 +46,19 @@ struct MissionAbortView: View {
       ScrollView {
         VStack(alignment: .leading, spacing: 24) {
           VStack(spacing: 10) {
-            ForEach(reasons, id: \.self) { reason in
-              reasonRow(reason)
+            ForEach(viewModel.questions) { question in
+              questionRow(question)
             }
           }
 
           LabeledFieldContainer(label: "상세 사유") {
             ContentTextField(
               placeholder: "기타를 선택하신 경우 상세 사유를 꼭 작성해 주세요.",
-              text: $detail,
-              maxLength: MissionAbortView.detailMaxLength
+              text: $viewModel.detail,
+              maxLength: MissionAbortViewModel.detailMaxLength
             )
+            .disabled(!viewModel.isDetailRequired)
+            .opacity(viewModel.isDetailRequired ? 1 : 0.5)
           }
         }
         .padding(Layout.screenHorizontalPadding)
@@ -82,10 +66,10 @@ struct MissionAbortView: View {
 
       VStack(spacing: 0) {
         FillButton(
-          title: "임무 중단하기",
-          isEnabled: canSubmit
+          title: viewModel.isSubmitting ? "처리 중..." : "임무 중단하기",
+          isEnabled: viewModel.canSubmit && !viewModel.isSubmitting
         ) {
-          onSubmit()
+          Task { await viewModel.submit() }
         }
         .padding(.horizontal, Layout.screenHorizontalPadding)
         .padding(.top, 16)
@@ -100,17 +84,25 @@ struct MissionAbortView: View {
       }
     }
     .background(Color.white)
+    .task {
+      await viewModel.load()
+    }
+    .onChange(of: viewModel.didSubmit) { _, didSubmit in
+      if didSubmit {
+        onSubmitted()
+      }
+    }
   }
 
-  private func reasonRow(_ reason: String) -> some View {
-    let isSelected = selectedReason == reason
+  private func questionRow(_ question: DisputeSurveyQuestion) -> some View {
+    let isSelected = viewModel.selectedQuestionID == question.id
     return Button {
-      selectedReason = reason
+      viewModel.select(question)
     } label: {
       HStack(spacing: 14) {
         radioCircle(isSelected: isSelected)
 
-        Text(reason)
+        Text(question.questionText)
           .textStyle(.body2, weight: isSelected ? .bold : nil, kerning: -0.2)
           .foregroundColor(isSelected ? Color.indigo800 : Color.gray800)
 
@@ -144,5 +136,15 @@ struct MissionAbortView: View {
 }
 
 #Preview {
-  MissionAbortView()
+  MissionAbortView(
+    viewModel: MissionAbortViewModel(
+      submitTarget: .proposal(
+        proposalID: 1,
+        useCase: RaiseProposalDisputeUseCase(repository: TestProposalRepositoryImpl(store: DummyBackendStore()))
+      ),
+      fetchQuestionsUseCase: FetchDisputeSurveyQuestionsUseCase(
+        repository: TestDisputeSurveyRepositoryImpl()
+      )
+    )
+  )
 }

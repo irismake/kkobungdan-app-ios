@@ -13,17 +13,20 @@ struct MyProposalDetailView: View {
   var onBack: () -> Void = {}
   var onShowRunners: () -> Void = {}
   var onAccepted: () -> Void = {}
+  var onAbort: () -> Void = {}
 
   init(
     viewModel: MyProposalDetailViewModel,
     onBack: @escaping () -> Void = {},
     onShowRunners: @escaping () -> Void = {},
-    onAccepted: @escaping () -> Void = {}
+    onAccepted: @escaping () -> Void = {},
+    onAbort: @escaping () -> Void = {}
   ) {
     _viewModel = State(initialValue: viewModel)
     self.onBack = onBack
     self.onShowRunners = onShowRunners
     self.onAccepted = onAccepted
+    self.onAbort = onAbort
   }
 
   private var statusBadges: [BadgeItem] {
@@ -127,7 +130,7 @@ struct MyProposalDetailView: View {
         MissionCompleteButton { isMissionCompleted = true }
 
         OutlineButton(title: "임무 중단") {
-          // TODO: 분쟁 기능 추가
+          onAbort()
         }
       }
     case .orderCompleted:
@@ -142,7 +145,7 @@ struct MyProposalDetailView: View {
           .clipShape(RoundedRectangle(cornerRadius: 12))
 
         OutlineButton(title: "임무 중단") {
-          // TODO: 분쟁 기능 추가
+          onAbort()
         }
       }
     case .allCompleted, .disputed, .cancelled, .resolved:
