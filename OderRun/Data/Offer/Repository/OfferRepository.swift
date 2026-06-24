@@ -60,10 +60,10 @@ final class OfferRepository: OfferRepositoryProtocol {
     return dto.toDomain()
   }
 
-  func raiseDispute(offerID: Int64, reason: String) async throws -> Offer {
+  func raiseDispute(offerID: Int64, surveyQuestionID: Int64, reason: String) async throws -> Offer {
     let dto: OfferResponseDTO = try await client.post(
       "/v1/offer/\(offerID)/dispute",
-      body: DisputeRequest(disputeReason: reason)
+      body: DisputeRequest(surveyQuestionID: surveyQuestionID, disputeReason: reason)
     )
     return dto.toDomain()
   }

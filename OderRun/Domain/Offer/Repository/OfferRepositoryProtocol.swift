@@ -18,5 +18,5 @@ protocol OfferRepositoryProtocol: Sendable {
   /// 러너 배달 완료 처리. `POST /v1/offer/{id}/complete-delivery`
   func completeDelivery(offerID: Int64, proofImageURL: String?) async throws -> Offer
   /// 러너 분쟁 제기. `POST /v1/offer/{id}/dispute`
-  func raiseDispute(offerID: Int64, reason: String) async throws -> Offer
+  func raiseDispute(offerID: Int64, surveyQuestionID: Int64, reason: String) async throws -> Offer
 }
