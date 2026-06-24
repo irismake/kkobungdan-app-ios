@@ -25,6 +25,10 @@ enum AppRoute: Hashable {
   case addOffer(proposalID: Int64)
   /// 지원하기 성공 직후 안내 화면
   case offerComplete(proposalID: Int64, offerID: Int64)
+  /// 의뢰 신고 사유 선택 화면
+  case report(proposalID: Int64)
+  /// 신고 접수 완료 안내 화면
+  case reportComplete
   /// 새 의뢰 작성 — 1단계: 제목/내용
   case addProposalDraft
   /// 새 의뢰 작성 — 2단계: 날짜/시간
