@@ -18,25 +18,24 @@ struct ReportCompleteView: View {
         ZStack {
           Circle()
             .fill(Color.rose000)
-            .frame(width: 80, height: 80)
+            .frame(width: 48, height: 48)
 
-          Image("icon_check")
+          Image("icon_big_circle_check")
             .renderingMode(.template)
             .resizable()
-            .frame(width: 48, height: 48)
+            .frame(width: 40, height: 40)
             .foregroundColor(Color.rose500)
         }
 
         VStack(spacing: 8) {
           Text("신고 접수 완료")
-            .textStyle(.heading2)
+            .textStyle(.heading6)
             .foregroundColor(Color.gray900)
             .multilineTextAlignment(.center)
             .frame(maxWidth: .infinity)
 
           Text("운영팀이 신고 내용을 확인하고\n필요한 조치가 진행될 예정입니다.\n함께 안전한 커뮤니티를 만들어 주셔서 감사합니다.")
             .textStyle(.body3)
-            .kerning(-0.4)
             .foregroundColor(Color.gray600)
             .multilineTextAlignment(.center)
             .frame(maxWidth: .infinity)
@@ -58,7 +57,7 @@ struct ReportCompleteView: View {
       .padding(.top, 16)
       .padding(.bottom, 20)
     }
-    .background(Color.gray000)
+    .background(Color.white)
   }
 }
 

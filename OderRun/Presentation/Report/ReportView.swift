@@ -24,21 +24,29 @@ struct ReportView: View {
 
   var body: some View {
     VStack(spacing: 0) {
-      CloseHeader(
-        title: "어떤 점이 문제였나요?",
-        closePosition: .trailing,
-        onClose: onClose
-      )
-      .padding(.top, 8)
+      VStack(alignment: .leading, spacing: 12) {
+        CloseHeader(
+          title: "어떤 점이 문제였나요?",
+          closePosition: .trailing,
+          onClose: onClose
+        )
+
+        Text("운영팀이 내용을 확인할 수 있도록 신고 사유를 선택해 주세요.")
+          .textStyle(.body3)
+          .foregroundColor(Color.gray600)
+          .padding(.horizontal, Layout.screenHorizontalPadding)
+      }
+      .padding(.bottom, 32)
+      .overlay(alignment: .bottom) {
+        Rectangle()
+          .fill(Color.gray200)
+          .frame(height: 1)
+      }
 
       ScrollView {
         VStack(alignment: .leading, spacing: 24) {
-          Text("운영팀이 내용을 확인할 수 있도록 신고 사유를 선택해 주세요.")
-            .textStyle(.body3)
-            .foregroundColor(Color.gray500)
-
-          VStack(spacing: 12) {
-            ForEach(ReportReason.allCases) { reason in
+          VStack(spacing: 10) {
+            ForEach(viewModel.reasons) { reason in
               reasonRow(reason)
             }
           }
@@ -51,22 +59,32 @@ struct ReportView: View {
             )
           }
         }
-        .padding(.horizontal, Layout.screenHorizontalPadding)
-        .padding(.top, 20)
-        .padding(.bottom, 12)
+        .padding(Layout.screenHorizontalPadding)
       }
 
-      FillButton(
-        title: viewModel.isSubmitting ? "신고 중..." : "신고하기",
-        isEnabled: viewModel.canSubmit && !viewModel.isSubmitting
-      ) {
-        Task { await viewModel.submit() }
+      VStack(spacing: 0) {
+        FillButton(
+          title: viewModel.isSubmitting ? "신고 중..." : "신고하기",
+          isEnabled: viewModel.canSubmit && !viewModel.isSubmitting
+        ) {
+          Task { await viewModel.submit() }
+        }
+        .padding(.horizontal, Layout.screenHorizontalPadding)
+        .padding(.top, 16)
+        .padding(.bottom, 20)
       }
-      .padding(.horizontal, Layout.screenHorizontalPadding)
-      .padding(.top, 16)
-      .padding(.bottom, 20)
+      .frame(maxWidth: .infinity)
+      .background(Color.white)
+      .overlay(alignment: .top) {
+        Rectangle()
+          .fill(Color.gray200)
+          .frame(height: 1)
+      }
     }
-    .background(Color.gray000)
+    .background(Color.white)
+    .task {
+      await viewModel.load()
+    }
     .onChange(of: viewModel.didSubmit) { _, didSubmit in
       if didSubmit {
         onSubmitted()
@@ -75,25 +93,25 @@ struct ReportView: View {
   }
 
   private func reasonRow(_ reason: ReportReason) -> some View {
-    let isSelected = viewModel.selectedReason == reason
+    let isSelected = viewModel.selectedReasonID == reason.id
     return Button {
       viewModel.select(reason)
     } label: {
-      HStack(spacing: 12) {
+      HStack(spacing: 14) {
         radioCircle(isSelected: isSelected)
 
-        Text(reason.displayText)
-          .textStyle(.body1)
-          .foregroundColor(Color.gray900)
+        Text(reason.questionText)
+          .textStyle(.body2, kerning: -0.2)
+          .foregroundColor(Color.gray800)
 
         Spacer(minLength: 0)
       }
-      .padding(.horizontal, 16)
-      .frame(height: 56)
+      .padding(16)
+      .frame(maxWidth: .infinity, alignment: .leading)
       .background(Color.white)
-      .clipShape(RoundedRectangle(cornerRadius: 12))
+      .clipShape(RoundedRectangle(cornerRadius: 16))
       .overlay(
-        RoundedRectangle(cornerRadius: 12)
+        RoundedRectangle(cornerRadius: 16)
           .stroke(isSelected ? Color.indigo500 : Color.gray200, lineWidth: 1)
       )
     }
@@ -103,18 +121,28 @@ struct ReportView: View {
   private func radioCircle(isSelected: Bool) -> some View {
     ZStack {
       Circle()
-        .stroke(isSelected ? Color.indigo500 : Color.gray300, lineWidth: 1.5)
+        .fill(isSelected ? Color.indigo500 : Color.white)
+        .overlay(Circle().stroke(isSelected ? Color.clear : Color.gray300, lineWidth: 2))
         .frame(width: 20, height: 20)
 
       if isSelected {
-        Circle()
-          .fill(Color.indigo500)
-          .frame(width: 10, height: 10)
+        Image("icon_check")
+          .renderingMode(.template)
+          .resizable()
+          .scaledToFit()
+          .frame(width: 12, height: 12)
+          .foregroundColor(.white)
       }
     }
   }
 }
 
 #Preview {
-  ReportView(viewModel: ReportViewModel(proposalID: 1))
+  ReportView(
+    viewModel: ReportViewModel(
+      proposalID: 1,
+      fetchReasonsUseCase: FetchReportReasonsUseCase(repository: TestReportRepositoryImpl()),
+      submitReportUseCase: SubmitProposalReportUseCase(repository: TestReportRepositoryImpl())
+    )
+  )
 }
