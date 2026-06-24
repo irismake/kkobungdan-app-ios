@@ -113,6 +113,16 @@
       "success": "boolean"
     }
   },
+  "ApiResponse_PageResponse_ProposalReportResponse__": {
+    "required": [
+      "success"
+    ],
+    "properties": {
+      "data": "anyOf(ref:PageResponse_ProposalReportResponse_|null)",
+      "message": "anyOf(string|null)",
+      "success": "boolean"
+    }
+  },
   "ApiResponse_PageResponse_ProposalResponse__": {
     "required": [
       "success"
@@ -129,6 +139,16 @@
     ],
     "properties": {
       "data": "anyOf(ref:ProposalDetailResponse|null)",
+      "message": "anyOf(string|null)",
+      "success": "boolean"
+    }
+  },
+  "ApiResponse_ProposalReportResponse_": {
+    "required": [
+      "success"
+    ],
+    "properties": {
+      "data": "anyOf(ref:ProposalReportResponse|null)",
       "message": "anyOf(string|null)",
       "success": "boolean"
     }
@@ -205,6 +225,16 @@
     ],
     "properties": {
       "data": "anyOf(array<ref:OfferSummaryResponse>|null)",
+      "message": "anyOf(string|null)",
+      "success": "boolean"
+    }
+  },
+  "ApiResponse_list_ProposalReportReasonQuestionResponse__": {
+    "required": [
+      "success"
+    ],
+    "properties": {
+      "data": "anyOf(array<ref:ProposalReportReasonQuestionResponse>|null)",
       "message": "anyOf(string|null)",
       "success": "boolean"
     }
@@ -625,6 +655,26 @@
       "totalPages": "integer"
     }
   },
+  "PageResponse_ProposalReportResponse_": {
+    "required": [
+      "content",
+      "first",
+      "last",
+      "pageNumber",
+      "pageSize",
+      "totalElements",
+      "totalPages"
+    ],
+    "properties": {
+      "content": "array<ref:ProposalReportResponse>",
+      "first": "boolean",
+      "last": "boolean",
+      "pageNumber": "integer",
+      "pageSize": "integer",
+      "totalElements": "integer",
+      "totalPages": "integer"
+    }
+  },
   "PageResponse_ProposalResponse_": {
     "required": [
       "content",
@@ -743,6 +793,53 @@
       "title": "string",
       "updatedAt": "string"
     }
+  },
+  "ProposalReportCreateRequest": {
+    "required": [
+      "reasonQuestionId"
+    ],
+    "properties": {
+      "detailReason": "anyOf(string|null)",
+      "reasonQuestionId": "integer"
+    }
+  },
+  "ProposalReportReasonQuestionResponse": {
+    "required": [
+      "displayOrder",
+      "id",
+      "questionText"
+    ],
+    "properties": {
+      "displayOrder": "integer",
+      "id": "integer",
+      "questionText": "string"
+    }
+  },
+  "ProposalReportResponse": {
+    "required": [
+      "createdAt",
+      "id",
+      "proposalId",
+      "reasonQuestionId",
+      "reasonQuestionText",
+      "reporterId",
+      "status"
+    ],
+    "properties": {
+      "createdAt": "string",
+      "detailReason": "anyOf(string|null)",
+      "id": "integer",
+      "proposalId": "integer",
+      "reasonQuestionId": "integer",
+      "reasonQuestionText": "string",
+      "reporterId": "string",
+      "reviewedAt": "anyOf(string|null)",
+      "status": "ref:ProposalReportStatus"
+    }
+  },
+  "ProposalReportStatus": {
+    "required": [],
+    "properties": {}
   },
   "ProposalRequest": {
     "required": [

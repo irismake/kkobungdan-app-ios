@@ -13,6 +13,8 @@
   "OfferSummaryResponse": "GET /v1/offer",
   "ProposalDetailResponse": "GET /v1/proposal/{proposal_id}",
   "ProposalOwnResponse": "GET /v1/proposal/own",
+  "ProposalReportReasonQuestionResponse": "GET /v1/proposal-report-reasons",
+  "ProposalReportResponse": "POST /v1/proposal/{proposal_id}/reports",
   "ProposalResponse": "GET /v1/proposal",
   "SettlementAccountResponse": "GET /v1/settlement/account",
   "SettlementBankNamesResponse": "GET /v1/settlement/banks",

@@ -35,6 +35,9 @@ final class OpenAPIContractTests: XCTestCase {
         DecodeContract("TermsAgreementResponse", decoding(TermsAgreementResponseDTO.self)),
         // Dispute survey
         DecodeContract("DisputeSurveyQuestionResponse", decoding(DisputeSurveyQuestionResponseDTO.self)),
+
+        DecodeContract("ProposalReportReasonQuestionResponse", decoding(ProposalReportReasonQuestionResponseDTO.self)), // GET /v1/proposal-report-reasons
+        DecodeContract("ProposalReportResponse", decoding(ProposalReportResponseDTO.self)), // POST /v1/proposal/{id}/reports
         // Notification
         DecodeContract("NotificationListResponse", decoding(NotificationListResponseDTO.self)),
         DecodeContract("NotificationResponse", decoding(NotificationDTO.self)),
@@ -86,6 +89,10 @@ final class OpenAPIContractTests: XCTestCase {
         // Proposal
         EncodeContract("ProposalRequest", ProposalRequestBody(
             title: "제목", content: "내용", deadline: "2026-12-31T23:59:59", errandFee: 5000
+        )),
+        // Report
+        EncodeContract("ProposalReportCreateRequest", ProposalReportCreateRequest(
+            reasonQuestionID: 1, detailReason: "상세 사유"
         )),
     ]
 
