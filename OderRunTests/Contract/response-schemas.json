@@ -2,6 +2,7 @@
   "AuthAccessTokenResponse": "POST /v1/auth/refresh",
   "AuthTokenResponse": "POST /v1/auth/signup/confirm",
   "AuthVerificationSendResponse": "POST /v1/auth/signup/send",
+  "DisputeEvidenceResponse": "GET /v1/dispute-evidence",
   "DisputeSurveyQuestionResponse": "GET /v1/dispute-survey/questions",
   "NotificationListResponse": "GET /v1/notifications",
   "NotificationMarkReadResponse": "POST /v1/notifications/mark-read",
