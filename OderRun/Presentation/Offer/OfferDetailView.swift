@@ -73,15 +73,19 @@ struct OfferDetailView: View {
       }
       .frame(maxHeight: .infinity)
       .overlay(alignment: .bottom) {
-        Rectangle()
-          .fill(Color.gray200)
-          .frame(height: 1)
+        if hasBottomAction {
+          Rectangle()
+            .fill(Color.gray200)
+            .frame(height: 1)
+        }
       }
 
-      bottomActionSection
-        .padding(.horizontal, Layout.screenHorizontalPadding)
-        .padding(.top, 16)
-        .padding(.bottom, 20)
+      if hasBottomAction {
+        bottomActionSection
+          .padding(.horizontal, Layout.screenHorizontalPadding)
+          .padding(.top, 16)
+          .padding(.bottom, 20)
+      }
     }
     .background(Color.gray000)
     .task {
@@ -99,6 +103,18 @@ struct OfferDetailView: View {
       }
     } message: {
       Text("지원을 취소하면 되돌릴 수 없어요.")
+    }
+  }
+
+  /// 하단 액션 버튼이 있는지 여부. 없으면 구분선도 숨긴다.
+  private var hasBottomAction: Bool {
+    switch viewModel.offer?.status {
+    case .accepted, .runnerCompleted, .waiting:
+      return true
+    case .disputed:
+      return viewModel.isDisputedByCounterparty
+    default:
+      return false
     }
   }
 

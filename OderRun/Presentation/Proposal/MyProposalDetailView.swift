@@ -101,15 +101,19 @@ struct MyProposalDetailView: View {
       }
       .frame(maxHeight: .infinity)
       .overlay(alignment: .bottom) {
-        Rectangle()
-          .fill(Color.gray200)
-          .frame(height: 1)
+        if hasBottomAction {
+          Rectangle()
+            .fill(Color.gray200)
+            .frame(height: 1)
+        }
       }
 
-      bottomActionSection
-        .padding(.horizontal, Layout.screenHorizontalPadding)
-        .padding(.top, 16)
-        .padding(.bottom, 20)
+      if hasBottomAction {
+        bottomActionSection
+          .padding(.horizontal, Layout.screenHorizontalPadding)
+          .padding(.top, 16)
+          .padding(.bottom, 20)
+      }
     }
     .background(Color.gray000)
     .task {
@@ -122,6 +126,18 @@ struct MyProposalDetailView: View {
       if didCancel {
         onBack()
       }
+    }
+  }
+
+  /// 하단 액션 버튼이 있는지 여부. 없으면 구분선도 숨긴다.
+  private var hasBottomAction: Bool {
+    switch viewModel.proposal?.status {
+    case .disputed:
+      return viewModel.isDisputedByCounterparty
+    case .allCompleted, .cancelled, .resolved:
+      return false
+    default:
+      return true
     }
   }
 
