@@ -11,6 +11,7 @@ struct BadgeItem {
   let text: String
   var textColor: Color = .rose500
   var bgColor: Color = .rose000
+  var iconName: String? = nil
 }
 
 struct ProposalCard: View {
@@ -47,7 +48,7 @@ struct ProposalCard: View {
     HStack(spacing: 4) {
       ForEach(badges.indices, id: \.self) { index in
         let badge = badges[index]
-        Badge(text: badge.text, textColor: badge.textColor, bgColor: badge.bgColor)
+        Badge(text: badge.text, textColor: badge.textColor, bgColor: badge.bgColor, iconName: badge.iconName)
       }
     }
   }

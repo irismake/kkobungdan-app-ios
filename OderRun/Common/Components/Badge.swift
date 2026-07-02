@@ -11,16 +11,22 @@ struct Badge: View {
   let text: String
   var textColor: Color = .rose500
   var bgColor: Color = .rose000
+  var iconName: String? = nil
 
   var body: some View {
-    Text(text)
-      .textStyle(.caption1)
-      .foregroundColor(textColor)
-      .multilineTextAlignment(.center)
-      .padding(.horizontal, 8)
-      .padding(.vertical, 2)
-      .background(bgColor)
-      .clipShape(RoundedRectangle(cornerRadius: 4))
+    HStack(spacing: 2) {
+      if let iconName {
+        Image(iconName)
+      }
+      Text(text)
+        .textStyle(.caption1)
+        .foregroundColor(textColor)
+        .multilineTextAlignment(.center)
+    }
+    .padding(.horizontal, 8)
+    .padding(.vertical, 2)
+    .background(bgColor)
+    .clipShape(RoundedRectangle(cornerRadius: 4))
   }
 }
 
