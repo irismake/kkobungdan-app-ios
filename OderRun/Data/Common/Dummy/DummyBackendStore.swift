@@ -54,9 +54,34 @@ actor DummyBackendStore {
       status: proposal.status,
       ordererID: ordererID,
       ordererName: DummySession.displayName(for: ordererID),
-      ordererLevel: DummySession.level(for: ordererID)
+      ordererLevel: DummySession.level(for: ordererID),
+      openChatURL: Self.openChatURL(proposalStatus: proposal.status)
     )
   }
+
+  /// 임무 진행 중(MATCHED·ORDER_COMPLETED)에만 오픈채팅 링크를 내려주는 서버 동작을 흉내낸다.
+  /// 임무 완료·중단·취소 등 이후 상태에서는 링크를 제거한다.
+  private static func openChatURL(proposalStatus: ProposalStatus) -> String? {
+    switch proposalStatus {
+    case .matched, .orderCompleted:
+      return dummyOpenChatURL
+    case .holding, .posted, .offered, .allCompleted, .disputed, .resolved, .cancelled:
+      return nil
+    }
+  }
+
+  /// 임무 진행 중(ACCEPTED·RUNNER_COMPLETED)에만 오픈채팅 링크를 내려주는 서버 동작을 흉내낸다.
+  /// 임무 완료·중단·취소 등 이후 상태에서는 링크를 제거한다.
+  private static func openChatURL(offerStatus: OfferStatus) -> String? {
+    switch offerStatus {
+    case .accepted, .runnerCompleted:
+      return dummyOpenChatURL
+    case .waiting, .allCompleted, .disputed, .resolved, .rejected, .cancelled:
+      return nil
+    }
+  }
+
+  private static let dummyOpenChatURL = "https://open.kakao.com/o/dummyChatRoom"
 
   func createProposal(
     ordererID: String,
@@ -204,7 +229,8 @@ actor DummyBackendStore {
       runnerID: offer.runnerID,
       runnerName: offer.runnerName,
       status: offer.status,
-      createdAt: offer.createdAt
+      createdAt: offer.createdAt,
+      openChatURL: Self.openChatURL(offerStatus: offer.status)
     )
   }
 

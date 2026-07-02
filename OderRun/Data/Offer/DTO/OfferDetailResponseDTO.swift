@@ -50,14 +50,15 @@ struct OfferDetailResponseDTO: Decodable {
 
 extension OfferDetailResponseDTO {
   func toDomain() -> OfferDetail {
-    // TODO: ordererID, ordererName, ordererLevel, runnerLevel, acceptedAt, runnerConfirmedAt, ordererConfirmedAt, disputedAt, resolvedAt, openChatURL — UI 반영 시 OfferDetail 엔티티에 추가
+    // TODO: ordererID, ordererName, ordererLevel, runnerLevel, acceptedAt, runnerConfirmedAt, ordererConfirmedAt, disputedAt, resolvedAt — UI 반영 시 OfferDetail 엔티티에 추가
     OfferDetail(
       id: id,
       proposalID: proposalID,
       runnerID: runnerID,
       runnerName: runnerName,
       status: OfferStatus(rawValue: status) ?? .waiting,
-      createdAt: DateFormatters.parse(createdAt)
+      createdAt: DateFormatters.parse(createdAt),
+      openChatURL: openChatURL
     )
   }
 }

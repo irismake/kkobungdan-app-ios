@@ -20,4 +20,5 @@ struct ProposalDetail: Equatable, Identifiable {
   let ordererID: String
   let ordererName: String
   let ordererLevel: Int
+  let openChatURL: String?
 }

@@ -61,7 +61,7 @@ struct ProposalOwnOfferResponseDTO: Decodable {
 
 extension ProposalDetailResponseDTO {
   func toDomain() -> ProposalDetail {
-    // TODO: matchedAt, runnerConfirmedAt, ordererConfirmedAt, disputedAt, resolvedAt, openChatUrl, offers — UI 반영 시 ProposalDetail 엔티티에 추가
+    // TODO: matchedAt, runnerConfirmedAt, ordererConfirmedAt, disputedAt, resolvedAt, offers — UI 반영 시 ProposalDetail 엔티티에 추가
     ProposalDetail(
       id: id,
       title: title,
@@ -71,7 +71,8 @@ extension ProposalDetailResponseDTO {
       status: ProposalStatus(rawValue: status) ?? .posted,
       ordererID: ordererID,
       ordererName: ordererName,
-      ordererLevel: ordererLevel
+      ordererLevel: ordererLevel,
+      openChatURL: openChatUrl
     )
   }
 }

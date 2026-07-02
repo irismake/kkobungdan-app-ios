@@ -85,6 +85,10 @@ struct MyProposalDetailView: View {
                   appliedAt: ProposalFormatter.appliedAtString(matched.createdAt)
                 )
               }
+
+              if let openChatURL = viewModel.proposal?.openChatURL {
+                OpenChatModal(urlString: openChatURL)
+              }
             }
           }
           .padding(.vertical, 12)

@@ -36,6 +36,10 @@ struct ProposalDetailView: View {
         ScrollView {
           VStack(alignment: .leading, spacing: 12) {
             proposalCardSection
+
+            if let openChatURL = viewModel.proposal?.openChatURL {
+              OpenChatModal(urlString: openChatURL)
+            }
           }
           .padding(.horizontal, Layout.screenHorizontalPadding)
           .padding(.vertical, 12)
