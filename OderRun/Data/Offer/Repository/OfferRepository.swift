@@ -51,11 +51,11 @@ final class OfferRepository: OfferRepositoryProtocol {
     return dto.toDomain()
   }
 
-  func completeDelivery(offerID: Int64, proofImageURL: String?) async throws -> Offer {
-    // complete-delivery·dispute 모두 OfferResponse 를 반환한다.
+  func completeDelivery(offerID: Int64) async throws -> Offer {
+    // complete-delivery·dispute 모두 OfferResponse 를 반환한다. (무바디 POST)
     let dto: OfferResponseDTO = try await client.post(
       "/v1/offer/\(offerID)/complete-delivery",
-      body: ProofDeliveryRequest(proofImageUrl: proofImageURL)
+      body: nil as String?
     )
     return dto.toDomain()
   }

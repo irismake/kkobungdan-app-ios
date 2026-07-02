@@ -82,9 +82,7 @@ final class OfferDetailViewModel {
     isCompletingDelivery = true
     errorMessage = nil
     do {
-      // TODO: proofImageUrl UI 연동 전까지 stub URL 전송.
-      // let proofURL = "https://cdn.orderrun.com/proofs/offer-\(offerID).jpg"
-      _ = try await completeDeliveryUseCase.execute(offerID: offerID, proofImageURL: nil)
+      _ = try await completeDeliveryUseCase.execute(offerID: offerID)
       await load()
     } catch {
       errorMessage = "임무 완료 처리에 실패했어요. 잠시 후 다시 시도해주세요."

@@ -64,8 +64,7 @@ final class OpenAPIContractTests: XCTestCase {
     private static let requestContracts: [EncodeContract] = [
         // Offer
         EncodeContract("OfferCreate", CreateOfferBody(proposalID: 0)),
-        EncodeContract("ProofDeliveryRequest", ProofDeliveryRequest(proofImageUrl: "https://example.com/x.jpg")),
-        EncodeContract("ProofDisputeRequest", DisputeRequest(surveyQuestionID: 1, disputeReason: "사유")),
+        EncodeContract("DisputeRequest", DisputeRequest(surveyQuestionID: 1, disputeReason: "사유")),
         // Settlement / User
         EncodeContract("SettlementAccountRequest", SettlementAccountRequest(
             bankName: "국민은행", accountNumber: "123", accountHolder: "홍길동"

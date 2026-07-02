@@ -254,7 +254,7 @@ actor DummyBackendStore {
 
   /// 러너 배달 완료. `POST /v1/offer/{id}/complete-delivery`
   /// 오더러가 이미 수령 확인(ORDER_COMPLETED)했으면 양측 정산(ALL_COMPLETED), 아니면 RUNNER_COMPLETED.
-  func completeDelivery(offerID: Int64, proofImageURL _: String?) throws -> Offer {
+  func completeDelivery(offerID: Int64) throws -> Offer {
     guard let offerIndex = offers.firstIndex(where: { $0.id == offerID }) else {
       throw RepositoryError.notFound
     }
