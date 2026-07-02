@@ -35,6 +35,7 @@ final class OpenAPIContractTests: XCTestCase {
         DecodeContract("TermsAgreementResponse", decoding(TermsAgreementResponseDTO.self)),
         // Dispute survey
         DecodeContract("DisputeSurveyQuestionResponse", decoding(DisputeSurveyQuestionResponseDTO.self)),
+        DecodeContract("DisputeEvidenceResponse", decoding(DisputeEvidenceResponseDTO.self)), // GET /v1/dispute-evidence
 
         DecodeContract("ProposalReportReasonQuestionResponse", decoding(ProposalReportReasonQuestionResponseDTO.self)), // GET /v1/proposal-report-reasons
         DecodeContract("ProposalReportResponse", decoding(ProposalReportResponseDTO.self)), // POST /v1/proposal/{id}/reports
