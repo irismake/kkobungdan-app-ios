@@ -145,7 +145,7 @@ actor DummyBackendStore {
   }
 
   /// 오더러 분쟁 제기. `POST /v1/proposal/{id}/dispute`
-  func raiseProposalDispute(proposalID: Int64, reason _: String) throws -> ProposalDetail {
+  func raiseProposalDispute(proposalID: Int64, surveyQuestionID _: Int64, reason _: String) throws -> ProposalDetail {
     guard let proposalIndex = proposals.firstIndex(where: { $0.id == proposalID }) else {
       throw RepositoryError.notFound
     }
@@ -254,7 +254,7 @@ actor DummyBackendStore {
 
   /// 러너 배달 완료. `POST /v1/offer/{id}/complete-delivery`
   /// 오더러가 이미 수령 확인(ORDER_COMPLETED)했으면 양측 정산(ALL_COMPLETED), 아니면 RUNNER_COMPLETED.
-  func completeDelivery(offerID: Int64, proofImageURL _: String?) throws -> Offer {
+  func completeDelivery(offerID: Int64) throws -> Offer {
     guard let offerIndex = offers.firstIndex(where: { $0.id == offerID }) else {
       throw RepositoryError.notFound
     }
@@ -278,7 +278,7 @@ actor DummyBackendStore {
   }
 
   /// 러너 분쟁 제기. `POST /v1/offer/{id}/dispute`
-  func raiseOfferDispute(offerID: Int64, reason _: String) throws -> Offer {
+  func raiseOfferDispute(offerID: Int64, surveyQuestionID _: Int64, reason _: String) throws -> Offer {
     guard let offerIndex = offers.firstIndex(where: { $0.id == offerID }) else {
       throw RepositoryError.notFound
     }

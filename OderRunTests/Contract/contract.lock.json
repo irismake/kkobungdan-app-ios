@@ -23,6 +23,16 @@
       "success": "boolean"
     }
   },
+  "ApiResponse_DisputeEvidenceResponse_": {
+    "required": [
+      "success"
+    ],
+    "properties": {
+      "data": "anyOf(ref:DisputeEvidenceResponse|null)",
+      "message": "anyOf(string|null)",
+      "success": "boolean"
+    }
+  },
   "ApiResponse_NotificationListResponse_": {
     "required": [
       "success"
@@ -331,6 +341,36 @@
       "phone": "string"
     }
   },
+  "DisputeEvidenceResponse": {
+    "required": [
+      "actorId",
+      "createdAt",
+      "id",
+      "offerId",
+      "proposalId",
+      "reason",
+      "surveyQuestionId"
+    ],
+    "properties": {
+      "actorId": "string",
+      "createdAt": "string",
+      "id": "integer",
+      "offerId": "integer",
+      "proposalId": "integer",
+      "reason": "string",
+      "surveyQuestionId": "integer"
+    }
+  },
+  "DisputeRequest": {
+    "required": [
+      "disputeReason",
+      "surveyQuestionId"
+    ],
+    "properties": {
+      "disputeReason": "string",
+      "surveyQuestionId": "integer"
+    }
+  },
   "DisputeSurveyQuestionResponse": {
     "required": [
       "displayOrder",
@@ -533,16 +573,16 @@
     "properties": {
       "acceptedAt": "anyOf(string|null)",
       "createdAt": "string",
-      "deliveryCompletedAt": "anyOf(string|null)",
       "disputedAt": "anyOf(string|null)",
       "id": "integer",
       "openChatUrl": "anyOf(string|null)",
+      "ordererConfirmedAt": "anyOf(string|null)",
       "ordererId": "string",
       "ordererLevel": "integer",
       "ordererName": "string",
       "proposalId": "integer",
-      "receiptConfirmedAt": "anyOf(string|null)",
       "resolvedAt": "anyOf(string|null)",
+      "runnerConfirmedAt": "anyOf(string|null)",
       "runnerId": "string",
       "runnerLevel": "integer",
       "runnerName": "string",
@@ -565,15 +605,15 @@
     "properties": {
       "acceptedAt": "anyOf(string|null)",
       "createdAt": "string",
-      "deliveryCompletedAt": "anyOf(string|null)",
       "disputedAt": "anyOf(string|null)",
       "id": "integer",
+      "ordererConfirmedAt": "anyOf(string|null)",
       "ordererId": "string",
       "ordererLevel": "integer",
       "ordererName": "string",
       "proposalId": "integer",
-      "receiptConfirmedAt": "anyOf(string|null)",
       "resolvedAt": "anyOf(string|null)",
+      "runnerConfirmedAt": "anyOf(string|null)",
       "runnerId": "string",
       "runnerLevel": "integer",
       "runnerName": "string",
@@ -600,15 +640,15 @@
     "properties": {
       "acceptedAt": "anyOf(string|null)",
       "createdAt": "string",
-      "deliveryCompletedAt": "anyOf(string|null)",
       "disputedAt": "anyOf(string|null)",
       "id": "integer",
+      "ordererConfirmedAt": "anyOf(string|null)",
       "ordererId": "string",
       "ordererLevel": "integer",
       "ordererName": "string",
       "proposalId": "integer",
-      "receiptConfirmedAt": "anyOf(string|null)",
       "resolvedAt": "anyOf(string|null)",
+      "runnerConfirmedAt": "anyOf(string|null)",
       "runnerId": "string",
       "runnerLevel": "integer",
       "runnerName": "string",
@@ -695,22 +735,6 @@
       "totalPages": "integer"
     }
   },
-  "ProofDeliveryRequest": {
-    "required": [],
-    "properties": {
-      "proofImageUrl": "anyOf(string|null)"
-    }
-  },
-  "ProofDisputeRequest": {
-    "required": [
-      "disputeReason",
-      "surveyQuestionId"
-    ],
-    "properties": {
-      "disputeReason": "string",
-      "surveyQuestionId": "integer"
-    }
-  },
   "ProposalDetailResponse": {
     "required": [
       "content",
@@ -726,18 +750,18 @@
     "properties": {
       "content": "string",
       "deadline": "string",
-      "deliveryReportedAt": "anyOf(string|null)",
       "disputedAt": "anyOf(string|null)",
       "errandFee": "integer",
       "id": "integer",
       "matchedAt": "anyOf(string|null)",
       "offers": "array<ref:ProposalOwnOfferResponse>",
       "openChatUrl": "anyOf(string|null)",
+      "ordererConfirmedAt": "anyOf(string|null)",
       "ordererId": "string",
       "ordererLevel": "integer",
       "ordererName": "string",
-      "receivedConfirmedAt": "anyOf(string|null)",
       "resolvedAt": "anyOf(string|null)",
+      "runnerConfirmedAt": "anyOf(string|null)",
       "status": "ref:ProposalStatus",
       "title": "string"
     }

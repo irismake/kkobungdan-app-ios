@@ -16,7 +16,7 @@ struct CompleteDeliveryUseCase {
     self.repository = repository
   }
 
-  func execute(offerID: Int64, proofImageURL: String?) async throws -> Offer {
-    try await repository.completeDelivery(offerID: offerID, proofImageURL: proofImageURL)
+  func execute(offerID: Int64) async throws -> Offer {
+    try await repository.completeDelivery(offerID: offerID)
   }
 }

@@ -40,13 +40,13 @@ struct TestOfferRepositoryImpl: OfferRepositoryProtocol {
     return try await store.acceptOffer(offerID: offerID)
   }
 
-  func completeDelivery(offerID: Int64, proofImageURL: String?) async throws -> Offer {
+  func completeDelivery(offerID: Int64) async throws -> Offer {
     try await Task.sleep(nanoseconds: Self.simulatedLatency)
-    return try await store.completeDelivery(offerID: offerID, proofImageURL: proofImageURL)
+    return try await store.completeDelivery(offerID: offerID)
   }
 
-  func raiseDispute(offerID: Int64, reason: String) async throws -> Offer {
+  func raiseDispute(offerID: Int64, surveyQuestionID: Int64, reason: String) async throws -> Offer {
     try await Task.sleep(nanoseconds: Self.simulatedLatency)
-    return try await store.raiseOfferDispute(offerID: offerID, reason: reason)
+    return try await store.raiseOfferDispute(offerID: offerID, surveyQuestionID: surveyQuestionID, reason: reason)
   }
 }

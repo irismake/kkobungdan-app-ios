@@ -35,6 +35,7 @@ final class OpenAPIContractTests: XCTestCase {
         DecodeContract("TermsAgreementResponse", decoding(TermsAgreementResponseDTO.self)),
         // Dispute survey
         DecodeContract("DisputeSurveyQuestionResponse", decoding(DisputeSurveyQuestionResponseDTO.self)),
+        DecodeContract("DisputeEvidenceResponse", decoding(DisputeEvidenceResponseDTO.self)), // GET /v1/dispute-evidence
 
         DecodeContract("ProposalReportReasonQuestionResponse", decoding(ProposalReportReasonQuestionResponseDTO.self)), // GET /v1/proposal-report-reasons
         DecodeContract("ProposalReportResponse", decoding(ProposalReportResponseDTO.self)), // POST /v1/proposal/{id}/reports
@@ -64,8 +65,7 @@ final class OpenAPIContractTests: XCTestCase {
     private static let requestContracts: [EncodeContract] = [
         // Offer
         EncodeContract("OfferCreate", CreateOfferBody(proposalID: 0)),
-        EncodeContract("ProofDeliveryRequest", ProofDeliveryRequest(proofImageUrl: "https://example.com/x.jpg")),
-        EncodeContract("ProofDisputeRequest", DisputeRequest(disputeReason: "사유")),
+        EncodeContract("DisputeRequest", DisputeRequest(surveyQuestionID: 1, disputeReason: "사유")),
         // Settlement / User
         EncodeContract("SettlementAccountRequest", SettlementAccountRequest(
             bankName: "국민은행", accountNumber: "123", accountHolder: "홍길동"

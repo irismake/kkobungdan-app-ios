@@ -13,17 +13,23 @@ struct MyProposalDetailView: View {
   var onBack: () -> Void = {}
   var onShowRunners: () -> Void = {}
   var onAccepted: () -> Void = {}
+  var onAbort: () -> Void = {}
+  var onInquiry: () -> Void = {}
 
   init(
     viewModel: MyProposalDetailViewModel,
     onBack: @escaping () -> Void = {},
     onShowRunners: @escaping () -> Void = {},
-    onAccepted: @escaping () -> Void = {}
+    onAccepted: @escaping () -> Void = {},
+    onAbort: @escaping () -> Void = {},
+    onInquiry: @escaping () -> Void = {}
   ) {
     _viewModel = State(initialValue: viewModel)
     self.onBack = onBack
     self.onShowRunners = onShowRunners
     self.onAccepted = onAccepted
+    self.onAbort = onAbort
+    self.onInquiry = onInquiry
   }
 
   private var statusBadges: [BadgeItem] {
@@ -95,15 +101,19 @@ struct MyProposalDetailView: View {
       }
       .frame(maxHeight: .infinity)
       .overlay(alignment: .bottom) {
-        Rectangle()
-          .fill(Color.gray200)
-          .frame(height: 1)
+        if hasBottomAction {
+          Rectangle()
+            .fill(Color.gray200)
+            .frame(height: 1)
+        }
       }
 
-      bottomActionSection
-        .padding(.horizontal, Layout.screenHorizontalPadding)
-        .padding(.top, 16)
-        .padding(.bottom, 20)
+      if hasBottomAction {
+        bottomActionSection
+          .padding(.horizontal, Layout.screenHorizontalPadding)
+          .padding(.top, 16)
+          .padding(.bottom, 20)
+      }
     }
     .background(Color.gray000)
     .task {
@@ -119,6 +129,18 @@ struct MyProposalDetailView: View {
     }
   }
 
+  /// 하단 액션 버튼이 있는지 여부. 없으면 구분선도 숨긴다.
+  private var hasBottomAction: Bool {
+    switch viewModel.proposal?.status {
+    case .disputed:
+      return viewModel.isDisputedByCounterparty
+    case .allCompleted, .cancelled, .resolved:
+      return false
+    default:
+      return true
+    }
+  }
+
   @ViewBuilder
   private var bottomActionSection: some View {
     switch viewModel.proposal?.status {
@@ -127,19 +149,34 @@ struct MyProposalDetailView: View {
         MissionCompleteButton { isMissionCompleted = true }
 
         OutlineButton(title: "임무 중단") {
-          // TODO: 분쟁 기능 추가
+          onAbort()
         }
       }
     case .orderCompleted:
-      Text("꼬붕의 확인을 기다리는중...")
-        .textStyle(.heading4)
-        .foregroundColor(.gray400)
-        .multilineTextAlignment(.center)
-        .frame(maxWidth: .infinity)
-        .frame(height: 56)
-        .background(Color.gray200)
-        .clipShape(RoundedRectangle(cornerRadius: 12))
-    case .allCompleted, .disputed, .cancelled, .resolved:
+      VStack(spacing: 8) {
+        Text("꼬붕의 확인을 기다리는중...")
+          .textStyle(.heading4)
+          .foregroundColor(.gray400)
+          .multilineTextAlignment(.center)
+          .frame(maxWidth: .infinity)
+          .frame(height: 56)
+          .background(Color.gray200)
+          .clipShape(RoundedRectangle(cornerRadius: 12))
+
+        OutlineButton(title: "임무 중단") {
+          onAbort()
+        }
+      }
+    case .disputed:
+      // 내가 중단을 신청한 경우엔 버튼 없음. 중단을 당한 경우에만 문의하기 노출.
+      if viewModel.isDisputedByCounterparty {
+        OutlineButton(title: "문의하기") {
+          onInquiry()
+        }
+      } else {
+        EmptyView()
+      }
+    case .allCompleted, .cancelled, .resolved:
       EmptyView()
     default:
       VStack(spacing: 8) {

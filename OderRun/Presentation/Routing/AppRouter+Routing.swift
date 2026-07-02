@@ -46,6 +46,23 @@ extension AppRouter {
         }
       )
       .navigationBarBackButtonHidden(true)
+    case let .missionAbort(target):
+      MissionAbortView(
+        viewModel: AppRouteFactory.makeMissionAbortViewModel(target: target),
+        onClose: { self.popLast(path: path) },
+        onSubmitted: {
+          path.wrappedValue.append(.missionAbortComplete)
+        }
+      )
+      .navigationBarBackButtonHidden(true)
+    case .missionAbortComplete:
+      MissionAbortCompleteView(
+        onHome: {
+          path.wrappedValue.removeAll()
+          self.selectedTab = .home
+        }
+      )
+      .navigationBarBackButtonHidden(true)
     case let .addOffer(proposalID):
       AddOfferView(
         viewModel: AppRouteFactory.makeAddOfferViewModel(proposalID: proposalID),
@@ -74,7 +91,12 @@ extension AppRouter {
         onBack: { self.popLast(path: path) },
         onShowRunners: {
           path.wrappedValue.append(.runnerList(proposalID: proposalID))
-        }
+        },
+        onAbort: {
+          path.wrappedValue.append(.missionAbort(target: .proposal(proposalID: proposalID)))
+        },
+        // TODO: 문의하기 플로우 확정 시 라우팅 연결.
+        onInquiry: {}
       )
       .navigationBarBackButtonHidden(true)
     case let .offerDetail(proposalID, offerID):
@@ -83,7 +105,12 @@ extension AppRouter {
           proposalID: proposalID,
           offerID: offerID
         ),
-        onBack: { self.popLast(path: path) }
+        onBack: { self.popLast(path: path) },
+        onAbort: {
+          path.wrappedValue.append(.missionAbort(target: .offer(offerID: offerID)))
+        },
+        // TODO: 문의하기 플로우 확정 시 라우팅 연결.
+        onInquiry: {}
       )
       .navigationBarBackButtonHidden(true)
     case let .runnerDetail(proposalID, offerID):
@@ -92,7 +119,12 @@ extension AppRouter {
           proposalID: proposalID,
           offerID: offerID
         ),
-        onBack: { self.popLast(path: path) }
+        onBack: { self.popLast(path: path) },
+        onAbort: {
+          path.wrappedValue.append(.missionAbort(target: .offer(offerID: offerID)))
+        },
+        // TODO: 문의하기 플로우 확정 시 라우팅 연결.
+        onInquiry: {}
       )
       .navigationBarBackButtonHidden(true)
     case let .runnerList(proposalID):

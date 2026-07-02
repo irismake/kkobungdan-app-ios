@@ -1921,6 +1921,230 @@
         ]
       }
     },
+    "/v1/dispute-evidence": {
+      "get": {
+        "tags": [
+          "분쟁 증빙"
+        ],
+        "summary": "분쟁 증빙 상세 조회",
+        "description": "거래 당사자가 proposalId 또는 offerId로 분쟁 증빙을 조회합니다.",
+        "operationId": "get_dispute_evidence_v1_dispute_evidence_get",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "proposalId",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "integer",
+                  "exclusiveMinimum": 0
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Proposal ID",
+              "title": "Proposalid"
+            },
+            "description": "Proposal ID"
+          },
+          {
+            "name": "offerId",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "integer",
+                  "exclusiveMinimum": 0
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Offer ID",
+              "title": "Offerid"
+            },
+            "description": "Offer ID"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "성공 응답",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponse_DisputeEvidenceResponse_"
+                },
+                "example": {
+                  "success": true,
+                  "data": {
+                    "id": 1,
+                    "proposalId": 1,
+                    "offerId": 10,
+                    "actorId": "550e8400-e29b-41d4-a716-446655440001",
+                    "reason": "배송 중 파손",
+                    "surveyQuestionId": 3,
+                    "createdAt": "2026-06-01T12:00:00+09:00"
+                  },
+                  "message": "Success"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "실패 응답",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "INVALID_TOKEN": {
+                    "summary": "INVALID_TOKEN",
+                    "value": {
+                      "success": false,
+                      "error": {
+                        "code": "INVALID_TOKEN",
+                        "message": "Invalid token",
+                        "details": null
+                      },
+                      "timestamp": "2026-06-01T12:00:00+09:00"
+                    }
+                  },
+                  "MISSING_CREDENTIALS": {
+                    "summary": "INVALID_TOKEN",
+                    "value": {
+                      "success": false,
+                      "error": {
+                        "code": "INVALID_TOKEN",
+                        "message": "Missing credentials",
+                        "details": null
+                      },
+                      "timestamp": "2026-06-01T12:00:00+09:00"
+                    }
+                  },
+                  "INVALID_TOKEN_CREDENTIALS": {
+                    "summary": "INVALID_TOKEN",
+                    "value": {
+                      "success": false,
+                      "error": {
+                        "code": "INVALID_TOKEN",
+                        "message": "Could not validate credentials",
+                        "details": null
+                      },
+                      "timestamp": "2026-06-01T12:00:00+09:00"
+                    }
+                  },
+                  "INVALID_TOKEN_TYPE": {
+                    "summary": "INVALID_TOKEN",
+                    "value": {
+                      "success": false,
+                      "error": {
+                        "code": "INVALID_TOKEN",
+                        "message": "Invalid token type",
+                        "details": null
+                      },
+                      "timestamp": "2026-06-01T12:00:00+09:00"
+                    }
+                  },
+                  "INVALID_AUTHENTICATION_CREDENTIALS": {
+                    "summary": "INVALID_TOKEN",
+                    "value": {
+                      "success": false,
+                      "error": {
+                        "code": "INVALID_TOKEN",
+                        "message": "Invalid authentication credentials",
+                        "details": null
+                      },
+                      "timestamp": "2026-06-01T12:00:00+09:00"
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "실패 응답",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "VALIDATION_ERROR": {
+                    "summary": "VALIDATION_ERROR",
+                    "value": {
+                      "success": false,
+                      "error": {
+                        "code": "VALIDATION_ERROR",
+                        "message": "요청 값이 올바르지 않습니다.",
+                        "details": null
+                      },
+                      "timestamp": "2026-06-01T12:00:00+09:00"
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "실패 응답",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "FORBIDDEN": {
+                    "summary": "FORBIDDEN",
+                    "value": {
+                      "success": false,
+                      "error": {
+                        "code": "FORBIDDEN",
+                        "message": "권한이 없습니다.",
+                        "details": null
+                      },
+                      "timestamp": "2026-06-01T12:00:00+09:00"
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "실패 응답",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "DISPUTE_EVIDENCE_NOT_FOUND": {
+                    "summary": "DISPUTE_EVIDENCE_NOT_FOUND",
+                    "value": {
+                      "success": false,
+                      "error": {
+                        "code": "DISPUTE_EVIDENCE_NOT_FOUND",
+                        "message": "분쟁 증빙을 찾을 수 없습니다.",
+                        "details": null
+                      },
+                      "timestamp": "2026-06-01T12:00:00+09:00"
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/v1/dispute-survey/questions": {
       "get": {
         "tags": [
@@ -2928,7 +3152,7 @@
                         "ordererName": "홍길동",
                         "ordererLevel": 0,
                         "matchedAt": "2026-06-01T12:10:00+09:00",
-                        "receivedConfirmedAt": "2026-06-01T12:10:00+09:00",
+                        "ordererConfirmedAt": "2026-06-01T12:10:00+09:00",
                         "openChatUrl": "https://open.kakao.com/o/example",
                         "offers": [
                           {
@@ -2959,8 +3183,8 @@
                         "ordererName": "홍길동",
                         "ordererLevel": 0,
                         "matchedAt": "2026-06-01T12:10:00+09:00",
-                        "deliveryReportedAt": "2026-06-01T12:10:00+09:00",
-                        "receivedConfirmedAt": "2026-06-01T12:10:00+09:00",
+                        "runnerConfirmedAt": "2026-06-01T12:10:00+09:00",
+                        "ordererConfirmedAt": "2026-06-01T12:10:00+09:00",
                         "openChatUrl": "https://open.kakao.com/o/example",
                         "offers": [
                           {
@@ -3916,7 +4140,7 @@
                         "ordererName": "홍길동",
                         "ordererLevel": 0,
                         "matchedAt": "2026-06-01T12:10:00+09:00",
-                        "receivedConfirmedAt": "2026-06-01T12:10:00+09:00",
+                        "ordererConfirmedAt": "2026-06-01T12:10:00+09:00",
                         "openChatUrl": "https://open.kakao.com/o/example",
                         "offers": [
                           {
@@ -3948,8 +4172,8 @@
                         "ordererName": "홍길동",
                         "ordererLevel": 0,
                         "matchedAt": "2026-06-01T12:10:00+09:00",
-                        "deliveryReportedAt": "2026-06-01T12:10:00+09:00",
-                        "receivedConfirmedAt": "2026-06-01T12:10:00+09:00",
+                        "runnerConfirmedAt": "2026-06-01T12:10:00+09:00",
+                        "ordererConfirmedAt": "2026-06-01T12:10:00+09:00",
                         "openChatUrl": "https://open.kakao.com/o/example",
                         "offers": [
                           {
@@ -4158,7 +4382,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/ProofDisputeRequest"
+                "$ref": "#/components/schemas/DisputeRequest"
               }
             }
           }
@@ -4721,7 +4945,7 @@
                           "runnerLevel": 3,
                           "status": "RUNNER_COMPLETED",
                           "acceptedAt": "2026-06-01T12:00:00+09:00",
-                          "deliveryCompletedAt": "2026-06-01T12:10:00+09:00",
+                          "runnerConfirmedAt": "2026-06-01T12:10:00+09:00",
                           "createdAt": "2026-06-01T12:00:00+09:00"
                         }
                       ],
@@ -4744,8 +4968,8 @@
                           "runnerLevel": 3,
                           "status": "ALL_COMPLETED",
                           "acceptedAt": "2026-06-01T12:00:00+09:00",
-                          "deliveryCompletedAt": "2026-06-01T12:10:00+09:00",
-                          "receiptConfirmedAt": "2026-06-01T12:10:00+09:00",
+                          "runnerConfirmedAt": "2026-06-01T12:10:00+09:00",
+                          "ordererConfirmedAt": "2026-06-01T12:10:00+09:00",
                           "createdAt": "2026-06-01T12:00:00+09:00"
                         }
                       ],
@@ -5116,7 +5340,7 @@
                             "runnerLevel": 3,
                             "status": "RUNNER_COMPLETED",
                             "acceptedAt": "2026-06-01T12:00:00+09:00",
-                            "deliveryCompletedAt": "2026-06-01T12:10:00+09:00",
+                            "runnerConfirmedAt": "2026-06-01T12:10:00+09:00",
                             "createdAt": "2026-06-01T12:00:00+09:00"
                           }
                         ],
@@ -5147,8 +5371,8 @@
                             "runnerLevel": 3,
                             "status": "ALL_COMPLETED",
                             "acceptedAt": "2026-06-01T12:00:00+09:00",
-                            "deliveryCompletedAt": "2026-06-01T12:10:00+09:00",
-                            "receiptConfirmedAt": "2026-06-01T12:10:00+09:00",
+                            "runnerConfirmedAt": "2026-06-01T12:10:00+09:00",
+                            "ordererConfirmedAt": "2026-06-01T12:10:00+09:00",
                             "createdAt": "2026-06-01T12:00:00+09:00"
                           }
                         ],
@@ -5474,7 +5698,7 @@
                         "runnerLevel": 3,
                         "status": "RUNNER_COMPLETED",
                         "acceptedAt": "2026-06-01T12:00:00+09:00",
-                        "deliveryCompletedAt": "2026-06-01T12:10:00+09:00",
+                        "runnerConfirmedAt": "2026-06-01T12:10:00+09:00",
                         "createdAt": "2026-06-01T12:00:00+09:00",
                         "openChatUrl": "https://open.kakao.com/o/example"
                       },
@@ -5496,8 +5720,8 @@
                         "runnerLevel": 3,
                         "status": "ALL_COMPLETED",
                         "acceptedAt": "2026-06-01T12:00:00+09:00",
-                        "deliveryCompletedAt": "2026-06-01T12:10:00+09:00",
-                        "receiptConfirmedAt": "2026-06-01T12:10:00+09:00",
+                        "runnerConfirmedAt": "2026-06-01T12:10:00+09:00",
+                        "ordererConfirmedAt": "2026-06-01T12:10:00+09:00",
                         "createdAt": "2026-06-01T12:00:00+09:00",
                         "openChatUrl": "https://open.kakao.com/o/example"
                       },
@@ -5932,7 +6156,7 @@
           "제안"
         ],
         "summary": "러너 완료 처리",
-        "description": "러너가 완료 증빙 이미지를 등록하고 제안을 완료 상태로 변경합니다.",
+        "description": "러너가 제안을 완료 상태로 변경합니다.",
         "operationId": "complete_delivery_v1_offer__offer_id__complete_delivery_post",
         "security": [
           {
@@ -5950,16 +6174,6 @@
             }
           }
         ],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/ProofDeliveryRequest"
-              }
-            }
-          }
-        },
         "responses": {
           "200": {
             "description": "성공 응답",
@@ -5968,23 +6182,50 @@
                 "schema": {
                   "$ref": "#/components/schemas/ApiResponse_OfferResponse_"
                 },
-                "example": {
-                  "success": true,
-                  "data": {
-                    "id": 10,
-                    "proposalId": 1,
-                    "ordererId": "550e8400-e29b-41d4-a716-446655440000",
-                    "ordererName": "홍길동",
-                    "ordererLevel": 0,
-                    "runnerId": "550e8400-e29b-41d4-a716-446655440001",
-                    "runnerName": "Runner One",
-                    "runnerLevel": 3,
-                    "status": "RUNNER_COMPLETED",
-                    "acceptedAt": "2026-06-01T12:00:00+09:00",
-                    "deliveryCompletedAt": "2026-06-01T12:10:00+09:00",
-                    "createdAt": "2026-06-01T12:00:00+09:00"
+                "examples": {
+                  "runner_completed": {
+                    "summary": "runner_completed",
+                    "value": {
+                      "success": true,
+                      "data": {
+                        "id": 10,
+                        "proposalId": 1,
+                        "ordererId": "550e8400-e29b-41d4-a716-446655440000",
+                        "ordererName": "홍길동",
+                        "ordererLevel": 0,
+                        "runnerId": "550e8400-e29b-41d4-a716-446655440001",
+                        "runnerName": "Runner One",
+                        "runnerLevel": 3,
+                        "status": "RUNNER_COMPLETED",
+                        "acceptedAt": "2026-06-01T12:00:00+09:00",
+                        "runnerConfirmedAt": "2026-06-01T12:10:00+09:00",
+                        "createdAt": "2026-06-01T12:00:00+09:00"
+                      },
+                      "message": "완료 처리되었습니다."
+                    }
                   },
-                  "message": "완료 처리되었습니다."
+                  "all_completed": {
+                    "summary": "all_completed",
+                    "value": {
+                      "success": true,
+                      "data": {
+                        "id": 10,
+                        "proposalId": 1,
+                        "ordererId": "550e8400-e29b-41d4-a716-446655440000",
+                        "ordererName": "홍길동",
+                        "ordererLevel": 0,
+                        "runnerId": "550e8400-e29b-41d4-a716-446655440001",
+                        "runnerName": "Runner One",
+                        "runnerLevel": 3,
+                        "status": "ALL_COMPLETED",
+                        "acceptedAt": "2026-06-01T12:00:00+09:00",
+                        "runnerConfirmedAt": "2026-06-01T12:10:00+09:00",
+                        "ordererConfirmedAt": "2026-06-01T12:10:00+09:00",
+                        "createdAt": "2026-06-01T12:00:00+09:00"
+                      },
+                      "message": "완료 처리되었습니다."
+                    }
+                  }
                 }
               }
             }
@@ -6189,7 +6430,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/ProofDisputeRequest"
+                "$ref": "#/components/schemas/DisputeRequest"
               }
             }
           }
@@ -8387,6 +8628,51 @@
         "type": "object",
         "title": "ApiResponse[AuthVerificationSendResponse]"
       },
+      "ApiResponse_DisputeEvidenceResponse_": {
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "title": "Success",
+            "description": "성공 여부"
+          },
+          "data": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/DisputeEvidenceResponse"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "응답 데이터"
+          },
+          "message": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Message",
+            "description": "응답 메시지"
+          }
+        },
+        "type": "object",
+        "required": [
+          "success"
+        ],
+        "title": "ApiResponse[DisputeEvidenceResponse]",
+        "example": {
+          "data": {
+            "id": 1,
+            "name": "example"
+          },
+          "message": "Success",
+          "success": true
+        }
+      },
       "ApiResponse_NotificationListResponse_": {
         "properties": {
           "success": {
@@ -9630,6 +9916,72 @@
           "phone": "01012345678"
         }
       },
+      "DisputeEvidenceResponse": {
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "Id"
+          },
+          "proposalId": {
+            "type": "integer",
+            "title": "Proposalid"
+          },
+          "offerId": {
+            "type": "integer",
+            "title": "Offerid"
+          },
+          "actorId": {
+            "type": "string",
+            "title": "Actorid"
+          },
+          "reason": {
+            "type": "string",
+            "title": "Reason"
+          },
+          "surveyQuestionId": {
+            "type": "integer",
+            "title": "Surveyquestionid"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Createdat"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "proposalId",
+          "offerId",
+          "actorId",
+          "reason",
+          "surveyQuestionId",
+          "createdAt"
+        ],
+        "title": "DisputeEvidenceResponse",
+        "description": "Dispute evidence API response."
+      },
+      "DisputeRequest": {
+        "properties": {
+          "surveyQuestionId": {
+            "type": "integer",
+            "minimum": 1.0,
+            "title": "Surveyquestionid"
+          },
+          "disputeReason": {
+            "type": "string",
+            "title": "Disputereason"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "surveyQuestionId",
+          "disputeReason"
+        ],
+        "title": "DisputeRequest",
+        "description": "Dispute request."
+      },
       "DisputeSurveyQuestionResponse": {
         "properties": {
           "id": {
@@ -10207,7 +10559,7 @@
             ],
             "title": "Acceptedat"
           },
-          "deliveryCompletedAt": {
+          "runnerConfirmedAt": {
             "anyOf": [
               {
                 "type": "string",
@@ -10217,9 +10569,9 @@
                 "type": "null"
               }
             ],
-            "title": "Deliverycompletedat"
+            "title": "Runnerconfirmedat"
           },
-          "receiptConfirmedAt": {
+          "ordererConfirmedAt": {
             "anyOf": [
               {
                 "type": "string",
@@ -10229,7 +10581,7 @@
                 "type": "null"
               }
             ],
-            "title": "Receiptconfirmedat"
+            "title": "Ordererconfirmedat"
           },
           "disputedAt": {
             "anyOf": [
@@ -10337,7 +10689,7 @@
             ],
             "title": "Acceptedat"
           },
-          "deliveryCompletedAt": {
+          "runnerConfirmedAt": {
             "anyOf": [
               {
                 "type": "string",
@@ -10347,9 +10699,9 @@
                 "type": "null"
               }
             ],
-            "title": "Deliverycompletedat"
+            "title": "Runnerconfirmedat"
           },
-          "receiptConfirmedAt": {
+          "ordererConfirmedAt": {
             "anyOf": [
               {
                 "type": "string",
@@ -10359,7 +10711,7 @@
                 "type": "null"
               }
             ],
-            "title": "Receiptconfirmedat"
+            "title": "Ordererconfirmedat"
           },
           "disputedAt": {
             "anyOf": [
@@ -10471,7 +10823,7 @@
             ],
             "title": "Acceptedat"
           },
-          "deliveryCompletedAt": {
+          "runnerConfirmedAt": {
             "anyOf": [
               {
                 "type": "string",
@@ -10481,9 +10833,9 @@
                 "type": "null"
               }
             ],
-            "title": "Deliverycompletedat"
+            "title": "Runnerconfirmedat"
           },
-          "receiptConfirmedAt": {
+          "ordererConfirmedAt": {
             "anyOf": [
               {
                 "type": "string",
@@ -10493,7 +10845,7 @@
                 "type": "null"
               }
             ],
-            "title": "Receiptconfirmedat"
+            "title": "Ordererconfirmedat"
           },
           "disputedAt": {
             "anyOf": [
@@ -10753,46 +11105,6 @@
         ],
         "title": "PageResponse[ProposalResponse]"
       },
-      "ProofDeliveryRequest": {
-        "properties": {
-          "proofImageUrl": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Proofimageurl"
-          }
-        },
-        "additionalProperties": false,
-        "type": "object",
-        "title": "ProofDeliveryRequest",
-        "description": "Runner request to complete delivery."
-      },
-      "ProofDisputeRequest": {
-        "properties": {
-          "surveyQuestionId": {
-            "type": "integer",
-            "minimum": 1.0,
-            "title": "Surveyquestionid"
-          },
-          "disputeReason": {
-            "type": "string",
-            "title": "Disputereason"
-          }
-        },
-        "additionalProperties": false,
-        "type": "object",
-        "required": [
-          "surveyQuestionId",
-          "disputeReason"
-        ],
-        "title": "ProofDisputeRequest",
-        "description": "Dispute request."
-      },
       "ProposalDetailResponse": {
         "properties": {
           "id": {
@@ -10843,7 +11155,7 @@
             ],
             "title": "Matchedat"
           },
-          "deliveryReportedAt": {
+          "runnerConfirmedAt": {
             "anyOf": [
               {
                 "type": "string",
@@ -10853,9 +11165,9 @@
                 "type": "null"
               }
             ],
-            "title": "Deliveryreportedat"
+            "title": "Runnerconfirmedat"
           },
-          "receivedConfirmedAt": {
+          "ordererConfirmedAt": {
             "anyOf": [
               {
                 "type": "string",
@@ -10865,7 +11177,7 @@
                 "type": "null"
               }
             ],
-            "title": "Receivedconfirmedat"
+            "title": "Ordererconfirmedat"
           },
           "disputedAt": {
             "anyOf": [

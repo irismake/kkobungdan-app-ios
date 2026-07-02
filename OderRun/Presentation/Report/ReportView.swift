@@ -57,6 +57,8 @@ struct ReportView: View {
               text: $viewModel.detail,
               maxLength: ReportViewModel.detailMaxLength
             )
+            .disabled(!viewModel.isDetailRequired)
+            .opacity(viewModel.isDetailRequired ? 1 : 0.5)
           }
         }
         .padding(Layout.screenHorizontalPadding)

@@ -34,30 +34,49 @@ final class MyProposalDetailViewModel {
     offers.filter { $0.status == .waiting || $0.status == .accepted }.count
   }
 
-  /// 매칭된 offer. 진행중·완료 proposal 의 매칭 러너 카드 표시에 사용.
+  /// 매칭된 offer. 진행중·완료·분쟁중 proposal 의 매칭 러너 카드 표시에 사용.
   var matchedOffer: Offer? {
     offers.first(where: {
-      $0.status == .accepted || $0.status == .runnerCompleted || $0.status == .allCompleted
+      $0.status == .accepted || $0.status == .runnerCompleted
+        || $0.status == .allCompleted || $0.status == .disputed
     })
+  }
+
+  /// 분쟁 중 조회한 증빙. 내가 중단을 신청한 당사자인지 판별하는 데 쓴다.
+  var disputeEvidence: DisputeEvidence?
+
+  /// 분쟁 중이고 중단을 신청한 당사자가 내가 아닌 경우(= 내가 중단을 당한 경우) → 문의하기 노출.
+  /// 이 화면은 오더러 본인의 요청 상세이므로 내 식별자는 `proposal.ordererID`.
+  var isDisputedByCounterparty: Bool {
+    guard proposal?.status == .disputed,
+          let evidence = disputeEvidence,
+          let ordererID = proposal?.ordererID
+    else {
+      return false
+    }
+    return evidence.actorID != ordererID
   }
 
   private let fetchDetailUseCase: FetchProposalDetailUseCase
   private let fetchOffersUseCase: FetchOffersByProposalUseCase
   private let confirmReceivedUseCase: ConfirmReceivedUseCase
   private let cancelProposalUseCase: CancelProposalUseCase
+  private let fetchDisputeEvidenceUseCase: FetchDisputeEvidenceUseCase
 
   init(
     proposalID: Int64,
     fetchDetailUseCase: FetchProposalDetailUseCase,
     fetchOffersUseCase: FetchOffersByProposalUseCase,
     confirmReceivedUseCase: ConfirmReceivedUseCase,
-    cancelProposalUseCase: CancelProposalUseCase
+    cancelProposalUseCase: CancelProposalUseCase,
+    fetchDisputeEvidenceUseCase: FetchDisputeEvidenceUseCase
   ) {
     self.proposalID = proposalID
     self.fetchDetailUseCase = fetchDetailUseCase
     self.fetchOffersUseCase = fetchOffersUseCase
     self.confirmReceivedUseCase = confirmReceivedUseCase
     self.cancelProposalUseCase = cancelProposalUseCase
+    self.fetchDisputeEvidenceUseCase = fetchDisputeEvidenceUseCase
   }
 
   /// proposal 상태별로 조회할 offer status 필터.
@@ -90,6 +109,14 @@ final class MyProposalDetailViewModel {
         offers = try await fetchOffersUseCase.execute(proposalID: proposalID, status: filter)
       } else {
         offers = []
+      }
+
+      // 분쟁 중일 때만 증빙을 조회해 신청자/피신청자를 분기한다.
+      // 증빙 조회 실패는 상세 로딩을 막지 않도록 보조 정보로만 취급한다.
+      if loaded.status == .disputed {
+        disputeEvidence = try? await fetchDisputeEvidenceUseCase.execute(for: .proposal(proposalID))
+      } else {
+        disputeEvidence = nil
       }
     } catch {
       errorMessage = "내 요청 상세를 불러오지 못했어요."

@@ -16,8 +16,8 @@ struct MyOfferResponseDTO: Decodable {
   let runnerName: String
   let status: String
   let acceptedAt: String?
-  let deliveryCompletedAt: String?
-  let receiptConfirmedAt: String?
+  let runnerConfirmedAt: String?
+  let ordererConfirmedAt: String?
   let disputedAt: String?
   let refundedAt: String?
   let createdAt: String
@@ -29,8 +29,8 @@ struct MyOfferResponseDTO: Decodable {
     case runnerName
     case status
     case acceptedAt
-    case deliveryCompletedAt
-    case receiptConfirmedAt
+    case runnerConfirmedAt
+    case ordererConfirmedAt
     case disputedAt
     case refundedAt
     case createdAt
@@ -39,7 +39,7 @@ struct MyOfferResponseDTO: Decodable {
 
 extension MyOfferResponseDTO {
   func toDomain() -> MyOffer {
-    // TODO: runnerName, acceptedAt, deliveryCompletedAt, receiptConfirmedAt, disputedAt, refundedAt
+    // TODO: runnerName, acceptedAt, runnerConfirmedAt, ordererConfirmedAt, disputedAt, refundedAt
     //       — UI 반영 시 MyOffer 엔티티에 추가.
     MyOffer(
       id: id,

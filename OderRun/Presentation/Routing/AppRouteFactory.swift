@@ -29,6 +29,30 @@ enum AppRouteFactory {
     )
   }
 
+  // MARK: - Mission Abort (임무 중단 — 분쟁 제기)
+
+  static func makeMissionAbortViewModel(target: MissionAbortTarget) -> MissionAbortViewModel {
+    let submitTarget: MissionAbortViewModel.Submit
+    switch target {
+    case let .proposal(proposalID):
+      submitTarget = .proposal(
+        proposalID: proposalID,
+        useCase: RaiseProposalDisputeUseCase(repository: DIContainer.proposalRepository)
+      )
+    case let .offer(offerID):
+      submitTarget = .offer(
+        offerID: offerID,
+        useCase: RaiseOfferDisputeUseCase(repository: DIContainer.offerRepository)
+      )
+    }
+    return MissionAbortViewModel(
+      submitTarget: submitTarget,
+      fetchQuestionsUseCase: FetchDisputeSurveyQuestionsUseCase(
+        repository: DIContainer.disputeSurveyRepository
+      )
+    )
+  }
+
   // MARK: - Account Register (지원하기 → 계좌 등록)
 
   static func makeAddOfferViewModel(proposalID: Int64) -> AddOfferViewModel {
@@ -47,7 +71,8 @@ enum AppRouteFactory {
       fetchDetailUseCase: FetchProposalDetailUseCase(repository: DIContainer.proposalRepository),
       fetchOffersUseCase: FetchOffersByProposalUseCase(repository: DIContainer.offerRepository),
       confirmReceivedUseCase: ConfirmReceivedUseCase(repository: DIContainer.proposalRepository),
-      cancelProposalUseCase: CancelProposalUseCase(repository: DIContainer.proposalRepository)
+      cancelProposalUseCase: CancelProposalUseCase(repository: DIContainer.proposalRepository),
+      fetchDisputeEvidenceUseCase: FetchDisputeEvidenceUseCase(repository: DIContainer.disputeEvidenceRepository)
     )
   }
 
@@ -63,7 +88,8 @@ enum AppRouteFactory {
       fetchDetailUseCase: FetchProposalDetailUseCase(repository: DIContainer.proposalRepository),
       fetchOfferDetailUseCase: FetchOfferDetailUseCase(repository: DIContainer.offerRepository),
       completeDeliveryUseCase: CompleteDeliveryUseCase(repository: DIContainer.offerRepository),
-      cancelOfferUseCase: CancelOfferUseCase(repository: DIContainer.offerRepository)
+      cancelOfferUseCase: CancelOfferUseCase(repository: DIContainer.offerRepository),
+      fetchDisputeEvidenceUseCase: FetchDisputeEvidenceUseCase(repository: DIContainer.disputeEvidenceRepository)
     )
   }
 

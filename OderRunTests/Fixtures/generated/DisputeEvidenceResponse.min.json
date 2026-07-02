@@ -1,0 +1,9 @@
+{
+  "id": 0,
+  "proposalId": 0,
+  "offerId": 0,
+  "actorId": "string",
+  "reason": "string",
+  "surveyQuestionId": 0,
+  "createdAt": "2026-06-12T18:00:00"
+}
