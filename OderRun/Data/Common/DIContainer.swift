@@ -9,7 +9,7 @@ import Foundation
 
 enum DIContainer {
   /// ← true: 더미 데이터 / false: 실 API
-  static let isDummy: Bool = false
+  static let isDummy: Bool = true
 
   /// 더미 환경에서 proposal / offer 를 공유하는 단일 인메모리 백엔드.
   /// 실 API 모드에서는 사용되지 않는다.
@@ -47,7 +47,7 @@ enum DIContainer {
     isDummy ? TestDisputeSurveyRepositoryImpl() : DisputeSurveyRepository(client: .shared)
 
   static let disputeEvidenceRepository: DisputeEvidenceRepositoryProtocol =
-    isDummy ? TestDisputeEvidenceRepositoryImpl() : DisputeEvidenceRepository(client: .shared)
+    isDummy ? TestDisputeEvidenceRepositoryImpl(store: dummyStore) : DisputeEvidenceRepository(client: .shared)
 
   static let reportRepository: ReportRepositoryProtocol =
     isDummy ? TestReportRepositoryImpl() : ReportRepository(client: .shared)
