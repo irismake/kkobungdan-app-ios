@@ -2,7 +2,7 @@
 """
 서버 OpenAPI 스펙을 내려받아 계약 테스트용 산출물을 자동 생성한다.
 
-생성물 (모두 OderRunTests/Contract, OderRunTests/Fixtures/generated 아래):
+생성물 (모두 KkobungdanTests/Contract, KkobungdanTests/Fixtures/generated 아래):
   Contract/openapi.json          서버 원본 스펙 (참고용)
   Contract/contract.current.json 정규화 스냅샷 (매 실행 갱신)
   Contract/contract.lock.json    승인된 기준선 (--accept 시에만 갱신)
@@ -31,10 +31,10 @@ import urllib.parse
 import urllib.request
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-CONTRACT_DIR = os.path.join(ROOT, "OderRunTests", "Contract")
-GENERATED_DIR = os.path.join(ROOT, "OderRunTests", "Fixtures", "generated")
+CONTRACT_DIR = os.path.join(ROOT, "KkobungdanTests", "Contract")
+GENERATED_DIR = os.path.join(ROOT, "KkobungdanTests", "Fixtures", "generated")
 # 앱과 동일한 단일 출처. gitignore 된 파일이라 서버 주소를 하드코딩하지 않는다.
-SECRETS_XCCONFIG = os.path.join(ROOT, "OderRun", "Secrets.xcconfig")
+SECRETS_XCCONFIG = os.path.join(ROOT, "Kkobungdan", "Secrets.xcconfig")
 
 # date-time 포맷은 DateFormatters.localDateTime ("yyyy-MM-dd'T'HH:mm:ss") 과 맞춘다.
 SAMPLE_DATETIME = "2026-06-12T18:00:00"
@@ -81,7 +81,7 @@ def resolve_url(cli_url):
     raise SystemExit(
         f"개발 서버 주소를 찾지 못했습니다. 계약 테스트는 실서버가 아닌 {DEV_HOST_KEY} 를 씁니다.\n"
         "다음 중 하나로 지정하세요:\n"
-        f"  - OderRun/Secrets.xcconfig 의 {DEV_HOST_KEY} (권장)\n"
+        f"  - Kkobungdan/Secrets.xcconfig 의 {DEV_HOST_KEY} (권장)\n"
         "  - 환경변수 OPENAPI_URL (예: CI 에서 export OPENAPI_URL=http://dev-host/openapi.json)\n"
         "  - --url http://dev-host/openapi.json"
     )

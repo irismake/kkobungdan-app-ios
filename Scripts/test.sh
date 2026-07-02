@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #
-# OderRunTests(DTO 디코딩 · OpenAPI 계약 테스트)를 실행한다. Xcode 의 ⌘U 와 같다.
+# KkobungdanTests(DTO 디코딩 · OpenAPI 계약 테스트)를 실행한다. Xcode 의 ⌘U 와 같다.
 # 사용: ./Scripts/test.sh
 #
 set -euo pipefail
@@ -20,7 +20,7 @@ fi
 echo "▶︎ 시뮬레이터: ${SIM_NAME}"
 
 xcodebuild test \
-  -project OderRun.xcodeproj \
-  -scheme OderRun \
+  -project Kkobungdan.xcodeproj \
+  -scheme Kkobungdan \
   -destination "platform=iOS Simulator,name=${SIM_NAME}" \
-  -only-testing:OderRunTests
+  -only-testing:KkobungdanTests
