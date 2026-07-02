@@ -17,6 +17,8 @@ actor DummyBackendStore {
   private var offers: [Offer] = Offer.dummyList
   private var nextProposalID: Int64 = 100
   private var nextOfferID: Int64 = 1000
+  private var disputeEvidenceByProposalID: [Int64: DisputeEvidence] = [:]
+  private var nextDisputeEvidenceID: Int64 = 1
 
   // MARK: - Proposal
 
@@ -170,17 +172,27 @@ actor DummyBackendStore {
   }
 
   /// 오더러 분쟁 제기. `POST /v1/proposal/{id}/dispute`
-  func raiseProposalDispute(proposalID: Int64, surveyQuestionID _: Int64, reason _: String) throws -> ProposalDetail {
+  /// 제기 당사자(actor)는 이 proposal 의 오더러다.
+  func raiseProposalDispute(proposalID: Int64, surveyQuestionID: Int64, reason: String) throws -> ProposalDetail {
     guard let proposalIndex = proposals.firstIndex(where: { $0.id == proposalID }) else {
       throw RepositoryError.notFound
     }
     let updated = with(proposals[proposalIndex], status: .disputed)
     proposals[proposalIndex] = updated
+    var disputedOfferID: Int64?
     if let offerIndex = offers.firstIndex(where: {
       $0.proposalID == proposalID && ($0.status == .accepted || $0.status == .runnerCompleted)
     }) {
       offers[offerIndex] = with(offers[offerIndex], status: .disputed)
+      disputedOfferID = offers[offerIndex].id
     }
+    recordDisputeEvidence(
+      proposalID: proposalID,
+      offerID: disputedOfferID,
+      actorID: ordererIDByProposalID[proposalID] ?? "",
+      surveyQuestionID: surveyQuestionID,
+      reason: reason
+    )
     return detail(updated)
   }
 
@@ -304,7 +316,8 @@ actor DummyBackendStore {
   }
 
   /// 러너 분쟁 제기. `POST /v1/offer/{id}/dispute`
-  func raiseOfferDispute(offerID: Int64, surveyQuestionID _: Int64, reason _: String) throws -> Offer {
+  /// 제기 당사자(actor)는 이 offer 의 러너다.
+  func raiseOfferDispute(offerID: Int64, surveyQuestionID: Int64, reason: String) throws -> Offer {
     guard let offerIndex = offers.firstIndex(where: { $0.id == offerID }) else {
       throw RepositoryError.notFound
     }
@@ -313,7 +326,52 @@ actor DummyBackendStore {
     if let proposalIndex = proposals.firstIndex(where: { $0.id == updated.proposalID }) {
       proposals[proposalIndex] = with(proposals[proposalIndex], status: .disputed)
     }
+    recordDisputeEvidence(
+      proposalID: updated.proposalID,
+      offerID: updated.id,
+      actorID: updated.runnerID,
+      surveyQuestionID: surveyQuestionID,
+      reason: reason
+    )
     return updated
+  }
+
+  /// 분쟁 증빙 조회. `GET /v1/dispute-evidence?proposalId=` · `?offerId=`
+  /// 실제 제기 당사자(actor)를 그대로 돌려줘, 클라이언트가 "내가 신청/피신청"을 구분할 수 있게 한다.
+  func disputeEvidence(for query: DisputeEvidenceQuery) throws -> DisputeEvidence {
+    let proposalID: Int64
+    switch query {
+    case let .proposal(id):
+      proposalID = id
+    case let .offer(id):
+      guard let offer = offers.first(where: { $0.id == id }) else {
+        throw RepositoryError.notFound
+      }
+      proposalID = offer.proposalID
+    }
+    guard let evidence = disputeEvidenceByProposalID[proposalID] else {
+      throw RepositoryError.notFound
+    }
+    return evidence
+  }
+
+  private func recordDisputeEvidence(
+    proposalID: Int64,
+    offerID: Int64?,
+    actorID: String,
+    surveyQuestionID: Int64,
+    reason: String
+  ) {
+    disputeEvidenceByProposalID[proposalID] = DisputeEvidence(
+      id: nextDisputeEvidenceID,
+      proposalID: proposalID,
+      offerID: offerID ?? 0,
+      actorID: actorID,
+      reason: reason,
+      surveyQuestionID: surveyQuestionID,
+      createdAt: Date()
+    )
+    nextDisputeEvidenceID += 1
   }
 
   // MARK: - Activity
