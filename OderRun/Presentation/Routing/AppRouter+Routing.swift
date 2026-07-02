@@ -94,7 +94,9 @@ extension AppRouter {
         },
         onAbort: {
           path.wrappedValue.append(.missionAbort(target: .proposal(proposalID: proposalID)))
-        }
+        },
+        // TODO: 문의하기 플로우 확정 시 라우팅 연결.
+        onInquiry: {}
       )
       .navigationBarBackButtonHidden(true)
     case let .offerDetail(proposalID, offerID):
@@ -106,7 +108,9 @@ extension AppRouter {
         onBack: { self.popLast(path: path) },
         onAbort: {
           path.wrappedValue.append(.missionAbort(target: .offer(offerID: offerID)))
-        }
+        },
+        // TODO: 문의하기 플로우 확정 시 라우팅 연결.
+        onInquiry: {}
       )
       .navigationBarBackButtonHidden(true)
     case let .runnerDetail(proposalID, offerID):
@@ -118,7 +122,9 @@ extension AppRouter {
         onBack: { self.popLast(path: path) },
         onAbort: {
           path.wrappedValue.append(.missionAbort(target: .offer(offerID: offerID)))
-        }
+        },
+        // TODO: 문의하기 플로우 확정 시 라우팅 연결.
+        onInquiry: {}
       )
       .navigationBarBackButtonHidden(true)
     case let .runnerList(proposalID):

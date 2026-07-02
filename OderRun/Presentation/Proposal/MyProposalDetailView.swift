@@ -14,19 +14,22 @@ struct MyProposalDetailView: View {
   var onShowRunners: () -> Void = {}
   var onAccepted: () -> Void = {}
   var onAbort: () -> Void = {}
+  var onInquiry: () -> Void = {}
 
   init(
     viewModel: MyProposalDetailViewModel,
     onBack: @escaping () -> Void = {},
     onShowRunners: @escaping () -> Void = {},
     onAccepted: @escaping () -> Void = {},
-    onAbort: @escaping () -> Void = {}
+    onAbort: @escaping () -> Void = {},
+    onInquiry: @escaping () -> Void = {}
   ) {
     _viewModel = State(initialValue: viewModel)
     self.onBack = onBack
     self.onShowRunners = onShowRunners
     self.onAccepted = onAccepted
     self.onAbort = onAbort
+    self.onInquiry = onInquiry
   }
 
   private var statusBadges: [BadgeItem] {
@@ -148,7 +151,16 @@ struct MyProposalDetailView: View {
           onAbort()
         }
       }
-    case .allCompleted, .disputed, .cancelled, .resolved:
+    case .disputed:
+      // 내가 중단을 신청한 경우엔 버튼 없음. 중단을 당한 경우에만 문의하기 노출.
+      if viewModel.isDisputedByCounterparty {
+        OutlineButton(title: "문의하기") {
+          onInquiry()
+        }
+      } else {
+        EmptyView()
+      }
+    case .allCompleted, .cancelled, .resolved:
       EmptyView()
     default:
       VStack(spacing: 8) {

@@ -13,15 +13,18 @@ struct OfferDetailView: View {
   @State private var isCancelConfirmPresented: Bool = false
   var onBack: () -> Void = {}
   var onAbort: () -> Void = {}
+  var onInquiry: () -> Void = {}
 
   init(
     viewModel: OfferDetailViewModel,
     onBack: @escaping () -> Void = {},
-    onAbort: @escaping () -> Void = {}
+    onAbort: @escaping () -> Void = {},
+    onInquiry: @escaping () -> Void = {}
   ) {
     _viewModel = State(initialValue: viewModel)
     self.onBack = onBack
     self.onAbort = onAbort
+    self.onInquiry = onInquiry
   }
 
   var body: some View {
@@ -130,6 +133,16 @@ struct OfferDetailView: View {
     case .waiting:
       OutlineButton(title: viewModel.isCancelling ? "취소 중..." : "지원 취소") {
         isCancelConfirmPresented = true
+      }
+
+    case .disputed:
+      // 내가 중단을 신청한 경우엔 버튼 없음. 중단을 당한 경우에만 문의하기 노출.
+      if viewModel.isDisputedByCounterparty {
+        OutlineButton(title: "문의하기") {
+          onInquiry()
+        }
+      } else {
+        EmptyView()
       }
 
     default:
