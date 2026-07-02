@@ -58,7 +58,7 @@ struct OfferDetailView: View {
           VStack(alignment: .leading, spacing: 12) {
             proposalCardSection
 
-            if let openChatURL = viewModel.offer?.openChatURL {
+            if let openChatURL = viewModel.openChatURL {
               OpenChatModal(urlString: openChatURL)
             }
           }

@@ -86,7 +86,7 @@ struct MyProposalDetailView: View {
                 )
               }
 
-              if let openChatURL = viewModel.proposal?.openChatURL {
+              if let openChatURL = viewModel.openChatURL {
                 OpenChatModal(urlString: openChatURL)
               }
             }
