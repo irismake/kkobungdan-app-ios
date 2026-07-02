@@ -1,6 +1,6 @@
 ---
 description: 더미 환경 DummyBackendStore vs Test*RepositoryImpl 책임 분리
-globs: OderRun/Data/**/*.swift
+globs: Kkobungdan/Data/**/*.swift
 alwaysApply: true
 ---
 

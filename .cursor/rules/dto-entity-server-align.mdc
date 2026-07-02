@@ -1,6 +1,6 @@
 ---
 description: API 응답 DTO·엔티티를 서버 스펙과 일치, 응답 미사용 필드는 toDomain TODO만
-globs: OderRun/Data/**/*.swift,OderRun/Domain/**/*.swift
+globs: Kkobungdan/Data/**/*.swift,Kkobungdan/Domain/**/*.swift
 alwaysApply: true
 ---
 

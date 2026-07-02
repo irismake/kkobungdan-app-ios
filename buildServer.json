@@ -12,8 +12,8 @@
 	"argv": [
 		"/opt/homebrew/bin/xcode-build-server"
 	],
-	"workspace": "/Users/gimgahui/Documents/OderRun/OderRun.xcodeproj/project.xcworkspace",
-	"build_root": "/Users/gimgahui/Library/Developer/Xcode/DerivedData/OderRun-ajmkkdopydqlbpctobaerfzdjafr",
-	"scheme": "OderRun",
+	"workspace": "/Users/gimgahui/Documents/Kkobungdan/Kkobungdan.xcodeproj/project.xcworkspace",
+	"build_root": "/Users/gimgahui/Library/Developer/Xcode/DerivedData/Kkobungdan-ajmkkdopydqlbpctobaerfzdjafr",
+	"scheme": "Kkobungdan",
 	"kind": "xcode"
 }

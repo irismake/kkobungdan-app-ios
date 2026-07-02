@@ -1,4 +1,4 @@
-# OderRun iOS
+# Kkobungdan iOS
 
 ## AI 규칙
 
