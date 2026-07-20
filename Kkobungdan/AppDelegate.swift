@@ -15,6 +15,8 @@ final class AppDelegate: NSObject, UIApplicationDelegate {
     _ application: UIApplication,
     didFinishLaunchingWithOptions _: [UIApplication.LaunchOptionsKey: Any]? = nil
   ) -> Bool {
+    print("현재 access token: \(TokenStorage.shared.accessToken ?? "nil")")
+
     // GoogleService-Info.plist 는 Firebase 콘솔에서 받아 Kkobungdan/ 에 넣는다.
     guard Bundle.main.path(forResource: "GoogleService-Info", ofType: "plist") != nil else {
       pushLogger.fault("GoogleService-Info.plist 가 번들에 없습니다. FCM 초기화를 건너뜁니다.")

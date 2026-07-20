@@ -34,6 +34,14 @@ struct NotificationView: View {
                 }
                 Task { await viewModel.markAsRead(id: item.id) }
               }
+              .onAppear {
+                Task { await viewModel.loadMoreIfNeeded(currentItem: item) }
+              }
+            }
+
+            if viewModel.isLoadingMore {
+              ProgressView()
+                .padding(.vertical, 16)
             }
           }
         }

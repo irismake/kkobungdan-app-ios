@@ -11,7 +11,11 @@ import Foundation
 final class NotificationViewModel {
   var notifications: [AppNotification] = []
   var isLoading: Bool = false
+  var isLoadingMore: Bool = false
   var errorMessage: String?
+
+  private var page = 1
+  private var hasNext = false
 
   private let fetchNotificationsUseCase: FetchNotificationsUseCase
   private let repository: NotificationRepositoryProtocol
@@ -39,11 +43,31 @@ final class NotificationViewModel {
     isLoading = true
     errorMessage = nil
     do {
-      notifications = try await fetchNotificationsUseCase.execute()
+      let firstPage = try await fetchNotificationsUseCase.execute()
+      notifications = firstPage.notifications
+      page = 1
+      hasNext = firstPage.hasNext
     } catch {
       errorMessage = "알림을 불러오지 못했어요."
     }
     isLoading = false
+  }
+
+  /// 마지막 알림이 화면에 나타나면 다음 페이지를 이어 붙인다.
+  /// 실패 시 조용히 멈추고, 마지막 셀이 다시 보일 때 재시도된다.
+  @MainActor
+  func loadMoreIfNeeded(currentItem: AppNotification) async {
+    guard hasNext, !isLoadingMore, currentItem.id == notifications.last?.id else {
+      return
+    }
+    isLoadingMore = true
+    do {
+      let nextPage = try await fetchNotificationsUseCase.execute(page: page + 1)
+      page += 1
+      notifications += nextPage.notifications
+      hasNext = nextPage.hasNext
+    } catch {}
+    isLoadingMore = false
   }
 
   @MainActor

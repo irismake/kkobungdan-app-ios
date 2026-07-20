@@ -14,10 +14,12 @@ final class NotificationRepository: NotificationRepositoryProtocol {
     self.client = client
   }
 
-  func fetchNotifications() async throws -> [AppNotification] {
-    let dto: NotificationListResponseDTO =
-      try await client.get("/v1/notifications")
-    return dto.notifications.map { $0.toDomain() }
+  func fetchNotifications(page: Int, pageSize: Int, unreadOnly: Bool) async throws -> NotificationPage {
+    let dto: NotificationListResponseDTO = try await client.get(
+      "/v1/notifications",
+      params: ["page": page, "page_size": pageSize, "unread_only": unreadOnly]
+    )
+    return dto.toDomain()
   }
 
   func markAsRead(ids: [Int]) async throws -> Int {

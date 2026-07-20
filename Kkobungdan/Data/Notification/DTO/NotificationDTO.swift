@@ -15,6 +15,15 @@ struct NotificationListResponseDTO: Decodable {
   let pageSize: Int
 }
 
+extension NotificationListResponseDTO {
+  func toDomain() -> NotificationPage {
+    NotificationPage(
+      notifications: notifications.map { $0.toDomain() },
+      hasNext: page * pageSize < total
+    )
+  }
+}
+
 struct NotificationDTO: Decodable {
   let id: Int
   let userID: String
