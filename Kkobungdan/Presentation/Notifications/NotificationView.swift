@@ -3,8 +3,15 @@ import SwiftUI
 struct NotificationView: View {
   @State private var viewModel: NotificationViewModel
 
-  init(viewModel: NotificationViewModel) {
+  /// 딥링크 있는 알림 셀 탭 시 호출. 푸시 배너 탭과 동일한 라우팅을 태운다.
+  var onSelect: (PushPayload) -> Void = { _ in }
+
+  init(
+    viewModel: NotificationViewModel,
+    onSelect: @escaping (PushPayload) -> Void = { _ in }
+  ) {
     _viewModel = State(initialValue: viewModel)
+    self.onSelect = onSelect
   }
 
   var body: some View {
@@ -29,10 +36,12 @@ struct NotificationView: View {
                 isRead: item.isRead
               )
               .onTapGesture {
-                guard !item.isRead else {
-                  return
+                if !item.isRead {
+                  Task { await viewModel.markAsRead(id: item.id) }
                 }
-                Task { await viewModel.markAsRead(id: item.id) }
+                if let deepLink = item.deepLink {
+                  onSelect(deepLink)
+                }
               }
               .onAppear {
                 Task { await viewModel.loadMoreIfNeeded(currentItem: item) }
@@ -47,6 +56,9 @@ struct NotificationView: View {
         }
       }
       .background(Color.gray000)
+      .refreshable {
+        await viewModel.load()
+      }
     }
     .background(Color.gray000)
     .task {

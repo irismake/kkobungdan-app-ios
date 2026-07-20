@@ -85,6 +85,10 @@ extension AppDelegate: UNUserNotificationCenterDelegate {
     willPresent _: UNNotification,
     withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void
   ) {
+    // 탭바 안읽음 뱃지 갱신 트리거
+    Task { @MainActor in
+      PushRouteStore.shared.foregroundPushCount += 1
+    }
     // 포그라운드에서도 배너 표시
     completionHandler([.banner, .list, .badge, .sound])
   }

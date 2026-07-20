@@ -15,4 +15,7 @@ final class PushRouteStore {
 
   /// 아직 라우팅되지 않은 푸시 딥링크. 소비 측이 이동 처리 후 nil 로 되돌린다.
   var pending: PushPayload?
+
+  /// 포그라운드에서 푸시가 도착할 때마다 증가. 탭바 안읽음 뱃지 갱신 트리거.
+  var foregroundPushCount = 0
 }

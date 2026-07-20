@@ -13,6 +13,8 @@ final class NotificationViewModel {
   var isLoading: Bool = false
   var isLoadingMore: Bool = false
   var errorMessage: String?
+  /// 탭바 뱃지에 쓰는 전체 안읽음 개수. (목록은 페이지 단위라 stats API 로 별도 조회)
+  var unreadCount: Int = 0
 
   private var page = 1
   private var hasNext = false
@@ -51,6 +53,15 @@ final class NotificationViewModel {
       errorMessage = "알림을 불러오지 못했어요."
     }
     isLoading = false
+    await refreshUnreadCount()
+  }
+
+  /// 안읽음 개수를 서버 통계로 갱신한다. 뱃지 용도라 실패는 조용히 무시.
+  @MainActor
+  func refreshUnreadCount() async {
+    do {
+      unreadCount = try await repository.fetchStats().unread
+    } catch {}
   }
 
   /// 마지막 알림이 화면에 나타나면 다음 페이지를 이어 붙인다.
@@ -81,9 +92,11 @@ final class NotificationViewModel {
           title: existing.title,
           body: existing.body,
           createdAt: existing.createdAt,
-          isRead: true
+          isRead: true,
+          deepLink: existing.deepLink
         )
       }
+      unreadCount = max(0, unreadCount - 1)
     } catch {
       errorMessage = "알림 상태를 변경하지 못했어요."
     }

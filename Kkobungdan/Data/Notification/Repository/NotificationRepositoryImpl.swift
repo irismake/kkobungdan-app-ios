@@ -39,7 +39,8 @@ actor NotificationRepositoryImpl: NotificationRepositoryProtocol {
         title: existing.title,
         body: existing.body,
         createdAt: existing.createdAt,
-        isRead: true
+        isRead: true,
+        deepLink: existing.deepLink
       )
     }
     return marked

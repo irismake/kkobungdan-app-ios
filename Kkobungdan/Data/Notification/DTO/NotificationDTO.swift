@@ -64,14 +64,41 @@ struct NotificationDTO: Decodable {
 
 extension NotificationDTO {
   func toDomain() -> AppNotification {
-    // TODO: userId, notificationType, data, relatedEntityType, relatedEntityId,
+    // TODO: userId, relatedEntityType, relatedEntityId,
     //       fcmMessageId, errorMessage, sentAt, deliveredAt, readAt — UI 반영 시 엔티티에 추가
     AppNotification(
       id: id,
       title: title,
       body: body,
       createdAt: DateFormatters.parse(createdAt),
-      isRead: status == .read
+      isRead: status == .read,
+      deepLink: Self.parseDeepLink(type: notificationType, data: data)
     )
+  }
+
+  /// `data`(JSON 문자열, 예: `{"offer_id": 60, "proposal_id": 28}`)를 푸시와 동일한
+  /// 라우팅 payload 로 변환한다. 값이 숫자·문자열 어느 쪽으로 와도 허용한다.
+  private static func parseDeepLink(type: NotificationType, data: String?) -> PushPayload? {
+    guard
+      let eventType = PushPayload.EventType(rawValue: type.rawValue),
+      let data,
+      let jsonData = data.data(using: .utf8),
+      let object = (try? JSONSerialization.jsonObject(with: jsonData)) as? [String: Any],
+      let offerID = int64(object["offer_id"]),
+      let proposalID = int64(object["proposal_id"])
+    else {
+      return nil
+    }
+    return PushPayload(type: eventType, offerID: offerID, proposalID: proposalID)
+  }
+
+  private static func int64(_ value: Any?) -> Int64? {
+    if let number = value as? NSNumber {
+      return number.int64Value
+    }
+    if let string = value as? String {
+      return Int64(string)
+    }
+    return nil
   }
 }
