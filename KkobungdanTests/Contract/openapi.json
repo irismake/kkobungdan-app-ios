@@ -141,7 +141,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/AuthPhoneConfirmRequest"
+                "$ref": "#/components/schemas/AuthSignupConfirmRequest"
               }
             }
           },
@@ -959,163 +959,6 @@
       }
     },
     "/v1/user/alarm": {
-      "post": {
-        "tags": [
-          "사용자"
-        ],
-        "summary": "알림 설정 변경",
-        "description": "현재 사용자의 알림 수신 여부를 변경합니다.",
-        "operationId": "update_alarm_v1_user_alarm_post",
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/UserAlarmRequest"
-              }
-            }
-          },
-          "required": true
-        },
-        "responses": {
-          "200": {
-            "description": "성공 응답",
-            "content": {
-              "application/json": {
-                "schema": {},
-                "example": {
-                  "success": true,
-                  "message": "알람 설정이 업데이트되었습니다."
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "실패 응답",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                },
-                "examples": {
-                  "INVALID_TOKEN": {
-                    "summary": "INVALID_TOKEN",
-                    "value": {
-                      "success": false,
-                      "error": {
-                        "code": "INVALID_TOKEN",
-                        "message": "Invalid token",
-                        "details": null
-                      },
-                      "timestamp": "2026-06-01T12:00:00+09:00"
-                    }
-                  },
-                  "MISSING_CREDENTIALS": {
-                    "summary": "INVALID_TOKEN",
-                    "value": {
-                      "success": false,
-                      "error": {
-                        "code": "INVALID_TOKEN",
-                        "message": "Missing credentials",
-                        "details": null
-                      },
-                      "timestamp": "2026-06-01T12:00:00+09:00"
-                    }
-                  },
-                  "INVALID_TOKEN_CREDENTIALS": {
-                    "summary": "INVALID_TOKEN",
-                    "value": {
-                      "success": false,
-                      "error": {
-                        "code": "INVALID_TOKEN",
-                        "message": "Could not validate credentials",
-                        "details": null
-                      },
-                      "timestamp": "2026-06-01T12:00:00+09:00"
-                    }
-                  },
-                  "INVALID_TOKEN_TYPE": {
-                    "summary": "INVALID_TOKEN",
-                    "value": {
-                      "success": false,
-                      "error": {
-                        "code": "INVALID_TOKEN",
-                        "message": "Invalid token type",
-                        "details": null
-                      },
-                      "timestamp": "2026-06-01T12:00:00+09:00"
-                    }
-                  },
-                  "INVALID_AUTHENTICATION_CREDENTIALS": {
-                    "summary": "INVALID_TOKEN",
-                    "value": {
-                      "success": false,
-                      "error": {
-                        "code": "INVALID_TOKEN",
-                        "message": "Invalid authentication credentials",
-                        "details": null
-                      },
-                      "timestamp": "2026-06-01T12:00:00+09:00"
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "실패 응답",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                },
-                "examples": {
-                  "VALIDATION_ERROR": {
-                    "summary": "VALIDATION_ERROR",
-                    "value": {
-                      "success": false,
-                      "error": {
-                        "code": "VALIDATION_ERROR",
-                        "message": "요청 값이 올바르지 않습니다.",
-                        "details": null
-                      },
-                      "timestamp": "2026-06-01T12:00:00+09:00"
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "실패 응답",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                },
-                "examples": {
-                  "USER_NOT_FOUND": {
-                    "summary": "USER_NOT_FOUND",
-                    "value": {
-                      "success": false,
-                      "error": {
-                        "code": "USER_NOT_FOUND",
-                        "message": "User not found",
-                        "details": null
-                      },
-                      "timestamp": "2026-06-01T12:00:00+09:00"
-                    }
-                  }
-                }
-              }
-            }
-          }
-        },
-        "security": [
-          {
-            "HTTPBearer": []
-          }
-        ]
-      },
       "patch": {
         "tags": [
           "사용자"
@@ -9760,35 +9603,6 @@
           "refreshToken": "refresh-token"
         }
       },
-      "AuthPhoneConfirmRequest": {
-        "properties": {
-          "phone": {
-            "type": "string",
-            "maxLength": 20,
-            "minLength": 1,
-            "title": "Phone",
-            "description": "휴대폰 번호"
-          },
-          "code": {
-            "type": "string",
-            "maxLength": 20,
-            "minLength": 1,
-            "title": "Code",
-            "description": "SMS 인증번호"
-          }
-        },
-        "additionalProperties": false,
-        "type": "object",
-        "required": [
-          "phone",
-          "code"
-        ],
-        "title": "AuthPhoneConfirmRequest",
-        "example": {
-          "code": "123456",
-          "phone": "01012345678"
-        }
-      },
       "AuthRefreshRequest": {
         "properties": {
           "refreshToken": {
@@ -9806,6 +9620,50 @@
         "title": "AuthRefreshRequest",
         "example": {
           "refreshToken": "refresh-token"
+        }
+      },
+      "AuthSignupConfirmRequest": {
+        "properties": {
+          "phone": {
+            "type": "string",
+            "maxLength": 20,
+            "minLength": 1,
+            "title": "Phone",
+            "description": "휴대폰 번호"
+          },
+          "code": {
+            "type": "string",
+            "maxLength": 20,
+            "minLength": 1,
+            "title": "Code",
+            "description": "SMS 인증번호"
+          },
+          "fcmToken": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 4096,
+                "minLength": 1
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Fcmtoken",
+            "description": "FCM 토큰"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "phone",
+          "code"
+        ],
+        "title": "AuthSignupConfirmRequest",
+        "example": {
+          "code": "123456",
+          "fcmToken": "fcm-token",
+          "phone": "01012345678"
         }
       },
       "AuthSignupSendRequest": {

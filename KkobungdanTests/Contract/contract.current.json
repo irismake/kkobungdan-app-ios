@@ -286,22 +286,23 @@
       "refreshToken": "string"
     }
   },
-  "AuthPhoneConfirmRequest": {
-    "required": [
-      "code",
-      "phone"
-    ],
-    "properties": {
-      "code": "string",
-      "phone": "string"
-    }
-  },
   "AuthRefreshRequest": {
     "required": [
       "refreshToken"
     ],
     "properties": {
       "refreshToken": "string"
+    }
+  },
+  "AuthSignupConfirmRequest": {
+    "required": [
+      "code",
+      "phone"
+    ],
+    "properties": {
+      "code": "string",
+      "fcmToken": "anyOf(string|null)",
+      "phone": "string"
     }
   },
   "AuthSignupSendRequest": {
