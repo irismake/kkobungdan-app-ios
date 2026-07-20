@@ -42,7 +42,7 @@ final class AuthRepository: AuthRepositoryProtocol {
   func confirmSignupCode(code: String, phone: String) async throws -> AuthTokens {
     let response: AuthTokenResponseDTO = try await client.post(
       "/v1/auth/signup/confirm",
-      body: AuthPhoneConfirmRequest(code: code, phone: phone)
+      body: AuthSignupConfirmRequest(code: code, phone: phone)
     )
     let tokens = response.toDomain()
     store(tokens)
