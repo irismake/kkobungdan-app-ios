@@ -76,7 +76,9 @@ struct BankSelectSheet: View {
               }
               if bankRows[rowIndex].count < columnCount {
                 ForEach(0 ..< (columnCount - bankRows[rowIndex].count), id: \.self) { _ in
-                  Color.clear.frame(maxWidth: .infinity)
+                  Color.clear
+                    .frame(maxWidth: .infinity)
+                    .frame(height: 0)
                 }
               }
             }
