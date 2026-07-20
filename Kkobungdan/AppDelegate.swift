@@ -57,8 +57,23 @@ final class AppDelegate: NSObject, UIApplicationDelegate {
 
 extension AppDelegate: MessagingDelegate {
   nonisolated func messaging(_: Messaging, didReceiveRegistrationToken fcmToken: String?) {
-    // TODO: 서버 디바이스 토큰 등록 API 연동 시 fcmToken 전송
     pushLogger.info("FCM 토큰 갱신: \(fcmToken ?? "nil", privacy: .private)")
+    guard let fcmToken else {
+      return
+    }
+    FcmTokenStorage.shared.token = fcmToken
+
+    guard TokenStorage.shared.refreshToken != nil else {
+      return
+    }
+    Task {
+      do {
+        try await UpdateFcmTokenUseCase(userRepository: DIContainer.userRepository)
+          .execute(token: fcmToken)
+      } catch {
+        pushLogger.error("FCM 토큰 서버 갱신 실패: \(error)")
+      }
+    }
   }
 }
 

@@ -11,18 +11,6 @@ import Foundation
 
 struct AuthLoginConfirmRequest: Encodable {
   let code: String
-  // TODO: fcmToken — 푸시 연동 전까지 stub 값 전송
   let fcmToken: String?
   let phone: String
-
-  init(code: String, phone: String) {
-    self.code = code
-    self.phone = phone
-    fcmToken = AuthLoginConfirmRequest.stubFCMToken
-  }
-}
-
-extension AuthLoginConfirmRequest {
-  // TODO: fcmToken 푸시 연동 시 호출부에서 실제 값 전달로 교체
-  static let stubFCMToken: String? = nil
 }

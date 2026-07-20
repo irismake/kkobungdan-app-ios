@@ -25,10 +25,16 @@ private struct SignupRequestBody: Encodable {
 final class AuthRepository: AuthRepositoryProtocol {
   private let client: HTTPClient
   private let tokenStorage: TokenStorage
+  private let fcmTokenStorage: FcmTokenStorage
 
-  init(client: HTTPClient = .shared, tokenStorage: TokenStorage = .shared) {
+  init(
+    client: HTTPClient = .shared,
+    tokenStorage: TokenStorage = .shared,
+    fcmTokenStorage: FcmTokenStorage = .shared
+  ) {
     self.client = client
     self.tokenStorage = tokenStorage
+    self.fcmTokenStorage = fcmTokenStorage
   }
 
   func sendSignupCode(name: String, phone: String, carrier: String) async throws -> PhoneVerification {
@@ -42,7 +48,7 @@ final class AuthRepository: AuthRepositoryProtocol {
   func confirmSignupCode(code: String, phone: String) async throws -> AuthTokens {
     let response: AuthTokenResponseDTO = try await client.post(
       "/v1/auth/signup/confirm",
-      body: AuthSignupConfirmRequest(code: code, phone: phone)
+      body: AuthSignupConfirmRequest(code: code, fcmToken: fcmTokenStorage.token, phone: phone)
     )
     let tokens = response.toDomain()
     store(tokens)
@@ -60,7 +66,7 @@ final class AuthRepository: AuthRepositoryProtocol {
   func confirmLoginCode(code: String, phone: String) async throws -> AuthTokens {
     let response: AuthTokenResponseDTO = try await client.post(
       "/v1/auth/login/confirm",
-      body: AuthLoginConfirmRequest(code: code, phone: phone)
+      body: AuthLoginConfirmRequest(code: code, fcmToken: fcmTokenStorage.token, phone: phone)
     )
     let tokens = response.toDomain()
     store(tokens)

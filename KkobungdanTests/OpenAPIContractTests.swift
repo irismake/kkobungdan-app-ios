@@ -75,9 +75,9 @@ final class OpenAPIContractTests: XCTestCase {
         EncodeContract("UserFcmTokenRequest", UserFcmTokenRequest(fcmToken: "token")),
         // Auth
         EncodeContract("AuthSignupSendRequest", AuthSignupSendRequest(carrier: "SKT", name: "홍길동", phone: "01012345678")),
-        EncodeContract("AuthSignupConfirmRequest", AuthSignupConfirmRequest(code: "123456", phone: "01012345678")),
+        EncodeContract("AuthSignupConfirmRequest", AuthSignupConfirmRequest(code: "123456", fcmToken: "token", phone: "01012345678")),
         EncodeContract("AuthLoginSendRequest", AuthLoginSendRequest(phone: "01012345678")),
-        EncodeContract("AuthLoginConfirmRequest", AuthLoginConfirmRequest(code: "123456", phone: "01012345678")),
+        EncodeContract("AuthLoginConfirmRequest", AuthLoginConfirmRequest(code: "123456", fcmToken: "token", phone: "01012345678")),
         EncodeContract("AuthRefreshRequest", AuthRefreshRequest(refreshToken: "refresh")),
         EncodeContract("AuthLogoutRequest", AuthLogoutRequest(refreshToken: "refresh")),
         // Terms
