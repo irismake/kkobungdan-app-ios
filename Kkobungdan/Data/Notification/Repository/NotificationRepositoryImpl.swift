@@ -14,9 +14,13 @@ actor NotificationRepositoryImpl: NotificationRepositoryProtocol {
 
   private var notifications: [AppNotification] = AppNotification.dummyList
 
-  func fetchNotifications() async throws -> [AppNotification] {
+  func fetchNotifications(page: Int, pageSize: Int, unreadOnly: Bool) async throws -> NotificationPage {
     try await Task.sleep(nanoseconds: Self.simulatedLatency)
-    return notifications.sorted { $0.createdAt > $1.createdAt }
+    let filtered = notifications
+      .sorted { $0.createdAt > $1.createdAt }
+      .filter { !unreadOnly || !$0.isRead }
+    let items = Array(filtered.dropFirst((page - 1) * pageSize).prefix(pageSize))
+    return NotificationPage(notifications: items, hasNext: page * pageSize < filtered.count)
   }
 
   func markAsRead(ids: [Int]) async throws -> Int {
@@ -35,7 +39,8 @@ actor NotificationRepositoryImpl: NotificationRepositoryProtocol {
         title: existing.title,
         body: existing.body,
         createdAt: existing.createdAt,
-        isRead: true
+        isRead: true,
+        deepLink: existing.deepLink
       )
     }
     return marked

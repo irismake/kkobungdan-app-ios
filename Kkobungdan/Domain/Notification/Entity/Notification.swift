@@ -13,4 +13,5 @@ struct AppNotification: Equatable, Identifiable {
   let body: String
   let createdAt: Date
   let isRead: Bool
+  let deepLink: PushPayload?
 }

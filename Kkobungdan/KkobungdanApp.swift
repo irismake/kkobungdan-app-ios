@@ -11,6 +11,7 @@ import SwiftUI
 
 @main
 struct KkobungdanApp: App {
+  @UIApplicationDelegateAdaptor(AppDelegate.self) private var appDelegate
   @State private var session = SessionViewModel()
 
   init() {

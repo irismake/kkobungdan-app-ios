@@ -11,7 +11,7 @@ struct ActivityView: View {
   @State private var proposalsViewModel: MyProposalsViewModel
   @State private var offersViewModel: MyOffersViewModel
   @Binding var segment: ActivitySegment
-  @State private var filter: ActivityStatusFilter = .all
+  @Binding var filter: ActivityStatusFilter
 
   var onSelectOrdererProposal: (Int64) -> Void = { _ in }
   var onSelectRunnerItem: (_ proposalID: Int64, _ offerID: Int64) -> Void = { _, _ in }
@@ -31,12 +31,14 @@ struct ActivityView: View {
     proposalsViewModel: MyProposalsViewModel,
     offersViewModel: MyOffersViewModel,
     segment: Binding<ActivitySegment> = .constant(.orderer),
+    filter: Binding<ActivityStatusFilter> = .constant(.all),
     onSelectOrdererProposal: @escaping (Int64) -> Void = { _ in },
     onSelectRunnerItem: @escaping (_ proposalID: Int64, _ offerID: Int64) -> Void = { _, _ in }
   ) {
     _proposalsViewModel = State(initialValue: proposalsViewModel)
     _offersViewModel = State(initialValue: offersViewModel)
     _segment = segment
+    _filter = filter
     self.onSelectOrdererProposal = onSelectOrdererProposal
     self.onSelectRunnerItem = onSelectRunnerItem
   }
@@ -53,14 +55,18 @@ struct ActivityView: View {
         VStack(spacing: 12) {
           contentSection
         }
+        .frame(maxWidth: .infinity)
         .padding(.horizontal, 16)
         .padding(.vertical, 16)
       }
+      .frame(maxWidth: .infinity, maxHeight: .infinity)
       .background(Color.gray000)
       .refreshable {
         await reloadCurrentSegment()
       }
     }
+    .frame(maxWidth: .infinity, maxHeight: .infinity)
+    .background(Color.gray000)
     // 세그먼트·카테고리가 바뀔 때마다 해당 목록을 status 필터를 적용해 다시 조회한다.
     .task(id: "\(segment.rawValue)-\(filter.rawValue)") {
       await reloadCurrentSegment()
@@ -91,16 +97,19 @@ struct ActivityView: View {
     let items = proposalsViewModel.myProposals
     if proposalsViewModel.isLoading, items.isEmpty {
       ProgressView().padding(.top, 40)
+        .frame(maxWidth: .infinity)
     } else if let errorMessage = proposalsViewModel.errorMessage, items.isEmpty {
       Text(errorMessage)
         .textStyle(.body3)
         .foregroundColor(Color.rose500)
         .padding(.top, 40)
+        .frame(maxWidth: .infinity)
     } else if items.isEmpty {
       Text("아직 등록한 의뢰가 없어요.")
         .textStyle(.body3)
         .foregroundColor(Color.gray500)
         .padding(.top, 40)
+        .frame(maxWidth: .infinity)
     } else {
       ForEach(items) { proposal in
         card(for: proposal)
@@ -117,16 +126,19 @@ struct ActivityView: View {
     let items = offersViewModel.myOffers
     if offersViewModel.isLoading, items.isEmpty {
       ProgressView().padding(.top, 40)
+        .frame(maxWidth: .infinity)
     } else if let errorMessage = offersViewModel.errorMessage, items.isEmpty {
       Text(errorMessage)
         .textStyle(.body3)
         .foregroundColor(Color.rose500)
         .padding(.top, 40)
+        .frame(maxWidth: .infinity)
     } else if items.isEmpty {
       Text("아직 지원한 의뢰가 없어요.")
         .textStyle(.body3)
         .foregroundColor(Color.gray500)
         .padding(.top, 40)
+        .frame(maxWidth: .infinity)
     } else {
       ForEach(items) { offer in
         card(for: offer)

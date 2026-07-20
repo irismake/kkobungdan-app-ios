@@ -14,7 +14,11 @@ struct FetchNotificationsUseCase {
     self.repository = repository
   }
 
-  func execute() async throws -> [AppNotification] {
-    try await repository.fetchNotifications()
+  func execute(
+    page: Int = 1,
+    pageSize: Int = 20,
+    unreadOnly: Bool = false
+  ) async throws -> NotificationPage {
+    try await repository.fetchNotifications(page: page, pageSize: pageSize, unreadOnly: unreadOnly)
   }
 }

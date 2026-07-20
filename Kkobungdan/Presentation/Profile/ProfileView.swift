@@ -32,10 +32,11 @@ struct ProfileView: View {
         // 메뉴 섹션 (border-t 컨테이너)
         VStack(spacing: 0) {
           VStack(spacing: 16) {
-            // 약관 & 버전 그룹
+            // 약관 & 버전 & 알림 설정 그룹
             VStack(spacing: 0) {
               termsRow
               versionRow
+              alarmRow
             }
 
             // 로그아웃
@@ -168,6 +169,48 @@ struct ProfileView: View {
     .overlay(alignment: .bottom) {
       Rectangle().fill(Color.gray200).frame(height: 1)
     }
+  }
+
+  /// 서버 알림 수신 설정(`alarmEnabled`) 토글. 꺼져 있으면 서버가 푸시를 생성하지 않는다.
+  private var alarmRow: some View {
+    HStack(spacing: 12) {
+      HStack(spacing: 8) {
+        Image(systemName: "bell")
+          .resizable()
+          .scaledToFit()
+          .frame(width: 20, height: 20)
+          .foregroundColor(Color.gray900)
+
+        Text("알림 설정")
+          .textStyle(.title3)
+          .foregroundColor(Color.gray900)
+
+        Spacer()
+      }
+
+      Toggle("알림 설정", isOn: alarmBinding)
+        .labelsHidden()
+        .tint(Color.indigo500)
+        .disabled(viewModel.user == nil)
+        .frame(height: 20)
+    }
+    .padding(.horizontal, 24)
+    .padding(.vertical, 20)
+    .background(Color.white)
+    .overlay(alignment: .bottom) {
+      Rectangle().fill(Color.gray200).frame(height: 1)
+    }
+  }
+
+  /// 표시는 user.alarmEnabled 를 따르고, 변경 시 서버 반영(`PATCH /v1/user/alarm`) 후
+  /// 응답으로 user 가 갱신된다. 실패하면 user 가 그대로라 토글이 원래 상태로 돌아온다.
+  private var alarmBinding: Binding<Bool> {
+    Binding(
+      get: { viewModel.user?.alarmEnabled ?? false },
+      set: { enabled in
+        Task { await viewModel.toggleAlarm(enabled) }
+      }
+    )
   }
 
   private var logoutRow: some View {
