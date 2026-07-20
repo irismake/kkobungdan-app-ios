@@ -1,14 +1,14 @@
 //
-//  ProposalFormatter.swift
+//  DisplayFormatter.swift
 //  Kkobungdan
 //
-//  proposal / offer 데이터를 화면에 표시할 때 쓰는 날짜·시간·금액 포맷팅 유틸.
+//  화면에 표시할 날짜·시간·금액 포맷팅 유틸.
 //  상태 → 배지 매핑은 `ActivityStatusBadge` 참고.
 //
 
 import Foundation
 
-enum ProposalFormatter {
+enum DisplayFormatter {
   private static let dateFormatter: DateFormatter = {
     let formatter = DateFormatter()
     formatter.locale = Locale(identifier: "ko_KR")

@@ -179,9 +179,9 @@ struct OfferDetailView: View {
       ProposalCard(
         title: proposal.title,
         description: proposal.content,
-        date: ProposalFormatter.dateString(proposal.deadline),
-        time: ProposalFormatter.timeString(proposal.deadline),
-        fee: ProposalFormatter.feeString(proposal.errandFee),
+        date: DisplayFormatter.dateString(proposal.deadline),
+        time: DisplayFormatter.timeString(proposal.deadline),
+        fee: DisplayFormatter.feeString(proposal.errandFee),
         badges: ActivityStatusBadge.badges(proposal: proposal)
       )
     } else if let errorMessage = viewModel.errorMessage {

@@ -3,7 +3,7 @@
 //  Kkobungdan
 //
 //  proposal / offer 상태(status)를 화면 배지(BadgeItem)로 매핑한다.
-//  날짜·금액 포맷팅은 `ProposalFormatter` 참고.
+//  날짜·금액 포맷팅은 `DisplayFormatter` 참고.
 //
 
 import SwiftUI

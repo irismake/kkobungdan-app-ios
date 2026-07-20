@@ -82,7 +82,7 @@ struct MyProposalDetailView: View {
                 MatchedRunnerSection(
                   nickname: matched.runnerName,
                   level: matched.runnerLevel,
-                  appliedAt: ProposalFormatter.appliedAtString(matched.createdAt)
+                  appliedAt: DisplayFormatter.appliedAtString(matched.createdAt)
                 )
               }
 
@@ -212,9 +212,9 @@ struct MyProposalDetailView: View {
       ProposalCard(
         title: proposal.title,
         description: proposal.content,
-        date: ProposalFormatter.dateString(proposal.deadline),
-        time: ProposalFormatter.timeString(proposal.deadline),
-        fee: ProposalFormatter.feeString(proposal.errandFee),
+        date: DisplayFormatter.dateString(proposal.deadline),
+        time: DisplayFormatter.timeString(proposal.deadline),
+        fee: DisplayFormatter.feeString(proposal.errandFee),
         badges: statusBadges
       )
     } else if viewModel.isLoading {
