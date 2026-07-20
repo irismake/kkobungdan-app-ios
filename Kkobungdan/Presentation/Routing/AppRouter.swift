@@ -15,6 +15,7 @@ final class AppRouter {
   var homePath: [AppRoute] = []
   var activityPath: [AppRoute] = []
   var activitySegment: ActivitySegment = .orderer
+  var activityFilter: ActivityStatusFilter = .all
 
   func popLast(path: Binding<[AppRoute]>) {
     if !path.wrappedValue.isEmpty {

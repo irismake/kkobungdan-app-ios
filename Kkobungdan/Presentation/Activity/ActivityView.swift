@@ -11,7 +11,7 @@ struct ActivityView: View {
   @State private var proposalsViewModel: MyProposalsViewModel
   @State private var offersViewModel: MyOffersViewModel
   @Binding var segment: ActivitySegment
-  @State private var filter: ActivityStatusFilter = .all
+  @Binding var filter: ActivityStatusFilter
 
   var onSelectOrdererProposal: (Int64) -> Void = { _ in }
   var onSelectRunnerItem: (_ proposalID: Int64, _ offerID: Int64) -> Void = { _, _ in }
@@ -31,12 +31,14 @@ struct ActivityView: View {
     proposalsViewModel: MyProposalsViewModel,
     offersViewModel: MyOffersViewModel,
     segment: Binding<ActivitySegment> = .constant(.orderer),
+    filter: Binding<ActivityStatusFilter> = .constant(.all),
     onSelectOrdererProposal: @escaping (Int64) -> Void = { _ in },
     onSelectRunnerItem: @escaping (_ proposalID: Int64, _ offerID: Int64) -> Void = { _, _ in }
   ) {
     _proposalsViewModel = State(initialValue: proposalsViewModel)
     _offersViewModel = State(initialValue: offersViewModel)
     _segment = segment
+    _filter = filter
     self.onSelectOrdererProposal = onSelectOrdererProposal
     self.onSelectRunnerItem = onSelectRunnerItem
   }

@@ -64,6 +64,14 @@ struct MainTabView: View {
       .task {
         await viewModel.load()
       }
+      // 푸시 배너 탭 딥링크 소비.
+      .task(id: PushRouteStore.shared.pending) {
+        guard let payload = PushRouteStore.shared.pending else {
+          return
+        }
+        PushRouteStore.shared.pending = nil
+        await router.route(push: payload)
+      }
   }
 
   // MARK: - Tab Content
@@ -102,6 +110,7 @@ struct MainTabView: View {
             proposalsViewModel: myProposalsViewModel,
             offersViewModel: myOffersViewModel,
             segment: $router.activitySegment,
+            filter: $router.activityFilter,
             onSelectOrdererProposal: { proposalID in
               router.activityPath.append(.myProposalDetail(proposalID: proposalID))
             },
