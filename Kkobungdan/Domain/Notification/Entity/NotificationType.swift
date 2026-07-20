@@ -22,4 +22,5 @@ enum NotificationType: String, Decodable {
   case custom
   case offerSubmitted = "offer_submitted"
   case meetingConfirmed = "meeting_confirmed"
+  case disputeRaised = "dispute_raised"
 }

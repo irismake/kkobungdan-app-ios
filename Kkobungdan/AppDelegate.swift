@@ -15,8 +15,6 @@ final class AppDelegate: NSObject, UIApplicationDelegate {
     _ application: UIApplication,
     didFinishLaunchingWithOptions _: [UIApplication.LaunchOptionsKey: Any]? = nil
   ) -> Bool {
-    print("현재 access token: \(TokenStorage.shared.accessToken ?? "nil")")
-
     // GoogleService-Info.plist 는 Firebase 콘솔에서 받아 Kkobungdan/ 에 넣는다.
     guard Bundle.main.path(forResource: "GoogleService-Info", ofType: "plist") != nil else {
       pushLogger.fault("GoogleService-Info.plist 가 번들에 없습니다. FCM 초기화를 건너뜁니다.")
@@ -89,5 +87,24 @@ extension AppDelegate: UNUserNotificationCenterDelegate {
   ) {
     // 포그라운드에서도 배너 표시
     completionHandler([.banner, .list, .badge, .sound])
+  }
+
+  nonisolated func userNotificationCenter(
+    _: UNUserNotificationCenter,
+    didReceive response: UNNotificationResponse,
+    withCompletionHandler completionHandler: @escaping () -> Void
+  ) {
+    let userInfo = response.notification.request.content.userInfo
+    if let payload = PushPayload(userInfo: userInfo) {
+      pushLogger.info(
+        "푸시 탭: \(payload.type.rawValue) proposal=\(payload.proposalID) offer=\(payload.offerID)"
+      )
+      Task { @MainActor in
+        PushRouteStore.shared.pending = payload
+      }
+    } else {
+      pushLogger.warning("푸시 탭: payload 파싱 실패 — \(String(describing: userInfo))")
+    }
+    completionHandler()
   }
 }
