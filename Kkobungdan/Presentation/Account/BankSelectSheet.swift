@@ -97,9 +97,10 @@ struct BankSelectSheet: View {
 
   private func bankChip(_ bank: String) -> some View {
     VStack(spacing: 4) {
-      RoundedRectangle(cornerRadius: 2)
-        .fill(Color.gray300)
-        .frame(width: 24, height: 24)
+      // TODO: 은행 로고 이미지 확정 전까지 임시 제거 — 이미지 에셋 반영 시 복원
+      // RoundedRectangle(cornerRadius: 2)
+      //   .fill(Color.gray300)
+      //   .frame(width: 24, height: 24)
 
       Text(bank)
         .textStyle(.inputBody3)
