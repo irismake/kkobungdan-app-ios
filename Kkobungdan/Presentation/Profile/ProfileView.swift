@@ -261,6 +261,9 @@ struct ProfileView: View {
       Text(supportEmail)
         .textStyle(.body3)
         .foregroundColor(Color.gray700)
+
+      withdrawButton
+        .padding(.top, 10)
     }
     .frame(maxWidth: .infinity, alignment: .leading)
     .padding(16)
@@ -268,6 +271,18 @@ struct ProfileView: View {
     .overlay(alignment: .top) {
       Rectangle().fill(Color.gray200).frame(height: 1)
     }
+  }
+
+  private var withdrawButton: some View {
+    Button {
+      // TODO: 탈퇴 플로우 연결
+    } label: {
+      Text("탈퇴하기")
+        .textStyle(.button2)
+        .foregroundColor(Color.gray700)
+        .underline()
+    }
+    .buttonStyle(.plain)
   }
 }
 
