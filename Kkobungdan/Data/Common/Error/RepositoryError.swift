@@ -27,4 +27,14 @@ extension Error {
     }
     return fallback
   }
+
+  /// 상태코드가 아니라 서버가 명시한 코드로 분기할 때 사용한다.
+  func isServerError(_ code: ServerErrorCode) -> Bool {
+    if let repositoryError = self as? RepositoryError,
+       case let .server(serverCode, _) = repositoryError
+    {
+      return serverCode == code.rawValue
+    }
+    return false
+  }
 }

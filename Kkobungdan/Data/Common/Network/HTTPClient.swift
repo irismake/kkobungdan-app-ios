@@ -221,15 +221,14 @@ final class HTTPClient {
     guard let http = response as? HTTPURLResponse else {
       return
     }
-    switch http.statusCode {
-    case 200 ..< 300: return
-    case 401: throw RepositoryError.unauthorized
-    default: break
+    guard !(200 ..< 300).contains(http.statusCode) else {
+      return
     }
     if let errorBody = try? decoder.decode(ApiErrorDTO.self, from: data) {
       throw RepositoryError.server(code: errorBody.error.code, message: errorBody.error.message)
     }
     switch http.statusCode {
+    case 401: throw RepositoryError.unauthorized
     case 404: throw RepositoryError.notFound
     case 409: throw RepositoryError.conflict
     default: throw RepositoryError.network
