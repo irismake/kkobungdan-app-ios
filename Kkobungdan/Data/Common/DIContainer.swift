@@ -51,4 +51,7 @@ enum DIContainer {
 
   static let reportRepository: ReportRepositoryProtocol =
     isDummy ? TestReportRepositoryImpl() : ReportRepository(client: .shared)
+
+  static let appUpdateRepository: AppUpdateRepositoryProtocol =
+    isDummy ? TestAppUpdateRepositoryImpl() : RemoteConfigAppUpdateRepository()
 }

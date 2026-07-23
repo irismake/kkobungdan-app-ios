@@ -4,7 +4,7 @@ struct ProfileView: View {
   @Environment(SessionViewModel.self) private var session
   @State private var viewModel: ProfileViewModel
 
-  private let appVersion = "v1.0.0"
+  private let appVersion = "v\(Bundle.main.appVersion)"
   private let supportEmail = SupportContact.email
 
   private let withdrawReasonViewModel: WithdrawReasonViewModel

@@ -7,7 +7,7 @@
 
 import Foundation
 
-enum NotificationType: String, Decodable {
+enum NotificationType: String, Decodable, CaseIterable {
   case proposalNew = "proposal_new"
   case proposalMatched = "proposal_matched"
   case proposalCancelled = "proposal_cancelled"

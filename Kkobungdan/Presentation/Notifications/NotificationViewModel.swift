@@ -53,7 +53,6 @@ final class NotificationViewModel {
       errorMessage = error.userMessage(fallback: "알림을 불러오지 못했어요.")
     }
     isLoading = false
-    await refreshUnreadCount()
   }
 
   /// 안읽음 개수를 서버 통계로 갱신한다. 뱃지 용도라 실패는 조용히 무시.
