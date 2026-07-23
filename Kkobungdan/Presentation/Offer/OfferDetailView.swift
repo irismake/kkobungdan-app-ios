@@ -8,23 +8,21 @@
 import SwiftUI
 
 struct OfferDetailView: View {
+  @Environment(\.openURL) private var openURL
   @State private var viewModel: OfferDetailViewModel
   @State private var isMissionCompleted: Bool = false
   @State private var isCancelConfirmPresented: Bool = false
   var onBack: () -> Void = {}
   var onAbort: () -> Void = {}
-  var onInquiry: () -> Void = {}
 
   init(
     viewModel: OfferDetailViewModel,
     onBack: @escaping () -> Void = {},
-    onAbort: @escaping () -> Void = {},
-    onInquiry: @escaping () -> Void = {}
+    onAbort: @escaping () -> Void = {}
   ) {
     _viewModel = State(initialValue: viewModel)
     self.onBack = onBack
     self.onAbort = onAbort
-    self.onInquiry = onInquiry
   }
 
   var body: some View {
@@ -169,7 +167,9 @@ struct OfferDetailView: View {
             .clipShape(RoundedRectangle(cornerRadius: 12))
 
           OutlineButton(title: "문의하기") {
-            onInquiry()
+            if let url = SupportContact.mailtoURL {
+              openURL(url)
+            }
           }
         }
       } else {
