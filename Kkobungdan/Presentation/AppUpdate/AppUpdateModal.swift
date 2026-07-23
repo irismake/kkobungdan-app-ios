@@ -31,10 +31,11 @@ struct AppUpdateModal: View {
             .fill(Color.indigo000)
             .frame(width: 48, height: 48)
 
-          Image(systemName: "arrow.down.circle.fill")
+          Image("icon_info")
+            .renderingMode(.template)
             .resizable()
             .scaledToFit()
-            .frame(width: 26, height: 26)
+            .frame(width: 24, height: 24)
             .foregroundColor(Color.indigo500)
         }
 
