@@ -7,7 +7,7 @@
 
 import Foundation
 
-enum OfferStatus: String {
+enum OfferStatus: String, CaseIterable {
   /// 선택 기다리는중
   case waiting = "WAITING"
   /// 선택 받음 (매칭)

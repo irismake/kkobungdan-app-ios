@@ -8,7 +8,7 @@
 import Foundation
 
 /// 서버 알림의 FCM 발송 라이프사이클 상태.
-enum NotificationStatus: String, Decodable {
+enum NotificationStatus: String, Decodable, CaseIterable {
   /// 알림 생성됨, 아직 푸시 발송 전
   case pending
   /// FCM 발송 완료 (`sent_at` 기록)

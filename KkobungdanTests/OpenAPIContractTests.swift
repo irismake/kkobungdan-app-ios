@@ -101,6 +101,23 @@ final class OpenAPIContractTests: XCTestCase {
         )),
     ]
 
+    /// 서버 스펙 enum ↔ Swift enum 매핑. 새 스펙 enum 에 Swift enum 을 만들면 여기 한 줄 추가한다.
+    /// (스키마명은 openapi.json `components/schemas` 의 enum 이름)
+    private static let enumContracts: [EnumContract] = [
+        EnumContract("NotificationStatus", NotificationStatus.self),
+        EnumContract("NotificationType", NotificationType.self),
+        EnumContract("OfferStatus", OfferStatus.self),
+        // REPORTED — 배지 등 UI 가 없는 클라이언트 미사용 상태라 Swift 케이스를 두지 않는다.
+        EnumContract("ProposalStatus", ProposalStatus.self, knownMissingValues: ["REPORTED"]),
+        EnumContract("DisputeSurveyTargetType", DisputeSurveyTargetType.self),
+    ]
+
+    /// 서버 스펙 enum 이지만 의도적으로 Swift enum 을 두지 않는 것 (DTO 가 String 으로 유지, 클라이언트 미사용).
+    /// Swift enum 을 만들면 여기서 빼고 `enumContracts` 에 등록한다.
+    private static let knownUnregisteredEnumSchemas: Set<String> = [
+        "ProposalReportStatus", // 신고 처리 상태 — 클라이언트 미사용 (ProposalReportResponseDTO.status: String)
+    ]
+
     // MARK: - 1. maximal: 모든 필드가 채워진 응답을 DTO 가 읽는가 (필드명·타입 변경 감지)
 
     func test_maximal_픽스처가_DTO로_디코딩된다() throws {
@@ -218,6 +235,66 @@ final class OpenAPIContractTests: XCTestCase {
         }
     }
 
+    // MARK: - 6. enum 계약: 스펙 enum 값 전체가 Swift enum 케이스로 표현되는가
+
+    /// 서버가 보낼 수 있는 enum 값이 Swift enum 에 없으면 — 직접 디코딩하는 enum(Notification 계열)은
+    /// 리스트 전체 디코딩 실패, `init(rawValue:) ?? fallback` 매핑 enum 은 조용한 오분류가 난다.
+    /// (예: 서버가 NotificationStatus 에 `skipped` 를 추가했을 때 알림 목록이 통째로 안 뜬 사고)
+    func test_스펙_enum_값이_Swift_enum_케이스로_모두_표현된다() throws {
+        let specEnums = try specEnumValues()
+
+        for contract in Self.enumContracts {
+            guard let specValues = specEnums[contract.schema] else {
+                XCTFail("[\(contract.schema)] 스펙에서 string enum 을 찾지 못함 — `python3 Scripts/sync-openapi.py` 실행/스키마명을 확인하세요.")
+                continue
+            }
+
+            let missing = specValues
+                .filter { !contract.hasCase($0) && !contract.knownMissingValues.contains($0) }
+            if !missing.isEmpty {
+                XCTFail("""
+                [\(contract.schema)] 서버가 보낼 수 있는 값이 Swift \(contract.swiftName) 에 없습니다: \(missing)
+                → 디코딩 실패 또는 fallback 오분류가 납니다. 케이스를 추가하세요.
+                (UI 반영 전이라 의도적으로 미구현이면 `knownMissingValues` 에 TODO 와 함께 추가해 인지 처리)
+                """)
+            }
+
+            let stale = contract.swiftRawValues.filter { !specValues.contains($0) }
+            if !stale.isEmpty {
+                XCTFail("[\(contract.schema)] Swift \(contract.swiftName) 에만 있고 스펙에 없는 케이스: \(stale) — 서버가 값을 삭제했는지 확인하세요.")
+            }
+
+            let resolved = contract.knownMissingValues.filter { contract.hasCase($0) || !specValues.contains($0) }
+            if !resolved.isEmpty {
+                XCTFail("[\(contract.schema)] `knownMissingValues` 의 \(resolved.sorted()) 는 더 이상 인지 처리가 필요 없습니다 — 목록에서 제거하세요.")
+            }
+        }
+    }
+
+    func test_스펙_enum_스키마가_모두_등록됐다() throws {
+        let specEnums = try specEnumValues()
+        let registered = Set(Self.enumContracts.map(\.schema))
+
+        let missing = specEnums.keys
+            .filter { !registered.contains($0) && !Self.knownUnregisteredEnumSchemas.contains($0) }
+            .sorted()
+
+        if !missing.isEmpty {
+            let lines = missing.map { "  ＋ \($0): \(specEnums[$0] ?? [])" }
+            XCTFail("""
+            서버 스펙 enum 에 대응하는 Swift enum 이 등록돼 있지 않습니다. `enumContracts` 에 등록하세요.
+            (Swift enum 없이 String 으로 받는 게 의도면 `knownUnregisteredEnumSchemas` 에 추가해 인지 처리)
+
+            \(lines.joined(separator: "\n"))
+            """)
+        }
+
+        let resolved = Self.knownUnregisteredEnumSchemas.filter { registered.contains($0) || specEnums[$0] == nil }
+        if !resolved.isEmpty {
+            XCTFail("`knownUnregisteredEnumSchemas` 의 \(resolved.sorted()) 는 더 이상 인지 처리가 필요 없습니다 — 목록에서 제거하세요.")
+        }
+    }
+
     /// 서버 타입 토큰(`string`/`integer`/`boolean`/`array<...>`/`anyOf(T|null)` …)이
     /// 실제 인코딩된 JSON 값과 맞는지 본다. optional(`anyOf(T|null)`)은 inner 타입으로 비교한다.
     private static func jsonType(_ serverType: String, matches value: Any) -> Bool {
@@ -292,6 +369,29 @@ final class OpenAPIContractTests: XCTestCase {
         return (obj as? [String: [String: Any]]) ?? [:]
     }
 
+    /// `Contract/openapi.json` 의 `components/schemas` 에서 string enum 만 추출 — { enum 스키마명: [값] }.
+    /// (contract.current.json 은 properties 만 담아 enum 값 변경을 못 보므로 원본 스펙을 직접 읽는다)
+    private func specEnumValues() throws -> [String: [String]] {
+        let bundle = Bundle(for: Self.self)
+        guard let url = bundle.url(forResource: "openapi", withExtension: "json", subdirectory: "Contract") else {
+            XCTFail("openapi.json 없음 — `python3 Scripts/sync-openapi.py` 를 먼저 실행하세요.")
+            throw ContractTestError.missingResource("openapi")
+        }
+        let raw = try Data(contentsOf: url)
+        let obj = try JSONSerialization.jsonObject(with: raw) as? [String: Any]
+        let components = obj?["components"] as? [String: Any]
+        let schemas = (components?["schemas"] as? [String: Any]) ?? [:]
+
+        var out: [String: [String]] = [:]
+        for (name, schema) in schemas {
+            guard let dict = schema as? [String: Any],
+                  dict["type"] as? String == "string",
+                  let values = dict["enum"] as? [String] else { continue }
+            out[name] = values
+        }
+        return out
+    }
+
     /// `Contract/response-schemas.json` 로드 — { 응답 payload 스키마명: "GET /path" }.
     private func responseSchemasManifest() throws -> [String: String] {
         let bundle = Bundle(for: Self.self)
@@ -357,6 +457,28 @@ private struct DecodeContract {
 
 private enum ContractTestError: Error {
     case missingResource(String)
+}
+
+// MARK: - EnumContract
+
+/// 서버 스펙 enum ↔ Swift `String` raw-value enum 매핑.
+private struct EnumContract {
+    let schema: String
+    let swiftName: String
+    let hasCase: (String) -> Bool
+    let swiftRawValues: [String]
+    /// 스펙에는 있지만 Swift 가 의도적으로 아직 안 받는 값 (UI 미반영 등 — TODO 와 함께 인지 처리)
+    let knownMissingValues: Set<String>
+
+    init<T>(_ schema: String, _: T.Type, knownMissingValues: Set<String> = [])
+        where T: RawRepresentable & CaseIterable, T.RawValue == String
+    {
+        self.schema = schema
+        swiftName = String(describing: T.self)
+        hasCase = { T(rawValue: $0) != nil }
+        swiftRawValues = T.allCases.map(\.rawValue)
+        self.knownMissingValues = knownMissingValues
+    }
 }
 
 // MARK: - EncodeContract

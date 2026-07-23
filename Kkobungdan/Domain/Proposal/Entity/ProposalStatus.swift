@@ -7,7 +7,7 @@
 
 import Foundation
 
-enum ProposalStatus: String {
+enum ProposalStatus: String, CaseIterable {
   /// 등록 대기 (입금 확인 전)
   case holding = "HOLDING"
   /// 등록 완료 (입금 완료, 지원 대기중)
