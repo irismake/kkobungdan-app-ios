@@ -12,4 +12,5 @@ protocol UserRepositoryProtocol: Sendable {
   func updateName(_ name: String) async throws -> User
   func updateAlarm(enabled: Bool) async throws -> User
   func updateFcmToken(_ token: String) async throws
+  func withdraw() async throws
 }

@@ -17,6 +17,7 @@ struct MainTabView: View {
   @State private var router = AppRouter()
 
   private let profileViewModel: ProfileViewModel
+  private let withdrawReasonViewModel: WithdrawReasonViewModel
   private let notificationViewModel: NotificationViewModel
 
   /// 운영 진입점. DIContainer 로 탭 루트 VM 을 조립한다.
@@ -38,6 +39,9 @@ struct MainTabView: View {
         updateUserNameUseCase: UpdateUserNameUseCase(userRepository: DIContainer.userRepository),
         logoutUseCase: LogoutUseCase(authRepository: DIContainer.authRepository)
       ),
+      withdrawReasonViewModel: WithdrawReasonViewModel(
+        withdrawUseCase: WithdrawUserUseCase(userRepository: DIContainer.userRepository)
+      ),
       notificationViewModel: NotificationViewModel(
         fetchNotificationsUseCase: FetchNotificationsUseCase(repository: DIContainer.notificationRepository),
         repository: DIContainer.notificationRepository
@@ -51,12 +55,14 @@ struct MainTabView: View {
     myProposalsViewModel: MyProposalsViewModel,
     myOffersViewModel: MyOffersViewModel,
     profileViewModel: ProfileViewModel,
+    withdrawReasonViewModel: WithdrawReasonViewModel,
     notificationViewModel: NotificationViewModel
   ) {
     _viewModel = State(initialValue: viewModel)
     _myProposalsViewModel = State(initialValue: myProposalsViewModel)
     _myOffersViewModel = State(initialValue: myOffersViewModel)
     self.profileViewModel = profileViewModel
+    self.withdrawReasonViewModel = withdrawReasonViewModel
     self.notificationViewModel = notificationViewModel
   }
 
@@ -170,9 +176,14 @@ struct MainTabView: View {
         bottomBar
       }
     case .profile:
-      VStack(spacing: 0) {
-        ProfileView(viewModel: profileViewModel)
-        bottomBar
+      NavigationStack {
+        VStack(spacing: 0) {
+          ProfileView(
+            viewModel: profileViewModel,
+            withdrawReasonViewModel: withdrawReasonViewModel
+          )
+          bottomBar
+        }
       }
     }
   }
@@ -201,6 +212,7 @@ struct MainTabView: View {
     myProposalsViewModel: .preview(),
     myOffersViewModel: .preview(),
     profileViewModel: .preview(),
+    withdrawReasonViewModel: .preview(),
     notificationViewModel: .preview()
   )
 }

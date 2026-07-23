@@ -7,8 +7,14 @@ struct ProfileView: View {
   private let appVersion = "v1.0.0"
   private let supportEmail = SupportContact.email
 
-  init(viewModel: ProfileViewModel) {
+  private let withdrawReasonViewModel: WithdrawReasonViewModel
+
+  init(
+    viewModel: ProfileViewModel,
+    withdrawReasonViewModel: WithdrawReasonViewModel
+  ) {
     _viewModel = State(initialValue: viewModel)
+    self.withdrawReasonViewModel = withdrawReasonViewModel
   }
 
   private var nickname: String {
@@ -20,8 +26,37 @@ struct ProfileView: View {
   }
 
   @State private var isEditingProfile = false
+  @State private var isWithdrawing = false
+  @State private var isWithdrawReasonPresented = false
 
   var body: some View {
+    ZStack {
+      profileContent
+
+      if isWithdrawing {
+        WithdrawConfirmModal(
+          onCancel: { isWithdrawing = false },
+          onConfirm: {
+            isWithdrawing = false
+            isWithdrawReasonPresented = true
+          }
+        )
+      }
+    }
+    .navigationDestination(isPresented: $isWithdrawReasonPresented) {
+      WithdrawReasonView(
+        viewModel: withdrawReasonViewModel,
+        onClose: { isWithdrawReasonPresented = false },
+        onWithdrawn: {
+          isWithdrawReasonPresented = false
+          session.isLoggedIn = false
+        }
+      )
+      .navigationBarBackButtonHidden(true)
+    }
+  }
+
+  private var profileContent: some View {
     VStack(spacing: 0) {
       TabPageHeader(title: "프로필")
 
@@ -261,6 +296,9 @@ struct ProfileView: View {
       Text(supportEmail)
         .textStyle(.body3)
         .foregroundColor(Color.gray700)
+
+      withdrawButton
+        .padding(.top, 10)
     }
     .frame(maxWidth: .infinity, alignment: .leading)
     .padding(16)
@@ -269,8 +307,20 @@ struct ProfileView: View {
       Rectangle().fill(Color.gray200).frame(height: 1)
     }
   }
+
+  private var withdrawButton: some View {
+    Button {
+      isWithdrawing = true
+    } label: {
+      Text("탈퇴하기")
+        .textStyle(.button2)
+        .foregroundColor(Color.gray700)
+        .underline()
+    }
+    .buttonStyle(.plain)
+  }
 }
 
 #Preview {
-  ProfileView(viewModel: .preview())
+  ProfileView(viewModel: .preview(), withdrawReasonViewModel: .preview())
 }
