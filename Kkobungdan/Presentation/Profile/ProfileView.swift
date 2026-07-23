@@ -37,7 +37,7 @@ struct ProfileView: View {
         )
       }
     }
-    .fullScreenCover(isPresented: $isWithdrawReasonPresented) {
+    .navigationDestination(isPresented: $isWithdrawReasonPresented) {
       WithdrawReasonView(
         onClose: { isWithdrawReasonPresented = false },
         onSubmitted: {
@@ -45,6 +45,7 @@ struct ProfileView: View {
           isWithdrawReasonPresented = false
         }
       )
+      .navigationBarBackButtonHidden(true)
     }
   }
 

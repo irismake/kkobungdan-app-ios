@@ -170,9 +170,11 @@ struct MainTabView: View {
         bottomBar
       }
     case .profile:
-      VStack(spacing: 0) {
-        ProfileView(viewModel: profileViewModel)
-        bottomBar
+      NavigationStack {
+        VStack(spacing: 0) {
+          ProfileView(viewModel: profileViewModel)
+          bottomBar
+        }
       }
     }
   }
