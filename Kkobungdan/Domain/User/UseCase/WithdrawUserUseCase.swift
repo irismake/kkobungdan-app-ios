@@ -14,7 +14,10 @@ struct WithdrawUserUseCase {
     self.userRepository = userRepository
   }
 
-  func execute() async throws {
-    try await userRepository.withdraw()
+  func execute(reasonQuestionID: Int64?, detailReason: String?) async throws {
+    try await userRepository.withdraw(
+      reasonQuestionID: reasonQuestionID,
+      detailReason: detailReason
+    )
   }
 }

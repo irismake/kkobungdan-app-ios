@@ -40,6 +40,7 @@ struct MainTabView: View {
         logoutUseCase: LogoutUseCase(authRepository: DIContainer.authRepository)
       ),
       withdrawReasonViewModel: WithdrawReasonViewModel(
+        fetchReasonsUseCase: FetchWithdrawalReasonsUseCase(userRepository: DIContainer.userRepository),
         withdrawUseCase: WithdrawUserUseCase(userRepository: DIContainer.userRepository)
       ),
       notificationViewModel: NotificationViewModel(

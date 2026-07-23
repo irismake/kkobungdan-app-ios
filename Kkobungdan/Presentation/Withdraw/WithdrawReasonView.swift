@@ -30,7 +30,7 @@ struct WithdrawReasonView: View {
       subtitle: "더 나은 서비스를 만들 수 있도록 탈퇴 사유를 알려주세요.",
       submitTitle: "탈퇴하기",
       submittingTitle: "처리 중...",
-      options: viewModel.reasons.map { .init(id: $0.id, text: $0.text) },
+      options: viewModel.reasons.map { .init(id: $0.id, text: $0.questionText) },
       selectedID: viewModel.selectedID,
       detail: $viewModel.detail,
       detailMaxLength: WithdrawReasonViewModel.detailMaxLength,
@@ -44,6 +44,9 @@ struct WithdrawReasonView: View {
     .navigationDestination(isPresented: $isCompletePresented) {
       WithdrawCompleteView(onComplete: onWithdrawn)
         .navigationBarBackButtonHidden(true)
+    }
+    .task {
+      await viewModel.load()
     }
     .onChange(of: viewModel.didSubmit) { _, didSubmit in
       if didSubmit {
