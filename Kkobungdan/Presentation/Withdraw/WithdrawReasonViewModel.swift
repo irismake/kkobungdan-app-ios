@@ -7,6 +7,9 @@
 //
 
 import Foundation
+import OSLog
+
+private let withdrawLogger = Logger(subsystem: "com.kkobungdan.Kkobungdan", category: "Withdraw")
 
 @Observable
 final class WithdrawReasonViewModel {
@@ -15,7 +18,7 @@ final class WithdrawReasonViewModel {
     let text: String
   }
 
-  // TODO: 탈퇴 사유는 서버 연동 전까지 하드코딩. UseCase 연결 시 load()에서 fetch 로 교체.
+  // TODO: 탈퇴 사유 목록은 하드코딩. 서버 제공 스펙 확정 시 fetch use case 로 교체.
   let reasons: [Reason] = [
     Reason(id: 1, text: "원하는 임무가 많지 않았어요."),
     Reason(id: 2, text: "원하는 꼬붕(또는 행님)을 만나기 어려웠어요."),
@@ -30,8 +33,26 @@ final class WithdrawReasonViewModel {
   var detail: String = ""
   var isSubmitting: Bool = false
   var didSubmit: Bool = false
+  var errorMessage: String?
 
   static let detailMaxLength = 500
+
+  private let withdrawUseCase: WithdrawUserUseCase
+  private let tokenStorage: TokenStorage
+
+  init(
+    withdrawUseCase: WithdrawUserUseCase,
+    tokenStorage: TokenStorage = .shared
+  ) {
+    self.withdrawUseCase = withdrawUseCase
+    self.tokenStorage = tokenStorage
+  }
+
+  static func preview() -> WithdrawReasonViewModel {
+    WithdrawReasonViewModel(
+      withdrawUseCase: WithdrawUserUseCase(userRepository: DIContainer.userRepository)
+    )
+  }
 
   private var selectedReason: Reason? {
     reasons.first { $0.id == selectedID }
@@ -65,6 +86,20 @@ final class WithdrawReasonViewModel {
 
   @MainActor
   func submit() async {
-    // TODO: 탈퇴 API 연동 (presentation only). 성공 시 didSubmit = true 로 완료 처리.
+    guard canSubmit, !isSubmitting else {
+      return
+    }
+    isSubmitting = true
+    errorMessage = nil
+    do {
+      // TODO: 선택한 사유(selectedReason·detail)는 서버 전송 스펙 확정 시 요청 바디로 추가.
+      try await withdrawUseCase.execute()
+      tokenStorage.clear()
+      didSubmit = true
+    } catch {
+      errorMessage = "탈퇴에 실패했어요. 잠시 후 다시 시도해 주세요."
+      withdrawLogger.error("회원 탈퇴 실패: \(error.localizedDescription)")
+    }
+    isSubmitting = false
   }
 }

@@ -44,4 +44,10 @@ final class UserRepository: UserRepositoryProtocol {
       body: UserFcmTokenRequest(fcmToken: token)
     )
   }
+
+  func withdraw() async throws {
+    // 회원 탈퇴. 응답 본문이 없어 상태코드만 확인한다.
+    // TODO: 탈퇴 사유 전송 스펙 확정 시 요청 바디 추가.
+    try await client.delete("/v1/user")
+  }
 }

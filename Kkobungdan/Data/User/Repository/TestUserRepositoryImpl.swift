@@ -42,4 +42,8 @@ actor TestUserRepositoryImpl: UserRepositoryProtocol {
   func updateFcmToken(_: String) async throws {
     try await Task.sleep(nanoseconds: Self.simulatedLatency)
   }
+
+  func withdraw() async throws {
+    try await Task.sleep(nanoseconds: Self.simulatedLatency)
+  }
 }

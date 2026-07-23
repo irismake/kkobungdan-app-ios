@@ -7,8 +7,14 @@ struct ProfileView: View {
   private let appVersion = "v1.0.0"
   private let supportEmail = SupportContact.email
 
-  init(viewModel: ProfileViewModel) {
+  private let withdrawReasonViewModel: WithdrawReasonViewModel
+
+  init(
+    viewModel: ProfileViewModel,
+    withdrawReasonViewModel: WithdrawReasonViewModel
+  ) {
     _viewModel = State(initialValue: viewModel)
+    self.withdrawReasonViewModel = withdrawReasonViewModel
   }
 
   private var nickname: String {
@@ -39,10 +45,11 @@ struct ProfileView: View {
     }
     .navigationDestination(isPresented: $isWithdrawReasonPresented) {
       WithdrawReasonView(
+        viewModel: withdrawReasonViewModel,
         onClose: { isWithdrawReasonPresented = false },
-        onSubmitted: {
-          // TODO: 탈퇴 완료 화면 연결 (presentation only)
+        onWithdrawn: {
           isWithdrawReasonPresented = false
+          session.isLoggedIn = false
         }
       )
       .navigationBarBackButtonHidden(true)
@@ -315,5 +322,5 @@ struct ProfileView: View {
 }
 
 #Preview {
-  ProfileView(viewModel: .preview())
+  ProfileView(viewModel: .preview(), withdrawReasonViewModel: .preview())
 }

@@ -8,9 +8,21 @@
 import SwiftUI
 
 struct WithdrawReasonView: View {
-  @State private var viewModel = WithdrawReasonViewModel()
+  @State private var viewModel: WithdrawReasonViewModel
+  @State private var isCompletePresented = false
   var onClose: () -> Void = {}
-  var onSubmitted: () -> Void = {}
+  /// 완료 화면에서 "완료"를 눌렀을 때 — 강제 로그아웃 트리거.
+  var onWithdrawn: () -> Void = {}
+
+  init(
+    viewModel: WithdrawReasonViewModel,
+    onClose: @escaping () -> Void = {},
+    onWithdrawn: @escaping () -> Void = {}
+  ) {
+    _viewModel = State(initialValue: viewModel)
+    self.onClose = onClose
+    self.onWithdrawn = onWithdrawn
+  }
 
   var body: some View {
     ReasonSurveyLayout(
@@ -29,14 +41,18 @@ struct WithdrawReasonView: View {
       onSelect: { viewModel.select(id: $0) },
       onSubmit: { Task { await viewModel.submit() } }
     )
+    .navigationDestination(isPresented: $isCompletePresented) {
+      WithdrawCompleteView(onComplete: onWithdrawn)
+        .navigationBarBackButtonHidden(true)
+    }
     .onChange(of: viewModel.didSubmit) { _, didSubmit in
       if didSubmit {
-        onSubmitted()
+        isCompletePresented = true
       }
     }
   }
 }
 
 #Preview {
-  WithdrawReasonView()
+  WithdrawReasonView(viewModel: .preview())
 }
