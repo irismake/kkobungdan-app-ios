@@ -1,0 +1,12 @@
+{
+  "success": true,
+  "data": [
+    {
+      "id": 0,
+      "questionText": "string",
+      "displayOrder": 0,
+      "requiresDetail": true
+    }
+  ],
+  "message": "string"
+}

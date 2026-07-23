@@ -1435,14 +1435,142 @@
         ]
       }
     },
+    "/v1/user/withdrawal-reasons": {
+      "get": {
+        "tags": [
+          "사용자"
+        ],
+        "summary": "회원 탈퇴 사유 조회",
+        "description": "회원 탈퇴 화면에 표시할 활성 탈퇴 사유를 조회합니다.",
+        "operationId": "list_withdrawal_reasons_v1_user_withdrawal_reasons_get",
+        "responses": {
+          "200": {
+            "description": "성공 응답",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponse_list_UserWithdrawalReasonQuestionResponse__"
+                },
+                "example": {
+                  "success": true,
+                  "data": [
+                    {
+                      "id": 1,
+                      "questionText": "원하는 임무가 많지 않았어요.",
+                      "displayOrder": 1,
+                      "requiresDetail": false
+                    }
+                  ],
+                  "message": "Success"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "실패 응답",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "examples": {
+                  "INVALID_TOKEN": {
+                    "summary": "INVALID_TOKEN",
+                    "value": {
+                      "success": false,
+                      "error": {
+                        "code": "INVALID_TOKEN",
+                        "message": "Invalid token",
+                        "details": null
+                      },
+                      "timestamp": "2026-06-01T12:00:00+09:00"
+                    }
+                  },
+                  "MISSING_CREDENTIALS": {
+                    "summary": "INVALID_TOKEN",
+                    "value": {
+                      "success": false,
+                      "error": {
+                        "code": "INVALID_TOKEN",
+                        "message": "Missing credentials",
+                        "details": null
+                      },
+                      "timestamp": "2026-06-01T12:00:00+09:00"
+                    }
+                  },
+                  "INVALID_TOKEN_CREDENTIALS": {
+                    "summary": "INVALID_TOKEN",
+                    "value": {
+                      "success": false,
+                      "error": {
+                        "code": "INVALID_TOKEN",
+                        "message": "Could not validate credentials",
+                        "details": null
+                      },
+                      "timestamp": "2026-06-01T12:00:00+09:00"
+                    }
+                  },
+                  "INVALID_TOKEN_TYPE": {
+                    "summary": "INVALID_TOKEN",
+                    "value": {
+                      "success": false,
+                      "error": {
+                        "code": "INVALID_TOKEN",
+                        "message": "Invalid token type",
+                        "details": null
+                      },
+                      "timestamp": "2026-06-01T12:00:00+09:00"
+                    }
+                  },
+                  "INVALID_AUTHENTICATION_CREDENTIALS": {
+                    "summary": "INVALID_TOKEN",
+                    "value": {
+                      "success": false,
+                      "error": {
+                        "code": "INVALID_TOKEN",
+                        "message": "Invalid authentication credentials",
+                        "details": null
+                      },
+                      "timestamp": "2026-06-01T12:00:00+09:00"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
     "/v1/user": {
       "delete": {
         "tags": [
           "사용자"
         ],
         "summary": "회원 탈퇴",
-        "description": "현재 사용자의 개인정보를 삭제합니다. 매칭 이후 진행 중인 거래, 분쟁 또는 정산이 있으면 탈퇴할 수 없습니다.",
+        "description": "현재 사용자의 개인정보를 삭제합니다. 탈퇴 사유와 상세 사유를 선택 입력으로 받을 수 있습니다. 매칭 이후 진행 중인 거래, 분쟁 또는 정산이 있으면 탈퇴할 수 없습니다.",
         "operationId": "withdraw_user_v1_user_delete",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "anyOf": [
+                  {
+                    "$ref": "#/components/schemas/UserWithdrawalRequest"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "title": "Payload"
+              }
+            }
+          }
+        },
         "responses": {
           "200": {
             "description": "성공 응답",
@@ -1519,6 +1647,30 @@
                       "error": {
                         "code": "INVALID_TOKEN",
                         "message": "Invalid authentication credentials",
+                        "details": null
+                      },
+                      "timestamp": "2026-06-01T12:00:00+09:00"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "실패 응답",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "examples": {
+                  "VALIDATION_ERROR": {
+                    "summary": "VALIDATION_ERROR",
+                    "value": {
+                      "success": false,
+                      "error": {
+                        "code": "VALIDATION_ERROR",
+                        "message": "요청 값이 올바르지 않습니다.",
                         "details": null
                       },
                       "timestamp": "2026-06-01T12:00:00+09:00"
@@ -7117,7 +7269,7 @@
                         "notification_type": "custom",
                         "title": "테스트 알림",
                         "body": "테스트 알림 본문입니다.",
-                        "data": "{\"proposalId\":1}",
+                        "data": "{\"proposalId\":\"1\"}",
                         "related_entity_type": "proposal",
                         "related_entity_id": 1,
                         "status": "sent",
@@ -7383,7 +7535,7 @@
                     "notification_type": "custom",
                     "title": "테스트 알림",
                     "body": "테스트 알림 본문입니다.",
-                    "data": "{\"proposalId\":1}",
+                    "data": "{\"proposalId\":\"1\"}",
                     "related_entity_type": "proposal",
                     "related_entity_id": 1,
                     "status": "sent",
@@ -7671,7 +7823,7 @@
                     "notification_type": "custom",
                     "title": "테스트 알림",
                     "body": "테스트 알림 본문입니다.",
-                    "data": "{\"proposalId\":1}",
+                    "data": "{\"proposalId\":\"1\"}",
                     "related_entity_type": "proposal",
                     "related_entity_id": 1,
                     "status": "sent",
@@ -9496,6 +9648,42 @@
           "success": true
         }
       },
+      "ApiResponse_list_UserWithdrawalReasonQuestionResponse__": {
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "title": "Success",
+            "default": true
+          },
+          "data": {
+            "anyOf": [
+              {
+                "items": {
+                  "$ref": "#/components/schemas/UserWithdrawalReasonQuestionResponse"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Data"
+          },
+          "message": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Message"
+          }
+        },
+        "type": "object",
+        "title": "ApiResponse[list[UserWithdrawalReasonQuestionResponse]]"
+      },
       "AuthAccessTokenResponse": {
         "properties": {
           "accessToken": {
@@ -10259,7 +10447,8 @@
           "sent",
           "delivered",
           "failed",
-          "read"
+          "read",
+          "skipped"
         ],
         "title": "NotificationStatus"
       },
@@ -11690,6 +11879,65 @@
         "example": {
           "name": "새닉네임"
         }
+      },
+      "UserWithdrawalReasonQuestionResponse": {
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "Id"
+          },
+          "questionText": {
+            "type": "string",
+            "title": "Questiontext"
+          },
+          "displayOrder": {
+            "type": "integer",
+            "title": "Displayorder"
+          },
+          "requiresDetail": {
+            "type": "boolean",
+            "title": "Requiresdetail"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "questionText",
+          "displayOrder",
+          "requiresDetail"
+        ],
+        "title": "UserWithdrawalReasonQuestionResponse"
+      },
+      "UserWithdrawalRequest": {
+        "properties": {
+          "reasonQuestionId": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "minimum": 1.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reasonquestionid"
+          },
+          "detailReason": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 500
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Detailreason"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "title": "UserWithdrawalRequest"
       },
       "ValidationError": {
         "properties": {

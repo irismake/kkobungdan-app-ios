@@ -57,6 +57,7 @@ final class OpenAPIContractTests: XCTestCase {
     /// 빈 set = 서버의 모든 응답 스키마에 대응 DTO 가 있어야 함(미구현이면 빨간불).
     private static let knownUnregisteredResponseSchemas: Set<String> = [
         // 예) "NotificationStatsResponse",  // 알림 통계 — UI 미연동
+        "UserWithdrawalReasonQuestionResponse", // GET /v1/user/withdrawal-reasons — 탈퇴 사유 목록, 현재 하드코딩(WithdrawReasonViewModel TODO)
     ]
 
     /// 요청 바디(Encodable) ↔ 서버 요청 스키마 매핑. 인코딩한 JSON 키가 서버 스키마와 맞는지 검증한다.

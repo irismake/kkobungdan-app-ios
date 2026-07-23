@@ -20,5 +20,6 @@
   "SettlementAccountResponse": "GET /v1/settlement/account",
   "SettlementBankNamesResponse": "GET /v1/settlement/banks",
   "TermsAgreementResponse": "POST /v1/terms",
-  "UserDetailResponse": "GET /v1/user/detail"
+  "UserDetailResponse": "GET /v1/user/detail",
+  "UserWithdrawalReasonQuestionResponse": "GET /v1/user/withdrawal-reasons"
 }
