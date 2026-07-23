@@ -21,6 +21,7 @@ struct ProfileView: View {
 
   @State private var isEditingProfile = false
   @State private var isWithdrawing = false
+  @State private var isWithdrawReasonPresented = false
 
   var body: some View {
     ZStack {
@@ -30,11 +31,20 @@ struct ProfileView: View {
         WithdrawConfirmModal(
           onCancel: { isWithdrawing = false },
           onConfirm: {
-            // TODO: 탈퇴 플로우 연결
             isWithdrawing = false
+            isWithdrawReasonPresented = true
           }
         )
       }
+    }
+    .fullScreenCover(isPresented: $isWithdrawReasonPresented) {
+      WithdrawReasonView(
+        onClose: { isWithdrawReasonPresented = false },
+        onSubmitted: {
+          // TODO: 탈퇴 완료 화면 연결 (presentation only)
+          isWithdrawReasonPresented = false
+        }
+      )
     }
   }
 
