@@ -249,6 +249,14 @@
       "success": "boolean"
     }
   },
+  "ApiResponse_list_UserWithdrawalReasonQuestionResponse__": {
+    "required": [],
+    "properties": {
+      "data": "anyOf(array<ref:UserWithdrawalReasonQuestionResponse>|null)",
+      "message": "anyOf(string|null)",
+      "success": "boolean"
+    }
+  },
   "AuthAccessTokenResponse": {
     "required": [
       "accessToken",
@@ -1005,6 +1013,27 @@
     ],
     "properties": {
       "name": "string"
+    }
+  },
+  "UserWithdrawalReasonQuestionResponse": {
+    "required": [
+      "displayOrder",
+      "id",
+      "questionText",
+      "requiresDetail"
+    ],
+    "properties": {
+      "displayOrder": "integer",
+      "id": "integer",
+      "questionText": "string",
+      "requiresDetail": "boolean"
+    }
+  },
+  "UserWithdrawalRequest": {
+    "required": [],
+    "properties": {
+      "detailReason": "anyOf(string|null)",
+      "reasonQuestionId": "anyOf(integer|null)"
     }
   },
   "ValidationError": {

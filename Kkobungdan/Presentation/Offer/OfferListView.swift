@@ -39,10 +39,6 @@ struct OfferListView: View {
 
             if viewModel.isLoading, viewModel.runners.isEmpty {
               ProgressView().padding(.top, 20)
-            } else if let errorMessage = viewModel.errorMessage, viewModel.runners.isEmpty {
-              Text(errorMessage)
-                .textStyle(.body3)
-                .foregroundColor(Color.rose500)
             } else {
               ForEach(viewModel.runners) { runner in
                 runnerCard(runner)
@@ -81,6 +77,7 @@ struct OfferListView: View {
         )
       }
     }
+    .errorToast($viewModel.errorMessage)
   }
 
   private func runnerCard(_ runner: Offer) -> some View {

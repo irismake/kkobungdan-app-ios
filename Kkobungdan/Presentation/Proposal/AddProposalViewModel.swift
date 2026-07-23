@@ -49,7 +49,7 @@ final class AddProposalViewModel {
         errandFee: errandFee
       )
     } catch {
-      errorMessage = "요청 등록에 실패했어요. 다시 시도해주세요."
+      errorMessage = error.userMessage(fallback: "요청 등록에 실패했어요. 다시 시도해주세요.")
       return nil
     }
   }

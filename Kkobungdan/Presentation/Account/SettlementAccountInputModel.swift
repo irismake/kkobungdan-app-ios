@@ -117,7 +117,7 @@ final class SettlementAccountInputModel {
       )
       return true
     } catch {
-      errorMessage = "계좌 등록에 실패했어요. 다시 시도해주세요."
+      errorMessage = error.userMessage(fallback: "계좌 등록에 실패했어요. 다시 시도해주세요.")
       return false
     }
   }

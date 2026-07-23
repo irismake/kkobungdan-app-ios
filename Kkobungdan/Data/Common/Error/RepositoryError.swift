@@ -13,4 +13,28 @@ enum RepositoryError: Error {
   case conflict
   case unauthorized
   case network
+  /// 서버가 `ErrorResponse` 바디로 내려준 에러. `message` 는 사용자에게 그대로 노출 가능한 문구.
+  case server(code: String, message: String)
+}
+
+extension Error {
+  /// 서버가 내려준 에러 메시지가 있으면 그대로, 없으면 화면별 fallback 문구를 반환한다.
+  func userMessage(fallback: String) -> String {
+    if let repositoryError = self as? RepositoryError,
+       case let .server(_, message) = repositoryError
+    {
+      return message
+    }
+    return fallback
+  }
+
+  /// 상태코드가 아니라 서버가 명시한 코드로 분기할 때 사용한다.
+  func isServerError(_ code: ServerErrorCode) -> Bool {
+    if let repositoryError = self as? RepositoryError,
+       case let .server(serverCode, _) = repositoryError
+    {
+      return serverCode == code.rawValue
+    }
+    return false
+  }
 }

@@ -71,6 +71,8 @@ struct ActivityView: View {
     .task(id: "\(segment.rawValue)-\(filter.rawValue)") {
       await reloadCurrentSegment()
     }
+    .errorToast($proposalsViewModel.errorMessage)
+    .errorToast($offersViewModel.errorMessage)
   }
 
   private func reloadCurrentSegment() async {
@@ -98,12 +100,6 @@ struct ActivityView: View {
     if proposalsViewModel.isLoading, items.isEmpty {
       ProgressView().padding(.top, 40)
         .frame(maxWidth: .infinity)
-    } else if let errorMessage = proposalsViewModel.errorMessage, items.isEmpty {
-      Text(errorMessage)
-        .textStyle(.body3)
-        .foregroundColor(Color.rose500)
-        .padding(.top, 40)
-        .frame(maxWidth: .infinity)
     } else if items.isEmpty {
       Text("아직 등록한 의뢰가 없어요.")
         .textStyle(.body3)
@@ -126,12 +122,6 @@ struct ActivityView: View {
     let items = offersViewModel.myOffers
     if offersViewModel.isLoading, items.isEmpty {
       ProgressView().padding(.top, 40)
-        .frame(maxWidth: .infinity)
-    } else if let errorMessage = offersViewModel.errorMessage, items.isEmpty {
-      Text(errorMessage)
-        .textStyle(.body3)
-        .foregroundColor(Color.rose500)
-        .padding(.top, 40)
         .frame(maxWidth: .infinity)
     } else if items.isEmpty {
       Text("아직 지원한 의뢰가 없어요.")

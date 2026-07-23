@@ -78,7 +78,7 @@ final class MissionAbortViewModel {
       questions = try await fetchQuestionsUseCase.execute(targetType: submitTarget.surveyTargetType)
         .sorted { $0.displayOrder < $1.displayOrder }
     } catch {
-      errorMessage = "중단 사유를 불러오지 못했습니다."
+      errorMessage = error.userMessage(fallback: "중단 사유를 불러오지 못했습니다.")
     }
     isLoading = false
   }
@@ -115,7 +115,7 @@ final class MissionAbortViewModel {
       }
       didSubmit = true
     } catch {
-      errorMessage = "임무 중단 신청에 실패했습니다. 잠시 후 다시 시도해 주세요."
+      errorMessage = error.userMessage(fallback: "임무 중단 신청에 실패했습니다. 잠시 후 다시 시도해 주세요.")
     }
     isSubmitting = false
   }

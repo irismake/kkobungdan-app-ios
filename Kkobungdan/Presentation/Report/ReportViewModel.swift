@@ -72,7 +72,7 @@ final class ReportViewModel {
     do {
       reasons = try await fetchReasonsUseCase.execute()
     } catch {
-      errorMessage = "신고 사유를 불러오지 못했습니다."
+      errorMessage = error.userMessage(fallback: "신고 사유를 불러오지 못했습니다.")
     }
     isLoading = false
   }
@@ -101,7 +101,7 @@ final class ReportViewModel {
       )
       didSubmit = true
     } catch {
-      errorMessage = "신고 접수에 실패했습니다. 잠시 후 다시 시도해 주세요."
+      errorMessage = error.userMessage(fallback: "신고 접수에 실패했습니다. 잠시 후 다시 시도해 주세요.")
     }
     isSubmitting = false
   }

@@ -30,6 +30,7 @@ final class OpenAPIContractTests: XCTestCase {
         DecodeContract("OfferAcceptResponse", decoding(OfferAcceptResponseDTO.self)),
         // User / Settlement / Terms
         DecodeContract("UserDetailResponse", decoding(UserDetailResponseDTO.self)),
+        DecodeContract("UserWithdrawalReasonQuestionResponse", decoding(UserWithdrawalReasonQuestionResponseDTO.self)), // GET /v1/user/withdrawal-reasons
         DecodeContract("SettlementAccountResponse", decoding(SettlementAccountResponseDTO.self)),
         DecodeContract("SettlementBankNamesResponse", decoding(SettlementBankNamesResponseDTO.self)),
         DecodeContract("TermsAgreementResponse", decoding(TermsAgreementResponseDTO.self)),
@@ -48,6 +49,9 @@ final class OpenAPIContractTests: XCTestCase {
         DecodeContract("AuthTokenResponse", decoding(AuthTokenResponseDTO.self)), // login/signup confirm
         DecodeContract("AuthVerificationSendResponse", decoding(PhoneVerificationResponseDTO.self)), // login/signup send
         DecodeContract("AuthAccessTokenResponse", decoding(RefreshTokenResponseDTO.self)), // refresh
+        // 공통 에러 (non-2xx 바디)
+        DecodeContract("ErrorResponse", decoding(ApiErrorDTO.self)),
+        DecodeContract("ErrorDetail", decoding(ApiErrorDetailDTO.self)),
         // ⚠️ Oauth 3종(LoginResponseDTO/AppleLoginResponseDTO/KakaoLoginResponseDTO)은
         //    호출 엔드포인트(/v1/auth/login, /v1/auth/oauth/*)가 현재 서버 스펙에 없어 추적 불가.
     ]
@@ -73,6 +77,7 @@ final class OpenAPIContractTests: XCTestCase {
         EncodeContract("UserNameUpdateRequest", UserNameUpdateRequest(name: "홍길동")),
         EncodeContract("UserAlarmRequest", UserAlarmRequest(alarmEnabled: true)),
         EncodeContract("UserFcmTokenRequest", UserFcmTokenRequest(fcmToken: "token")),
+        EncodeContract("UserWithdrawalRequest", UserWithdrawalRequest(reasonQuestionID: 1, detailReason: "상세 사유")), // DELETE /v1/user
         // Auth
         EncodeContract("AuthSignupSendRequest", AuthSignupSendRequest(carrier: "SKT", name: "홍길동", phone: "01012345678")),
         EncodeContract("AuthSignupConfirmRequest", AuthSignupConfirmRequest(code: "123456", fcmToken: "token", phone: "01012345678")),

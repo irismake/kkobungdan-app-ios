@@ -56,7 +56,7 @@ final class ProfileViewModel {
     do {
       user = try await fetchUserDetailUseCase.execute()
     } catch {
-      errorMessage = "프로필을 불러오지 못했어요."
+      errorMessage = error.userMessage(fallback: "프로필을 불러오지 못했어요.")
     }
     isLoading = false
   }
@@ -66,7 +66,7 @@ final class ProfileViewModel {
     do {
       user = try await updateAlarmUseCase.execute(enabled: enabled)
     } catch {
-      errorMessage = "알림 설정을 변경하지 못했어요."
+      errorMessage = error.userMessage(fallback: "알림 설정을 변경하지 못했어요.")
     }
   }
 
@@ -75,7 +75,7 @@ final class ProfileViewModel {
     do {
       user = try await updateUserNameUseCase.execute(name: name)
     } catch {
-      errorMessage = "닉네임을 변경하지 못했어요."
+      errorMessage = error.userMessage(fallback: "닉네임을 변경하지 못했어요.")
     }
   }
 

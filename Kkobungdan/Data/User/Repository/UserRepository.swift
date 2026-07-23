@@ -45,9 +45,22 @@ final class UserRepository: UserRepositoryProtocol {
     )
   }
 
-  func withdraw() async throws {
+  func fetchWithdrawalReasons() async throws -> [WithdrawalReason] {
+    let dtos: [UserWithdrawalReasonQuestionResponseDTO] =
+      try await client.get("/v1/user/withdrawal-reasons")
+    return dtos
+      .sorted { $0.displayOrder < $1.displayOrder }
+      .map { $0.toDomain() }
+  }
+
+  func withdraw(reasonQuestionID: Int64?, detailReason: String?) async throws {
     // 회원 탈퇴. 응답 본문이 없어 상태코드만 확인한다.
-    // TODO: 탈퇴 사유 전송 스펙 확정 시 요청 바디 추가.
-    try await client.delete("/v1/user")
+    try await client.delete(
+      "/v1/user",
+      body: UserWithdrawalRequest(
+        reasonQuestionID: reasonQuestionID,
+        detailReason: detailReason
+      )
+    )
   }
 }

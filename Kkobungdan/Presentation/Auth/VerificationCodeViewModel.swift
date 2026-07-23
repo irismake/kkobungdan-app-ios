@@ -70,21 +70,46 @@ final class VerificationCodeViewModel {
   /// verification 화면 진입 시(`.task`) 호출해 응답(만료 시각)으로 타이머를 시작한다.
   @MainActor
   func sendCode() async -> Bool {
+    switch flow {
+    case let .signup(name, phone, carrier):
+      return await sendSignupCode(name: name, phone: phone, carrier: carrier)
+    case let .login(phone):
+      return await sendLoginCode(phone: phone)
+    }
+  }
+
+  /// 회원가입 인증번호 발송.
+  @MainActor
+  private func sendSignupCode(name: String, phone: String, carrier: String) async -> Bool {
     isLoading = true
     errorMessage = nil
     defer { isLoading = false }
     do {
-      let verification: PhoneVerification
-      switch flow {
-      case let .signup(name, phone, carrier):
-        verification = try await sendSignupCodeUseCase.execute(name: name, phone: phone, carrier: carrier)
-      case let .login(phone):
-        verification = try await sendLoginCodeUseCase.execute(phone: phone)
-      }
+      let verification = try await sendSignupCodeUseCase.execute(name: name, phone: phone, carrier: carrier)
       startTimer(until: verification.expiresAt)
       return true
     } catch {
-      errorMessage = "인증번호 발송에 실패했습니다. 다시 시도해주세요."
+      errorMessage = error.userMessage(fallback: "인증번호 발송에 실패했습니다. 다시 시도해주세요.")
+      return false
+    }
+  }
+
+  /// 로그인 인증번호 발송.
+  @MainActor
+  private func sendLoginCode(phone: String) async -> Bool {
+    isLoading = true
+    errorMessage = nil
+    defer { isLoading = false }
+    do {
+      let verification = try await sendLoginCodeUseCase.execute(phone: phone)
+      startTimer(until: verification.expiresAt)
+      return true
+    } catch {
+      if error.isServerError(.invalidCredentials) {
+        errorMessage = "가입되지 않은 전화번호입니다. 회원가입 후 이용해주세요."
+      } else {
+        errorMessage = error.userMessage(fallback: "인증번호 발송에 실패했습니다. 다시 시도해주세요.")
+      }
       return false
     }
   }
@@ -115,7 +140,7 @@ final class VerificationCodeViewModel {
       }
       return true
     } catch {
-      errorMessage = "인증번호가 올바르지 않습니다. 다시 확인해주세요."
+      errorMessage = error.userMessage(fallback: "인증번호가 올바르지 않습니다. 다시 확인해주세요.")
       return false
     }
   }

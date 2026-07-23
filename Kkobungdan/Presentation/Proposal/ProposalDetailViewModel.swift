@@ -61,7 +61,7 @@ final class ProposalDetailViewModel {
         $0.runnerID == currentUserID && ($0.status == .waiting || $0.status == .accepted)
       }
     } catch {
-      errorMessage = "요청 상세를 불러오지 못했어요."
+      errorMessage = error.userMessage(fallback: "요청 상세를 불러오지 못했어요.")
     }
     isLoading = false
   }

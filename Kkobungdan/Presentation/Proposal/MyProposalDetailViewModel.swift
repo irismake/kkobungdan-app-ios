@@ -127,7 +127,7 @@ final class MyProposalDetailViewModel {
         disputeEvidence = nil
       }
     } catch {
-      errorMessage = "내 요청 상세를 불러오지 못했어요."
+      errorMessage = error.userMessage(fallback: "내 요청 상세를 불러오지 못했어요.")
     }
     isLoading = false
   }
@@ -144,7 +144,7 @@ final class MyProposalDetailViewModel {
       _ = try await confirmReceivedUseCase.execute(proposalID: proposalID)
       await load()
     } catch {
-      errorMessage = "진행 완료 처리에 실패했어요. 잠시 후 다시 시도해주세요."
+      errorMessage = error.userMessage(fallback: "진행 완료 처리에 실패했어요. 잠시 후 다시 시도해주세요.")
     }
     isConfirming = false
   }
@@ -162,7 +162,7 @@ final class MyProposalDetailViewModel {
       NotificationCenter.default.post(name: .proposalListNeedsRefresh, object: nil)
       didCancel = true
     } catch {
-      errorMessage = "요청을 취소하지 못했어요."
+      errorMessage = error.userMessage(fallback: "요청을 취소하지 못했어요.")
     }
     isCancelling = false
   }

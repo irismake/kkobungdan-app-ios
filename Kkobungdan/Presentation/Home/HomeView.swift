@@ -29,11 +29,6 @@ struct HomeView: View {
           if viewModel.isLoading, viewModel.proposals.isEmpty {
             ProgressView()
               .padding(.top, 40)
-          } else if let errorMessage = viewModel.errorMessage, viewModel.proposals.isEmpty {
-            Text(errorMessage)
-              .textStyle(.body3)
-              .foregroundColor(Color.rose500)
-              .padding(.top, 40)
           } else {
             ForEach(viewModel.proposals) { proposal in
               ProposalCard(
@@ -58,6 +53,7 @@ struct HomeView: View {
         await viewModel.load()
       }
     }
+    .errorToast($viewModel.errorMessage)
   }
 }
 

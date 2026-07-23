@@ -46,7 +46,7 @@ final class OfferListViewModel {
       self.proposal = proposal
       runners = offers.filter { $0.status == .waiting || $0.status == .accepted }
     } catch {
-      errorMessage = "지원자 목록을 불러오지 못했어요."
+      errorMessage = error.userMessage(fallback: "지원자 목록을 불러오지 못했어요.")
     }
     isLoading = false
   }
@@ -66,7 +66,7 @@ final class OfferListViewModel {
       NotificationCenter.default.post(name: .proposalListNeedsRefresh, object: nil)
       didAcceptOffer = true
     } catch {
-      errorMessage = "지원자 수락에 실패했어요. 잠시 후 다시 시도해주세요."
+      errorMessage = error.userMessage(fallback: "지원자 수락에 실패했어요. 잠시 후 다시 시도해주세요.")
     }
     isAccepting = false
   }

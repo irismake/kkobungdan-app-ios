@@ -71,6 +71,7 @@ struct ProposalDetailView: View {
         onMine()
       }
     }
+    .errorToast($viewModel.errorMessage)
   }
 
   private var offerButtonTitle: String {
@@ -107,11 +108,6 @@ struct ProposalDetailView: View {
 
       reportButton
         .frame(maxWidth: .infinity, alignment: .trailing)
-    } else if let errorMessage = viewModel.errorMessage {
-      Text(errorMessage)
-        .textStyle(.body3)
-        .foregroundColor(Color.rose500)
-        .padding(.horizontal, 16)
     }
   }
 }

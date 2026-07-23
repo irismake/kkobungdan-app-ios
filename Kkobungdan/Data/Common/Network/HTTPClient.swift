@@ -77,8 +77,8 @@ final class HTTPClient {
     try await performVoid(request, isRetry: false)
   }
 
-  func delete(_ path: String) async throws {
-    let request = try buildRequest(method: "DELETE", path: path, params: [:], body: nil as String?)
+  func delete<B: Encodable>(_ path: String, body: B? = nil as String?) async throws {
+    let request = try buildRequest(method: "DELETE", path: path, params: [:], body: body)
     try await performVoid(request, isRetry: false)
   }
 
@@ -139,7 +139,7 @@ final class HTTPClient {
       return try await sendAndValidate(rebuiltRequest(from: request), isRetry: true)
     }
 
-    try mapHTTPError(response: response)
+    try mapHTTPError(response: response, data: data)
     return data
   }
 
@@ -217,12 +217,17 @@ final class HTTPClient {
     return retry
   }
 
-  private func mapHTTPError(response: URLResponse) throws {
+  private func mapHTTPError(response: URLResponse, data: Data) throws {
     guard let http = response as? HTTPURLResponse else {
       return
     }
+    guard !(200 ..< 300).contains(http.statusCode) else {
+      return
+    }
+    if let errorBody = try? decoder.decode(ApiErrorDTO.self, from: data) {
+      throw RepositoryError.server(code: errorBody.error.code, message: errorBody.error.message)
+    }
     switch http.statusCode {
-    case 200 ..< 300: return
     case 401: throw RepositoryError.unauthorized
     case 404: throw RepositoryError.notFound
     case 409: throw RepositoryError.conflict

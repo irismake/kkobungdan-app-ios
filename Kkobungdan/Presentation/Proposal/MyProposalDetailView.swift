@@ -57,6 +57,7 @@ struct MyProposalDetailView: View {
         )
       }
     }
+    .errorToast($viewModel.errorMessage)
   }
 
   private var contentView: some View {
@@ -230,10 +231,6 @@ struct MyProposalDetailView: View {
       )
     } else if viewModel.isLoading {
       ProgressView()
-    } else if let errorMessage = viewModel.errorMessage {
-      Text(errorMessage)
-        .textStyle(.body3)
-        .foregroundColor(Color.rose500)
     }
   }
 }

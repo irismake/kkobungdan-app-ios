@@ -106,6 +106,7 @@ struct OfferDetailView: View {
     } message: {
       Text("지원을 취소하면 되돌릴 수 없어요.")
     }
+    .errorToast($viewModel.errorMessage)
   }
 
   /// 하단 액션 버튼이 있는지 여부. 없으면 구분선도 숨긴다.
@@ -195,11 +196,6 @@ struct OfferDetailView: View {
         fee: DisplayFormatter.feeString(proposal.errandFee),
         badges: ActivityStatusBadge.badges(proposal: proposal)
       )
-    } else if let errorMessage = viewModel.errorMessage {
-      Text(errorMessage)
-        .textStyle(.body3)
-        .foregroundColor(Color.rose500)
-        .padding(.horizontal, 16)
     }
   }
 }

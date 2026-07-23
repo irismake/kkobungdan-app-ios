@@ -51,7 +51,7 @@ final class AddOfferViewModel {
       let offer = try await createOfferUseCase.execute(proposalID: proposalID)
       return offer.id
     } catch {
-      errorMessage = "지원에 실패했어요. 잠시 후 다시 시도해주세요."
+      errorMessage = error.userMessage(fallback: "지원에 실패했어요. 잠시 후 다시 시도해주세요.")
       return nil
     }
   }

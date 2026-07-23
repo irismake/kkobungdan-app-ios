@@ -50,7 +50,7 @@ final class NotificationViewModel {
       page = 1
       hasNext = firstPage.hasNext
     } catch {
-      errorMessage = "알림을 불러오지 못했어요."
+      errorMessage = error.userMessage(fallback: "알림을 불러오지 못했어요.")
     }
     isLoading = false
     await refreshUnreadCount()
@@ -98,7 +98,7 @@ final class NotificationViewModel {
       }
       unreadCount = max(0, unreadCount - 1)
     } catch {
-      errorMessage = "알림 상태를 변경하지 못했어요."
+      errorMessage = error.userMessage(fallback: "알림 상태를 변경하지 못했어요.")
     }
   }
 }
