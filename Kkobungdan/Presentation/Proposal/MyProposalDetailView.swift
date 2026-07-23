@@ -174,8 +174,19 @@ struct MyProposalDetailView: View {
     case .disputed:
       // 내가 중단을 신청한 경우엔 버튼 없음. 중단을 당한 경우에만 문의하기 노출.
       if viewModel.isDisputedByCounterparty {
-        OutlineButton(title: "문의하기") {
-          onInquiry()
+        VStack(spacing: 8) {
+          Text("꼬붕이 임무를 중단했습니다.")
+            .textStyle(.heading4)
+            .foregroundColor(.gray400)
+            .multilineTextAlignment(.center)
+            .frame(maxWidth: .infinity)
+            .frame(height: 56)
+            .background(Color.gray200)
+            .clipShape(RoundedRectangle(cornerRadius: 12))
+
+          OutlineButton(title: "문의하기") {
+            onInquiry()
+          }
         }
       } else {
         EmptyView()
