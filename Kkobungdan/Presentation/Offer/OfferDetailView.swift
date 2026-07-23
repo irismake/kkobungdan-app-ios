@@ -68,7 +68,7 @@ struct OfferDetailView: View {
 
         Spacer()
 
-        Text("고객센터 email@gmail")
+        Text("고객센터 \(SupportContact.email)")
           .textStyle(.body3)
           .foregroundColor(Color.gray700)
           .multilineTextAlignment(.center)

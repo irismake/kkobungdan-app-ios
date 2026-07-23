@@ -5,7 +5,7 @@ struct ProfileView: View {
   @State private var viewModel: ProfileViewModel
 
   private let appVersion = "v1.0.0"
-  private let supportEmail = "email@gmail"
+  private let supportEmail = SupportContact.email
 
   init(viewModel: ProfileViewModel) {
     _viewModel = State(initialValue: viewModel)
