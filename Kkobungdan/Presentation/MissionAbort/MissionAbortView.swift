@@ -51,6 +51,7 @@ struct MissionAbortView: View {
         onSubmitted()
       }
     }
+    .errorToast($viewModel.errorMessage)
   }
 }
 

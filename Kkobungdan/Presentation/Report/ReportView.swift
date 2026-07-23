@@ -51,6 +51,7 @@ struct ReportView: View {
         onSubmitted()
       }
     }
+    .errorToast($viewModel.errorMessage)
   }
 }
 

@@ -63,7 +63,7 @@ final class SocialLoginViewModel {
       _ = try await emailLoginUseCase.execute(email: email, password: password)
       isLoginSuccess = true
     } catch {
-      errorMessage = "로그인에 실패했습니다. 다시 시도해주세요."
+      errorMessage = error.userMessage(fallback: "로그인에 실패했습니다. 다시 시도해주세요.")
     }
 
     isLoading = false
@@ -92,7 +92,7 @@ final class SocialLoginViewModel {
     } catch AppleSignInError.canceled {
       // 사용자가 취소한 경우는 조용히 무시
     } catch {
-      errorMessage = "Apple 로그인에 실패했습니다. 잠시 후 다시 시도해주세요."
+      errorMessage = error.userMessage(fallback: "Apple 로그인에 실패했습니다. 잠시 후 다시 시도해주세요.")
     }
 
     isAppleLoading = false
@@ -117,7 +117,7 @@ final class SocialLoginViewModel {
     } catch KakaoSignInError.canceled {
       // 사용자가 취소한 경우는 조용히 무시
     } catch {
-      errorMessage = "카카오 로그인에 실패했습니다. 잠시 후 다시 시도해주세요."
+      errorMessage = error.userMessage(fallback: "카카오 로그인에 실패했습니다. 잠시 후 다시 시도해주세요.")
     }
 
     isKakaoLoading = false

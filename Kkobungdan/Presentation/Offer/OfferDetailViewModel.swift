@@ -103,7 +103,7 @@ final class OfferDetailViewModel {
         disputeEvidence = nil
       }
     } catch {
-      errorMessage = "지원 상세를 불러오지 못했어요."
+      errorMessage = error.userMessage(fallback: "지원 상세를 불러오지 못했어요.")
     }
     isLoading = false
   }
@@ -120,7 +120,7 @@ final class OfferDetailViewModel {
       _ = try await completeDeliveryUseCase.execute(offerID: offerID)
       await load()
     } catch {
-      errorMessage = "임무 완료 처리에 실패했어요. 잠시 후 다시 시도해주세요."
+      errorMessage = error.userMessage(fallback: "임무 완료 처리에 실패했어요. 잠시 후 다시 시도해주세요.")
     }
     isCompletingDelivery = false
   }
@@ -138,7 +138,7 @@ final class OfferDetailViewModel {
       NotificationCenter.default.post(name: .proposalListNeedsRefresh, object: nil)
       didCancel = true
     } catch {
-      errorMessage = "지원을 취소하지 못했어요."
+      errorMessage = error.userMessage(fallback: "지원을 취소하지 못했어요.")
     }
     isCancelling = false
   }

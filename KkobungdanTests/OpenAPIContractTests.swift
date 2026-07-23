@@ -49,6 +49,9 @@ final class OpenAPIContractTests: XCTestCase {
         DecodeContract("AuthTokenResponse", decoding(AuthTokenResponseDTO.self)), // login/signup confirm
         DecodeContract("AuthVerificationSendResponse", decoding(PhoneVerificationResponseDTO.self)), // login/signup send
         DecodeContract("AuthAccessTokenResponse", decoding(RefreshTokenResponseDTO.self)), // refresh
+        // 공통 에러 (non-2xx 바디)
+        DecodeContract("ErrorResponse", decoding(ApiErrorDTO.self)),
+        DecodeContract("ErrorDetail", decoding(ApiErrorDetailDTO.self)),
         // ⚠️ Oauth 3종(LoginResponseDTO/AppleLoginResponseDTO/KakaoLoginResponseDTO)은
         //    호출 엔드포인트(/v1/auth/login, /v1/auth/oauth/*)가 현재 서버 스펙에 없어 추적 불가.
     ]

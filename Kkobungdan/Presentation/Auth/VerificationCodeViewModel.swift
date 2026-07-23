@@ -84,7 +84,7 @@ final class VerificationCodeViewModel {
       startTimer(until: verification.expiresAt)
       return true
     } catch {
-      errorMessage = "인증번호 발송에 실패했습니다. 다시 시도해주세요."
+      errorMessage = error.userMessage(fallback: "인증번호 발송에 실패했습니다. 다시 시도해주세요.")
       return false
     }
   }
@@ -115,7 +115,7 @@ final class VerificationCodeViewModel {
       }
       return true
     } catch {
-      errorMessage = "인증번호가 올바르지 않습니다. 다시 확인해주세요."
+      errorMessage = error.userMessage(fallback: "인증번호가 올바르지 않습니다. 다시 확인해주세요.")
       return false
     }
   }

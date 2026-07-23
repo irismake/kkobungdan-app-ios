@@ -106,7 +106,7 @@ final class WithdrawReasonViewModel {
       tokenStorage.clear()
       didSubmit = true
     } catch {
-      errorMessage = "탈퇴에 실패했어요. 잠시 후 다시 시도해 주세요."
+      errorMessage = error.userMessage(fallback: "탈퇴에 실패했어요. 잠시 후 다시 시도해 주세요.")
       withdrawLogger.error("회원 탈퇴 실패: \(error.localizedDescription)")
     }
     isSubmitting = false

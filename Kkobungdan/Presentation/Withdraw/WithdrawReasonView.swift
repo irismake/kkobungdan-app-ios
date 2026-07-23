@@ -53,6 +53,7 @@ struct WithdrawReasonView: View {
         isCompletePresented = true
       }
     }
+    .errorToast($viewModel.errorMessage)
   }
 }
 

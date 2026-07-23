@@ -54,6 +54,7 @@ struct ProfileView: View {
       )
       .navigationBarBackButtonHidden(true)
     }
+    .errorToast($viewModel.errorMessage)
   }
 
   private var profileContent: some View {

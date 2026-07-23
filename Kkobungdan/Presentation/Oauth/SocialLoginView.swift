@@ -38,6 +38,7 @@ struct SocialLoginView: View {
         onComplete: { viewModel.completeTermsAgreement() }
       )
     }
+    .errorToast($viewModel.errorMessage)
   }
 
   private var brandSection: some View {

@@ -33,7 +33,8 @@ struct AddOfferView: View {
   }
 
   var body: some View {
-    VStack(spacing: 0) {
+    @Bindable var account = viewModel.account
+    return VStack(spacing: 0) {
       header
 
       ScrollView {
@@ -41,13 +42,6 @@ struct AddOfferView: View {
           accountNumberField
           bankField
           accountHolderField
-
-          if let errorMessage = viewModel.errorMessage ?? viewModel.account.errorMessage {
-            Text(errorMessage)
-              .textStyle(.body3)
-              .foregroundColor(Color.rose500)
-              .frame(maxWidth: .infinity, alignment: .leading)
-          }
         }
         .padding(16)
       }
@@ -76,6 +70,8 @@ struct AddOfferView: View {
     }
     .navigationBarBackButtonHidden(true)
     .task { await viewModel.account.loadAccount() }
+    .errorToast($viewModel.errorMessage)
+    .errorToast($account.errorMessage)
   }
 
   // MARK: - Header

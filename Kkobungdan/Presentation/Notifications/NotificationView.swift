@@ -22,11 +22,6 @@ struct NotificationView: View {
           if viewModel.isLoading, viewModel.notifications.isEmpty {
             ProgressView()
               .padding(.top, 40)
-          } else if let errorMessage = viewModel.errorMessage, viewModel.notifications.isEmpty {
-            Text(errorMessage)
-              .textStyle(.body3)
-              .foregroundColor(Color.rose500)
-              .padding(.top, 40)
           } else {
             ForEach(viewModel.notifications) { item in
               NotificationItemView(
@@ -64,6 +59,7 @@ struct NotificationView: View {
     .task {
       await viewModel.load()
     }
+    .errorToast($viewModel.errorMessage)
   }
 }
 
