@@ -7,7 +7,9 @@ import Foundation
 
 /// 알림/푸시에서 화면 라우팅에 필요한 payload.
 /// 알림 목록 API 는 `notification_type` 과 JSON 문자열 `data` 를 분리해 내려준다.
-/// 예: `"notification_type": "offer_accepted", "data": "{\"offer_id\": 45, \"proposal_id\": 10}"`
+/// 예: `"notification_type": "offer_accepted", "data": "{\"offer_id\": \"45\", \"proposal_id\": \"10\"}"`
+/// 푸시(APNs userInfo)는 최상위에 병합돼 온다: `{"notification_type": "offer_accepted", "offer_id": "45", "proposal_id": "10"}`
+/// `offer_id`·`proposal_id` 는 문자열로 오며, `int64(_:)` 가 String/NSNumber 를 모두 파싱한다.
 struct PushPayload: Equatable {
   /// 정책 문서 "이벤트별 data payload" 의 `notification_type` 과 1:1.
   /// 알림 목록 API 의 `NotificationType`(서버 enum 15종) 과 달리, 푸시로 발송되는 이벤트만 담는다.

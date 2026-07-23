@@ -8,23 +8,21 @@
 import SwiftUI
 
 struct OfferDetailView: View {
+  @Environment(\.openURL) private var openURL
   @State private var viewModel: OfferDetailViewModel
   @State private var isMissionCompleted: Bool = false
   @State private var isCancelConfirmPresented: Bool = false
   var onBack: () -> Void = {}
   var onAbort: () -> Void = {}
-  var onInquiry: () -> Void = {}
 
   init(
     viewModel: OfferDetailViewModel,
     onBack: @escaping () -> Void = {},
-    onAbort: @escaping () -> Void = {},
-    onInquiry: @escaping () -> Void = {}
+    onAbort: @escaping () -> Void = {}
   ) {
     _viewModel = State(initialValue: viewModel)
     self.onBack = onBack
     self.onAbort = onAbort
-    self.onInquiry = onInquiry
   }
 
   var body: some View {
@@ -68,7 +66,7 @@ struct OfferDetailView: View {
 
         Spacer()
 
-        Text("고객센터 email@gmail")
+        Text("고객센터 \(SupportContact.email)")
           .textStyle(.body3)
           .foregroundColor(Color.gray700)
           .multilineTextAlignment(.center)
@@ -158,8 +156,21 @@ struct OfferDetailView: View {
     case .disputed:
       // 내가 중단을 신청한 경우엔 버튼 없음. 중단을 당한 경우에만 문의하기 노출.
       if viewModel.isDisputedByCounterparty {
-        OutlineButton(title: "문의하기") {
-          onInquiry()
+        VStack(spacing: 8) {
+          Text("행님이 임무를 중단했습니다.")
+            .textStyle(.heading4)
+            .foregroundColor(.gray400)
+            .multilineTextAlignment(.center)
+            .frame(maxWidth: .infinity)
+            .frame(height: 56)
+            .background(Color.gray200)
+            .clipShape(RoundedRectangle(cornerRadius: 12))
+
+          OutlineButton(title: "문의하기") {
+            if let url = SupportContact.mailtoURL {
+              openURL(url)
+            }
+          }
         }
       } else {
         EmptyView()
