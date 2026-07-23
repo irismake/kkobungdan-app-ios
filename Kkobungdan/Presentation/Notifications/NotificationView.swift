@@ -56,7 +56,7 @@ struct NotificationView: View {
       }
     }
     .background(Color.gray000)
-    .task {
+    .task(id: PushRouteStore.shared.foregroundPushCount) {
       await viewModel.load()
     }
     .errorToast($viewModel.errorMessage)

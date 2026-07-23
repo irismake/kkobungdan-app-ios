@@ -80,19 +80,19 @@ struct MainTabView: View {
         PushRouteStore.shared.pending = nil
         await router.route(push: payload)
       }
-      // 최초 진입 + 포그라운드 푸시 도착 시: 알림 목록·안읽음 뱃지 갱신
-      // (load() 가 stats 조회까지 수행하므로 뱃지도 함께 갱신된다)
+      // 최초 진입 + 포그라운드 푸시 도착 시: 안읽음 뱃지만 갱신.
+      // (알림 목록 로드는 알림 탭 진입 시 NotificationView 가 담당 — 뱃지/목록 분리)
       .task(id: PushRouteStore.shared.foregroundPushCount) {
-        await notificationViewModel.load()
+        await notificationViewModel.refreshUnreadCount()
         if PushRouteStore.shared.foregroundPushCount > 0 {
           await refreshRootData()
         }
       }
-      // 백그라운드에 쌓인 알림 반영: 앱이 다시 활성화될 때 갱신
+      // 백그라운드에 쌓인 알림 반영: 앱이 다시 활성화될 때 뱃지 갱신
       .onChange(of: scenePhase) { _, phase in
         if phase == .active {
           Task {
-            await notificationViewModel.load()
+            await notificationViewModel.refreshUnreadCount()
             await refreshRootData()
           }
         }
