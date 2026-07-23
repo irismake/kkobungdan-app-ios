@@ -222,9 +222,9 @@ struct ActivityView: View {
     ProposalCard(
       title: proposal.title,
       description: proposal.content,
-      date: ProposalFormatter.dateString(proposal.deadline),
-      time: ProposalFormatter.timeString(proposal.deadline),
-      fee: ProposalFormatter.feeString(proposal.errandFee),
+      date: DisplayFormatter.dateString(proposal.deadline),
+      time: DisplayFormatter.timeString(proposal.deadline),
+      fee: DisplayFormatter.feeString(proposal.errandFee),
       badges: ActivityStatusBadge.badges(myProposal: proposal)
     )
   }
@@ -234,9 +234,9 @@ struct ActivityView: View {
     return ProposalCard(
       title: proposal?.title ?? "",
       description: proposal?.content ?? "",
-      date: ProposalFormatter.dateString(proposal?.deadline ?? offer.createdAt),
-      time: ProposalFormatter.timeString(proposal?.deadline ?? offer.createdAt),
-      fee: proposal.map { ProposalFormatter.feeString($0.errandFee) } ?? "",
+      date: DisplayFormatter.dateString(proposal?.deadline ?? offer.createdAt),
+      time: DisplayFormatter.timeString(proposal?.deadline ?? offer.createdAt),
+      fee: proposal.map { DisplayFormatter.feeString($0.errandFee) } ?? "",
       badges: ActivityStatusBadge.badges(myOffer: offer)
     )
   }

@@ -32,7 +32,7 @@ struct NotificationView: View {
               NotificationItemView(
                 title: item.title,
                 message: item.body,
-                timeString: ProposalFormatter.relativeTimeString(item.createdAt),
+                timeString: DisplayFormatter.relativeTimeString(item.createdAt),
                 isRead: item.isRead
               )
               .onTapGesture {

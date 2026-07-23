@@ -10,8 +10,20 @@ import Foundation
 
 @Observable
 final class SettlementAccountInputModel {
-  /// 계좌번호 입력값. 등록된 계좌가 있으면 마스킹된 번호로 채워진다.
-  var accountNumber: String = ""
+  /// 계좌번호 입력값. 숫자만 허용한다. 등록된 계좌가 있으면 마스킹된 번호로 채워진다.
+  var accountNumber: String = "" {
+    didSet {
+      // 마스킹된 번호(`*` 포함)는 필터링하지 않고 그대로 표시한다.
+      guard existingAccount == nil else {
+        return
+      }
+      let digitsOnly = accountNumber.filter(\.isNumber)
+      if digitsOnly != accountNumber {
+        accountNumber = digitsOnly
+      }
+    }
+  }
+
   /// 예금주명 입력값. 등록된 계좌가 있으면 해당 예금주명으로 채워진다.
   var accountHolder: String = ""
   /// 선택한 은행 표시명.

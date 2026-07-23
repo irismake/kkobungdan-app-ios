@@ -77,13 +77,29 @@ struct MainTabView: View {
       // (load() 가 stats 조회까지 수행하므로 뱃지도 함께 갱신된다)
       .task(id: PushRouteStore.shared.foregroundPushCount) {
         await notificationViewModel.load()
+        if PushRouteStore.shared.foregroundPushCount > 0 {
+          await refreshRootData()
+        }
       }
       // 백그라운드에 쌓인 알림 반영: 앱이 다시 활성화될 때 갱신
       .onChange(of: scenePhase) { _, phase in
         if phase == .active {
-          Task { await notificationViewModel.load() }
+          Task {
+            await notificationViewModel.load()
+            await refreshRootData()
+          }
         }
       }
+      .onReceive(NotificationCenter.default.publisher(for: .proposalListNeedsRefresh)) { _ in
+        Task { await refreshRootData() }
+      }
+  }
+
+  @MainActor
+  private func refreshRootData() async {
+    await viewModel.load()
+    await myProposalsViewModel.load(status: router.activityFilter.proposalStatuses)
+    await myOffersViewModel.load(status: router.activityFilter.offerStatuses)
   }
 
   // MARK: - Tab Content

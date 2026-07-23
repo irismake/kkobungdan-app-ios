@@ -159,6 +159,7 @@ final class MyProposalDetailViewModel {
     do {
       // 취소 응답(Proposal)은 화면을 닫기 때문에 보관하지 않는다. 상세는 ProposalDetail 로 별도 조회.
       _ = try await cancelProposalUseCase.execute(id: proposalID)
+      NotificationCenter.default.post(name: .proposalListNeedsRefresh, object: nil)
       didCancel = true
     } catch {
       errorMessage = "요청을 취소하지 못했어요."
