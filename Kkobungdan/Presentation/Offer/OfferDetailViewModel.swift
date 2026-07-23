@@ -135,6 +135,7 @@ final class OfferDetailViewModel {
     errorMessage = nil
     do {
       try await cancelOfferUseCase.execute(offerID: offerID)
+      NotificationCenter.default.post(name: .proposalListNeedsRefresh, object: nil)
       didCancel = true
     } catch {
       errorMessage = "지원을 취소하지 못했어요."
