@@ -20,8 +20,25 @@ struct ProfileView: View {
   }
 
   @State private var isEditingProfile = false
+  @State private var isWithdrawing = false
 
   var body: some View {
+    ZStack {
+      profileContent
+
+      if isWithdrawing {
+        WithdrawConfirmModal(
+          onCancel: { isWithdrawing = false },
+          onConfirm: {
+            // TODO: 탈퇴 플로우 연결
+            isWithdrawing = false
+          }
+        )
+      }
+    }
+  }
+
+  private var profileContent: some View {
     VStack(spacing: 0) {
       TabPageHeader(title: "프로필")
 
@@ -275,7 +292,7 @@ struct ProfileView: View {
 
   private var withdrawButton: some View {
     Button {
-      // TODO: 탈퇴 플로우 연결
+      isWithdrawing = true
     } label: {
       Text("탈퇴하기")
         .textStyle(.button2)

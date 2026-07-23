@@ -15,7 +15,7 @@ enum ActivityStatusBadge {
   static let completedBadge = BadgeItem(text: "완료", textColor: .emerald500, bgColor: .emerald000)
   static let cancelledBadge = BadgeItem(text: "취소", textColor: .gray500, bgColor: .gray100)
   static let unpaidBadge = BadgeItem(text: "미입금", textColor: .rose500, bgColor: .rose000)
-  static let disputedBadge = BadgeItem(text: "분쟁중", textColor: .rose800, bgColor: .rose000, iconName: "icon_dispute")
+  static let disputedBadge = BadgeItem(text: "분쟁중", textColor: .rose800, bgColor: .rose000, iconName: "icon_wavy_warning_fill")
 
   /// proposal / offer 상태로 배지를 결정한다.
   /// - myOfferStatus: 러너 본인이 이 proposal 에 제출한 offer 상태. 있으면 offer 상태가 우선.
