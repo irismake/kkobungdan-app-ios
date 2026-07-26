@@ -116,13 +116,13 @@ struct MainTabView: View {
     switch router.selectedTab {
     case .home:
       NavigationStack(path: $router.homePath) {
-        VStack(spacing: 0) {
-          HomeView(
-            viewModel: viewModel,
-            onSelectProposal: { proposal in
-              router.homePath.append(.proposalDetail(proposalID: proposal.id))
-            }
-          )
+        HomeView(
+          viewModel: viewModel,
+          onSelectProposal: { proposal in
+            router.homePath.append(.proposalDetail(proposalID: proposal.id))
+          }
+        )
+        .safeAreaInset(edge: .bottom, spacing: 0) {
           bottomBar
         }
         .navigationDestination(for: AppRoute.self) { route in
@@ -140,19 +140,19 @@ struct MainTabView: View {
       }
     case .activity:
       NavigationStack(path: $router.activityPath) {
-        VStack(spacing: 0) {
-          ActivityView(
-            proposalsViewModel: myProposalsViewModel,
-            offersViewModel: myOffersViewModel,
-            segment: $router.activitySegment,
-            filter: $router.activityFilter,
-            onSelectOrdererProposal: { proposalID in
-              router.activityPath.append(.myProposalDetail(proposalID: proposalID))
-            },
-            onSelectRunnerItem: { proposalID, offerID in
-              router.activityPath.append(.offerDetail(proposalID: proposalID, offerID: offerID))
-            }
-          )
+        ActivityView(
+          proposalsViewModel: myProposalsViewModel,
+          offersViewModel: myOffersViewModel,
+          segment: $router.activitySegment,
+          filter: $router.activityFilter,
+          onSelectOrdererProposal: { proposalID in
+            router.activityPath.append(.myProposalDetail(proposalID: proposalID))
+          },
+          onSelectRunnerItem: { proposalID, offerID in
+            router.activityPath.append(.offerDetail(proposalID: proposalID, offerID: offerID))
+          }
+        )
+        .safeAreaInset(edge: .bottom, spacing: 0) {
           bottomBar
         }
         .navigationDestination(for: AppRoute.self) { route in
@@ -167,22 +167,22 @@ struct MainTabView: View {
         }
       }
     case .notifications:
-      VStack(spacing: 0) {
-        NotificationView(
-          viewModel: notificationViewModel,
-          onSelect: { payload in
-            Task { await router.route(push: payload) }
-          }
-        )
+      NotificationView(
+        viewModel: notificationViewModel,
+        onSelect: { payload in
+          Task { await router.route(push: payload) }
+        }
+      )
+      .safeAreaInset(edge: .bottom, spacing: 0) {
         bottomBar
       }
     case .profile:
       NavigationStack {
-        VStack(spacing: 0) {
-          ProfileView(
-            viewModel: profileViewModel,
-            withdrawReasonViewModel: withdrawReasonViewModel
-          )
+        ProfileView(
+          viewModel: profileViewModel,
+          withdrawReasonViewModel: withdrawReasonViewModel
+        )
+        .safeAreaInset(edge: .bottom, spacing: 0) {
           bottomBar
         }
       }

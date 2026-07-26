@@ -69,42 +69,42 @@ struct MyProposalDetailView: View {
           ProgressView()
             .frame(maxWidth: .infinity, maxHeight: .infinity)
         } else {
-        ScrollView {
-          ScreenContainer {
-            VStack(spacing: 12) {
-              proposalCardSection
+          ScrollView {
+            ScreenContainer {
+              VStack(spacing: 12) {
+                proposalCardSection
 
-              if viewModel.proposal?.status == .holding {
-                AccountInfoCard(
-                  bankName: "토스뱅크",
-                  accountNumber: "1234-56-24687"
-                )
-              }
+                if viewModel.proposal?.status == .holding {
+                  AccountInfoCard(
+                    bankName: "토스뱅크",
+                    accountNumber: "1234-56-24687"
+                  )
+                }
 
-              if let matched = viewModel.matchedOffer {
-                MatchedRunnerSection(
-                  nickname: matched.runnerName,
-                  level: matched.runnerLevel,
-                  appliedAt: DisplayFormatter.appliedAtString(matched.createdAt)
-                )
-              }
+                if let matched = viewModel.matchedOffer {
+                  MatchedRunnerSection(
+                    nickname: matched.runnerName,
+                    level: matched.runnerLevel,
+                    appliedAt: DisplayFormatter.appliedAtString(matched.createdAt)
+                  )
+                }
 
-              if let openChatURL = viewModel.openChatURL {
-                OpenChatModal(urlString: openChatURL)
+                if let openChatURL = viewModel.openChatURL {
+                  OpenChatModal(urlString: openChatURL)
+                }
               }
             }
+            .padding(.vertical, 12)
           }
-          .padding(.vertical, 12)
-        }
 
-        Spacer()
+          Spacer()
 
-        Text("고객센터 \(SupportContact.email)")
-          .textStyle(.body3)
-          .foregroundColor(Color.gray700)
-          .multilineTextAlignment(.center)
-          .frame(maxWidth: .infinity)
-          .padding(.bottom, 32)
+          Text("고객센터 \(SupportContact.email)")
+            .textStyle(.body3)
+            .foregroundColor(Color.gray700)
+            .multilineTextAlignment(.center)
+            .frame(maxWidth: .infinity)
+            .padding(.bottom, 32)
         }
       }
       .frame(maxHeight: .infinity)
