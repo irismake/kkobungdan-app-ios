@@ -65,6 +65,10 @@ struct MyProposalDetailView: View {
       AppBar(title: "내 요청 상세", onBack: onBack)
 
       VStack(spacing: 0) {
+        if viewModel.proposal == nil, viewModel.isLoading {
+          ProgressView()
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
+        } else {
         ScrollView {
           ScreenContainer {
             VStack(spacing: 12) {
@@ -101,6 +105,7 @@ struct MyProposalDetailView: View {
           .multilineTextAlignment(.center)
           .frame(maxWidth: .infinity)
           .padding(.bottom, 32)
+        }
       }
       .frame(maxHeight: .infinity)
       .overlay(alignment: .bottom) {
@@ -229,8 +234,6 @@ struct MyProposalDetailView: View {
         fee: DisplayFormatter.feeString(proposal.errandFee),
         badges: statusBadges
       )
-    } else if viewModel.isLoading {
-      ProgressView()
     }
   }
 }

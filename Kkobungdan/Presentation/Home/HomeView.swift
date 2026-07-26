@@ -29,6 +29,7 @@ struct HomeView: View {
           if viewModel.isLoading, viewModel.proposals.isEmpty {
             ProgressView()
               .padding(.top, 40)
+              .frame(maxWidth: .infinity)
           } else {
             ForEach(viewModel.proposals) { proposal in
               ProposalCard(

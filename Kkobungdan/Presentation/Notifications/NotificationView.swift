@@ -22,6 +22,7 @@ struct NotificationView: View {
           if viewModel.isLoading, viewModel.notifications.isEmpty {
             ProgressView()
               .padding(.top, 40)
+              .frame(maxWidth: .infinity)
           } else {
             ForEach(viewModel.notifications) { item in
               NotificationItemView(
@@ -46,6 +47,7 @@ struct NotificationView: View {
             if viewModel.isLoadingMore {
               ProgressView()
                 .padding(.vertical, 16)
+                .frame(maxWidth: .infinity)
             }
           }
         }
