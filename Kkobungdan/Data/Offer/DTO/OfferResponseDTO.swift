@@ -56,4 +56,17 @@ extension OfferResponseDTO {
       createdAt: DateFormatters.parse(createdAt)
     )
   }
+
+  /// `GET /v1/offer/own` (내 웨이팅 기록) 용 매핑. 같은 `OfferResponse` 스키마라 DTO 를 공유한다.
+  func toDomain() -> MyOffer {
+    // TODO: ordererID, ordererName, ordererLevel, runnerName, runnerLevel, acceptedAt,
+    //       runnerConfirmedAt, ordererConfirmedAt, disputedAt, resolvedAt — UI 반영 시 MyOffer 엔티티에 추가
+    MyOffer(
+      id: id,
+      proposalID: proposalID,
+      runnerID: runnerID,
+      status: OfferStatus(rawValue: status) ?? .waiting,
+      createdAt: DateFormatters.parse(createdAt)
+    )
+  }
 }

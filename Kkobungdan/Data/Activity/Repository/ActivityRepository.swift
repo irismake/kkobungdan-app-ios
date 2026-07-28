@@ -37,7 +37,7 @@ final class ActivityRepository: ActivityRepositoryProtocol {
     if !status.isEmpty {
       params["status"] = status.map(\.rawValue)
     }
-    let pageDTO: PageDTO<MyOfferResponseDTO> =
+    let pageDTO: PageDTO<OfferResponseDTO> =
       try await client.get("/v1/offer/own", params: params)
     return pageDTO.content.map { $0.toDomain() }
   }
