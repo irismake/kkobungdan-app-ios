@@ -2,7 +2,6 @@ import SwiftUI
 
 struct ProfileView: View {
   @Environment(SessionViewModel.self) private var session
-  @Environment(\.openURL) private var openURL
   @State private var viewModel: ProfileViewModel
 
   private let appVersion = "v\(Bundle.main.appVersion)"
@@ -29,6 +28,7 @@ struct ProfileView: View {
   @State private var isEditingProfile = false
   @State private var isWithdrawing = false
   @State private var isWithdrawReasonPresented = false
+  @State private var isPolicyListPresented = false
 
   var body: some View {
     ZStack {
@@ -70,11 +70,9 @@ struct ProfileView: View {
 
           // 메뉴 섹션 (border-t 컨테이너)
           VStack(spacing: 16) {
-            // 약관 & 정책 & 버전 & 알림 설정 그룹
+            // 약관 & 버전 & 알림 설정 그룹
             VStack(spacing: 0) {
               termsRow
-              privacyPolicyRow
-              operationPolicyRow
               versionRow
               alarmRow
             }
@@ -95,6 +93,10 @@ struct ProfileView: View {
       customerSupportCard
     }
     .background(Color.gray000)
+    .navigationDestination(isPresented: $isPolicyListPresented) {
+      PolicyListView(onBack: { isPolicyListPresented = false })
+        .navigationBarBackButtonHidden(true)
+    }
     .task {
       await viewModel.load()
     }
@@ -150,32 +152,20 @@ struct ProfileView: View {
 
   // MARK: - Menu Rows
 
+  /// 탭하면 약관 및 정책 목록 화면(`PolicyListView`)으로 이동한다.
   private var termsRow: some View {
-    policyRow(icon: "doc.text", title: "이용약관", url: PolicyURL.termsOfService)
-  }
-
-  private var privacyPolicyRow: some View {
-    policyRow(icon: "lock.shield", title: "개인정보 처리방침", url: PolicyURL.privacyPolicy)
-  }
-
-  private var operationPolicyRow: some View {
-    policyRow(icon: "list.bullet.rectangle", title: "운영정책", url: PolicyURL.operationPolicy)
-  }
-
-  /// 탭하면 외부 브라우저로 정책 문서를 연다.
-  private func policyRow(icon: String, title: String, url: URL) -> some View {
     Button {
-      openURL(url)
+      isPolicyListPresented = true
     } label: {
       HStack(spacing: 12) {
         HStack(spacing: 8) {
-          Image(systemName: icon)
+          Image(systemName: "doc.text")
             .resizable()
             .scaledToFit()
             .frame(width: 20, height: 20)
             .foregroundColor(Color.gray900)
 
-          Text(title)
+          Text("약관 및 정책")
             .textStyle(.title3)
             .foregroundColor(Color.gray900)
 
