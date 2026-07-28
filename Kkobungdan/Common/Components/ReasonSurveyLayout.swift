@@ -23,12 +23,16 @@ struct ReasonSurveyLayout: View {
   let selectedID: Int64?
   @Binding var detail: String
   let detailMaxLength: Int
-  let isDetailRequired: Bool
   let isSubmitting: Bool
   let canSubmit: Bool
   let onClose: () -> Void
   let onSelect: (Int64) -> Void
   let onSubmit: () -> Void
+
+  /// 상세 사유 입력 활성 조건 — 사유를 하나 선택하면 열린다.
+  private var isDetailEnabled: Bool {
+    selectedID != nil
+  }
 
   var body: some View {
     VStack(spacing: 0) {
@@ -65,8 +69,9 @@ struct ReasonSurveyLayout: View {
               text: $detail,
               maxLength: detailMaxLength
             )
-            .disabled(!isDetailRequired)
-            .opacity(isDetailRequired ? 1 : 0.5)
+            // 사유를 고르면 어떤 사유든 상세 작성이 가능하다. (기타만 작성 '필수')
+            .disabled(!isDetailEnabled)
+            .opacity(isDetailEnabled ? 1 : 0.5)
           }
         }
         .padding(Layout.screenHorizontalPadding)

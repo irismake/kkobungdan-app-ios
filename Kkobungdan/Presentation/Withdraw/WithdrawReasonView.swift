@@ -34,7 +34,6 @@ struct WithdrawReasonView: View {
       selectedID: viewModel.selectedID,
       detail: $viewModel.detail,
       detailMaxLength: WithdrawReasonViewModel.detailMaxLength,
-      isDetailRequired: viewModel.isDetailRequired,
       isSubmitting: viewModel.isSubmitting,
       canSubmit: viewModel.canSubmit,
       onClose: onClose,

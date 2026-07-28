@@ -69,9 +69,6 @@ final class WithdrawReasonViewModel {
 
   func select(id: Int64) {
     selectedID = id
-    if !isDetailRequired {
-      detail = ""
-    }
   }
 
   @MainActor
@@ -100,8 +97,7 @@ final class WithdrawReasonViewModel {
     do {
       try await withdrawUseCase.execute(
         reasonQuestionID: selectedID,
-        // 상세 사유는 필수 사유(기타 등) 선택 시에만 전송.
-        detailReason: isDetailRequired && !trimmedDetail.isEmpty ? trimmedDetail : nil
+        detailReason: trimmedDetail.isEmpty ? nil : trimmedDetail
       )
       tokenStorage.clear()
       didSubmit = true
