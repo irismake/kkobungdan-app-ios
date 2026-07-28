@@ -10,4 +10,5 @@ import Foundation
 enum DepositAccount {
   static let bankName = "토스뱅크"
   static let accountNumber = "1002-6912-5301"
+  static let holderName = "김가희 (모임통장)"
 }

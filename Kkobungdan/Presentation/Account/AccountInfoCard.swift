@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import UIKit
 
 struct AccountInfoCard: View {
   let bankName: String
@@ -32,7 +33,7 @@ struct AccountInfoCard: View {
         Text(bankName)
           .textStyle(.inputBody2)
           .foregroundColor(Color.gray800)
-              
+
         Text(accountNumber)
           .textStyle(.inputBody3)
           .foregroundColor(Color.gray900)
@@ -40,7 +41,7 @@ struct AccountInfoCard: View {
           
       Spacer()
           
-      Button(action: onCopy) {
+      Button(action: copyAccountNumber) {
         Image("icon_copy")
           .renderingMode(.template)
           .resizable()
@@ -58,6 +59,12 @@ struct AccountInfoCard: View {
       .padding(.horizontal, 4)
       .frame(height: 40)
     }
+  }
+
+  /// 계좌번호만(은행명 제외) 클립보드에 복사한다.
+  private func copyAccountNumber() {
+    UIPasteboard.general.string = accountNumber
+    onCopy()
   }
 
   private var warningBox: some View {

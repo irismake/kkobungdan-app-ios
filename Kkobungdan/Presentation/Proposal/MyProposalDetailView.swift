@@ -11,6 +11,8 @@ struct MyProposalDetailView: View {
   @Environment(\.openURL) private var openURL
   @State private var viewModel: MyProposalDetailViewModel
   @State private var isMissionCompleted: Bool = false
+  /// 계좌번호 복사 안내 토스트 메시지.
+  @State private var toastMessage: String?
   var onBack: () -> Void = {}
   var onShowRunners: () -> Void = {}
   var onAccepted: () -> Void = {}
@@ -58,6 +60,7 @@ struct MyProposalDetailView: View {
       }
     }
     .errorToast($viewModel.errorMessage)
+    .errorToast($toastMessage)
   }
 
   private var contentView: some View {
@@ -77,7 +80,10 @@ struct MyProposalDetailView: View {
                 if viewModel.proposal?.status == .holding {
                   AccountInfoCard(
                     bankName: DepositAccount.bankName,
-                    accountNumber: DepositAccount.accountNumber
+                    accountNumber: DepositAccount.accountNumber,
+                    onCopy: {
+                      toastMessage = "\(DepositAccount.holderName) 계좌번호가 복사되었습니다."
+                    }
                   )
                 }
 
