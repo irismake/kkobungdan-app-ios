@@ -76,8 +76,8 @@ struct MyProposalDetailView: View {
 
                 if viewModel.proposal?.status == .holding {
                   AccountInfoCard(
-                    bankName: "토스뱅크",
-                    accountNumber: "1234-56-24687"
+                    bankName: DepositAccount.bankName,
+                    accountNumber: DepositAccount.accountNumber
                   )
                 }
 
