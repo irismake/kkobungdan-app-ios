@@ -37,8 +37,7 @@ struct HomeView: View {
                 description: proposal.content,
                 date: DisplayFormatter.dateString(proposal.deadline),
                 time: DisplayFormatter.timeString(proposal.deadline),
-                fee: DisplayFormatter.feeString(proposal.errandFee),
-                badges: ActivityStatusBadge.badges(proposal: proposal)
+                fee: DisplayFormatter.feeString(proposal.errandFee)
               )
               .contentShape(Rectangle())
               .onTapGesture {
