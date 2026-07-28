@@ -39,7 +39,6 @@ struct ReasonSurveyLayout: View {
       VStack(alignment: .leading, spacing: 12) {
         CloseHeader(
           title: title,
-          closePosition: .trailing,
           onClose: onClose
         )
 
