@@ -9,6 +9,7 @@ import SwiftUI
 
 struct TermsAgreementView: View {
   @State private var viewModel: TermsAgreementViewModel
+  @Environment(\.openURL) private var openURL
   var onBack: () -> Void
   var onComplete: (() -> Void)?
 
@@ -69,9 +70,7 @@ struct TermsAgreementView: View {
           isRequired: true,
           isAgreed: viewModel.isTermsAgreed,
           onToggle: { viewModel.isTermsAgreed.toggle() },
-          onView: {
-            // TODO: 이용약관 보기
-          }
+          onView: { openURL(PolicyURL.termsOfService) }
         )
 
         termRow(
@@ -79,9 +78,7 @@ struct TermsAgreementView: View {
           isRequired: true,
           isAgreed: viewModel.isPrivacyAgreed,
           onToggle: { viewModel.isPrivacyAgreed.toggle() },
-          onView: {
-            // TODO: 개인정보 처리방침 보기
-          }
+          onView: { openURL(PolicyURL.privacyPolicy) }
         )
       }
     }

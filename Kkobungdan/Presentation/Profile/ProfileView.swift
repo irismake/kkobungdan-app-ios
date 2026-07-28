@@ -2,6 +2,7 @@ import SwiftUI
 
 struct ProfileView: View {
   @Environment(SessionViewModel.self) private var session
+  @Environment(\.openURL) private var openURL
   @State private var viewModel: ProfileViewModel
 
   private let appVersion = "v\(Bundle.main.appVersion)"
@@ -61,12 +62,13 @@ struct ProfileView: View {
     VStack(spacing: 0) {
       TabPageHeader(title: "프로필")
 
-      VStack(spacing: 12) {
-        profileCard
-          .padding(.horizontal, 16)
+      // 프로필 카드 + 메뉴만 스크롤한다. (화면보다 길어질 때만)
+      ScrollView {
+        VStack(spacing: 12) {
+          profileCard
+            .padding(.horizontal, 16)
 
-        // 메뉴 섹션 (border-t 컨테이너)
-        VStack(spacing: 0) {
+          // 메뉴 섹션 (border-t 컨테이너)
           VStack(spacing: 16) {
             // 약관 & 정책 & 버전 & 알림 설정 그룹
             VStack(spacing: 0) {
@@ -80,20 +82,19 @@ struct ProfileView: View {
             // 로그아웃
             logoutRow
           }
-
-          Spacer()
-
-          customerSupportCard
+          .overlay(alignment: .top) {
+            Rectangle().fill(Color.gray200).frame(height: 1)
+          }
         }
-        .frame(maxHeight: .infinity)
-        .overlay(alignment: .top) {
-          Rectangle().fill(Color.gray200).frame(height: 1)
-        }
+        .padding(.top, 16)
       }
-      .padding(.top, 16)
-      .background(Color.gray000)
+      .scrollBounceBehavior(.basedOnSize)
       .frame(maxHeight: .infinity)
+
+      // 고객센터는 스크롤되지 않고 하단(bottom nav 바로 위)에 고정한다.
+      customerSupportCard
     }
+    .background(Color.gray000)
     .task {
       await viewModel.load()
     }
@@ -150,49 +151,52 @@ struct ProfileView: View {
   // MARK: - Menu Rows
 
   private var termsRow: some View {
-    // TODO: 이용약관 화면 연결
-    policyRow(icon: "doc.text", title: "이용약관")
+    policyRow(icon: "doc.text", title: "이용약관", url: PolicyURL.termsOfService)
   }
 
   private var privacyPolicyRow: some View {
-    // TODO: 개인정보 처리방침 화면 연결
-    policyRow(icon: "lock.shield", title: "개인정보 처리방침")
+    policyRow(icon: "lock.shield", title: "개인정보 처리방침", url: PolicyURL.privacyPolicy)
   }
 
   private var operationPolicyRow: some View {
-    // TODO: 운영정책 화면 연결
-    policyRow(icon: "list.bullet.rectangle", title: "운영정책")
+    policyRow(icon: "list.bullet.rectangle", title: "운영정책", url: PolicyURL.operationPolicy)
   }
 
-  private func policyRow(icon: String, title: String) -> some View {
-    HStack(spacing: 12) {
-      HStack(spacing: 8) {
-        Image(systemName: icon)
+  /// 탭하면 외부 브라우저로 정책 문서를 연다.
+  private func policyRow(icon: String, title: String, url: URL) -> some View {
+    Button {
+      openURL(url)
+    } label: {
+      HStack(spacing: 12) {
+        HStack(spacing: 8) {
+          Image(systemName: icon)
+            .resizable()
+            .scaledToFit()
+            .frame(width: 20, height: 20)
+            .foregroundColor(Color.gray900)
+
+          Text(title)
+            .textStyle(.title3)
+            .foregroundColor(Color.gray900)
+
+          Spacer()
+        }
+
+        Image("icon_arrow_right")
+          .renderingMode(.template)
           .resizable()
           .scaledToFit()
           .frame(width: 20, height: 20)
-          .foregroundColor(Color.gray900)
-
-        Text(title)
-          .textStyle(.title3)
-          .foregroundColor(Color.gray900)
-
-        Spacer()
+          .foregroundColor(Color.gray400)
       }
-
-      Image("icon_arrow_right")
-        .renderingMode(.template)
-        .resizable()
-        .scaledToFit()
-        .frame(width: 20, height: 20)
-        .foregroundColor(Color.gray400)
+      .padding(.horizontal, 24)
+      .padding(.vertical, 20)
+      .background(Color.white)
+      .overlay(alignment: .bottom) {
+        Rectangle().fill(Color.gray200).frame(height: 1)
+      }
     }
-    .padding(.horizontal, 24)
-    .padding(.vertical, 20)
-    .background(Color.white)
-    .overlay(alignment: .bottom) {
-      Rectangle().fill(Color.gray200).frame(height: 1)
-    }
+    .buttonStyle(.plain)
   }
 
   private var versionRow: some View {

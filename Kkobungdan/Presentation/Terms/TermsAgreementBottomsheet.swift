@@ -16,6 +16,7 @@ struct TermsAgreementBottomsheet: View {
   /// "확인" 으로 동의 완료.
   let onConfirm: () -> Void
 
+  @Environment(\.openURL) private var openURL
   @State private var isShown = false
 
   var body: some View {
@@ -61,18 +62,14 @@ struct TermsAgreementBottomsheet: View {
               title: "이용약관",
               isAgreed: viewModel.isTermsAgreed,
               onToggle: { viewModel.isTermsAgreed.toggle() },
-              onView: {
-                // TODO: 이용약관 보기
-              }
+              onView: { openURL(PolicyURL.termsOfService) }
             )
 
             termRow(
               title: "개인정보 처리방침",
               isAgreed: viewModel.isPrivacyAgreed,
               onToggle: { viewModel.isPrivacyAgreed.toggle() },
-              onView: {
-                // TODO: 개인정보 처리방침 보기
-              }
+              onView: { openURL(PolicyURL.privacyPolicy) }
             )
           }
           .padding(.bottom, 8)
