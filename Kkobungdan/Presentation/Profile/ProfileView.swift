@@ -68,9 +68,11 @@ struct ProfileView: View {
         // 메뉴 섹션 (border-t 컨테이너)
         VStack(spacing: 0) {
           VStack(spacing: 16) {
-            // 약관 & 버전 & 알림 설정 그룹
+            // 약관 & 정책 & 버전 & 알림 설정 그룹
             VStack(spacing: 0) {
               termsRow
+              privacyPolicyRow
+              operationPolicyRow
               versionRow
               alarmRow
             }
@@ -148,15 +150,30 @@ struct ProfileView: View {
   // MARK: - Menu Rows
 
   private var termsRow: some View {
+    // TODO: 이용약관 화면 연결
+    policyRow(icon: "doc.text", title: "이용약관")
+  }
+
+  private var privacyPolicyRow: some View {
+    // TODO: 개인정보 처리방침 화면 연결
+    policyRow(icon: "lock.shield", title: "개인정보 처리방침")
+  }
+
+  private var operationPolicyRow: some View {
+    // TODO: 운영정책 화면 연결
+    policyRow(icon: "list.bullet.rectangle", title: "운영정책")
+  }
+
+  private func policyRow(icon: String, title: String) -> some View {
     HStack(spacing: 12) {
       HStack(spacing: 8) {
-        Image(systemName: "doc.text")
+        Image(systemName: icon)
           .resizable()
           .scaledToFit()
           .frame(width: 20, height: 20)
           .foregroundColor(Color.gray900)
 
-        Text("약관 및 정책")
+        Text(title)
           .textStyle(.title3)
           .foregroundColor(Color.gray900)
 
