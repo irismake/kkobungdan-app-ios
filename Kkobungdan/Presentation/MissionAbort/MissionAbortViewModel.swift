@@ -85,9 +85,6 @@ final class MissionAbortViewModel {
 
   func select(_ question: DisputeSurveyQuestion) {
     selectedQuestionID = question.id
-    if !isDetailRequired {
-      detail = ""
-    }
   }
 
   @MainActor
@@ -97,7 +94,7 @@ final class MissionAbortViewModel {
     }
     isSubmitting = true
     errorMessage = nil
-    let reason = isDetailRequired ? trimmedDetail : question.questionText
+    let reason = trimmedDetail.isEmpty ? question.questionText : trimmedDetail
     do {
       switch submitTarget {
       case let .proposal(proposalID, useCase):

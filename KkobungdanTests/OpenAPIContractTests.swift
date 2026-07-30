@@ -23,10 +23,10 @@ final class OpenAPIContractTests: XCTestCase {
         DecodeContract("ProposalDetailResponse", decoding(ProposalDetailResponseDTO.self)),
         DecodeContract("ProposalOwnOfferResponse", decoding(ProposalOwnOfferResponseDTO.self)),
         DecodeContract("ProposalOwnResponse", decoding(MyProposalResponseDTO.self)), // GET /v1/proposal/own
-        DecodeContract("OfferResponse", decoding(OfferResponseDTO.self)), // 액션(complete-delivery·dispute)
+        // POST /v1/offer · 액션(complete-delivery·dispute) · GET /v1/offer/own — 모두 같은 OfferResponse 스키마라 DTO 공유
+        DecodeContract("OfferResponse", decoding(OfferResponseDTO.self)),
         DecodeContract("OfferSummaryResponse", decoding(OfferSummaryResponseDTO.self)), // GET /v1/offer
         DecodeContract("OfferDetailResponse", decoding(OfferDetailResponseDTO.self)), // GET /v1/offer/{id}
-        DecodeContract("OfferResponse", decoding(MyOfferResponseDTO.self)), // GET /v1/offer/own
         DecodeContract("OfferAcceptResponse", decoding(OfferAcceptResponseDTO.self)),
         // User / Settlement / Terms
         DecodeContract("UserDetailResponse", decoding(UserDetailResponseDTO.self)),

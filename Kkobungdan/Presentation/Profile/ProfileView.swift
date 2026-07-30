@@ -28,6 +28,7 @@ struct ProfileView: View {
   @State private var isEditingProfile = false
   @State private var isWithdrawing = false
   @State private var isWithdrawReasonPresented = false
+  @State private var isPolicyListPresented = false
 
   var body: some View {
     ZStack {
@@ -61,12 +62,13 @@ struct ProfileView: View {
     VStack(spacing: 0) {
       TabPageHeader(title: "프로필")
 
-      VStack(spacing: 12) {
-        profileCard
-          .padding(.horizontal, 16)
+      // 프로필 카드 + 메뉴만 스크롤한다. (화면보다 길어질 때만)
+      ScrollView {
+        VStack(spacing: 12) {
+          profileCard
+            .padding(.horizontal, 16)
 
-        // 메뉴 섹션 (border-t 컨테이너)
-        VStack(spacing: 0) {
+          // 메뉴 섹션 (border-t 컨테이너)
           VStack(spacing: 16) {
             // 약관 & 버전 & 알림 설정 그룹
             VStack(spacing: 0) {
@@ -78,19 +80,22 @@ struct ProfileView: View {
             // 로그아웃
             logoutRow
           }
-
-          Spacer()
-
-          customerSupportCard
+          .overlay(alignment: .top) {
+            Rectangle().fill(Color.gray200).frame(height: 1)
+          }
         }
-        .frame(maxHeight: .infinity)
-        .overlay(alignment: .top) {
-          Rectangle().fill(Color.gray200).frame(height: 1)
-        }
+        .padding(.top, 16)
       }
-      .padding(.top, 16)
-      .background(Color.gray000)
+      .scrollBounceBehavior(.basedOnSize)
       .frame(maxHeight: .infinity)
+
+      // 고객센터는 스크롤되지 않고 하단(bottom nav 바로 위)에 고정한다.
+      customerSupportCard
+    }
+    .background(Color.gray000)
+    .navigationDestination(isPresented: $isPolicyListPresented) {
+      PolicyListView(onBack: { isPolicyListPresented = false })
+        .navigationBarBackButtonHidden(true)
     }
     .task {
       await viewModel.load()
@@ -147,35 +152,41 @@ struct ProfileView: View {
 
   // MARK: - Menu Rows
 
+  /// 탭하면 약관 및 정책 목록 화면(`PolicyListView`)으로 이동한다.
   private var termsRow: some View {
-    HStack(spacing: 12) {
-      HStack(spacing: 8) {
-        Image(systemName: "doc.text")
+    Button {
+      isPolicyListPresented = true
+    } label: {
+      HStack(spacing: 12) {
+        HStack(spacing: 8) {
+          Image(systemName: "doc.text")
+            .resizable()
+            .scaledToFit()
+            .frame(width: 20, height: 20)
+            .foregroundColor(Color.gray900)
+
+          Text("약관 및 정책")
+            .textStyle(.title3)
+            .foregroundColor(Color.gray900)
+
+          Spacer()
+        }
+
+        Image("icon_arrow_right")
+          .renderingMode(.template)
           .resizable()
           .scaledToFit()
           .frame(width: 20, height: 20)
-          .foregroundColor(Color.gray900)
-
-        Text("약관 및 정책")
-          .textStyle(.title3)
-          .foregroundColor(Color.gray900)
-
-        Spacer()
+          .foregroundColor(Color.gray400)
       }
-
-      Image("icon_arrow_right")
-        .renderingMode(.template)
-        .resizable()
-        .scaledToFit()
-        .frame(width: 20, height: 20)
-        .foregroundColor(Color.gray400)
+      .padding(.horizontal, 24)
+      .padding(.vertical, 20)
+      .background(Color.white)
+      .overlay(alignment: .bottom) {
+        Rectangle().fill(Color.gray200).frame(height: 1)
+      }
     }
-    .padding(.horizontal, 24)
-    .padding(.vertical, 20)
-    .background(Color.white)
-    .overlay(alignment: .bottom) {
-      Rectangle().fill(Color.gray200).frame(height: 1)
-    }
+    .buttonStyle(.plain)
   }
 
   private var versionRow: some View {

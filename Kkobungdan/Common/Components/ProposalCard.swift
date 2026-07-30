@@ -89,12 +89,6 @@ struct ProposalCard: View {
 
   private var feeSection: some View {
     HStack(alignment: .center, spacing: 0) {
-      Image("icon_dollar")
-        .renderingMode(.template)
-        .resizable()
-        .frame(width: 20, height: 20)
-        .foregroundColor(Color.indigo500)
-        
       Text(fee)
         .textStyle(.heading4)
         .foregroundColor(Color.indigo500)

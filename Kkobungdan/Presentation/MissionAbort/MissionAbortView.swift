@@ -32,7 +32,6 @@ struct MissionAbortView: View {
       selectedID: viewModel.selectedQuestionID,
       detail: $viewModel.detail,
       detailMaxLength: MissionAbortViewModel.detailMaxLength,
-      isDetailRequired: viewModel.isDetailRequired,
       isSubmitting: viewModel.isSubmitting,
       canSubmit: viewModel.canSubmit,
       onClose: onClose,

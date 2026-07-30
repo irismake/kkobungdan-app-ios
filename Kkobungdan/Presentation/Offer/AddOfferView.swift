@@ -78,7 +78,7 @@ struct AddOfferView: View {
 
   private var header: some View {
     VStack(alignment: .leading, spacing: 12) {
-      CloseHeader(title: "계좌 등록", closePosition: .trailing, onClose: onBack)
+      CloseHeader(title: "계좌 등록", onClose: onBack)
 
       Text("임무 수행비를 받을 계좌를 등록해 주세요")
         .textStyle(.body3)

@@ -29,6 +29,7 @@ struct HomeView: View {
           if viewModel.isLoading, viewModel.proposals.isEmpty {
             ProgressView()
               .padding(.top, 40)
+              .frame(maxWidth: .infinity)
           } else {
             ForEach(viewModel.proposals) { proposal in
               ProposalCard(
@@ -36,8 +37,7 @@ struct HomeView: View {
                 description: proposal.content,
                 date: DisplayFormatter.dateString(proposal.deadline),
                 time: DisplayFormatter.timeString(proposal.deadline),
-                fee: DisplayFormatter.feeString(proposal.errandFee),
-                badges: ActivityStatusBadge.badges(proposal: proposal)
+                fee: DisplayFormatter.feeString(proposal.errandFee)
               )
               .contentShape(Rectangle())
               .onTapGesture {

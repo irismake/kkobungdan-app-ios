@@ -11,6 +11,8 @@ struct MyProposalDetailView: View {
   @Environment(\.openURL) private var openURL
   @State private var viewModel: MyProposalDetailViewModel
   @State private var isMissionCompleted: Bool = false
+  /// 계좌번호 복사 안내 토스트 메시지.
+  @State private var toastMessage: String?
   var onBack: () -> Void = {}
   var onShowRunners: () -> Void = {}
   var onAccepted: () -> Void = {}
@@ -58,6 +60,7 @@ struct MyProposalDetailView: View {
       }
     }
     .errorToast($viewModel.errorMessage)
+    .errorToast($toastMessage)
   }
 
   private var contentView: some View {
@@ -65,42 +68,50 @@ struct MyProposalDetailView: View {
       AppBar(title: "내 요청 상세", onBack: onBack)
 
       VStack(spacing: 0) {
-        ScrollView {
-          ScreenContainer {
-            VStack(spacing: 12) {
-              proposalCardSection
+        if viewModel.proposal == nil, viewModel.isLoading {
+          ProgressView()
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
+        } else {
+          ScrollView {
+            ScreenContainer {
+              VStack(spacing: 12) {
+                proposalCardSection
 
-              if viewModel.proposal?.status == .holding {
-                AccountInfoCard(
-                  bankName: "토스뱅크",
-                  accountNumber: "1234-56-24687"
-                )
-              }
+                if viewModel.proposal?.status == .holding {
+                  AccountInfoCard(
+                    bankName: DepositAccount.bankName,
+                    accountNumber: DepositAccount.accountNumber,
+                    onCopy: {
+                      toastMessage = "\(DepositAccount.holderName) 계좌번호가 복사되었습니다."
+                    }
+                  )
+                }
 
-              if let matched = viewModel.matchedOffer {
-                MatchedRunnerSection(
-                  nickname: matched.runnerName,
-                  level: matched.runnerLevel,
-                  appliedAt: DisplayFormatter.appliedAtString(matched.createdAt)
-                )
-              }
+                if let matched = viewModel.matchedOffer {
+                  MatchedRunnerSection(
+                    nickname: matched.runnerName,
+                    level: matched.runnerLevel,
+                    appliedAt: DisplayFormatter.appliedAtString(matched.createdAt)
+                  )
+                }
 
-              if let openChatURL = viewModel.openChatURL {
-                OpenChatModal(urlString: openChatURL)
+                if let openChatURL = viewModel.openChatURL {
+                  OpenChatModal(urlString: openChatURL)
+                }
               }
             }
+            .padding(.vertical, 12)
           }
-          .padding(.vertical, 12)
+
+          Spacer()
+
+          Text("고객센터 \(SupportContact.email)")
+            .textStyle(.body3)
+            .foregroundColor(Color.gray700)
+            .multilineTextAlignment(.center)
+            .frame(maxWidth: .infinity)
+            .padding(.bottom, 32)
         }
-
-        Spacer()
-
-        Text("고객센터 \(SupportContact.email)")
-          .textStyle(.body3)
-          .foregroundColor(Color.gray700)
-          .multilineTextAlignment(.center)
-          .frame(maxWidth: .infinity)
-          .padding(.bottom, 32)
       }
       .frame(maxHeight: .infinity)
       .overlay(alignment: .bottom) {
@@ -229,8 +240,6 @@ struct MyProposalDetailView: View {
         fee: DisplayFormatter.feeString(proposal.errandFee),
         badges: statusBadges
       )
-    } else if viewModel.isLoading {
-      ProgressView()
     }
   }
 }

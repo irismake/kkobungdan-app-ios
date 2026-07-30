@@ -9,6 +9,7 @@ import SwiftUI
 
 struct SocialLoginView: View {
   @State private var viewModel: SocialLoginViewModel
+  @Environment(\.openURL) private var openURL
 
   init(viewModel: SocialLoginViewModel) {
     _viewModel = State(initialValue: viewModel)
@@ -120,19 +121,13 @@ struct SocialLoginView: View {
         Text("로그인하면 오더런의")
           .textStyle(.caption5)
           .foregroundColor(Color.gray500)
-        Text("이용약관")
-          .textStyle(.caption5)
-          .foregroundColor(Color.gray500)
-          .underline()
+        policyLink(title: "이용약관", url: PolicyURL.termsOfService)
         Text("및")
           .textStyle(.caption5)
           .foregroundColor(Color.gray500)
       }
       HStack(spacing: 2) {
-        Text("개인정보처리방침")
-          .textStyle(.caption5)
-          .foregroundColor(Color.gray500)
-          .underline()
+        policyLink(title: "개인정보처리방침", url: PolicyURL.privacyPolicy)
         Text("에 동의하게 됩니다")
           .textStyle(.caption5)
           .foregroundColor(Color.gray500)
@@ -140,6 +135,19 @@ struct SocialLoginView: View {
     }
     .multilineTextAlignment(.center)
     .frame(maxWidth: .infinity)
+  }
+
+  /// 탭하면 외부 브라우저로 정책 문서를 연다.
+  private func policyLink(title: String, url: URL) -> some View {
+    Button {
+      openURL(url)
+    } label: {
+      Text(title)
+        .textStyle(.caption5)
+        .foregroundColor(Color.gray500)
+        .underline()
+    }
+    .buttonStyle(.plain)
   }
 }
 

@@ -32,7 +32,6 @@ struct ReportView: View {
       selectedID: viewModel.selectedReasonID,
       detail: $viewModel.detail,
       detailMaxLength: ReportViewModel.detailMaxLength,
-      isDetailRequired: viewModel.isDetailRequired,
       isSubmitting: viewModel.isSubmitting,
       canSubmit: viewModel.canSubmit,
       onClose: onClose,

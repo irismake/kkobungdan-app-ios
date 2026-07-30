@@ -39,6 +39,7 @@ struct OfferListView: View {
 
             if viewModel.isLoading, viewModel.runners.isEmpty {
               ProgressView().padding(.top, 20)
+                .frame(maxWidth: .infinity)
             } else {
               ForEach(viewModel.runners) { runner in
                 runnerCard(runner)
