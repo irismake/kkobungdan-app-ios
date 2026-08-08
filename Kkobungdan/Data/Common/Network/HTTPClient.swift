@@ -19,7 +19,12 @@ final class HTTPClient {
     else {
       fatalError("API_BASE_HOST 가 Info.plist 에 없습니다. Secrets.xcconfig 설정을 확인하세요.")
     }
-    return "http://\(host)"
+    guard let scheme = Bundle.main.object(forInfoDictionaryKey: "API_BASE_SCHEME") as? String,
+          !scheme.isEmpty
+    else {
+      fatalError("API_BASE_SCHEME 가 Info.plist 에 없습니다. Secrets.xcconfig 설정을 확인하세요.")
+    }
+    return "\(scheme)://\(host)"
   }()
 
   private static let refreshPath = "/v1/auth/refresh"

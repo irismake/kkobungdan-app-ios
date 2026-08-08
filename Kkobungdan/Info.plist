@@ -39,14 +39,20 @@
 	<string>$(KAKAO_NATIVE_APP_KEY)</string>
 	<key>API_BASE_HOST</key>
 	<string>$(API_BASE_HOST)</string>
+	<key>API_BASE_SCHEME</key>
+	<string>$(API_BASE_SCHEME)</string>
 	<!--
-	  개발 단계 한정: 백엔드가 아직 HTTP 라서 전역 ATS 우회를 켠다.
-	  운영 전 반드시 false 로 되돌리고 NSExceptionDomains 로 좁히거나 서버를 HTTPS 화할 것.
+	  개발 서버(Debug)가 HTTP 라서 ATS 우회가 필요하다. 운영(Release)은 HTTPS 이므로 우회하지 않는다.
+	  ATS 예외 도메인은 plist "키" 자리라 $(API_BASE_HOST) 변수 확장이 되지 않으므로,
+	  호스트를 저장소에 하드코딩하지 않기 위해 도메인 예외 대신 Debug 한정 전역 우회를 쓴다.
+	  분기는 INFOPLIST_PREPROCESS + INFOPLIST_PREPROCESSOR_DEFINITIONS(DEBUG_ATS=1) 로 처리한다.
 	-->
+#if DEBUG_ATS
 	<key>NSAppTransportSecurity</key>
 	<dict>
 		<key>NSAllowsArbitraryLoads</key>
 		<true/>
 	</dict>
+#endif
 </dict>
 </plist>
