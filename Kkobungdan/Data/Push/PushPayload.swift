@@ -61,8 +61,7 @@ extension PushPayload {
     if
       let object = Self.dataObject(from: userInfo["data"] as? String),
       let offerID = Self.int64(object["offer_id"]),
-      let proposalID = Self.int64(object["proposal_id"])
-    {
+      let proposalID = Self.int64(object["proposal_id"]) {
       self.init(type: type, offerID: offerID, proposalID: proposalID)
       return
     }

@@ -21,8 +21,7 @@ extension Error {
   /// 서버가 내려준 에러 메시지가 있으면 그대로, 없으면 화면별 fallback 문구를 반환한다.
   func userMessage(fallback: String) -> String {
     if let repositoryError = self as? RepositoryError,
-       case let .server(_, message) = repositoryError
-    {
+       case let .server(_, message) = repositoryError {
       return message
     }
     return fallback
@@ -31,8 +30,7 @@ extension Error {
   /// 상태코드가 아니라 서버가 명시한 코드로 분기할 때 사용한다.
   func isServerError(_ code: ServerErrorCode) -> Bool {
     if let repositoryError = self as? RepositoryError,
-       case let .server(serverCode, _) = repositoryError
-    {
+       case let .server(serverCode, _) = repositoryError {
       return serverCode == code.rawValue
     }
     return false

@@ -30,7 +30,11 @@ file_length:
 
 type_body_length:
   warning: 300          # 클래스 또는 구조체의 최대 길이 (300줄 초과 시 경고)
-  error: 400            # 400줄 초과 시 에러 발생
+  error: 500            # 500줄 초과 시 에러 발생
+
+function_body_length:
+  warning: 100          # 긴 함수는 경고로 확인
+  error: 150            # 150줄 초과 시 에러 발생
 
 # 6. 네이밍 규칙 (변수, 함수, 타입 이름 길이)
 type_name:

@@ -51,7 +51,7 @@ final class OpenAPIContractTests: XCTestCase {
         DecodeContract("AuthAccessTokenResponse", decoding(RefreshTokenResponseDTO.self)), // refresh
         // 공통 에러 (non-2xx 바디)
         DecodeContract("ErrorResponse", decoding(ApiErrorDTO.self)),
-        DecodeContract("ErrorDetail", decoding(ApiErrorDetailDTO.self)),
+        DecodeContract("ErrorDetail", decoding(ApiErrorDetailDTO.self))
         // ⚠️ Oauth 3종(LoginResponseDTO/AppleLoginResponseDTO/KakaoLoginResponseDTO)은
         //    호출 엔드포인트(/v1/auth/login, /v1/auth/oauth/*)가 현재 서버 스펙에 없어 추적 불가.
     ]
@@ -98,7 +98,7 @@ final class OpenAPIContractTests: XCTestCase {
         // Report
         EncodeContract("ProposalReportCreateRequest", ProposalReportCreateRequest(
             reasonQuestionID: 1, detailReason: "상세 사유"
-        )),
+        ))
     ]
 
     /// 서버 스펙 enum ↔ Swift enum 매핑. 새 스펙 enum 에 Swift enum 을 만들면 여기 한 줄 추가한다.
@@ -109,13 +109,13 @@ final class OpenAPIContractTests: XCTestCase {
         EnumContract("OfferStatus", OfferStatus.self),
         // REPORTED — 배지 등 UI 가 없는 클라이언트 미사용 상태라 Swift 케이스를 두지 않는다.
         EnumContract("ProposalStatus", ProposalStatus.self, knownMissingValues: ["REPORTED"]),
-        EnumContract("DisputeSurveyTargetType", DisputeSurveyTargetType.self),
+        EnumContract("DisputeSurveyTargetType", DisputeSurveyTargetType.self)
     ]
 
     /// 서버 스펙 enum 이지만 의도적으로 Swift enum 을 두지 않는 것 (DTO 가 String 으로 유지, 클라이언트 미사용).
     /// Swift enum 을 만들면 여기서 빼고 `enumContracts` 에 등록한다.
     private static let knownUnregisteredEnumSchemas: Set<String> = [
-        "ProposalReportStatus", // 신고 처리 상태 — 클라이언트 미사용 (ProposalReportResponseDTO.status: String)
+        "ProposalReportStatus" // 신고 처리 상태 — 클라이언트 미사용 (ProposalReportResponseDTO.status: String)
     ]
 
     // MARK: - 1. maximal: 모든 필드가 채워진 응답을 DTO 가 읽는가 (필드명·타입 변경 감지)
@@ -417,27 +417,28 @@ final class OpenAPIContractTests: XCTestCase {
         }
 
         for name in lockNames.intersection(curNames).sorted() {
-            let l = lock[name] ?? [:], c = current[name] ?? [:]
-            let lReq = Set((l["required"] as? [String]) ?? [])
-            let cReq = Set((c["required"] as? [String]) ?? [])
-            let lProps = (l["properties"] as? [String: String]) ?? [:]
-            let cProps = (c["properties"] as? [String: String]) ?? [:]
-            let lKeys = Set(lProps.keys), cKeys = Set(cProps.keys)
+            let lockedSchema = lock[name] ?? [:], currentSchema = current[name] ?? [:]
+            let lockedRequiredFields = Set((lockedSchema["required"] as? [String]) ?? [])
+            let currentRequiredFields = Set((currentSchema["required"] as? [String]) ?? [])
+            let lockedProperties = (lockedSchema["properties"] as? [String: String]) ?? [:]
+            let currentProperties = (currentSchema["properties"] as? [String: String]) ?? [:]
+            let lockedFieldNames = Set(lockedProperties.keys), currentFieldNames = Set(currentProperties.keys)
 
-            for k in cKeys.subtracting(lKeys).sorted() {
-                out.append("  [\(name)] ＋ 필드 추가: \(k): \(cProps[k] ?? "?")")
+            for fieldName in currentFieldNames.subtracting(lockedFieldNames).sorted() {
+                out.append("  [\(name)] ＋ 필드 추가: \(fieldName): \(currentProperties[fieldName] ?? "?")")
             }
-            for k in lKeys.subtracting(cKeys).sorted() {
-                out.append("  [\(name)] － 필드 삭제: \(k)")
+            for fieldName in lockedFieldNames.subtracting(currentFieldNames).sorted() {
+                out.append("  [\(name)] － 필드 삭제: \(fieldName)")
             }
-            for k in lKeys.intersection(cKeys).sorted() where lProps[k] != cProps[k] {
-                out.append("  [\(name)] ~ 타입 변경: \(k): \(lProps[k] ?? "?") → \(cProps[k] ?? "?")")
+            for fieldName in lockedFieldNames.intersection(currentFieldNames).sorted()
+                where lockedProperties[fieldName] != currentProperties[fieldName] {
+                out.append("  [\(name)] ~ 타입 변경: \(fieldName): \(lockedProperties[fieldName] ?? "?") → \(currentProperties[fieldName] ?? "?")")
             }
-            for k in cReq.subtracting(lReq).sorted() {
-                out.append("  [\(name)] ! optional→required: \(k)")
+            for fieldName in currentRequiredFields.subtracting(lockedRequiredFields).sorted() {
+                out.append("  [\(name)] ! optional→required: \(fieldName)")
             }
-            for k in lReq.subtracting(cReq).sorted() {
-                out.append("  [\(name)] ! required→optional: \(k)")
+            for fieldName in lockedRequiredFields.subtracting(currentRequiredFields).sorted() {
+                out.append("  [\(name)] ! required→optional: \(fieldName)")
             }
         }
         return out
@@ -471,8 +472,7 @@ private struct EnumContract {
     let knownMissingValues: Set<String>
 
     init<T>(_ schema: String, _: T.Type, knownMissingValues: Set<String> = [])
-        where T: RawRepresentable & CaseIterable, T.RawValue == String
-    {
+        where T: RawRepresentable & CaseIterable, T.RawValue == String {
         self.schema = schema
         swiftName = String(describing: T.self)
         hasCase = { T(rawValue: $0) != nil }
