@@ -23,6 +23,12 @@ struct NotificationView: View {
             ProgressView()
               .padding(.top, 40)
               .frame(maxWidth: .infinity)
+          } else if viewModel.notifications.isEmpty {
+            Text("아직 알림이 없어요.")
+              .textStyle(.body3)
+              .foregroundColor(Color.gray500)
+              .padding(.top, 40)
+              .frame(maxWidth: .infinity)
           } else {
             ForEach(viewModel.notifications) { item in
               NotificationItemView(

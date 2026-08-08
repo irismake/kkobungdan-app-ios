@@ -101,7 +101,7 @@ struct ActivityView: View {
       ProgressView().padding(.top, 40)
         .frame(maxWidth: .infinity)
     } else if items.isEmpty {
-      Text("아직 등록한 의뢰가 없어요.")
+      Text("아직 등록한 요청이 없어요.")
         .textStyle(.body3)
         .foregroundColor(Color.gray500)
         .padding(.top, 40)
