@@ -208,8 +208,12 @@ final class HTTPClient {
       _ = try await tokenRefresher.refresh(currentAccessToken: currentToken)
       return true
     } catch {
-      tokenStorage.forceLogout()
-      throw RepositoryError.unauthorized
+      if case RepositoryError.unauthorized = error {
+        tokenStorage.forceLogout()
+      } else {
+        networkLogger.warning("토큰 갱신 실패(세션 유지): \(String(describing: error))")
+      }
+      throw error
     }
   }
 
