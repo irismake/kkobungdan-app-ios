@@ -59,6 +59,9 @@ final class MyOffersViewModel {
       }
       proposalByOfferID = map
     } catch {
+      guard !error.isCancellation else {
+        return
+      }
       errorMessage = error.userMessage(fallback: "웨이팅 기록을 불러오지 못했어요.")
     }
     isLoading = false

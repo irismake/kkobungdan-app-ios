@@ -35,6 +35,9 @@ final class MyProposalsViewModel {
     do {
       myProposals = try await fetchMyProposalsUseCase.execute(status: status)
     } catch {
+      guard !error.isCancellation else {
+        return
+      }
       errorMessage = error.userMessage(fallback: "내 요청을 불러오지 못했어요.")
     }
     isLoading = false
