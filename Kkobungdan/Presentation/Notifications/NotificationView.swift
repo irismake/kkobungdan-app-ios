@@ -60,12 +60,12 @@ struct NotificationView: View {
       }
       .background(Color.gray000)
       .refreshable {
-        await viewModel.load()
+        await viewModel.syncNotifications()
       }
     }
     .background(Color.gray000)
     .task(id: PushRouteStore.shared.foregroundPushCount) {
-      await viewModel.load()
+      await viewModel.syncNotifications()
     }
     .errorToast($viewModel.errorMessage)
   }
