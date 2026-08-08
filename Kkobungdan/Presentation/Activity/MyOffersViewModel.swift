@@ -45,19 +45,7 @@ final class MyOffersViewModel {
       let offers = try await fetchMyOffersUseCase.execute(status: status)
       myOffers = offers
 
-      var map: [Int64: ProposalDetail] = [:]
-      try await withThrowingTaskGroup(of: (Int64, ProposalDetail).self) { group in
-        for offer in offers {
-          group.addTask {
-            let proposal = try await self.fetchProposalDetailUseCase.execute(id: offer.proposalID)
-            return (offer.id, proposal)
-          }
-        }
-        for try await (offerID, proposal) in group {
-          map[offerID] = proposal
-        }
-      }
-      proposalByOfferID = map
+      proposalByOfferID = await loadProposals(for: offers)
     } catch {
       guard !error.isCancellation else {
         return
@@ -65,5 +53,26 @@ final class MyOffersViewModel {
       errorMessage = error.userMessage(fallback: "웨이팅 기록을 불러오지 못했어요.")
     }
     isLoading = false
+  }
+
+  /// offer 카드용 proposal 상세를 병렬 조회한다.
+  private func loadProposals(for offers: [MyOffer]) async -> [Int64: ProposalDetail] {
+    await withTaskGroup(of: (Int64, ProposalDetail)?.self) { group in
+      for offer in offers {
+        group.addTask {
+          guard let proposal = try? await self.fetchProposalDetailUseCase.execute(id: offer.proposalID) else {
+            return nil
+          }
+          return (offer.id, proposal)
+        }
+      }
+      var map: [Int64: ProposalDetail] = [:]
+      for await result in group {
+        if let (offerID, proposal) = result {
+          map[offerID] = proposal
+        }
+      }
+      return map
+    }
   }
 }
