@@ -11,7 +11,7 @@ import OSLog
 private let profileLogger = Logger(subsystem: "com.kkobungdan.Kkobungdan", category: "Profile")
 
 @Observable
-final class ProfileViewModel {
+final class ProfileViewModel: LoadableViewModel {
   var user: User?
   var isLoading: Bool = false
   var errorMessage: String?
@@ -51,16 +51,8 @@ final class ProfileViewModel {
 
   @MainActor
   func load() async {
-    isLoading = true
-    errorMessage = nil
-    defer { isLoading = false }
-    do {
+    await withLoading(fallback: "프로필을 불러오지 못했어요.") {
       user = try await fetchUserDetailUseCase.execute()
-    } catch {
-      guard !error.isCancellation else {
-        return
-      }
-      errorMessage = error.userMessage(fallback: "프로필을 불러오지 못했어요.")
     }
   }
 

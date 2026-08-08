@@ -8,7 +8,7 @@
 import Foundation
 
 @Observable
-final class NotificationViewModel {
+final class NotificationViewModel: LoadableViewModel {
   var notifications: [AppNotification] = []
   var isLoading: Bool = false
   var isLoadingMore: Bool = false
@@ -42,19 +42,11 @@ final class NotificationViewModel {
 
   @MainActor
   func load() async {
-    isLoading = true
-    errorMessage = nil
-    defer { isLoading = false }
-    do {
+    await withLoading(fallback: "알림을 불러오지 못했어요.") {
       let firstPage = try await fetchNotificationsUseCase.execute()
       notifications = firstPage.notifications
       page = 1
       hasNext = firstPage.hasNext
-    } catch {
-      guard !error.isCancellation else {
-        return
-      }
-      errorMessage = error.userMessage(fallback: "알림을 불러오지 못했어요.")
     }
   }
 

@@ -12,7 +12,7 @@ import OSLog
 private let withdrawLogger = Logger(subsystem: "com.kkobungdan.Kkobungdan", category: "Withdraw")
 
 @Observable
-final class WithdrawReasonViewModel {
+final class WithdrawReasonViewModel: LoadableViewModel {
   var reasons: [WithdrawalReason] = []
   var selectedID: Int64?
   var detail: String = ""
@@ -76,17 +76,11 @@ final class WithdrawReasonViewModel {
     guard reasons.isEmpty else {
       return
     }
-    isLoading = true
-    errorMessage = nil
-    defer { isLoading = false }
-    do {
+    await withLoading(
+      fallback: "탈퇴 사유를 불러오지 못했어요.",
+      onFailure: { withdrawLogger.error("탈퇴 사유 조회 실패: \($0.localizedDescription)") }
+    ) {
       reasons = try await fetchReasonsUseCase.execute()
-    } catch {
-      guard !error.isCancellation else {
-        return
-      }
-      errorMessage = "탈퇴 사유를 불러오지 못했어요."
-      withdrawLogger.error("탈퇴 사유 조회 실패: \(error.localizedDescription)")
     }
   }
 

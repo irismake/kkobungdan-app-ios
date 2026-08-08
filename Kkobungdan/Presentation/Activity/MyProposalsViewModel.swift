@@ -11,7 +11,7 @@
 import Foundation
 
 @Observable
-final class MyProposalsViewModel {
+final class MyProposalsViewModel: LoadableViewModel {
   var myProposals: [MyProposal] = []
   var isLoading: Bool = false
   var errorMessage: String?
@@ -30,16 +30,8 @@ final class MyProposalsViewModel {
 
   @MainActor
   func load(status: [ProposalStatus] = []) async {
-    isLoading = true
-    errorMessage = nil
-    defer { isLoading = false }
-    do {
+    await withLoading(fallback: "내 요청을 불러오지 못했어요.") {
       myProposals = try await fetchMyProposalsUseCase.execute(status: status)
-    } catch {
-      guard !error.isCancellation else {
-        return
-      }
-      errorMessage = error.userMessage(fallback: "내 요청을 불러오지 못했어요.")
     }
   }
 }

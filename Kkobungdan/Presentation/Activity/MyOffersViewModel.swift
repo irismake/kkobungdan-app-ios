@@ -12,7 +12,7 @@
 import Foundation
 
 @Observable
-final class MyOffersViewModel {
+final class MyOffersViewModel: LoadableViewModel {
   var myOffers: [MyOffer] = []
   /// offer 카드 표시용. offerID → ProposalDetail
   var proposalByOfferID: [Int64: ProposalDetail] = [:]
@@ -39,19 +39,11 @@ final class MyOffersViewModel {
 
   @MainActor
   func load(status: [OfferStatus] = []) async {
-    isLoading = true
-    errorMessage = nil
-    defer { isLoading = false }
-    do {
+    await withLoading(fallback: "웨이팅 기록을 불러오지 못했어요.") {
       let offers = try await fetchMyOffersUseCase.execute(status: status)
       myOffers = offers
 
       proposalByOfferID = await loadProposals(for: offers)
-    } catch {
-      guard !error.isCancellation else {
-        return
-      }
-      errorMessage = error.userMessage(fallback: "웨이팅 기록을 불러오지 못했어요.")
     }
   }
 
