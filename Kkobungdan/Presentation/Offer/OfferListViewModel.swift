@@ -39,6 +39,7 @@ final class OfferListViewModel {
   func load() async {
     isLoading = true
     errorMessage = nil
+    defer { isLoading = false }
     do {
       async let proposalTask = fetchDetailUseCase.execute(id: proposalID)
       async let offersTask = fetchOffersUseCase.execute(proposalID: proposalID)
@@ -46,9 +47,11 @@ final class OfferListViewModel {
       self.proposal = proposal
       runners = offers.filter { $0.status == .waiting || $0.status == .accepted }
     } catch {
+      guard !error.isCancellation else {
+        return
+      }
       errorMessage = error.userMessage(fallback: "지원자 목록을 불러오지 못했어요.")
     }
-    isLoading = false
   }
 
   /// 의뢰자가 지원자를 선택(수락)한다. `POST /v1/offer/{offerId}/accept` (무바디) 호출로

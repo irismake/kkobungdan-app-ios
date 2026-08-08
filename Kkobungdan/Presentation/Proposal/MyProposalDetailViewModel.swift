@@ -108,6 +108,7 @@ final class MyProposalDetailViewModel {
   func load() async {
     isLoading = true
     errorMessage = nil
+    defer { isLoading = false }
     do {
       // offer 조회 status 필터가 proposal 상태에 의존하므로 proposal 을 먼저 조회한다.
       let loaded = try await fetchDetailUseCase.execute(id: proposalID)
@@ -127,9 +128,11 @@ final class MyProposalDetailViewModel {
         disputeEvidence = nil
       }
     } catch {
+      guard !error.isCancellation else {
+        return
+      }
       errorMessage = error.userMessage(fallback: "내 요청 상세를 불러오지 못했어요.")
     }
-    isLoading = false
   }
 
   /// 오더 수령 확인. `POST /v1/proposal/{id}/confirm-received`

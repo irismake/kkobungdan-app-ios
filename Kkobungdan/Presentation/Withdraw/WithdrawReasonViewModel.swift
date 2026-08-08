@@ -78,13 +78,16 @@ final class WithdrawReasonViewModel {
     }
     isLoading = true
     errorMessage = nil
+    defer { isLoading = false }
     do {
       reasons = try await fetchReasonsUseCase.execute()
     } catch {
+      guard !error.isCancellation else {
+        return
+      }
       errorMessage = "탈퇴 사유를 불러오지 못했어요."
       withdrawLogger.error("탈퇴 사유 조회 실패: \(error.localizedDescription)")
     }
-    isLoading = false
   }
 
   @MainActor

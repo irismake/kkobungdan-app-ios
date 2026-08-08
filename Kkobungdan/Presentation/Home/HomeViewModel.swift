@@ -31,12 +31,15 @@ final class HomeViewModel {
   func load() async {
     isLoading = true
     errorMessage = nil
+    defer { isLoading = false }
     do {
       // 홈 피드는 아직 지원 가능한 공개 요청(등록 완료 / 새 지원 도착)만 노출한다.
       proposals = try await fetchProposalsUseCase.execute(status: [.posted, .offered])
     } catch {
+      guard !error.isCancellation else {
+        return
+      }
       errorMessage = error.userMessage(fallback: "요청 목록을 불러오지 못했어요.")
     }
-    isLoading = false
   }
 }

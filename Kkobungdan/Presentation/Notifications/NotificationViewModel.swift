@@ -44,15 +44,18 @@ final class NotificationViewModel {
   func load() async {
     isLoading = true
     errorMessage = nil
+    defer { isLoading = false }
     do {
       let firstPage = try await fetchNotificationsUseCase.execute()
       notifications = firstPage.notifications
       page = 1
       hasNext = firstPage.hasNext
     } catch {
+      guard !error.isCancellation else {
+        return
+      }
       errorMessage = error.userMessage(fallback: "알림을 불러오지 못했어요.")
     }
-    isLoading = false
   }
 
   /// 안읽음 개수를 서버 통계로 갱신한다. 뱃지 용도라 실패는 조용히 무시.

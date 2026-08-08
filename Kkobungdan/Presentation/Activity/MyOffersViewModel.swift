@@ -41,6 +41,7 @@ final class MyOffersViewModel {
   func load(status: [OfferStatus] = []) async {
     isLoading = true
     errorMessage = nil
+    defer { isLoading = false }
     do {
       let offers = try await fetchMyOffersUseCase.execute(status: status)
       myOffers = offers
@@ -52,7 +53,6 @@ final class MyOffersViewModel {
       }
       errorMessage = error.userMessage(fallback: "웨이팅 기록을 불러오지 못했어요.")
     }
-    isLoading = false
   }
 
   /// offer 카드용 proposal 상세를 병렬 조회한다.

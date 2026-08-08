@@ -53,12 +53,15 @@ final class ProfileViewModel {
   func load() async {
     isLoading = true
     errorMessage = nil
+    defer { isLoading = false }
     do {
       user = try await fetchUserDetailUseCase.execute()
     } catch {
+      guard !error.isCancellation else {
+        return
+      }
       errorMessage = error.userMessage(fallback: "프로필을 불러오지 못했어요.")
     }
-    isLoading = false
   }
 
   @MainActor

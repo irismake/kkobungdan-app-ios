@@ -88,6 +88,7 @@ final class OfferDetailViewModel {
   func load() async {
     isLoading = true
     errorMessage = nil
+    defer { isLoading = false }
     do {
       let proposal = try await fetchDetailUseCase.execute(id: proposalID)
       self.proposal = proposal
@@ -103,9 +104,11 @@ final class OfferDetailViewModel {
         disputeEvidence = nil
       }
     } catch {
+      guard !error.isCancellation else {
+        return
+      }
       errorMessage = error.userMessage(fallback: "지원 상세를 불러오지 못했어요.")
     }
-    isLoading = false
   }
 
   /// 러너 배달 완료. `POST /v1/offer/{id}/complete-delivery`

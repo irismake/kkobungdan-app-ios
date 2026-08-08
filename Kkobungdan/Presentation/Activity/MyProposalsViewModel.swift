@@ -32,6 +32,7 @@ final class MyProposalsViewModel {
   func load(status: [ProposalStatus] = []) async {
     isLoading = true
     errorMessage = nil
+    defer { isLoading = false }
     do {
       myProposals = try await fetchMyProposalsUseCase.execute(status: status)
     } catch {
@@ -40,6 +41,5 @@ final class MyProposalsViewModel {
       }
       errorMessage = error.userMessage(fallback: "내 요청을 불러오지 못했어요.")
     }
-    isLoading = false
   }
 }

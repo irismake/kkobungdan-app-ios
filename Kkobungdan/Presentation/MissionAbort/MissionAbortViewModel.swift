@@ -74,13 +74,16 @@ final class MissionAbortViewModel {
     }
     isLoading = true
     errorMessage = nil
+    defer { isLoading = false }
     do {
       questions = try await fetchQuestionsUseCase.execute(targetType: submitTarget.surveyTargetType)
         .sorted { $0.displayOrder < $1.displayOrder }
     } catch {
+      guard !error.isCancellation else {
+        return
+      }
       errorMessage = error.userMessage(fallback: "중단 사유를 불러오지 못했습니다.")
     }
-    isLoading = false
   }
 
   func select(_ question: DisputeSurveyQuestion) {
