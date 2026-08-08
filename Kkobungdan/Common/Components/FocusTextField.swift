@@ -19,11 +19,11 @@ struct FocusTextField<FocusValue: Hashable, Trailing: View>: View {
   @Binding var text: String
   var placeholder: String = ""
   var keyboardType: UIKeyboardType = .default
-  var maxLength: Int? = nil
+  var maxLength: Int?
   var autoFocus: Bool = false
-  var focus: FocusState<FocusValue?>.Binding? = nil
-  var focusValue: FocusValue? = nil
-  var onChange: ((String) -> Void)? = nil
+  var focus: FocusState<FocusValue?>.Binding?
+  var focusValue: FocusValue?
+  var onChange: ((String) -> Void)?
   var background: Color = .clear
   @ViewBuilder var trailing: () -> Trailing
 

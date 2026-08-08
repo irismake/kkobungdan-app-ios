@@ -9,7 +9,7 @@
 import Foundation
 
 @Observable
-final class MissionAbortViewModel {
+final class MissionAbortViewModel: LoadableViewModel {
   /// 중단 대상. 어떤 분쟁 엔드포인트를 호출할지 + 설문 대상 타입을 가른다.
   enum Submit {
     case proposal(proposalID: Int64, useCase: RaiseProposalDisputeUseCase)
@@ -72,15 +72,10 @@ final class MissionAbortViewModel {
     guard questions.isEmpty else {
       return
     }
-    isLoading = true
-    errorMessage = nil
-    do {
+    await withLoading(fallback: "중단 사유를 불러오지 못했습니다.") {
       questions = try await fetchQuestionsUseCase.execute(targetType: submitTarget.surveyTargetType)
         .sorted { $0.displayOrder < $1.displayOrder }
-    } catch {
-      errorMessage = error.userMessage(fallback: "중단 사유를 불러오지 못했습니다.")
     }
-    isLoading = false
   }
 
   func select(_ question: DisputeSurveyQuestion) {

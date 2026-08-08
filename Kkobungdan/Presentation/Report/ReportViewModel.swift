@@ -8,7 +8,7 @@
 import Foundation
 
 @Observable
-final class ReportViewModel {
+final class ReportViewModel: LoadableViewModel {
   /// 신고 대상 의뢰 ID.
   let proposalID: Int64
 
@@ -67,14 +67,9 @@ final class ReportViewModel {
     guard reasons.isEmpty else {
       return
     }
-    isLoading = true
-    errorMessage = nil
-    do {
+    await withLoading(fallback: "신고 사유를 불러오지 못했습니다.") {
       reasons = try await fetchReasonsUseCase.execute()
-    } catch {
-      errorMessage = error.userMessage(fallback: "신고 사유를 불러오지 못했습니다.")
     }
-    isLoading = false
   }
 
   func select(_ reason: ReportReason) {

@@ -12,7 +12,7 @@
 import Foundation
 
 @Observable
-final class MyOffersViewModel {
+final class MyOffersViewModel: LoadableViewModel {
   var myOffers: [MyOffer] = []
   /// offer 카드 표시용. offerID → ProposalDetail
   var proposalByOfferID: [Int64: ProposalDetail] = [:]
@@ -39,28 +39,32 @@ final class MyOffersViewModel {
 
   @MainActor
   func load(status: [OfferStatus] = []) async {
-    isLoading = true
-    errorMessage = nil
-    do {
+    await withLoading(fallback: "웨이팅 기록을 불러오지 못했어요.") {
       let offers = try await fetchMyOffersUseCase.execute(status: status)
       myOffers = offers
 
-      var map: [Int64: ProposalDetail] = [:]
-      try await withThrowingTaskGroup(of: (Int64, ProposalDetail).self) { group in
-        for offer in offers {
-          group.addTask {
-            let proposal = try await self.fetchProposalDetailUseCase.execute(id: offer.proposalID)
-            return (offer.id, proposal)
+      proposalByOfferID = await loadProposals(for: offers)
+    }
+  }
+
+  /// offer 카드용 proposal 상세를 병렬 조회한다.
+  private func loadProposals(for offers: [MyOffer]) async -> [Int64: ProposalDetail] {
+    await withTaskGroup(of: (Int64, ProposalDetail)?.self) { group in
+      for offer in offers {
+        group.addTask {
+          guard let proposal = try? await self.fetchProposalDetailUseCase.execute(id: offer.proposalID) else {
+            return nil
           }
+          return (offer.id, proposal)
         }
-        for try await (offerID, proposal) in group {
+      }
+      var map: [Int64: ProposalDetail] = [:]
+      for await result in group {
+        if let (offerID, proposal) = result {
           map[offerID] = proposal
         }
       }
-      proposalByOfferID = map
-    } catch {
-      errorMessage = error.userMessage(fallback: "웨이팅 기록을 불러오지 못했어요.")
+      return map
     }
-    isLoading = false
   }
 }

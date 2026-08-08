@@ -16,9 +16,9 @@ struct MainTabView: View {
   @State private var myOffersViewModel: MyOffersViewModel
   @State private var router = AppRouter()
 
-  private let profileViewModel: ProfileViewModel
-  private let withdrawReasonViewModel: WithdrawReasonViewModel
-  private let notificationViewModel: NotificationViewModel
+  @State private var profileViewModel: ProfileViewModel
+  @State private var withdrawReasonViewModel: WithdrawReasonViewModel
+  @State private var notificationViewModel: NotificationViewModel
 
   /// 운영 진입점. DIContainer 로 탭 루트 VM 을 조립한다.
   init() {
@@ -62,9 +62,9 @@ struct MainTabView: View {
     _viewModel = State(initialValue: viewModel)
     _myProposalsViewModel = State(initialValue: myProposalsViewModel)
     _myOffersViewModel = State(initialValue: myOffersViewModel)
-    self.profileViewModel = profileViewModel
-    self.withdrawReasonViewModel = withdrawReasonViewModel
-    self.notificationViewModel = notificationViewModel
+    _profileViewModel = State(initialValue: profileViewModel)
+    _withdrawReasonViewModel = State(initialValue: withdrawReasonViewModel)
+    _notificationViewModel = State(initialValue: notificationViewModel)
   }
 
   var body: some View {
@@ -80,8 +80,7 @@ struct MainTabView: View {
         PushRouteStore.shared.pending = nil
         await router.route(push: payload)
       }
-      // 최초 진입 + 포그라운드 푸시 도착 시: 안읽음 뱃지만 갱신.
-      // (알림 목록 로드는 알림 탭 진입 시 NotificationView 가 담당 — 뱃지/목록 분리)
+      // 최초 진입 + 포그라운드 푸시 도착 시 안읽음 뱃지를 갱신한다.
       .task(id: PushRouteStore.shared.foregroundPushCount) {
         await notificationViewModel.refreshUnreadCount()
         if PushRouteStore.shared.foregroundPushCount > 0 {

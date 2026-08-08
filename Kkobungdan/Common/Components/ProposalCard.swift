@@ -11,7 +11,7 @@ struct BadgeItem {
   let text: String
   var textColor: Color = .rose500
   var bgColor: Color = .rose000
-  var iconName: String? = nil
+  var iconName: String?
 }
 
 struct ProposalCard: View {

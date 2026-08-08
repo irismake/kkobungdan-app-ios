@@ -8,7 +8,7 @@
 import Foundation
 
 @Observable
-final class OfferListViewModel {
+final class OfferListViewModel: LoadableViewModel {
   let proposalID: Int64
 
   var proposal: ProposalDetail?
@@ -37,18 +37,13 @@ final class OfferListViewModel {
 
   @MainActor
   func load() async {
-    isLoading = true
-    errorMessage = nil
-    do {
+    await withLoading(fallback: "지원자 목록을 불러오지 못했어요.") {
       async let proposalTask = fetchDetailUseCase.execute(id: proposalID)
       async let offersTask = fetchOffersUseCase.execute(proposalID: proposalID)
       let (proposal, offers) = try await (proposalTask, offersTask)
       self.proposal = proposal
       runners = offers.filter { $0.status == .waiting || $0.status == .accepted }
-    } catch {
-      errorMessage = error.userMessage(fallback: "지원자 목록을 불러오지 못했어요.")
     }
-    isLoading = false
   }
 
   /// 의뢰자가 지원자를 선택(수락)한다. `POST /v1/offer/{offerId}/accept` (무바디) 호출로

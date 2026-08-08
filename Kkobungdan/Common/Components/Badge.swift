@@ -11,7 +11,7 @@ struct Badge: View {
   let text: String
   var textColor: Color = .rose500
   var bgColor: Color = .rose000
-  var iconName: String? = nil
+  var iconName: String?
 
   var body: some View {
     HStack(spacing: 2) {

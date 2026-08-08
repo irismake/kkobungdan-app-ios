@@ -8,7 +8,7 @@
 import Foundation
 
 @Observable
-final class OfferDetailViewModel {
+final class OfferDetailViewModel: LoadableViewModel {
   let proposalID: Int64
   let offerID: Int64
 
@@ -86,9 +86,7 @@ final class OfferDetailViewModel {
 
   @MainActor
   func load() async {
-    isLoading = true
-    errorMessage = nil
-    do {
+    await withLoading(fallback: "지원 상세를 불러오지 못했어요.") {
       let proposal = try await fetchDetailUseCase.execute(id: proposalID)
       self.proposal = proposal
 
@@ -102,10 +100,7 @@ final class OfferDetailViewModel {
       } else {
         disputeEvidence = nil
       }
-    } catch {
-      errorMessage = error.userMessage(fallback: "지원 상세를 불러오지 못했어요.")
     }
-    isLoading = false
   }
 
   /// 러너 배달 완료. `POST /v1/offer/{id}/complete-delivery`

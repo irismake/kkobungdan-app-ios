@@ -30,6 +30,12 @@ struct HomeView: View {
             ProgressView()
               .padding(.top, 40)
               .frame(maxWidth: .infinity)
+          } else if viewModel.proposals.isEmpty {
+            Text("아직 등록된 요청이 없어요.")
+              .textStyle(.body3)
+              .foregroundColor(Color.gray500)
+              .padding(.top, 40)
+              .frame(maxWidth: .infinity)
           } else {
             ForEach(viewModel.proposals) { proposal in
               ProposalCard(
@@ -46,13 +52,17 @@ struct HomeView: View {
             }
           }
         }
+        .frame(maxWidth: .infinity)
         .padding(16)
       }
+      .frame(maxWidth: .infinity, maxHeight: .infinity)
       .background(Color.gray000)
       .refreshable {
         await viewModel.load()
       }
     }
+    .frame(maxWidth: .infinity, maxHeight: .infinity)
+    .background(Color.gray000)
     .errorToast($viewModel.errorMessage)
   }
 }
