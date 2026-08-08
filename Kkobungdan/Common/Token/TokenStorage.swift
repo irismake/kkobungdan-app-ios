@@ -18,7 +18,12 @@ final class TokenStorage {
 
   var accessToken: String? {
     get { defaults.string(forKey: accessKey) }
-    set { defaults.set(newValue, forKey: accessKey) }
+    set {
+      defaults.set(newValue, forKey: accessKey)
+      #if DEBUG
+        print("[TokenStorage] accessToken: \(newValue ?? "nil")")
+      #endif
+    }
   }
 
   var refreshToken: String? {
@@ -45,6 +50,9 @@ final class TokenStorage {
   }
 
   private init() {
+    #if DEBUG
+      print("[TokenStorage] stored accessToken: \(defaults.string(forKey: accessKey) ?? "nil")")
+    #endif
     // 더미 모드에서는 로그인 응답이 없어 userID 가 비어 있다.
     // 더미 데이터가 모두 DummySession.currentUserID 기준이므로 본인 식별자를 맞춰 저장한다.
     if DIContainer.isDummy, userID == nil {
