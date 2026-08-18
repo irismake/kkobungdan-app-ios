@@ -240,6 +240,7 @@ final class HTTPClient {
     case 401: throw RepositoryError.unauthorized
     case 404: throw RepositoryError.notFound
     case 409: throw RepositoryError.conflict
+    case 429: throw RepositoryError.rateLimited
     default: throw RepositoryError.network
     }
   }
