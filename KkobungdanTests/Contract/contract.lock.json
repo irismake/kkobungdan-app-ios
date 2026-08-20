@@ -398,13 +398,17 @@
     "required": [],
     "properties": {}
   },
+  "ErrorCode": {
+    "required": [],
+    "properties": {}
+  },
   "ErrorDetail": {
     "required": [
       "code",
       "message"
     ],
     "properties": {
-      "code": "string",
+      "code": "ref:ErrorCode",
       "details": "anyOf(string|null)",
       "message": "string"
     }

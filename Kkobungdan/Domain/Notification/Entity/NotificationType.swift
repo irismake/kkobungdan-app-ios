@@ -18,6 +18,7 @@ enum NotificationType: String, Decodable, CaseIterable {
   case executionCompleted = "execution_completed"
   case paymentCompleted = "payment_completed"
   case paymentFailed = "payment_failed"
+  case paymentReminder = "payment_reminder"
   case systemAnnouncement = "system_announcement"
   case custom
   case offerSubmitted = "offer_submitted"

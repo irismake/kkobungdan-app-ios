@@ -109,7 +109,17 @@ final class OpenAPIContractTests: XCTestCase {
         EnumContract("OfferStatus", OfferStatus.self),
         // REPORTED — 배지 등 UI 가 없는 클라이언트 미사용 상태라 Swift 케이스를 두지 않는다.
         EnumContract("ProposalStatus", ProposalStatus.self, knownMissingValues: ["REPORTED"]),
-        EnumContract("DisputeSurveyTargetType", DisputeSurveyTargetType.self)
+        EnumContract("DisputeSurveyTargetType", DisputeSurveyTargetType.self),
+        // 에러 코드. 미등록 값은 `ServerErrorCode.unknown` 으로 흡수되므로 디코딩은 깨지지 않지만,
+        // 서버 문구 대신 화면별 fallback 이 뜨므로 이 테스트로 추가를 감지한다.
+        EnumContract(
+            "ErrorCode",
+            ServerErrorCode.self,
+            // INVALID_STATUS: admin 전용 엔드포인트(/v1/admin/*)에서만 나온다 — 클라이언트가 호출하지 않음
+            knownMissingValues: ["INVALID_STATUS"],
+            // UNKNOWN: 서버가 보내지 않는 클라이언트 전용 센티널 (미등록 코드 흡수용)
+            knownExtraValues: ["UNKNOWN"]
+        )
     ]
 
     /// 서버 스펙 enum 이지만 의도적으로 Swift enum 을 두지 않는 것 (DTO 가 String 으로 유지, 클라이언트 미사용).
@@ -148,6 +158,26 @@ final class OpenAPIContractTests: XCTestCase {
                 XCTFail("[\(contract.schema)] minimal 디코딩 실패:\n\(error)")
             }
         }
+    }
+
+    func test_알수없는_서버_에러_코드는_UNKNOWN으로_디코딩된다() throws {
+        let data = Data("""
+        {
+          "success": false,
+          "error": {
+            "code": "NEW_SERVER_ERROR_CODE",
+            "message": "새 서버 오류입니다.",
+            "details": null
+          },
+          "timestamp": "2026-06-01T12:00:00+09:00"
+        }
+        """.utf8)
+
+        let dto = try appDecoder.decode(ApiErrorDTO.self, from: data)
+        XCTAssertEqual(dto.error.code, .unknown)
+
+        let error = RepositoryError.server(code: dto.error.code, message: dto.error.message)
+        XCTAssertEqual(error.userMessage(fallback: "일시적인 오류가 발생했어요."), "일시적인 오류가 발생했어요.")
     }
 
     // MARK: - 3. contract lock: 승인된 기준선 대비 서버 스키마가 바뀌었는가
@@ -259,14 +289,24 @@ final class OpenAPIContractTests: XCTestCase {
                 """)
             }
 
-            let stale = contract.swiftRawValues.filter { !specValues.contains($0) }
+            let stale = contract.swiftRawValues
+                .filter { !specValues.contains($0) && !contract.knownExtraValues.contains($0) }
             if !stale.isEmpty {
-                XCTFail("[\(contract.schema)] Swift \(contract.swiftName) 에만 있고 스펙에 없는 케이스: \(stale) — 서버가 값을 삭제했는지 확인하세요.")
+                XCTFail("""
+                [\(contract.schema)] Swift \(contract.swiftName) 에만 있고 스펙에 없는 케이스: \(stale) — 서버가 값을 삭제했는지 확인하세요.
+                (서버가 보내지 않는 클라이언트 전용 값이면 `knownExtraValues` 에 사유와 함께 추가해 인지 처리)
+                """)
             }
 
             let resolved = contract.knownMissingValues.filter { contract.hasCase($0) || !specValues.contains($0) }
             if !resolved.isEmpty {
                 XCTFail("[\(contract.schema)] `knownMissingValues` 의 \(resolved.sorted()) 는 더 이상 인지 처리가 필요 없습니다 — 목록에서 제거하세요.")
+            }
+
+            // 서버가 뒤늦게 같은 값을 스펙에 추가하면 인지 처리가 불필요해진다.
+            let resolvedExtras = contract.knownExtraValues.filter { specValues.contains($0) }
+            if !resolvedExtras.isEmpty {
+                XCTFail("[\(contract.schema)] `knownExtraValues` 의 \(resolvedExtras.sorted()) 는 이제 스펙에도 있습니다 — 목록에서 제거하세요.")
             }
         }
     }
@@ -470,14 +510,21 @@ private struct EnumContract {
     let swiftRawValues: [String]
     /// 스펙에는 있지만 Swift 가 의도적으로 아직 안 받는 값 (UI 미반영 등 — TODO 와 함께 인지 처리)
     let knownMissingValues: Set<String>
+    /// Swift 에만 두는 값 (서버가 보내지 않는 클라이언트 전용 센티널 등 — 사유와 함께 인지 처리)
+    let knownExtraValues: Set<String>
 
-    init<T>(_ schema: String, _: T.Type, knownMissingValues: Set<String> = [])
-        where T: RawRepresentable & CaseIterable, T.RawValue == String {
+    init<T>(
+        _ schema: String,
+        _: T.Type,
+        knownMissingValues: Set<String> = [],
+        knownExtraValues: Set<String> = []
+    ) where T: RawRepresentable & CaseIterable, T.RawValue == String {
         self.schema = schema
         swiftName = String(describing: T.self)
         hasCase = { T(rawValue: $0) != nil }
         swiftRawValues = T.allCases.map(\.rawValue)
         self.knownMissingValues = knownMissingValues
+        self.knownExtraValues = knownExtraValues
     }
 }
 
