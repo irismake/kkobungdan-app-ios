@@ -24,15 +24,18 @@ private struct SignupRequestBody: Encodable {
 
 final class AuthRepository: AuthRepositoryProtocol {
   private let client: HTTPClient
+  private let refreshClient: HTTPClient
   private let tokenStorage: TokenStorage
   private let fcmTokenStorage: FcmTokenStorage
 
   init(
     client: HTTPClient = .shared,
+    refreshClient: HTTPClient = .unauthenticated,
     tokenStorage: TokenStorage = .shared,
     fcmTokenStorage: FcmTokenStorage = .shared
   ) {
     self.client = client
+    self.refreshClient = refreshClient
     self.tokenStorage = tokenStorage
     self.fcmTokenStorage = fcmTokenStorage
   }
@@ -88,8 +91,9 @@ final class AuthRepository: AuthRepositoryProtocol {
     )
   }
 
+  /// 액세스 토큰 갱신. 만료된 액세스 토큰으로 인증할 수 없으므로 `refreshClient` 로 보낸다.
   func refresh(refreshToken: String) async throws -> String {
-    let response: RefreshTokenResponseDTO = try await client.post(
+    let response: RefreshTokenResponseDTO = try await refreshClient.post(
       "/v1/auth/refresh",
       body: AuthRefreshRequest(refreshToken: refreshToken)
     )

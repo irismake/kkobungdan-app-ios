@@ -4,25 +4,26 @@
 //
 
 import Foundation
+import OSLog
 
-/// `/v1/auth/refresh` 호출을 직렬화한다.
+private let authLogger = Logger(subsystem: "com.kkobungdan.Kkobungdan", category: "Auth")
+
+/// `RefreshTokenUseCase` 호출을 직렬화한다.
 /// 여러 요청이 동시에 401을 받아도 refresh 는 한 번만 수행되고, 나머지는 같은 결과를 await 한다.
 actor TokenRefreshHandler {
   private let tokenStorage: TokenStorage
-  private let baseURL: String
-  private let session: URLSession
+  private let makeRefreshTokenUseCase: @Sendable () -> RefreshTokenUseCase
   private var inflightTask: Task<String, Error>?
+  private lazy var refreshTokenUseCase: RefreshTokenUseCase = makeRefreshTokenUseCase()
 
-  private let decoder: JSONDecoder = {
-    let decoder = JSONDecoder()
-    decoder.keyDecodingStrategy = .convertFromSnakeCase
-    return decoder
-  }()
-
-  init(tokenStorage: TokenStorage, baseURL: String, session: URLSession) {
+  init(
+    tokenStorage: TokenStorage,
+    refreshTokenUseCase: @escaping @Sendable () -> RefreshTokenUseCase = {
+      RefreshTokenUseCase(authRepository: DIContainer.authRepository)
+    }
+  ) {
     self.tokenStorage = tokenStorage
-    self.baseURL = baseURL
-    self.session = session
+    makeRefreshTokenUseCase = refreshTokenUseCase
   }
 
   /// 401을 받은 호출자가 가지고 있던 access token 을 넘기면, 그 사이 다른 요청이
@@ -55,31 +56,21 @@ actor TokenRefreshHandler {
     guard let refreshToken = tokenStorage.refreshToken else {
       throw RepositoryError.unauthorized
     }
+    do {
+      return try await refreshTokenUseCase.execute(refreshToken: refreshToken)
+    } catch {
+      throw sessionFailure(from: error)
+    }
+  }
 
-    var request = URLRequest(url: URL(string: baseURL + "/v1/auth/refresh")!)
-    request.httpMethod = "POST"
-    request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-    request.httpBody = try JSONSerialization.data(
-      withJSONObject: ["refreshToken": refreshToken]
-    )
-
-    let (data, response) = try await session.data(for: request)
-    guard let http = response as? HTTPURLResponse else {
-      throw RepositoryError.network
+  private func sessionFailure(from error: Error) -> Error {
+    switch (error.isServerError(.invalidToken), error.isServerError(.userNotFound)) {
+    case (true, _), (_, true):
+      authLogger.error("토큰 갱신 실패 — 세션 복구 불가: \(String(describing: error))")
+      return RepositoryError.unauthorized
+    default:
+      authLogger.warning("토큰 갱신 실패 — 세션 유지: \(String(describing: error))")
+      return error
     }
-    if http.statusCode == 401 {
-      throw RepositoryError.unauthorized
-    }
-    guard (200 ..< 300).contains(http.statusCode) else {
-      throw RepositoryError.network
-    }
-
-    let envelope = try decoder.decode(ApiResponseDTO<RefreshTokenResponseDTO>.self, from: data)
-    guard let response = envelope.data else {
-      throw RepositoryError.network
-    }
-    // refreshToken은 서버 응답에 없으므로 기존 storage 값 유지
-    tokenStorage.accessToken = response.accessToken
-    return response.accessToken
   }
 }

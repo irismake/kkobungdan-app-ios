@@ -12,6 +12,7 @@ private let networkLogger = Logger(subsystem: "com.kkobungdan.Kkobungdan", categ
 
 final class HTTPClient {
   static let shared = HTTPClient(tokenStorage: .shared)
+  static let unauthenticated = HTTPClient(tokenStorage: .shared, authenticates: false)
 
   private static let baseURL: String = {
     guard let host = Bundle.main.object(forInfoDictionaryKey: "API_BASE_HOST") as? String,
@@ -27,11 +28,9 @@ final class HTTPClient {
     return "\(scheme)://\(host)"
   }()
 
-  private static let refreshPath = "/v1/auth/refresh"
-
   private let session: URLSession
   private let tokenStorage: TokenStorage
-  private let tokenRefresher: TokenRefreshHandler
+  private let tokenRefresher: TokenRefreshHandler?
 
   private let decoder: JSONDecoder = {
     let decoder = JSONDecoder()
@@ -39,14 +38,10 @@ final class HTTPClient {
     return decoder
   }()
 
-  init(tokenStorage: TokenStorage, session: URLSession = .shared) {
+  init(tokenStorage: TokenStorage, session: URLSession = .shared, authenticates: Bool = true) {
     self.tokenStorage = tokenStorage
     self.session = session
-    tokenRefresher = TokenRefreshHandler(
-      tokenStorage: tokenStorage,
-      baseURL: Self.baseURL,
-      session: session
-    )
+    tokenRefresher = authenticates ? TokenRefreshHandler(tokenStorage: tokenStorage) : nil
   }
 
   // MARK: - Public Methods
@@ -108,7 +103,7 @@ final class HTTPClient {
     var request = URLRequest(url: components.url!)
     request.httpMethod = method
     request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-    if let token = tokenStorage.accessToken {
+    if tokenRefresher != nil, let token = tokenStorage.accessToken {
       let scheme = tokenStorage.tokenType ?? "Bearer"
       request.setValue("\(scheme) \(token)", forHTTPHeaderField: "Authorization")
     }
@@ -188,14 +183,14 @@ final class HTTPClient {
     guard let http = response as? HTTPURLResponse, http.statusCode == 401 else {
       return false
     }
+    // 인터셉트하지 않는 클라이언트(토큰 갱신 등)는 401 을 그대로 호출부에 넘긴다
+    guard let tokenRefresher else {
+      return false
+    }
     // 이미 한 번 재시도했는데도 401 — refresh 로 회복 불가
     if isRetry {
       tokenStorage.forceLogout()
       throw RepositoryError.unauthorized
-    }
-    // refresh 엔드포인트 자체의 401 은 정상 경로(mapHTTPError)로 처리
-    guard request.url?.path != Self.refreshPath else {
-      return false
     }
     // 애초에 Authorization 헤더 없이 보낸 요청은 refresh 대상이 아님
     guard let auth = request.value(forHTTPHeaderField: "Authorization") else {
@@ -219,7 +214,7 @@ final class HTTPClient {
 
   private func rebuiltRequest(from request: URLRequest) -> URLRequest {
     var retry = request
-    if let token = tokenStorage.accessToken {
+    if tokenRefresher != nil, let token = tokenStorage.accessToken {
       let scheme = tokenStorage.tokenType ?? "Bearer"
       retry.setValue("\(scheme) \(token)", forHTTPHeaderField: "Authorization")
     }
