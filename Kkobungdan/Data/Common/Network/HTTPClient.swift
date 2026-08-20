@@ -38,10 +38,17 @@ final class HTTPClient {
     return decoder
   }()
 
-  init(tokenStorage: TokenStorage, session: URLSession = .shared, authenticates: Bool = true) {
+  init(
+    tokenStorage: TokenStorage,
+    session: URLSession = .shared,
+    authenticates: Bool = true,
+    tokenRefresher: TokenRefreshHandler? = nil
+  ) {
     self.tokenStorage = tokenStorage
     self.session = session
-    tokenRefresher = authenticates ? TokenRefreshHandler(tokenStorage: tokenStorage) : nil
+    self.tokenRefresher = authenticates
+      ? (tokenRefresher ?? TokenRefreshHandler(tokenStorage: tokenStorage))
+      : nil
   }
 
   // MARK: - Public Methods
@@ -135,12 +142,29 @@ final class HTTPClient {
       }
     }
 
-    if try await shouldRetryAfterRefresh(request: request, response: response, isRetry: isRetry) {
+    // 에러 코드로 분기해야 하므로 봉투를 재시도 판단 전에 한 번만 디코딩한다.
+    let errorBody = errorDetail(response: response, data: data)
+
+    if try await shouldRetryAfterRefresh(
+      request: request,
+      response: response,
+      errorCode: errorBody?.code,
+      isRetry: isRetry
+    ) {
       return try await sendAndValidate(rebuiltRequest(from: request), isRetry: true)
     }
 
-    try mapHTTPError(response: response, data: data)
+    try mapHTTPError(response: response, errorBody: errorBody)
     return data
+  }
+
+  private func errorDetail(response: URLResponse, data: Data) -> ApiErrorDetailDTO? {
+    guard let http = response as? HTTPURLResponse,
+          !(200 ..< 300).contains(http.statusCode)
+    else {
+      return nil
+    }
+    return try? decoder.decode(ApiErrorDTO.self, from: data).error
   }
 
   private func perform<T: Decodable>(_ request: URLRequest, isRetry: Bool) async throws -> T {
@@ -173,24 +197,24 @@ final class HTTPClient {
     _ = try await sendAndValidate(request, isRetry: isRetry)
   }
 
-  /// 401 응답을 받았을 때 refresh 를 시도하고, 호출자가 동일 요청을 재시도해야 하는지 반환한다.
-  /// refresh 자체가 실패하면 토큰을 클리어하고 unauthorized 를 throw 한다.
   private func shouldRetryAfterRefresh(
     request: URLRequest,
     response: URLResponse,
+    errorCode: ServerErrorCode?,
     isRetry: Bool
   ) async throws -> Bool {
     guard let http = response as? HTTPURLResponse, http.statusCode == 401 else {
       return false
     }
-    // 인터셉트하지 않는 클라이언트(토큰 갱신 등)는 401 을 그대로 호출부에 넘긴다
     guard let tokenRefresher else {
       return false
     }
-    // 이미 한 번 재시도했는데도 401 — refresh 로 회복 불가
-    if isRetry {
-      tokenStorage.forceLogout()
-      throw RepositoryError.unauthorized
+    guard errorCode == .invalidToken else {
+      return false
+    }
+
+    guard !isRetry else {
+      return false
     }
     // 애초에 Authorization 헤더 없이 보낸 요청은 refresh 대상이 아님
     guard let auth = request.value(forHTTPHeaderField: "Authorization") else {
@@ -221,15 +245,15 @@ final class HTTPClient {
     return retry
   }
 
-  private func mapHTTPError(response: URLResponse, data: Data) throws {
+  private func mapHTTPError(response: URLResponse, errorBody: ApiErrorDetailDTO?) throws {
     guard let http = response as? HTTPURLResponse else {
       return
     }
     guard !(200 ..< 300).contains(http.statusCode) else {
       return
     }
-    if let errorBody = try? decoder.decode(ApiErrorDTO.self, from: data) {
-      throw RepositoryError.server(code: errorBody.error.code, message: errorBody.error.message)
+    if let errorBody {
+      throw RepositoryError.server(code: errorBody.code, message: errorBody.message)
     }
     switch http.statusCode {
     case 401: throw RepositoryError.unauthorized
