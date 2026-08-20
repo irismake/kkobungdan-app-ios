@@ -7,7 +7,7 @@
 //
 //   - 갱신 시도: 401 `INVALID_TOKEN` 이고, 실패한 요청이 `/v1/auth/refresh` 가 아닐 때만
 //   - 강제 로그아웃: `/v1/auth/refresh` 응답이 `INVALID_TOKEN`·`USER_NOT_FOUND` 일 때만
-//   - 그 외 401(`INVALID_CREDENTIALS` 등): 세션은 그대로 두고 서버 message 를 노출
+//   - 그 외 401(미등록 코드 등): 세션은 그대로 두고 서버 에러를 전달
 //
 
 @testable import Kkobungdan
@@ -51,10 +51,10 @@ final class HTTPClientAuthTests: XCTestCase {
         )
     }
 
-    func test_401_INVALID_CREDENTIALS_는_갱신도_로그아웃도_하지_않는다() async {
-        StubURLProtocol.enqueue(401, Self.errorBody("INVALID_CREDENTIALS", "로그인 정보가 올바르지 않습니다."))
+    func test_401_미등록_에러_코드는_갱신도_로그아웃도_하지_않는다() async {
+        StubURLProtocol.enqueue(401, Self.errorBody("NEW_SERVER_ERROR_CODE", "새 서버 오류입니다."))
 
-        await assertThrowsServerError(.invalidCredentials, message: "로그인 정보가 올바르지 않습니다.") {
+        await assertThrowsServerError(.unknown, message: "새 서버 오류입니다.") {
             try await self.makeClient().postVoid("/v1/auth/login/send")
         }
 

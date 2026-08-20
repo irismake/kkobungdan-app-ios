@@ -411,7 +411,7 @@
               }
             }
           },
-          "401": {
+          "404": {
             "description": "실패 응답",
             "content": {
               "application/json": {
@@ -419,13 +419,13 @@
                   "$ref": "#/components/schemas/ErrorResponse"
                 },
                 "examples": {
-                  "INVALID_CREDENTIALS": {
-                    "summary": "INVALID_CREDENTIALS",
+                  "PHONE_NOT_REGISTERED": {
+                    "summary": "USER_NOT_FOUND",
                     "value": {
                       "success": false,
                       "error": {
-                        "code": "INVALID_CREDENTIALS",
-                        "message": "로그인 정보가 올바르지 않습니다.",
+                        "code": "USER_NOT_FOUND",
+                        "message": "가입되지 않은 휴대폰 번호입니다. 회원가입 후 이용해주세요.",
                         "details": null
                       },
                       "timestamp": "2026-06-01T12:00:00+09:00"
@@ -11241,7 +11241,6 @@
           "DUPLICATE_PROPOSAL_REPORT",
           "FORBIDDEN",
           "INTERNAL_SERVER_ERROR",
-          "INVALID_CREDENTIALS",
           "INVALID_DATE_TIME_FORMAT",
           "INVALID_STATUS",
           "INVALID_TOKEN",

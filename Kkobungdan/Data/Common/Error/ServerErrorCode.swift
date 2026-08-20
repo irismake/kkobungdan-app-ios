@@ -7,7 +7,7 @@
 
 import Foundation
 
-/// 서버가 `ErrorResponse.error.code` 로 내려주는 값 전체(39종).
+/// 서버가 `ErrorResponse.error.code` 로 내려주는 값 전체(38종).
 /// 분기는 상태코드·message 가 아니라 이 값으로만 한다. (message 문구는 예고 없이 바뀐다)
 /// 정본: 서버 저장소 `docs/api-spec/error-codes.md` — 기준일 2026-08-20
 enum ServerErrorCode: String, Decodable, CaseIterable {
@@ -40,8 +40,6 @@ enum ServerErrorCode: String, Decodable, CaseIterable {
   case phoneAlreadyExists = "PHONE_ALREADY_EXISTS"
   /// 404. 인증 요청 내역 없음.
   case phoneVerificationNotFound = "PHONE_VERIFICATION_NOT_FOUND"
-  /// 401. 로그인 정보 불일치.
-  case invalidCredentials = "INVALID_CREDENTIALS"
   /// 429. 인증번호 발송 제한(5분당 3회).
   case phoneVerificationSendRateLimited = "PHONE_VERIFICATION_SEND_RATE_LIMITED"
 
