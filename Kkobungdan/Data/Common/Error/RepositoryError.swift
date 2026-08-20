@@ -12,6 +12,7 @@ enum RepositoryError: Error {
   case notFound
   case conflict
   case unauthorized
+  case rateLimited
   case network
   /// 서버가 `ErrorResponse` 바디로 내려준 에러. `message` 는 사용자에게 그대로 노출 가능한 문구.
   case server(code: String, message: String)
@@ -23,6 +24,10 @@ extension Error {
     if let repositoryError = self as? RepositoryError,
        case let .server(_, message) = repositoryError {
       return message
+    }
+    if let repositoryError = self as? RepositoryError,
+       case .rateLimited = repositoryError {
+      return "요청이 너무 많습니다. 잠시 후 다시 시도해주세요."
     }
     return fallback
   }

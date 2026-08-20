@@ -9,4 +9,5 @@ import Foundation
 
 enum ServerErrorCode: String {
   case invalidCredentials = "INVALID_CREDENTIALS"
+  case phoneVerificationSendRateLimited = "PHONE_VERIFICATION_SEND_RATE_LIMITED"
 }

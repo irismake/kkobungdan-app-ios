@@ -34,7 +34,7 @@ ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 CONTRACT_DIR = os.path.join(ROOT, "KkobungdanTests", "Contract")
 GENERATED_DIR = os.path.join(ROOT, "KkobungdanTests", "Fixtures", "generated")
 # 앱과 동일한 단일 출처. gitignore 된 파일이라 서버 주소를 하드코딩하지 않는다.
-SECRETS_XCCONFIG = os.path.join(ROOT, "Kkobungdan", "Secrets.xcconfig")
+SECRETS_XCCONFIG = os.path.join(ROOT, "Kkobungdan", "Secrets.Debug.xcconfig")
 
 # date-time 포맷은 DateFormatters.localDateTime ("yyyy-MM-dd'T'HH:mm:ss") 과 맞춘다.
 SAMPLE_DATETIME = "2026-06-12T18:00:00"

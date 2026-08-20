@@ -23,3 +23,5 @@ buildServer.json
 
 ### Secrets
 Secrets.xcconfig
+Secrets.Debug.xcconfig
+Secrets.Release.xcconfig
