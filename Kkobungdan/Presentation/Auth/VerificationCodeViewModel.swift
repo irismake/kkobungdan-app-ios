@@ -105,7 +105,7 @@ final class VerificationCodeViewModel {
       startTimer(until: verification.expiresAt)
       return true
     } catch {
-      if error.isServerError(.invalidCredentials) {
+      if error.isServerError(.userNotFound) {
         errorMessage = "가입되지 않은 전화번호입니다. 회원가입 후 이용해주세요."
       } else {
         errorMessage = error.userMessage(fallback: "인증번호 발송에 실패했습니다. 다시 시도해주세요.")

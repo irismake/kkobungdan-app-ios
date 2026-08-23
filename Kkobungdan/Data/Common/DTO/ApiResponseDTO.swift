@@ -22,7 +22,7 @@ struct ApiErrorDTO: Decodable {
 
 /// `ErrorDetail` 스키마.
 struct ApiErrorDetailDTO: Decodable {
-  let code: String
+  let code: ServerErrorCode
   let message: String
   let details: String?
 }

@@ -93,7 +93,11 @@ final class NotificationViewModel: LoadableViewModel {
       page += 1
       notifications += nextPage.notifications
       hasNext = nextPage.hasNext
-    } catch {}
+    } catch {
+      if !error.isCancellation {
+        errorMessage = error.userMessage(fallback: "알림을 더 불러오지 못했어요.")
+      }
+    }
     isLoadingMore = false
   }
 

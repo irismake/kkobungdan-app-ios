@@ -13,6 +13,8 @@
 		17998B8C2FB3300000519818 /* FirebaseMessaging in Frameworks */ = {isa = PBXBuildFile; productRef = 17998B8B2FB3300000519818 /* FirebaseMessaging */; };
 		17998B8D2FB3300000519818 /* FirebaseRemoteConfig in Frameworks */ = {isa = PBXBuildFile; productRef = 17998B8E2FB3300000519818 /* FirebaseRemoteConfig */; };
 		51C3EC1C17DD888E91B05D34 /* OpenAPIContractTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 769A8E30735BE0CF6AAD18CD /* OpenAPIContractTests.swift */; };
+		A1B2C3D40000000000000012 /* NotificationDecodingTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D40000000000000011 /* NotificationDecodingTests.swift */; };
+		A1B2C3D40000000000000002 /* HTTPClientAuthTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D40000000000000001 /* HTTPClientAuthTests.swift */; };
 		A00E989D86E760420C109F8D /* generated in Resources */ = {isa = PBXBuildFile; fileRef = F08BF9D1714EBF74399CB740 /* generated */; };
 /* End PBXBuildFile section */
 
@@ -29,6 +31,8 @@
 /* Begin PBXFileReference section */
 		4CCDB922354A64DABBCBDCD9 /* KkobungdanTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = KkobungdanTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		769A8E30735BE0CF6AAD18CD /* OpenAPIContractTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = OpenAPIContractTests.swift; sourceTree = "<group>"; };
+		A1B2C3D40000000000000011 /* NotificationDecodingTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = NotificationDecodingTests.swift; sourceTree = "<group>"; };
+		A1B2C3D40000000000000001 /* HTTPClientAuthTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = HTTPClientAuthTests.swift; sourceTree = "<group>"; };
 		7F6958982F5863060051C58F /* Kkobungdan.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Kkobungdan.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		B6AFA8466E90BB29072E4AFB /* Contract */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = folder; path = Contract; sourceTree = "<group>"; };
 		EC4B64719BF76ECF765355C1 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS18.0.sdk/System/Library/Frameworks/Foundation.framework; sourceTree = DEVELOPER_DIR; };
@@ -78,12 +82,30 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		A1B2C3D40000000000000013 /* Notification */ = {
+			isa = PBXGroup;
+			children = (
+				A1B2C3D40000000000000011 /* NotificationDecodingTests.swift */,
+			);
+			path = Notification;
+			sourceTree = "<group>";
+		};
+		A1B2C3D40000000000000003 /* Network */ = {
+			isa = PBXGroup;
+			children = (
+				A1B2C3D40000000000000001 /* HTTPClientAuthTests.swift */,
+			);
+			path = Network;
+			sourceTree = "<group>";
+		};
 		4F91F07D7F9DB1D105D00983 /* KkobungdanTests */ = {
 			isa = PBXGroup;
 			children = (
 				B6AFA8466E90BB29072E4AFB /* Contract */,
 				F08BF9D1714EBF74399CB740 /* generated */,
 				769A8E30735BE0CF6AAD18CD /* OpenAPIContractTests.swift */,
+				A1B2C3D40000000000000003 /* Network */,
+				A1B2C3D40000000000000013 /* Notification */,
 			);
 			path = KkobungdanTests;
 			sourceTree = "<group>";
@@ -247,7 +269,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "if [ -x \"/opt/homebrew/bin/swiftlint\" ]; then\n    echo \"Running SwiftLint...\"\n    /opt/homebrew/bin/swiftlint lint --no-cache\nelse\n    echo \"warning: SwiftLint not installed, install with 'brew install swiftlint'\"\nfi\n";
+			shellScript = "if [ -x \"/opt/homebrew/bin/swiftlint\" ]; then\n    echo \"Running SwiftLint...\"\n    /opt/homebrew/bin/swiftlint lint --no-cache --config \"${SRCROOT}/Kkobungdan/.swiftlint.yml\"\nelse\n    echo \"warning: SwiftLint not installed, install with 'brew install swiftlint'\"\nfi\n";
 		};
 		7F6958A92F5864920051C58F /* SwiftFormat */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -283,6 +305,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				51C3EC1C17DD888E91B05D34 /* OpenAPIContractTests.swift in Sources */,
+				A1B2C3D40000000000000002 /* HTTPClientAuthTests.swift in Sources */,
+				A1B2C3D40000000000000012 /* NotificationDecodingTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

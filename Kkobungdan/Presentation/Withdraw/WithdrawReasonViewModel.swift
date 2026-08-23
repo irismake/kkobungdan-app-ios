@@ -98,6 +98,10 @@ final class WithdrawReasonViewModel: LoadableViewModel {
       )
       tokenStorage.clear()
       didSubmit = true
+    } catch let error where error.isServerError(.userNotFound) {
+      withdrawLogger.info("이미 탈퇴 처리된 계정 — 완료로 간주하고 세션 정리")
+      tokenStorage.clear()
+      didSubmit = true
     } catch {
       errorMessage = error.userMessage(fallback: "탈퇴에 실패했어요. 잠시 후 다시 시도해 주세요.")
       withdrawLogger.error("회원 탈퇴 실패: \(error.localizedDescription)")

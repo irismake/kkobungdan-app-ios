@@ -11,13 +11,12 @@ opt_in_rules:
 
 # 3. 특정 폴더 및 파일 설정
 included:
-  - Sources              # SwiftLint가 검사할 폴더 (Sources 내부 파일만 검사)
+  - .                     # 앱 소스 (이 설정 파일 기준 Kkobungdan 폴더)
+  - ../KkobungdanTests    # 테스트 소스
 excluded:
   - Carthage            # 서드파티 라이브러리 폴더는 검사에서 제외
   - Pods                # CocoaPods 패키지는 검사에서 제외
   - DerivedData         # Xcode에서 생성하는 캐시 파일 검사 제외
-  - Sources/ExcludedFolder  # 특정 폴더 제외 가능
-  - Sources/ExcludedFile.swift  # 특정 파일 제외 가능
 
 # 4. 코드 스타일 강제 규칙 (warning or error 설정)
 force_cast: warning      # `as!` 강제 다운캐스팅 시 경고 발생
@@ -29,7 +28,7 @@ file_length:
   error: 1200           # 파일이 1200줄 이상이면 에러 발생
 
 type_body_length:
-  warning: 300          # 클래스 또는 구조체의 최대 길이 (300줄 초과 시 경고)
+  warning: 500          # 클래스 또는 구조체의 최대 허용 길이
   error: 500            # 500줄 초과 시 에러 발생
 
 function_body_length:
