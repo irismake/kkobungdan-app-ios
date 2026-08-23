@@ -6,6 +6,12 @@
 //
 
 import Foundation
+import OSLog
+
+private let notificationTypeLogger = Logger(
+  subsystem: "com.kkobungdan.Kkobungdan",
+  category: "Notification"
+)
 
 enum NotificationType: String, Decodable, CaseIterable {
   case proposalNew = "proposal_new"
@@ -24,4 +30,15 @@ enum NotificationType: String, Decodable, CaseIterable {
   case offerSubmitted = "offer_submitted"
   case meetingConfirmed = "meeting_confirmed"
   case disputeRaised = "dispute_raised"
+  case unknown = "__unknown__"
+
+  init(from decoder: any Decoder) throws {
+    let rawValue = try decoder.singleValueContainer().decode(String.self)
+    if let known = NotificationType(rawValue: rawValue), known != .unknown {
+      self = known
+    } else {
+      notificationTypeLogger.error("알 수 없는 notification_type: \(rawValue, privacy: .public)")
+      self = .unknown
+    }
+  }
 }

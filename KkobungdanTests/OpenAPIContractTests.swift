@@ -104,8 +104,9 @@ final class OpenAPIContractTests: XCTestCase {
     /// 서버 스펙 enum ↔ Swift enum 매핑. 새 스펙 enum 에 Swift enum 을 만들면 여기 한 줄 추가한다.
     /// (스키마명은 openapi.json `components/schemas` 의 enum 이름)
     private static let enumContracts: [EnumContract] = [
-        EnumContract("NotificationStatus", NotificationStatus.self),
-        EnumContract("NotificationType", NotificationType.self),
+        // __unknown__ — 서버 미발송. 스펙 밖 값 하나로 알림 목록 전체가 깨지지 않게 두는 클라이언트 센티널.
+        EnumContract("NotificationStatus", NotificationStatus.self, knownExtraValues: ["__unknown__"]),
+        EnumContract("NotificationType", NotificationType.self, knownExtraValues: ["__unknown__"]),
         EnumContract("OfferStatus", OfferStatus.self),
         // REPORTED — 배지 등 UI 가 없는 클라이언트 미사용 상태라 Swift 케이스를 두지 않는다.
         EnumContract("ProposalStatus", ProposalStatus.self, knownMissingValues: ["REPORTED"]),
