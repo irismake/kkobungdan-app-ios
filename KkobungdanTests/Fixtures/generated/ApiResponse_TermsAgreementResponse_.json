@@ -1,0 +1,11 @@
+{
+  "success": true,
+  "data": {
+    "userId": "string",
+    "termsOfService": true,
+    "privacyPolicy": true,
+    "paymentRefundPolicy": true,
+    "agreedAt": "2026-06-12T18:00:00"
+  },
+  "message": "string"
+}

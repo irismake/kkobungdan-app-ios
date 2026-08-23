@@ -1,0 +1,9 @@
+{
+  "success": true,
+  "error": {
+    "code": "string",
+    "message": "string",
+    "details": "string"
+  },
+  "timestamp": "2026-06-12T18:00:00"
+}

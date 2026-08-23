@@ -1,0 +1,27 @@
+### macOS
+.DS_Store
+
+### Xcode
+*.xcworkspace/xcuserdata/
+*.xcuserstate
+*.xccheckout
+*.moved-aside
+DerivedData/
+*.xcscmblueprint
+
+### SwiftPM
+.build/
+Package.resolved
+
+### Swift / iOS build products
+build/
+Products/
+buildServer.json
+
+### Logging / misc
+*.log
+
+### Secrets
+Secrets.xcconfig
+Secrets.Debug.xcconfig
+Secrets.Release.xcconfig

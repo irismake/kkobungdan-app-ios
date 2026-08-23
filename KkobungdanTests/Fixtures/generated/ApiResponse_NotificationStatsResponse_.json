@@ -1,0 +1,10 @@
+{
+  "success": true,
+  "data": {
+    "total_notifications": 0,
+    "unread_count": 0,
+    "failed_count": 0,
+    "read_count": 0
+  },
+  "message": "string"
+}

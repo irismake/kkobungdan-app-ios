@@ -1,0 +1,6 @@
+{
+  "bankName": "string",
+  "accountHolder": "string",
+  "maskedAccountNumber": "string",
+  "updatedAt": "2026-06-12T18:00:00"
+}

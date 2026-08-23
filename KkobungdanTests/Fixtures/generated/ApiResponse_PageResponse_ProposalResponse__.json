@@ -1,0 +1,22 @@
+{
+  "success": true,
+  "data": {
+    "content": [
+      {
+        "id": 0,
+        "title": "string",
+        "content": "string",
+        "deadline": "2026-06-12T18:00:00",
+        "errandFee": 0,
+        "status": "HOLDING"
+      }
+    ],
+    "totalElements": 0,
+    "totalPages": 0,
+    "pageNumber": 0,
+    "pageSize": 0,
+    "first": true,
+    "last": true
+  },
+  "message": "string"
+}
