@@ -269,7 +269,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "if [ -x \"/opt/homebrew/bin/swiftlint\" ]; then\n    echo \"Running SwiftLint...\"\n    /opt/homebrew/bin/swiftlint lint --no-cache\nelse\n    echo \"warning: SwiftLint not installed, install with 'brew install swiftlint'\"\nfi\n";
+			shellScript = "if [ -x \"/opt/homebrew/bin/swiftlint\" ]; then\n    echo \"Running SwiftLint...\"\n    /opt/homebrew/bin/swiftlint lint --no-cache --config \"${SRCROOT}/Kkobungdan/.swiftlint.yml\"\nelse\n    echo \"warning: SwiftLint not installed, install with 'brew install swiftlint'\"\nfi\n";
 		};
 		7F6958A92F5864920051C58F /* SwiftFormat */ = {
 			isa = PBXShellScriptBuildPhase;
