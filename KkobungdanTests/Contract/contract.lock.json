@@ -1,16 +1,397 @@
 {
-  "ApiResponse_AuthAccessTokenResponse_": {
+  "AdminConfirmPaymentRequest": {
+    "required": [
+      "openChatUrl"
+    ],
+    "properties": {
+      "openChatUrl": "string"
+    }
+  },
+  "AdminDisputeDetailResponse": {
+    "required": [
+      "createdAt",
+      "id",
+      "missionId",
+      "offerId",
+      "offerStatus",
+      "proposalId",
+      "proposalStatus",
+      "reason",
+      "requesterId",
+      "requesterName",
+      "requesterRole",
+      "status",
+      "surveyQuestionId",
+      "targetId",
+      "targetName",
+      "targetRole"
+    ],
+    "properties": {
+      "adminNote": "anyOf(string|null)",
+      "createdAt": "string",
+      "id": "integer",
+      "missionId": "integer",
+      "offerId": "integer",
+      "offerStatus": "ref:OfferStatus",
+      "proposalId": "integer",
+      "proposalStatus": "ref:ProposalStatus",
+      "reason": "string",
+      "requesterId": "string",
+      "requesterName": "string",
+      "requesterRole": "string",
+      "resolvedAt": "anyOf(string|null)",
+      "status": "ref:DisputeProcessStatus",
+      "surveyQuestionId": "integer",
+      "targetId": "string",
+      "targetName": "string",
+      "targetRole": "string"
+    }
+  },
+  "AdminDisputeResolveRequest": {
+    "required": [
+      "outcome"
+    ],
+    "properties": {
+      "adminId": "anyOf(string|null)",
+      "adminNote": "anyOf(string|null)",
+      "outcome": "ref:MissionResolution"
+    }
+  },
+  "AdminDisputeSummaryResponse": {
+    "required": [
+      "createdAt",
+      "id",
+      "missionId",
+      "offerId",
+      "proposalId",
+      "requesterId",
+      "requesterName",
+      "requesterRole",
+      "status"
+    ],
+    "properties": {
+      "createdAt": "string",
+      "id": "integer",
+      "missionId": "integer",
+      "offerId": "integer",
+      "proposalId": "integer",
+      "requesterId": "string",
+      "requesterName": "string",
+      "requesterRole": "string",
+      "status": "ref:DisputeProcessStatus"
+    }
+  },
+  "AdminLoginRequest": {
+    "required": [
+      "password",
+      "username"
+    ],
+    "properties": {
+      "password": "string",
+      "username": "string"
+    }
+  },
+  "AdminNoteRequest": {
     "required": [],
     "properties": {
-      "data": "anyOf(ref:AuthAccessTokenResponse|null)",
+      "adminId": "anyOf(string|null)",
+      "adminNote": "anyOf(string|null)"
+    }
+  },
+  "AdminOfferSummaryResponse": {
+    "required": [
+      "accepted",
+      "amount",
+      "createdAt",
+      "hasDispute",
+      "id",
+      "proposalId",
+      "runnerId",
+      "runnerName",
+      "status"
+    ],
+    "properties": {
+      "accepted": "boolean",
+      "amount": "integer",
+      "createdAt": "string",
+      "hasDispute": "boolean",
+      "id": "integer",
+      "openChatUrl": "anyOf(string|null)",
+      "proposalId": "integer",
+      "runnerId": "string",
+      "runnerLevel": "integer",
+      "runnerName": "string",
+      "status": "ref:OfferStatus"
+    }
+  },
+  "AdminPayoutDetailResponse": {
+    "required": [
+      "amount",
+      "id",
+      "offerId",
+      "proposalId",
+      "runnerId",
+      "runnerName",
+      "status"
+    ],
+    "properties": {
+      "adminNote": "anyOf(string|null)",
+      "amount": "integer",
+      "id": "integer",
+      "offerId": "integer",
+      "payoutAccountHolder": "anyOf(string|null)",
+      "payoutAccountNumber": "anyOf(string|null)",
+      "payoutBankName": "anyOf(string|null)",
+      "proposalId": "integer",
+      "runnerId": "string",
+      "runnerName": "string",
+      "settledAt": "anyOf(string|null)",
+      "status": "ref:PayoutStatus"
+    }
+  },
+  "AdminProposalDetailResponse": {
+    "required": [
+      "content",
+      "createdAt",
+      "deadline",
+      "errandFee",
+      "id",
+      "ordererId",
+      "ordererName",
+      "status",
+      "title"
+    ],
+    "properties": {
+      "acceptedOfferId": "anyOf(integer|null)",
+      "acceptedRunnerName": "anyOf(string|null)",
+      "adminNote": "anyOf(string|null)",
+      "content": "string",
+      "createdAt": "string",
+      "deadline": "string",
+      "depositAccountHolder": "anyOf(string|null)",
+      "depositAccountNumber": "anyOf(string|null)",
+      "depositBankName": "anyOf(string|null)",
+      "depositorName": "anyOf(string|null)",
+      "disputedAt": "anyOf(string|null)",
+      "errandFee": "integer",
+      "id": "integer",
+      "matchedAt": "anyOf(string|null)",
+      "missionId": "anyOf(integer|null)",
+      "openChatUrl": "anyOf(string|null)",
+      "ordererConfirmedAt": "anyOf(string|null)",
+      "ordererId": "string",
+      "ordererLevel": "integer",
+      "ordererName": "string",
+      "resolvedAt": "anyOf(string|null)",
+      "runnerConfirmedAt": "anyOf(string|null)",
+      "status": "ref:ProposalStatus",
+      "title": "string"
+    }
+  },
+  "AdminProposalReportResponse": {
+    "required": [
+      "createdAt",
+      "id",
+      "proposalId",
+      "reasonQuestionId",
+      "reasonQuestionText",
+      "reporterId",
+      "reporterName",
+      "status"
+    ],
+    "properties": {
+      "createdAt": "string",
+      "detailReason": "anyOf(string|null)",
+      "id": "integer",
+      "proposalId": "integer",
+      "proposalStatus": "anyOf(ref:ProposalStatus|null)",
+      "reasonQuestionId": "integer",
+      "reasonQuestionText": "string",
+      "reporterId": "string",
+      "reporterName": "string",
+      "reviewedAt": "anyOf(string|null)",
+      "status": "ref:ProposalReportStatus"
+    }
+  },
+  "AdminProposalResponse": {
+    "required": [
+      "content",
+      "deadline",
+      "errandFee",
+      "id",
+      "status",
+      "title"
+    ],
+    "properties": {
+      "content": "string",
+      "deadline": "string",
+      "errandFee": "integer",
+      "id": "integer",
+      "status": "ref:ProposalStatus",
+      "title": "string"
+    }
+  },
+  "AdminProposalSummaryResponse": {
+    "required": [
+      "createdAt",
+      "errandFee",
+      "id",
+      "offerCount",
+      "ordererId",
+      "ordererName",
+      "status"
+    ],
+    "properties": {
+      "createdAt": "string",
+      "errandFee": "integer",
+      "id": "integer",
+      "offerCount": "integer",
+      "ordererId": "string",
+      "ordererName": "string",
+      "status": "ref:ProposalStatus"
+    }
+  },
+  "AdminRefundDetailResponse": {
+    "required": [
+      "amount",
+      "id",
+      "ordererId",
+      "ordererName",
+      "proposalId",
+      "proposalStatus",
+      "requestedAt",
+      "status"
+    ],
+    "properties": {
+      "adminNote": "anyOf(string|null)",
+      "amount": "integer",
+      "id": "integer",
+      "ordererId": "string",
+      "ordererName": "string",
+      "processedAt": "anyOf(string|null)",
+      "proposalId": "integer",
+      "proposalStatus": "ref:ProposalStatus",
+      "reason": "anyOf(string|null)",
+      "refundAccountHolder": "anyOf(string|null)",
+      "refundAccountNumber": "anyOf(string|null)",
+      "refundBankName": "anyOf(string|null)",
+      "requestedAt": "string",
+      "status": "ref:PayoutStatus"
+    }
+  },
+  "AdminRefundSummaryResponse": {
+    "required": [
+      "amount",
+      "id",
+      "ordererId",
+      "ordererName",
+      "proposalId",
+      "proposalStatus",
+      "requestedAt",
+      "status"
+    ],
+    "properties": {
+      "amount": "integer",
+      "id": "integer",
+      "ordererId": "string",
+      "ordererName": "string",
+      "processedAt": "anyOf(string|null)",
+      "proposalId": "integer",
+      "proposalStatus": "ref:ProposalStatus",
+      "requestedAt": "string",
+      "status": "ref:PayoutStatus"
+    }
+  },
+  "AdminSummaryResponse": {
+    "required": [
+      "disputeCount",
+      "refundCount",
+      "reportCount",
+      "settlementCount",
+      "unpaidCount"
+    ],
+    "properties": {
+      "disputeCount": "integer",
+      "refundCount": "integer",
+      "reportCount": "integer",
+      "settlementCount": "integer",
+      "unpaidCount": "integer"
+    }
+  },
+  "ApiResponse_AdminDisputeDetailResponse_": {
+    "required": [
+      "success"
+    ],
+    "properties": {
+      "data": "anyOf(ref:AdminDisputeDetailResponse|null)",
       "message": "anyOf(string|null)",
       "success": "boolean"
     }
   },
-  "ApiResponse_AuthTokenResponse_": {
+  "ApiResponse_AdminPayoutDetailResponse_": {
+    "required": [
+      "success"
+    ],
+    "properties": {
+      "data": "anyOf(ref:AdminPayoutDetailResponse|null)",
+      "message": "anyOf(string|null)",
+      "success": "boolean"
+    }
+  },
+  "ApiResponse_AdminProposalDetailResponse_": {
+    "required": [
+      "success"
+    ],
+    "properties": {
+      "data": "anyOf(ref:AdminProposalDetailResponse|null)",
+      "message": "anyOf(string|null)",
+      "success": "boolean"
+    }
+  },
+  "ApiResponse_AdminProposalReportResponse_": {
+    "required": [
+      "success"
+    ],
+    "properties": {
+      "data": "anyOf(ref:AdminProposalReportResponse|null)",
+      "message": "anyOf(string|null)",
+      "success": "boolean"
+    }
+  },
+  "ApiResponse_AdminProposalResponse_": {
+    "required": [
+      "success"
+    ],
+    "properties": {
+      "data": "anyOf(ref:AdminProposalResponse|null)",
+      "message": "anyOf(string|null)",
+      "success": "boolean"
+    }
+  },
+  "ApiResponse_AdminRefundDetailResponse_": {
+    "required": [
+      "success"
+    ],
+    "properties": {
+      "data": "anyOf(ref:AdminRefundDetailResponse|null)",
+      "message": "anyOf(string|null)",
+      "success": "boolean"
+    }
+  },
+  "ApiResponse_AdminSummaryResponse_": {
+    "required": [
+      "success"
+    ],
+    "properties": {
+      "data": "anyOf(ref:AdminSummaryResponse|null)",
+      "message": "anyOf(string|null)",
+      "success": "boolean"
+    }
+  },
+  "ApiResponse_AuthAccessTokenResponse_": {
     "required": [],
     "properties": {
-      "data": "anyOf(ref:AuthTokenResponse|null)",
+      "data": "anyOf(ref:AuthAccessTokenResponse|null)",
       "message": "anyOf(string|null)",
       "success": "boolean"
     }
@@ -29,6 +410,16 @@
     ],
     "properties": {
       "data": "anyOf(ref:DisputeEvidenceResponse|null)",
+      "message": "anyOf(string|null)",
+      "success": "boolean"
+    }
+  },
+  "ApiResponse_MissionResponse_": {
+    "required": [
+      "success"
+    ],
+    "properties": {
+      "data": "anyOf(ref:MissionResponse|null)",
       "message": "anyOf(string|null)",
       "success": "boolean"
     }
@@ -103,6 +494,66 @@
       "success": "boolean"
     }
   },
+  "ApiResponse_PageResponse_AdminDisputeSummaryResponse__": {
+    "required": [
+      "success"
+    ],
+    "properties": {
+      "data": "anyOf(ref:PageResponse_AdminDisputeSummaryResponse_|null)",
+      "message": "anyOf(string|null)",
+      "success": "boolean"
+    }
+  },
+  "ApiResponse_PageResponse_AdminOfferSummaryResponse__": {
+    "required": [
+      "success"
+    ],
+    "properties": {
+      "data": "anyOf(ref:PageResponse_AdminOfferSummaryResponse_|null)",
+      "message": "anyOf(string|null)",
+      "success": "boolean"
+    }
+  },
+  "ApiResponse_PageResponse_AdminProposalReportResponse__": {
+    "required": [
+      "success"
+    ],
+    "properties": {
+      "data": "anyOf(ref:PageResponse_AdminProposalReportResponse_|null)",
+      "message": "anyOf(string|null)",
+      "success": "boolean"
+    }
+  },
+  "ApiResponse_PageResponse_AdminProposalSummaryResponse__": {
+    "required": [
+      "success"
+    ],
+    "properties": {
+      "data": "anyOf(ref:PageResponse_AdminProposalSummaryResponse_|null)",
+      "message": "anyOf(string|null)",
+      "success": "boolean"
+    }
+  },
+  "ApiResponse_PageResponse_AdminRefundSummaryResponse__": {
+    "required": [
+      "success"
+    ],
+    "properties": {
+      "data": "anyOf(ref:PageResponse_AdminRefundSummaryResponse_|null)",
+      "message": "anyOf(string|null)",
+      "success": "boolean"
+    }
+  },
+  "ApiResponse_PageResponse_MissionResponse__": {
+    "required": [
+      "success"
+    ],
+    "properties": {
+      "data": "anyOf(ref:PageResponse_MissionResponse_|null)",
+      "message": "anyOf(string|null)",
+      "success": "boolean"
+    }
+  },
   "ApiResponse_PageResponse_OfferResponse__": {
     "required": [
       "success"
@@ -119,16 +570,6 @@
     ],
     "properties": {
       "data": "anyOf(ref:PageResponse_ProposalOwnResponse_|null)",
-      "message": "anyOf(string|null)",
-      "success": "boolean"
-    }
-  },
-  "ApiResponse_PageResponse_ProposalReportResponse__": {
-    "required": [
-      "success"
-    ],
-    "properties": {
-      "data": "anyOf(ref:PageResponse_ProposalReportResponse_|null)",
       "message": "anyOf(string|null)",
       "success": "boolean"
     }
@@ -370,6 +811,10 @@
       "surveyQuestionId": "integer"
     }
   },
+  "DisputeProcessStatus": {
+    "required": [],
+    "properties": {}
+  },
   "DisputeRequest": {
     "required": [
       "disputeReason",
@@ -428,6 +873,77 @@
     "properties": {
       "detail": "array<ref:ValidationError>"
     }
+  },
+  "MissionPayoutRequest": {
+    "required": [],
+    "properties": {
+      "adminId": "anyOf(string|null)",
+      "memo": "anyOf(string|null)"
+    }
+  },
+  "MissionResolution": {
+    "required": [],
+    "properties": {}
+  },
+  "MissionResolveRequest": {
+    "required": [
+      "resolution"
+    ],
+    "properties": {
+      "resolution": "ref:MissionResolution"
+    }
+  },
+  "MissionResponse": {
+    "required": [
+      "createdAt",
+      "errandFee",
+      "id",
+      "offerId",
+      "ordererId",
+      "ordererName",
+      "proposalId",
+      "refunded",
+      "runnerId",
+      "runnerName",
+      "settlementPaid",
+      "settlementStatus",
+      "startedAt",
+      "status"
+    ],
+    "properties": {
+      "completedAt": "anyOf(string|null)",
+      "createdAt": "string",
+      "disputedAt": "anyOf(string|null)",
+      "errandFee": "integer",
+      "failedAt": "anyOf(string|null)",
+      "id": "integer",
+      "offerId": "integer",
+      "openChatUrl": "anyOf(string|null)",
+      "ordererConfirmedAt": "anyOf(string|null)",
+      "ordererId": "string",
+      "ordererName": "string",
+      "payoutMemo": "anyOf(string|null)",
+      "proposalId": "integer",
+      "refunded": "boolean",
+      "refundedAt": "anyOf(string|null)",
+      "refundedByAdminId": "anyOf(string|null)",
+      "resolution": "anyOf(ref:MissionResolution|null)",
+      "resolvedAt": "anyOf(string|null)",
+      "resolvedByAdminId": "anyOf(string|null)",
+      "runnerConfirmedAt": "anyOf(string|null)",
+      "runnerId": "string",
+      "runnerName": "string",
+      "settlementPaid": "boolean",
+      "settlementPaidAt": "anyOf(string|null)",
+      "settlementPaidByAdminId": "anyOf(string|null)",
+      "settlementStatus": "ref:PayoutStatus",
+      "startedAt": "string",
+      "status": "ref:MissionStatus"
+    }
+  },
+  "MissionStatus": {
+    "required": [],
+    "properties": {}
   },
   "NotificationListResponse": {
     "required": [
@@ -668,6 +1184,126 @@
       "status": "ref:OfferStatus"
     }
   },
+  "PageResponse_AdminDisputeSummaryResponse_": {
+    "required": [
+      "content",
+      "first",
+      "last",
+      "pageNumber",
+      "pageSize",
+      "totalElements",
+      "totalPages"
+    ],
+    "properties": {
+      "content": "array<ref:AdminDisputeSummaryResponse>",
+      "first": "boolean",
+      "last": "boolean",
+      "pageNumber": "integer",
+      "pageSize": "integer",
+      "totalElements": "integer",
+      "totalPages": "integer"
+    }
+  },
+  "PageResponse_AdminOfferSummaryResponse_": {
+    "required": [
+      "content",
+      "first",
+      "last",
+      "pageNumber",
+      "pageSize",
+      "totalElements",
+      "totalPages"
+    ],
+    "properties": {
+      "content": "array<ref:AdminOfferSummaryResponse>",
+      "first": "boolean",
+      "last": "boolean",
+      "pageNumber": "integer",
+      "pageSize": "integer",
+      "totalElements": "integer",
+      "totalPages": "integer"
+    }
+  },
+  "PageResponse_AdminProposalReportResponse_": {
+    "required": [
+      "content",
+      "first",
+      "last",
+      "pageNumber",
+      "pageSize",
+      "totalElements",
+      "totalPages"
+    ],
+    "properties": {
+      "content": "array<ref:AdminProposalReportResponse>",
+      "first": "boolean",
+      "last": "boolean",
+      "pageNumber": "integer",
+      "pageSize": "integer",
+      "totalElements": "integer",
+      "totalPages": "integer"
+    }
+  },
+  "PageResponse_AdminProposalSummaryResponse_": {
+    "required": [
+      "content",
+      "first",
+      "last",
+      "pageNumber",
+      "pageSize",
+      "totalElements",
+      "totalPages"
+    ],
+    "properties": {
+      "content": "array<ref:AdminProposalSummaryResponse>",
+      "first": "boolean",
+      "last": "boolean",
+      "pageNumber": "integer",
+      "pageSize": "integer",
+      "totalElements": "integer",
+      "totalPages": "integer"
+    }
+  },
+  "PageResponse_AdminRefundSummaryResponse_": {
+    "required": [
+      "content",
+      "first",
+      "last",
+      "pageNumber",
+      "pageSize",
+      "totalElements",
+      "totalPages"
+    ],
+    "properties": {
+      "content": "array<ref:AdminRefundSummaryResponse>",
+      "first": "boolean",
+      "last": "boolean",
+      "pageNumber": "integer",
+      "pageSize": "integer",
+      "totalElements": "integer",
+      "totalPages": "integer"
+    }
+  },
+  "PageResponse_MissionResponse_": {
+    "required": [
+      "content",
+      "first",
+      "last",
+      "pageNumber",
+      "pageSize",
+      "totalElements",
+      "totalPages"
+    ],
+    "properties": {
+      "content": "array<ref:MissionResponse>",
+      "first": "boolean",
+      "last": "boolean",
+      "pageNumber": "integer",
+      "pageSize": "integer",
+      "totalElements": "integer",
+      "totalPages": "integer"
+    }
+  },
   "PageResponse_OfferResponse_": {
     "required": [
       "content",
@@ -708,26 +1344,6 @@
       "totalPages": "integer"
     }
   },
-  "PageResponse_ProposalReportResponse_": {
-    "required": [
-      "content",
-      "first",
-      "last",
-      "pageNumber",
-      "pageSize",
-      "totalElements",
-      "totalPages"
-    ],
-    "properties": {
-      "content": "array<ref:ProposalReportResponse>",
-      "first": "boolean",
-      "last": "boolean",
-      "pageNumber": "integer",
-      "pageSize": "integer",
-      "totalElements": "integer",
-      "totalPages": "integer"
-    }
-  },
   "PageResponse_ProposalResponse_": {
     "required": [
       "content",
@@ -747,6 +1363,10 @@
       "totalElements": "integer",
       "totalPages": "integer"
     }
+  },
+  "PayoutStatus": {
+    "required": [],
+    "properties": {}
   },
   "ProposalDetailResponse": {
     "required": [
@@ -867,9 +1487,11 @@
       "detailReason": "anyOf(string|null)",
       "id": "integer",
       "proposalId": "integer",
+      "proposalStatus": "anyOf(ref:ProposalStatus|null)",
       "reasonQuestionId": "integer",
       "reasonQuestionText": "string",
       "reporterId": "string",
+      "reporterName": "anyOf(string|null)",
       "reviewedAt": "anyOf(string|null)",
       "status": "ref:ProposalReportStatus"
     }
@@ -1052,6 +1674,24 @@
       "loc": "array<anyOf(string|integer)>",
       "msg": "string",
       "type": "string"
+    }
+  },
+  "app__schemas__common__ApiResponse_AuthTokenResponse_": {
+    "required": [
+      "success"
+    ],
+    "properties": {
+      "data": "anyOf(ref:AuthTokenResponse|null)",
+      "message": "anyOf(string|null)",
+      "success": "boolean"
+    }
+  },
+  "app__schemas__user__ApiResponse_AuthTokenResponse_": {
+    "required": [],
+    "properties": {
+      "data": "anyOf(ref:AuthTokenResponse|null)",
+      "message": "anyOf(string|null)",
+      "success": "boolean"
     }
   }
 }
