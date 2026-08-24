@@ -1,7 +1,7 @@
 {
   "success": true,
   "error": {
-    "code": "string",
+    "code": "DISPUTE_EVIDENCE_NOT_FOUND",
     "message": "string",
     "details": "string"
   },

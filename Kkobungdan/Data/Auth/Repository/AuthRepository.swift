@@ -24,21 +24,24 @@ private struct SignupRequestBody: Encodable {
 
 final class AuthRepository: AuthRepositoryProtocol {
   private let client: HTTPClient
+  private let unauthenticatedClient: HTTPClient
   private let tokenStorage: TokenStorage
   private let fcmTokenStorage: FcmTokenStorage
 
   init(
     client: HTTPClient = .shared,
+    unauthenticatedClient: HTTPClient = .unauthenticated,
     tokenStorage: TokenStorage = .shared,
     fcmTokenStorage: FcmTokenStorage = .shared
   ) {
     self.client = client
+    self.unauthenticatedClient = unauthenticatedClient
     self.tokenStorage = tokenStorage
     self.fcmTokenStorage = fcmTokenStorage
   }
 
   func sendSignupCode(name: String, phone: String, carrier: String) async throws -> PhoneVerification {
-    let response: PhoneVerificationResponseDTO = try await client.post(
+    let response: PhoneVerificationResponseDTO = try await unauthenticatedClient.post(
       "/v1/auth/signup/send",
       body: AuthSignupSendRequest(carrier: carrier, name: name, phone: phone)
     )
@@ -46,7 +49,7 @@ final class AuthRepository: AuthRepositoryProtocol {
   }
 
   func confirmSignupCode(code: String, phone: String) async throws -> AuthTokens {
-    let response: AuthTokenResponseDTO = try await client.post(
+    let response: AuthTokenResponseDTO = try await unauthenticatedClient.post(
       "/v1/auth/signup/confirm",
       body: AuthSignupConfirmRequest(code: code, fcmToken: fcmTokenStorage.token, phone: phone)
     )
@@ -56,7 +59,7 @@ final class AuthRepository: AuthRepositoryProtocol {
   }
 
   func sendLoginCode(phone: String) async throws -> PhoneVerification {
-    let response: PhoneVerificationResponseDTO = try await client.post(
+    let response: PhoneVerificationResponseDTO = try await unauthenticatedClient.post(
       "/v1/auth/login/send",
       body: AuthLoginSendRequest(phone: phone)
     )
@@ -64,7 +67,7 @@ final class AuthRepository: AuthRepositoryProtocol {
   }
 
   func confirmLoginCode(code: String, phone: String) async throws -> AuthTokens {
-    let response: AuthTokenResponseDTO = try await client.post(
+    let response: AuthTokenResponseDTO = try await unauthenticatedClient.post(
       "/v1/auth/login/confirm",
       body: AuthLoginConfirmRequest(code: code, fcmToken: fcmTokenStorage.token, phone: phone)
     )
@@ -88,8 +91,9 @@ final class AuthRepository: AuthRepositoryProtocol {
     )
   }
 
+  /// 액세스 토큰 갱신. 만료된 액세스 토큰으로 인증할 수 없으므로 `unauthenticatedClient` 로 보낸다.
   func refresh(refreshToken: String) async throws -> String {
-    let response: RefreshTokenResponseDTO = try await client.post(
+    let response: RefreshTokenResponseDTO = try await unauthenticatedClient.post(
       "/v1/auth/refresh",
       body: AuthRefreshRequest(refreshToken: refreshToken)
     )
