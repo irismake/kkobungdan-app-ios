@@ -67,7 +67,7 @@ actor DummyBackendStore {
     switch proposalStatus {
     case .matched, .orderCompleted:
       return dummyOpenChatURL
-    case .holding, .posted, .offered, .allCompleted, .disputed, .resolved, .cancelled:
+    case .holding, .posted, .offered, .allCompleted, .disputed, .refundPending, .refunded, .cancelled:
       return nil
     }
   }
@@ -78,7 +78,7 @@ actor DummyBackendStore {
     switch offerStatus {
     case .accepted, .runnerCompleted:
       return dummyOpenChatURL
-    case .waiting, .allCompleted, .disputed, .resolved, .rejected, .cancelled:
+    case .waiting, .allCompleted, .disputed, .rejected, .cancelled:
       return nil
     }
   }
@@ -134,6 +134,7 @@ actor DummyBackendStore {
   }
 
   /// proposal 취소 시 관련 WAITING/ACCEPTED offer 도 같은 트랜잭션으로 REJECTED 전이.
+  /// 입금 전(HOLDING) 취소는 즉시 CANCELLED, 입금 확인 후(POSTED/OFFERED) 취소는 환불이 생성되어 REFUND_PENDING.
   func cancelProposal(id: Int64) throws -> Proposal {
     guard let index = proposals.firstIndex(where: { $0.id == id }) else {
       throw RepositoryError.notFound
@@ -142,7 +143,8 @@ actor DummyBackendStore {
     guard canEditOrCancel(existing.status) else {
       throw RepositoryError.conflict
     }
-    let cancelled = with(existing, status: .cancelled)
+    let cancelledStatus: ProposalStatus = existing.status == .holding ? .cancelled : .refundPending
+    let cancelled = with(existing, status: cancelledStatus)
     proposals[index] = cancelled
     rejectActiveOffers(forProposalID: id)
     return cancelled

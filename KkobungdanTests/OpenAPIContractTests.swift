@@ -134,9 +134,10 @@ final class OpenAPIContractTests: XCTestCase {
                 "DISPUTE_ALREADY_REVIEWED",
                 "INVALID_STATUS",
                 "MISSION_NOT_FOUND",
-                "MISSION_NOT_REFUNDABLE",
                 "MISSION_NOT_RESOLVABLE",
-                "MISSION_NOT_SETTLEABLE"
+                "MISSION_NOT_SETTLEABLE",
+                "REFUND_NOT_FOUND",
+                "REFUND_NOT_PROCESSABLE"
             ],
             // UNKNOWN: 서버가 보내지 않는 클라이언트 전용 센티널 (미등록 코드 흡수용)
             knownExtraValues: ["UNKNOWN"]
@@ -150,7 +151,9 @@ final class OpenAPIContractTests: XCTestCase {
         "MissionResolution", // 관리자 웹 전용
         "MissionStatus", // 관리자 웹 전용
         "PayoutStatus", // 관리자 웹 전용
-        "ProposalReportStatus" // 신고 처리 상태 — 클라이언트 미사용 (ProposalReportResponseDTO.status: String)
+        "ProposalReportStatus", // 신고 처리 상태 — 클라이언트 미사용 (ProposalReportResponseDTO.status: String)
+        "RefundReason", // 관리자 웹 전용
+        "RefundStatus" // 관리자 웹 전용
     ]
 
     // MARK: - 1. maximal: 모든 필드가 채워진 응답을 DTO 가 읽는가 (필드명·타입 변경 감지)

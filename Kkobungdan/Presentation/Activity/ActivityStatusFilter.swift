@@ -32,7 +32,7 @@ enum ActivityStatusFilter: String {
     case .inProgress: return [.matched, .orderCompleted]
     case .disputed: return [.disputed]
     case .completed: return [.allCompleted]
-    case .cancelled: return [.cancelled, .resolved]
+    case .cancelled: return [.cancelled, .refundPending, .refunded]
     }
   }
 
@@ -44,7 +44,7 @@ enum ActivityStatusFilter: String {
     case .inProgress: return [.accepted, .runnerCompleted]
     case .disputed: return [.disputed]
     case .completed: return [.allCompleted]
-    case .cancelled: return [.rejected, .cancelled, .resolved]
+    case .cancelled: return [.rejected, .cancelled]
     }
   }
 }
