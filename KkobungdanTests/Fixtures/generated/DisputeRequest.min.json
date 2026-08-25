@@ -1,4 +1,4 @@
 {
-  "surveyQuestionId": 0,
-  "disputeReason": "string"
+  "reasonQuestionId": 0,
+  "detailReason": "string"
 }

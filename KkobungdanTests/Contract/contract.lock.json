@@ -10,18 +10,19 @@
   "AdminDisputeDetailResponse": {
     "required": [
       "createdAt",
+      "detailReason",
       "id",
       "missionId",
       "offerId",
       "offerStatus",
       "proposalId",
       "proposalStatus",
-      "reason",
+      "reasonQuestionId",
+      "reasonQuestionText",
       "requesterId",
       "requesterName",
       "requesterRole",
       "status",
-      "surveyQuestionId",
       "targetId",
       "targetName",
       "targetRole"
@@ -29,19 +30,20 @@
     "properties": {
       "adminNote": "anyOf(string|null)",
       "createdAt": "string",
+      "detailReason": "string",
       "id": "integer",
       "missionId": "integer",
       "offerId": "integer",
       "offerStatus": "ref:OfferStatus",
       "proposalId": "integer",
       "proposalStatus": "ref:ProposalStatus",
-      "reason": "string",
+      "reasonQuestionId": "integer",
+      "reasonQuestionText": "string",
       "requesterId": "string",
       "requesterName": "string",
       "requesterRole": "string",
       "resolvedAt": "anyOf(string|null)",
       "status": "ref:DisputeProcessStatus",
-      "surveyQuestionId": "integer",
       "targetId": "string",
       "targetName": "string",
       "targetRole": "string"
@@ -322,6 +324,20 @@
       "unpaidCount": "integer"
     }
   },
+  "AdminUserSummaryResponse": {
+    "required": [
+      "createdAt",
+      "id",
+      "missionCount",
+      "name"
+    ],
+    "properties": {
+      "createdAt": "string",
+      "id": "string",
+      "missionCount": "integer",
+      "name": "string"
+    }
+  },
   "ApiResponse_AdminDisputeDetailResponse_": {
     "required": [
       "success"
@@ -548,6 +564,16 @@
       "success": "boolean"
     }
   },
+  "ApiResponse_PageResponse_AdminUserSummaryResponse__": {
+    "required": [
+      "success"
+    ],
+    "properties": {
+      "data": "anyOf(ref:PageResponse_AdminUserSummaryResponse_|null)",
+      "message": "anyOf(string|null)",
+      "success": "boolean"
+    }
+  },
   "ApiResponse_PageResponse_MissionResponse__": {
     "required": [
       "success"
@@ -650,6 +676,14 @@
     "required": [],
     "properties": {
       "data": "anyOf(ref:UserDetailResponse|null)",
+      "message": "anyOf(string|null)",
+      "success": "boolean"
+    }
+  },
+  "ApiResponse_UserWithdrawalResponse_": {
+    "required": [],
+    "properties": {
+      "data": "anyOf(ref:UserWithdrawalResponse|null)",
       "message": "anyOf(string|null)",
       "success": "boolean"
     }
@@ -799,20 +833,22 @@
     "required": [
       "actorId",
       "createdAt",
+      "detailReason",
       "id",
       "offerId",
       "proposalId",
-      "reason",
-      "surveyQuestionId"
+      "reasonQuestionId",
+      "reasonQuestionText"
     ],
     "properties": {
       "actorId": "string",
       "createdAt": "string",
+      "detailReason": "string",
       "id": "integer",
       "offerId": "integer",
       "proposalId": "integer",
-      "reason": "string",
-      "surveyQuestionId": "integer"
+      "reasonQuestionId": "integer",
+      "reasonQuestionText": "string"
     }
   },
   "DisputeProcessStatus": {
@@ -821,12 +857,12 @@
   },
   "DisputeRequest": {
     "required": [
-      "disputeReason",
-      "surveyQuestionId"
+      "detailReason",
+      "reasonQuestionId"
     ],
     "properties": {
-      "disputeReason": "string",
-      "surveyQuestionId": "integer"
+      "detailReason": "string",
+      "reasonQuestionId": "integer"
     }
   },
   "DisputeSurveyQuestionResponse": {
@@ -1284,6 +1320,26 @@
       "totalPages": "integer"
     }
   },
+  "PageResponse_AdminUserSummaryResponse_": {
+    "required": [
+      "content",
+      "first",
+      "last",
+      "pageNumber",
+      "pageSize",
+      "totalElements",
+      "totalPages"
+    ],
+    "properties": {
+      "content": "array<ref:AdminUserSummaryResponse>",
+      "first": "boolean",
+      "last": "boolean",
+      "pageNumber": "integer",
+      "pageSize": "integer",
+      "totalElements": "integer",
+      "totalPages": "integer"
+    }
+  },
   "PageResponse_MissionResponse_": {
     "required": [
       "content",
@@ -1668,6 +1724,21 @@
     "properties": {
       "detailReason": "anyOf(string|null)",
       "reasonQuestionId": "anyOf(integer|null)"
+    }
+  },
+  "UserWithdrawalResponse": {
+    "required": [
+      "id",
+      "userId",
+      "withdrawnAt"
+    ],
+    "properties": {
+      "detailReason": "anyOf(string|null)",
+      "id": "integer",
+      "reasonQuestionId": "anyOf(integer|null)",
+      "reasonQuestionText": "anyOf(string|null)",
+      "userId": "string",
+      "withdrawnAt": "string"
     }
   },
   "ValidationError": {

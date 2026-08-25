@@ -5,8 +5,9 @@
     "proposalId": 0,
     "offerId": 0,
     "actorId": "string",
-    "reason": "string",
-    "surveyQuestionId": 0,
+    "reasonQuestionId": 0,
+    "reasonQuestionText": "string",
+    "detailReason": "string",
     "createdAt": "2026-06-12T18:00:00"
   },
   "message": "string"

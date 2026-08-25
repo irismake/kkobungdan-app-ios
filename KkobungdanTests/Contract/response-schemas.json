@@ -10,6 +10,7 @@
   "AdminRefundDetailResponse": "GET /v1/admin/refund/{refund_id}",
   "AdminRefundSummaryResponse": "GET /v1/admin/refund",
   "AdminSummaryResponse": "GET /v1/admin/summary",
+  "AdminUserSummaryResponse": "GET /v1/admin/user",
   "AuthAccessTokenResponse": "POST /v1/auth/refresh",
   "AuthTokenResponse": "POST /v1/auth/signup/confirm",
   "AuthVerificationSendResponse": "POST /v1/auth/signup/send",
@@ -33,5 +34,6 @@
   "SettlementBankNamesResponse": "GET /v1/settlement/banks",
   "TermsAgreementResponse": "POST /v1/terms",
   "UserDetailResponse": "GET /v1/user/detail",
-  "UserWithdrawalReasonQuestionResponse": "GET /v1/user/withdrawal-reasons"
+  "UserWithdrawalReasonQuestionResponse": "GET /v1/user/withdrawal-reasons",
+  "UserWithdrawalResponse": "DELETE /v1/user"
 }
