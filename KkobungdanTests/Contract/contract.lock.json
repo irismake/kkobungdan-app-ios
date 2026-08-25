@@ -259,6 +259,7 @@
       "ordererName",
       "proposalId",
       "proposalStatus",
+      "reason",
       "requestedAt",
       "status"
     ],
@@ -271,12 +272,13 @@
       "processedAt": "anyOf(string|null)",
       "proposalId": "integer",
       "proposalStatus": "ref:ProposalStatus",
-      "reason": "anyOf(string|null)",
+      "reason": "ref:RefundReason",
+      "reasonDetail": "anyOf(string|null)",
       "refundAccountHolder": "anyOf(string|null)",
       "refundAccountNumber": "anyOf(string|null)",
       "refundBankName": "anyOf(string|null)",
       "requestedAt": "string",
-      "status": "ref:PayoutStatus"
+      "status": "ref:RefundStatus"
     }
   },
   "AdminRefundSummaryResponse": {
@@ -287,6 +289,7 @@
       "ordererName",
       "proposalId",
       "proposalStatus",
+      "reason",
       "requestedAt",
       "status"
     ],
@@ -298,8 +301,9 @@
       "processedAt": "anyOf(string|null)",
       "proposalId": "integer",
       "proposalStatus": "ref:ProposalStatus",
+      "reason": "ref:RefundReason",
       "requestedAt": "string",
-      "status": "ref:PayoutStatus"
+      "status": "ref:RefundStatus"
     }
   },
   "AdminSummaryResponse": {
@@ -902,7 +906,6 @@
       "ordererId",
       "ordererName",
       "proposalId",
-      "refunded",
       "runnerId",
       "runnerName",
       "settlementPaid",
@@ -924,9 +927,6 @@
       "ordererName": "string",
       "payoutMemo": "anyOf(string|null)",
       "proposalId": "integer",
-      "refunded": "boolean",
-      "refundedAt": "anyOf(string|null)",
-      "refundedByAdminId": "anyOf(string|null)",
       "resolution": "anyOf(ref:MissionResolution|null)",
       "resolvedAt": "anyOf(string|null)",
       "resolvedByAdminId": "anyOf(string|null)",
@@ -1533,6 +1533,14 @@
     }
   },
   "ProposalStatus": {
+    "required": [],
+    "properties": {}
+  },
+  "RefundReason": {
+    "required": [],
+    "properties": {}
+  },
+  "RefundStatus": {
     "required": [],
     "properties": {}
   },

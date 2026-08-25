@@ -13,7 +13,6 @@
       "errandFee": 0,
       "settlementPaid": true,
       "settlementStatus": "PENDING",
-      "refunded": true,
       "resolution": "COMPLETED",
       "startedAt": "2026-06-12T18:00:00",
       "runnerConfirmedAt": "2026-06-12T18:00:00",
@@ -25,8 +24,6 @@
       "resolvedByAdminId": "string",
       "settlementPaidAt": "2026-06-12T18:00:00",
       "settlementPaidByAdminId": "string",
-      "refundedAt": "2026-06-12T18:00:00",
-      "refundedByAdminId": "string",
       "payoutMemo": "string",
       "createdAt": "2026-06-12T18:00:00"
     }

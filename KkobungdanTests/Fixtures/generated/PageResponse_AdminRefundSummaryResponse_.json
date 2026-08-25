@@ -8,6 +8,7 @@
       "ordererName": "string",
       "amount": 0,
       "status": "PENDING",
+      "reason": "USER_CANCELLED",
       "requestedAt": "2026-06-12T18:00:00",
       "processedAt": "2026-06-12T18:00:00"
     }
