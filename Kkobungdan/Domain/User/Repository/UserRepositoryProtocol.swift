@@ -13,5 +13,5 @@ protocol UserRepositoryProtocol: Sendable {
   func updateAlarm(enabled: Bool) async throws -> User
   func updateFcmToken(_ token: String) async throws
   func fetchWithdrawalReasons() async throws -> [WithdrawalReason]
-  func withdraw(reasonQuestionID: Int64?, detailReason: String?) async throws
+  func withdraw(reasonQuestionID: Int64, detailReason: String?) async throws
 }

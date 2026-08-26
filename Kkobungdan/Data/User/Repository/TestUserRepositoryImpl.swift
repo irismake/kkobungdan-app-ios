@@ -64,7 +64,7 @@ actor TestUserRepositoryImpl: UserRepositoryProtocol {
     }
   }
 
-  func withdraw(reasonQuestionID _: Int64?, detailReason _: String?) async throws {
+  func withdraw(reasonQuestionID _: Int64, detailReason _: String?) async throws {
     try await Task.sleep(nanoseconds: Self.simulatedLatency)
   }
 }

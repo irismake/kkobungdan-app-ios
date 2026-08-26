@@ -90,14 +90,14 @@ final class WithdrawReasonViewModel: LoadableViewModel {
 
   @MainActor
   func submit() async {
-    guard canSubmit, !isSubmitting else {
+    guard canSubmit, !isSubmitting, let reason = selectedReason else {
       return
     }
     isSubmitting = true
     errorMessage = nil
     do {
       try await withdrawUseCase.execute(
-        reasonQuestionID: selectedID,
+        reasonQuestionID: reason.id,
         detailReason: trimmedDetail.isEmpty ? nil : trimmedDetail
       )
       tokenStorage.clear()
