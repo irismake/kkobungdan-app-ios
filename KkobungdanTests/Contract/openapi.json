@@ -13712,302 +13712,6 @@
         }
       }
     },
-    "/v1/admin/dispute/{dispute_id}/reject": {
-      "post": {
-        "tags": [
-          "관리자"
-        ],
-        "summary": "분쟁 반려 (관리자 전용)",
-        "description": "관리자가 분쟁을 반려합니다. 요청·지원·미션 상태는 바뀌지 않습니다.",
-        "operationId": "reject_admin_dispute_v1_admin_dispute__dispute_id__reject_post",
-        "security": [
-          {
-            "HTTPBearer": []
-          }
-        ],
-        "parameters": [
-          {
-            "name": "dispute_id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "integer",
-              "title": "Dispute Id"
-            }
-          }
-        ],
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "anyOf": [
-                  {
-                    "$ref": "#/components/schemas/AdminNoteRequest"
-                  },
-                  {
-                    "type": "null"
-                  }
-                ],
-                "title": "Request"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "성공 응답",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApiResponse_AdminDisputeDetailResponse_"
-                },
-                "example": {
-                  "success": true,
-                  "data": {
-                    "id": 5,
-                    "proposalId": 1,
-                    "offerId": 10,
-                    "missionId": 100,
-                    "requesterId": "550e8400-e29b-41d4-a716-446655440000",
-                    "requesterName": "홍길동",
-                    "requesterRole": "ORDERER",
-                    "status": "REJECTED",
-                    "createdAt": "2026-06-01T12:00:00+09:00",
-                    "targetId": "550e8400-e29b-41d4-a716-446655440001",
-                    "targetName": "Runner One",
-                    "targetRole": "RUNNER",
-                    "reasonQuestionId": 1,
-                    "reasonQuestionText": "물건이 파손되었어요",
-                    "detailReason": "약속한 물건과 다른 물건을 전달했습니다.",
-                    "proposalStatus": "DISPUTED",
-                    "offerStatus": "DISPUTED",
-                    "adminNote": "증빙 부족",
-                    "resolvedAt": "2026-06-01T12:10:00+09:00"
-                  },
-                  "message": "분쟁이 반려되었습니다."
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "실패 응답",
-            "content": {
-              "application/json": {
-                "examples": {
-                  "INVALID_TOKEN": {
-                    "summary": "INVALID_TOKEN",
-                    "value": {
-                      "success": false,
-                      "error": {
-                        "code": "INVALID_TOKEN",
-                        "message": "유효하지 않은 토큰입니다.",
-                        "details": null
-                      },
-                      "timestamp": "2026-06-01T12:00:00+09:00"
-                    }
-                  },
-                  "MISSING_CREDENTIALS": {
-                    "summary": "INVALID_TOKEN",
-                    "value": {
-                      "success": false,
-                      "error": {
-                        "code": "INVALID_TOKEN",
-                        "message": "인증 정보가 없습니다.",
-                        "details": null
-                      },
-                      "timestamp": "2026-06-01T12:00:00+09:00"
-                    }
-                  },
-                  "INVALID_TOKEN_CREDENTIALS": {
-                    "summary": "INVALID_TOKEN",
-                    "value": {
-                      "success": false,
-                      "error": {
-                        "code": "INVALID_TOKEN",
-                        "message": "인증 정보를 확인할 수 없습니다.",
-                        "details": null
-                      },
-                      "timestamp": "2026-06-01T12:00:00+09:00"
-                    }
-                  },
-                  "INVALID_TOKEN_TYPE": {
-                    "summary": "INVALID_TOKEN",
-                    "value": {
-                      "success": false,
-                      "error": {
-                        "code": "INVALID_TOKEN",
-                        "message": "토큰 종류가 올바르지 않습니다.",
-                        "details": null
-                      },
-                      "timestamp": "2026-06-01T12:00:00+09:00"
-                    }
-                  },
-                  "INVALID_AUTHENTICATION_CREDENTIALS": {
-                    "summary": "INVALID_TOKEN",
-                    "value": {
-                      "success": false,
-                      "error": {
-                        "code": "INVALID_TOKEN",
-                        "message": "인증 정보가 올바르지 않습니다.",
-                        "details": null
-                      },
-                      "timestamp": "2026-06-01T12:00:00+09:00"
-                    }
-                  }
-                },
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
-          "403": {
-            "description": "실패 응답",
-            "content": {
-              "application/json": {
-                "examples": {
-                  "FORBIDDEN": {
-                    "summary": "FORBIDDEN",
-                    "value": {
-                      "success": false,
-                      "error": {
-                        "code": "FORBIDDEN",
-                        "message": "권한이 없습니다.",
-                        "details": null
-                      },
-                      "timestamp": "2026-06-01T12:00:00+09:00"
-                    }
-                  }
-                },
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "실패 응답",
-            "content": {
-              "application/json": {
-                "examples": {
-                  "DISPUTE_EVIDENCE_NOT_FOUND": {
-                    "summary": "DISPUTE_EVIDENCE_NOT_FOUND",
-                    "value": {
-                      "success": false,
-                      "error": {
-                        "code": "DISPUTE_EVIDENCE_NOT_FOUND",
-                        "message": "분쟁 증빙을 찾을 수 없습니다.",
-                        "details": null
-                      },
-                      "timestamp": "2026-06-01T12:00:00+09:00"
-                    }
-                  },
-                  "PROPOSAL_NOT_FOUND": {
-                    "summary": "PROPOSAL_NOT_FOUND",
-                    "value": {
-                      "success": false,
-                      "error": {
-                        "code": "PROPOSAL_NOT_FOUND",
-                        "message": "요청을 찾을 수 없습니다.",
-                        "details": null
-                      },
-                      "timestamp": "2026-06-01T12:00:00+09:00"
-                    }
-                  },
-                  "OFFER_NOT_FOUND": {
-                    "summary": "OFFER_NOT_FOUND",
-                    "value": {
-                      "success": false,
-                      "error": {
-                        "code": "OFFER_NOT_FOUND",
-                        "message": "지원 내역을 찾을 수 없습니다.",
-                        "details": null
-                      },
-                      "timestamp": "2026-06-01T12:00:00+09:00"
-                    }
-                  }
-                },
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
-          "409": {
-            "description": "실패 응답",
-            "content": {
-              "application/json": {
-                "examples": {
-                  "DISPUTE_ALREADY_REVIEWED": {
-                    "summary": "DISPUTE_ALREADY_REVIEWED",
-                    "value": {
-                      "success": false,
-                      "error": {
-                        "code": "DISPUTE_ALREADY_REVIEWED",
-                        "message": "이미 처리된 분쟁입니다.",
-                        "details": null
-                      },
-                      "timestamp": "2026-06-01T12:00:00+09:00"
-                    }
-                  }
-                },
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "실패 응답",
-            "content": {
-              "application/json": {
-                "examples": {
-                  "VALIDATION_ERROR": {
-                    "summary": "VALIDATION_ERROR",
-                    "value": {
-                      "success": false,
-                      "error": {
-                        "code": "VALIDATION_ERROR",
-                        "message": "요청 값이 올바르지 않습니다.",
-                        "details": null
-                      },
-                      "timestamp": "2026-06-01T12:00:00+09:00"
-                    }
-                  }
-                },
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
-          "500": {
-            "description": "실패 응답",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                },
-                "examples": {
-                  "INTERNAL_SERVER_ERROR": {
-                    "summary": "INTERNAL_SERVER_ERROR",
-                    "value": {
-                      "success": false,
-                      "error": {
-                        "code": "INTERNAL_SERVER_ERROR",
-                        "message": "서버 내부 오류가 발생했습니다.",
-                        "details": null
-                      },
-                      "timestamp": "2026-06-01T12:00:00+09:00"
-                    }
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-    },
     "/v1/admin/refund": {
       "get": {
         "tags": [
@@ -14674,6 +14378,506 @@
                       "error": {
                         "code": "PROPOSAL_NOT_FOUND",
                         "message": "요청을 찾을 수 없습니다.",
+                        "details": null
+                      },
+                      "timestamp": "2026-06-01T12:00:00+09:00"
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "실패 응답",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "REFUND_NOT_PROCESSABLE": {
+                    "summary": "REFUND_NOT_PROCESSABLE",
+                    "value": {
+                      "success": false,
+                      "error": {
+                        "code": "REFUND_NOT_PROCESSABLE",
+                        "message": "대기 중인 환불만 처리할 수 있습니다.",
+                        "details": null
+                      },
+                      "timestamp": "2026-06-01T12:00:00+09:00"
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "실패 응답",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "VALIDATION_ERROR": {
+                    "summary": "VALIDATION_ERROR",
+                    "value": {
+                      "success": false,
+                      "error": {
+                        "code": "VALIDATION_ERROR",
+                        "message": "요청 값이 올바르지 않습니다.",
+                        "details": null
+                      },
+                      "timestamp": "2026-06-01T12:00:00+09:00"
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "실패 응답",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "examples": {
+                  "INTERNAL_SERVER_ERROR": {
+                    "summary": "INTERNAL_SERVER_ERROR",
+                    "value": {
+                      "success": false,
+                      "error": {
+                        "code": "INTERNAL_SERVER_ERROR",
+                        "message": "서버 내부 오류가 발생했습니다.",
+                        "details": null
+                      },
+                      "timestamp": "2026-06-01T12:00:00+09:00"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/admin/refund/{refund_id}/confirm-deposit": {
+      "post": {
+        "tags": [
+          "관리자"
+        ],
+        "summary": "입금 확인 처리 (관리자 전용)",
+        "description": "입금 확인 전 취소된 요청의 대조 결과 입금이 확인되었을 때 호출한다. 환불을 `REVIEW`에서 `PENDING`으로 확정하고 요청을 `REFUND_PENDING`으로 되돌린다. 이후 이체는 기존 환불 완료 API를 그대로 사용한다.",
+        "operationId": "confirm_admin_refund_deposit_v1_admin_refund__refund_id__confirm_deposit_post",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "refund_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Refund Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "성공 응답",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponse_AdminRefundDetailResponse_"
+                },
+                "example": {
+                  "success": true,
+                  "data": {
+                    "id": 100,
+                    "proposalId": 1,
+                    "proposalStatus": "REFUND_PENDING",
+                    "ordererId": "550e8400-e29b-41d4-a716-446655440000",
+                    "ordererName": "홍길동",
+                    "amount": 5000,
+                    "status": "PENDING",
+                    "reason": "USER_CANCELLED",
+                    "requestedAt": "2026-06-01T12:10:00+09:00",
+                    "processedAt": null,
+                    "reasonDetail": null,
+                    "refundBankName": "국민은행",
+                    "refundAccountNumber": "123456789012",
+                    "refundAccountHolder": "홍길동",
+                    "adminNote": null
+                  },
+                  "message": "입금이 확인되어 환불 대상으로 확정했습니다."
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "실패 응답",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "INVALID_TOKEN": {
+                    "summary": "INVALID_TOKEN",
+                    "value": {
+                      "success": false,
+                      "error": {
+                        "code": "INVALID_TOKEN",
+                        "message": "유효하지 않은 토큰입니다.",
+                        "details": null
+                      },
+                      "timestamp": "2026-06-01T12:00:00+09:00"
+                    }
+                  },
+                  "MISSING_CREDENTIALS": {
+                    "summary": "INVALID_TOKEN",
+                    "value": {
+                      "success": false,
+                      "error": {
+                        "code": "INVALID_TOKEN",
+                        "message": "인증 정보가 없습니다.",
+                        "details": null
+                      },
+                      "timestamp": "2026-06-01T12:00:00+09:00"
+                    }
+                  },
+                  "INVALID_TOKEN_CREDENTIALS": {
+                    "summary": "INVALID_TOKEN",
+                    "value": {
+                      "success": false,
+                      "error": {
+                        "code": "INVALID_TOKEN",
+                        "message": "인증 정보를 확인할 수 없습니다.",
+                        "details": null
+                      },
+                      "timestamp": "2026-06-01T12:00:00+09:00"
+                    }
+                  },
+                  "INVALID_TOKEN_TYPE": {
+                    "summary": "INVALID_TOKEN",
+                    "value": {
+                      "success": false,
+                      "error": {
+                        "code": "INVALID_TOKEN",
+                        "message": "토큰 종류가 올바르지 않습니다.",
+                        "details": null
+                      },
+                      "timestamp": "2026-06-01T12:00:00+09:00"
+                    }
+                  },
+                  "INVALID_AUTHENTICATION_CREDENTIALS": {
+                    "summary": "INVALID_TOKEN",
+                    "value": {
+                      "success": false,
+                      "error": {
+                        "code": "INVALID_TOKEN",
+                        "message": "인증 정보가 올바르지 않습니다.",
+                        "details": null
+                      },
+                      "timestamp": "2026-06-01T12:00:00+09:00"
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "실패 응답",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "FORBIDDEN": {
+                    "summary": "FORBIDDEN",
+                    "value": {
+                      "success": false,
+                      "error": {
+                        "code": "FORBIDDEN",
+                        "message": "권한이 없습니다.",
+                        "details": null
+                      },
+                      "timestamp": "2026-06-01T12:00:00+09:00"
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "실패 응답",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "REFUND_NOT_FOUND": {
+                    "summary": "REFUND_NOT_FOUND",
+                    "value": {
+                      "success": false,
+                      "error": {
+                        "code": "REFUND_NOT_FOUND",
+                        "message": "환불을 찾을 수 없습니다.",
+                        "details": null
+                      },
+                      "timestamp": "2026-06-01T12:00:00+09:00"
+                    }
+                  },
+                  "PROPOSAL_NOT_FOUND": {
+                    "summary": "PROPOSAL_NOT_FOUND",
+                    "value": {
+                      "success": false,
+                      "error": {
+                        "code": "PROPOSAL_NOT_FOUND",
+                        "message": "요청을 찾을 수 없습니다.",
+                        "details": null
+                      },
+                      "timestamp": "2026-06-01T12:00:00+09:00"
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "실패 응답",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "REFUND_NOT_PROCESSABLE": {
+                    "summary": "REFUND_NOT_PROCESSABLE",
+                    "value": {
+                      "success": false,
+                      "error": {
+                        "code": "REFUND_NOT_PROCESSABLE",
+                        "message": "대기 중인 환불만 처리할 수 있습니다.",
+                        "details": null
+                      },
+                      "timestamp": "2026-06-01T12:00:00+09:00"
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "실패 응답",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "examples": {
+                  "INTERNAL_SERVER_ERROR": {
+                    "summary": "INTERNAL_SERVER_ERROR",
+                    "value": {
+                      "success": false,
+                      "error": {
+                        "code": "INTERNAL_SERVER_ERROR",
+                        "message": "서버 내부 오류가 발생했습니다.",
+                        "details": null
+                      },
+                      "timestamp": "2026-06-01T12:00:00+09:00"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/admin/refund/{refund_id}/void": {
+      "post": {
+        "tags": [
+          "관리자"
+        ],
+        "summary": "입금 없음 종결 (관리자 전용)",
+        "description": "대조 결과 입금이 없어 환불 없이 종결한다. 환불 반려가 아니라 받은 돈이 없다는 뜻이며 요청은 `CANCELLED`로 남는다. 근거를 남기도록 `adminNote`는 필수다.",
+        "operationId": "void_admin_refund_v1_admin_refund__refund_id__void_post",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "refund_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Refund Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AdminRefundVoidRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "성공 응답",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponse_AdminRefundDetailResponse_"
+                },
+                "example": {
+                  "success": true,
+                  "data": {
+                    "id": 100,
+                    "proposalId": 1,
+                    "proposalStatus": "CANCELLED",
+                    "ordererId": "550e8400-e29b-41d4-a716-446655440000",
+                    "ordererName": "홍길동",
+                    "amount": 5000,
+                    "status": "VOIDED",
+                    "reason": "PAYMENT_EXPIRED",
+                    "requestedAt": "2026-06-01T12:10:00+09:00",
+                    "processedAt": "2026-06-01T12:10:00+09:00",
+                    "reasonDetail": null,
+                    "refundBankName": "국민은행",
+                    "refundAccountNumber": "123456789012",
+                    "refundAccountHolder": "홍길동",
+                    "adminNote": "2026-06-01 입금 내역 없음"
+                  },
+                  "message": "입금이 없어 환불 없이 종결했습니다."
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "실패 응답",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "INVALID_TOKEN": {
+                    "summary": "INVALID_TOKEN",
+                    "value": {
+                      "success": false,
+                      "error": {
+                        "code": "INVALID_TOKEN",
+                        "message": "유효하지 않은 토큰입니다.",
+                        "details": null
+                      },
+                      "timestamp": "2026-06-01T12:00:00+09:00"
+                    }
+                  },
+                  "MISSING_CREDENTIALS": {
+                    "summary": "INVALID_TOKEN",
+                    "value": {
+                      "success": false,
+                      "error": {
+                        "code": "INVALID_TOKEN",
+                        "message": "인증 정보가 없습니다.",
+                        "details": null
+                      },
+                      "timestamp": "2026-06-01T12:00:00+09:00"
+                    }
+                  },
+                  "INVALID_TOKEN_CREDENTIALS": {
+                    "summary": "INVALID_TOKEN",
+                    "value": {
+                      "success": false,
+                      "error": {
+                        "code": "INVALID_TOKEN",
+                        "message": "인증 정보를 확인할 수 없습니다.",
+                        "details": null
+                      },
+                      "timestamp": "2026-06-01T12:00:00+09:00"
+                    }
+                  },
+                  "INVALID_TOKEN_TYPE": {
+                    "summary": "INVALID_TOKEN",
+                    "value": {
+                      "success": false,
+                      "error": {
+                        "code": "INVALID_TOKEN",
+                        "message": "토큰 종류가 올바르지 않습니다.",
+                        "details": null
+                      },
+                      "timestamp": "2026-06-01T12:00:00+09:00"
+                    }
+                  },
+                  "INVALID_AUTHENTICATION_CREDENTIALS": {
+                    "summary": "INVALID_TOKEN",
+                    "value": {
+                      "success": false,
+                      "error": {
+                        "code": "INVALID_TOKEN",
+                        "message": "인증 정보가 올바르지 않습니다.",
+                        "details": null
+                      },
+                      "timestamp": "2026-06-01T12:00:00+09:00"
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "실패 응답",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "FORBIDDEN": {
+                    "summary": "FORBIDDEN",
+                    "value": {
+                      "success": false,
+                      "error": {
+                        "code": "FORBIDDEN",
+                        "message": "권한이 없습니다.",
+                        "details": null
+                      },
+                      "timestamp": "2026-06-01T12:00:00+09:00"
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "실패 응답",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "REFUND_NOT_FOUND": {
+                    "summary": "REFUND_NOT_FOUND",
+                    "value": {
+                      "success": false,
+                      "error": {
+                        "code": "REFUND_NOT_FOUND",
+                        "message": "환불을 찾을 수 없습니다.",
                         "details": null
                       },
                       "timestamp": "2026-06-01T12:00:00+09:00"
@@ -17122,6 +17326,37 @@
         "title": "AdminRefundSummaryResponse",
         "description": "관리자 환불 목록 항목. 식별자는 Refund ID다."
       },
+      "AdminRefundVoidRequest": {
+        "properties": {
+          "adminNote": {
+            "type": "string",
+            "maxLength": 200,
+            "minLength": 1,
+            "title": "Adminnote",
+            "description": "입금이 없다고 판단한 근거"
+          },
+          "adminId": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 36
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Adminid",
+            "description": "처리한 관리자 식별자"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "adminNote"
+        ],
+        "title": "AdminRefundVoidRequest",
+        "description": "입금 대조 결과 입금이 없어 환불 없이 종결하는 요청.\n\n돈을 지급하지 않고 종결하는 유일한 경로라 근거를 남기도록 메모를 필수로 받는다."
+      },
       "AdminSummaryResponse": {
         "properties": {
           "unpaidCount": {
@@ -19320,8 +19555,7 @@
         "type": "string",
         "enum": [
           "PENDING",
-          "RESOLVED",
-          "REJECTED"
+          "RESOLVED"
         ],
         "title": "DisputeProcessStatus",
         "description": "관리자의 분쟁 처리 상태. 요청·지원의 진행 상태와는 다른 축이다."
@@ -21659,7 +21893,8 @@
         "enum": [
           "USER_CANCELLED",
           "ADMIN_CANCELLED",
-          "DISPUTE_FAILED"
+          "DISPUTE_FAILED",
+          "PAYMENT_EXPIRED"
         ],
         "title": "RefundReason",
         "description": "Business event that made an orderer's confirmed payment refundable."
@@ -21667,11 +21902,13 @@
       "RefundStatus": {
         "type": "string",
         "enum": [
+          "REVIEW",
           "PENDING",
-          "COMPLETED"
+          "COMPLETED",
+          "VOIDED"
         ],
         "title": "RefundStatus",
-        "description": "Manual transfer processing status."
+        "description": "Manual transfer processing status.\n\n``REVIEW`` precedes the refund obligation. The orderer cancelled while the payment was\nstill unconfirmed, so an admin has to reconcile the bank statement before deciding."
       },
       "SettlementAccountRequest": {
         "properties": {
