@@ -1814,24 +1814,17 @@
           "사용자"
         ],
         "summary": "회원 탈퇴",
-        "description": "현재 사용자의 개인정보를 삭제합니다. 탈퇴 사유와 상세 사유를 선택 입력으로 받을 수 있습니다. 매칭 이후 진행 중인 거래, 분쟁 또는 정산이 있으면 탈퇴할 수 없습니다.",
+        "description": "현재 사용자의 개인정보를 삭제합니다. 탈퇴 사유는 필수이고, 해당 사유의 `requiresDetail`이 `true`(기타)이면 상세 사유도 필수입니다. 매칭 이후 진행 중인 거래, 분쟁 또는 정산이 있으면 탈퇴할 수 없습니다.",
         "operationId": "withdraw_user_v1_user_delete",
         "requestBody": {
           "content": {
             "application/json": {
               "schema": {
-                "anyOf": [
-                  {
-                    "$ref": "#/components/schemas/UserWithdrawalRequest"
-                  },
-                  {
-                    "type": "null"
-                  }
-                ],
-                "title": "Payload"
+                "$ref": "#/components/schemas/UserWithdrawalRequest"
               }
             }
-          }
+          },
+          "required": true
         },
         "responses": {
           "200": {
@@ -2525,7 +2518,8 @@
                       "id": 1,
                       "targetType": "ORDER",
                       "questionText": "러너의 수행 결과에 어떤 문제가 있었나요?",
-                      "displayOrder": 1
+                      "displayOrder": 1,
+                      "requiresDetail": false
                     }
                   ],
                   "message": "Success"
@@ -2678,7 +2672,8 @@
                     {
                       "id": 1,
                       "questionText": "광고 또는 스팸이에요",
-                      "displayOrder": 1
+                      "displayOrder": 1,
+                      "requiresDetail": false
                     }
                   ],
                   "message": "Success"
@@ -4278,7 +4273,7 @@
           "요청"
         ],
         "summary": "요청 게시글 신고",
-        "description": "공개 모집 중인 다른 사용자의 요청 게시글을 신고합니다.",
+        "description": "공개 모집 중인 다른 사용자의 요청 게시글을 신고합니다. 사유(`reasonQuestionId`)는 필수이며, 그 사유의 `requiresDetail`이 `true`(기타)이면 상세 사유(`detailReason`)도 필수입니다.",
         "operationId": "create_proposal_report_v1_proposal__proposal_id__reports_post",
         "security": [
           {
@@ -5054,7 +5049,7 @@
           "요청"
         ],
         "summary": "오더 분쟁 접수",
-        "description": "오더러가 요청의 분쟁을 접수합니다.",
+        "description": "오더러가 요청의 분쟁을 접수합니다. 사유(`reasonQuestionId`)는 필수이며, 그 사유의 `requiresDetail`이 `true`(기타)이면 상세 사유(`detailReason`)도 필수입니다.",
         "operationId": "raise_proposal_dispute_v1_proposal__proposal_id__dispute_post",
         "security": [
           {
@@ -7300,7 +7295,7 @@
           "지원"
         ],
         "summary": "러너 분쟁 접수",
-        "description": "러너가 수락된 지원의 분쟁을 접수합니다.",
+        "description": "러너가 수락된 지원의 분쟁을 접수합니다. 사유(`reasonQuestionId`)는 필수이며, 그 사유의 `requiresDetail`이 `true`(기타)이면 상세 사유(`detailReason`)도 필수입니다.",
         "operationId": "raise_offer_dispute_v1_offer__offer_id__dispute_post",
         "security": [
           {
@@ -16150,7 +16145,14 @@
             "title": "Reasonquestiontext"
           },
           "detailReason": {
-            "type": "string",
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
             "title": "Detailreason"
           },
           "proposalStatus": {
@@ -16199,7 +16201,6 @@
           "targetRole",
           "reasonQuestionId",
           "reasonQuestionText",
-          "detailReason",
           "proposalStatus",
           "offerStatus"
         ],
@@ -19286,7 +19287,14 @@
             "title": "Reasonquestiontext"
           },
           "detailReason": {
-            "type": "string",
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
             "title": "Detailreason"
           },
           "createdAt": {
@@ -19303,11 +19311,10 @@
           "actorId",
           "reasonQuestionId",
           "reasonQuestionText",
-          "detailReason",
           "createdAt"
         ],
         "title": "DisputeEvidenceResponse",
-        "description": "Dispute evidence API response. 신고 응답과 동일하게 사유 3종(reasonQuestionId/reasonQuestionText/detailReason)으로 응답한다."
+        "description": "Dispute evidence API response.\n\n신고·탈퇴 응답과 동일하게 사유 3종(reasonQuestionId/reasonQuestionText/detailReason)으로 응답한다.\n사유는 필수 입력이고 상세 사유는 기타 사유에서만 필수라 detailReason만 null일 수 있다."
       },
       "DisputeProcessStatus": {
         "type": "string",
@@ -19327,18 +19334,24 @@
             "title": "Reasonquestionid"
           },
           "detailReason": {
-            "type": "string",
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
             "title": "Detailreason"
           }
         },
         "additionalProperties": false,
         "type": "object",
         "required": [
-          "reasonQuestionId",
-          "detailReason"
+          "reasonQuestionId"
         ],
         "title": "DisputeRequest",
-        "description": "Dispute request. 신고·탈퇴와 같은 사유 필드명을 쓴다."
+        "description": "Dispute request. 신고·탈퇴와 같은 사유 필드명과 입력 정책을 쓴다.\n\n사유 선택은 필수이고, 상세 사유는 그 사유의 `requiresDetail`이 true(기타)일 때만 필수다."
       },
       "DisputeSurveyQuestionResponse": {
         "properties": {
@@ -19360,6 +19373,11 @@
             "type": "integer",
             "title": "Displayorder",
             "description": "클라이언트 표시 순서"
+          },
+          "requiresDetail": {
+            "type": "boolean",
+            "title": "Requiresdetail",
+            "description": "상세 사유 필수 여부. 기타 문항만 true다."
           }
         },
         "type": "object",
@@ -19367,7 +19385,8 @@
           "id",
           "targetType",
           "questionText",
-          "displayOrder"
+          "displayOrder",
+          "requiresDetail"
         ],
         "title": "DisputeSurveyQuestionResponse",
         "description": "Question shown to the client before dispute submission."
@@ -21413,7 +21432,8 @@
         "required": [
           "reasonQuestionId"
         ],
-        "title": "ProposalReportCreateRequest"
+        "title": "ProposalReportCreateRequest",
+        "description": "신고 요청. 분쟁·탈퇴와 같이 사유 선택은 필수이고 상세 사유는 기타 사유에서만 필수다."
       },
       "ProposalReportReasonQuestionResponse": {
         "properties": {
@@ -21428,13 +21448,19 @@
           "displayOrder": {
             "type": "integer",
             "title": "Displayorder"
+          },
+          "requiresDetail": {
+            "type": "boolean",
+            "title": "Requiresdetail",
+            "description": "상세 사유 필수 여부. 기타 문항만 true다."
           }
         },
         "type": "object",
         "required": [
           "id",
           "questionText",
-          "displayOrder"
+          "displayOrder",
+          "requiresDetail"
         ],
         "title": "ProposalReportReasonQuestionResponse"
       },
@@ -21525,7 +21551,8 @@
           "status",
           "createdAt"
         ],
-        "title": "ProposalReportResponse"
+        "title": "ProposalReportResponse",
+        "description": "신고 응답. 분쟁·탈퇴와 같은 사유 3종을 반환한다. 상세 사유만 null일 수 있다."
       },
       "ProposalReportStatus": {
         "type": "string",
@@ -21935,15 +21962,8 @@
       "UserWithdrawalRequest": {
         "properties": {
           "reasonQuestionId": {
-            "anyOf": [
-              {
-                "type": "integer",
-                "minimum": 1.0
-              },
-              {
-                "type": "null"
-              }
-            ],
+            "type": "integer",
+            "minimum": 1.0,
             "title": "Reasonquestionid"
           },
           "detailReason": {
@@ -21961,7 +21981,11 @@
         },
         "additionalProperties": false,
         "type": "object",
-        "title": "UserWithdrawalRequest"
+        "required": [
+          "reasonQuestionId"
+        ],
+        "title": "UserWithdrawalRequest",
+        "description": "탈퇴 요청. 신고·분쟁과 같이 사유 선택은 필수이고 상세 사유는 기타 사유에서만 필수다."
       },
       "UserWithdrawalResponse": {
         "properties": {
@@ -21974,25 +21998,11 @@
             "title": "Userid"
           },
           "reasonQuestionId": {
-            "anyOf": [
-              {
-                "type": "integer"
-              },
-              {
-                "type": "null"
-              }
-            ],
+            "type": "integer",
             "title": "Reasonquestionid"
           },
           "reasonQuestionText": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
+            "type": "string",
             "title": "Reasonquestiontext"
           },
           "detailReason": {
@@ -22016,10 +22026,12 @@
         "required": [
           "id",
           "userId",
+          "reasonQuestionId",
+          "reasonQuestionText",
           "withdrawnAt"
         ],
         "title": "UserWithdrawalResponse",
-        "description": "회원 탈퇴 결과. 신고·분쟁과 같은 사유 3종을 반환한다. 사유는 선택 입력이라 셋 다 null일 수 있다."
+        "description": "회원 탈퇴 결과. 신고·분쟁과 같은 사유 3종을 반환한다. 상세 사유만 null일 수 있다."
       },
       "ValidationError": {
         "properties": {

@@ -72,7 +72,10 @@ final class OpenAPIContractTests: XCTestCase {
         "AdminRefundDetailResponse",
         "AdminRefundSummaryResponse",
         "AdminSummaryResponse",
-        "MissionResponse"
+        "AdminUserSummaryResponse",
+        "MissionResponse",
+        // DELETE /v1/user — 앱은 상태코드만 보고 응답 본문을 쓰지 않는다.
+        "UserWithdrawalResponse"
     ]
 
     /// 요청 바디(Encodable) ↔ 서버 요청 스키마 매핑. 인코딩한 JSON 키가 서버 스키마와 맞는지 검증한다.

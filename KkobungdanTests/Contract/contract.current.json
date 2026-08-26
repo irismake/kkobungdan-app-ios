@@ -10,7 +10,6 @@
   "AdminDisputeDetailResponse": {
     "required": [
       "createdAt",
-      "detailReason",
       "id",
       "missionId",
       "offerId",
@@ -30,7 +29,7 @@
     "properties": {
       "adminNote": "anyOf(string|null)",
       "createdAt": "string",
-      "detailReason": "string",
+      "detailReason": "anyOf(string|null)",
       "id": "integer",
       "missionId": "integer",
       "offerId": "integer",
@@ -833,7 +832,6 @@
     "required": [
       "actorId",
       "createdAt",
-      "detailReason",
       "id",
       "offerId",
       "proposalId",
@@ -843,7 +841,7 @@
     "properties": {
       "actorId": "string",
       "createdAt": "string",
-      "detailReason": "string",
+      "detailReason": "anyOf(string|null)",
       "id": "integer",
       "offerId": "integer",
       "proposalId": "integer",
@@ -857,11 +855,10 @@
   },
   "DisputeRequest": {
     "required": [
-      "detailReason",
       "reasonQuestionId"
     ],
     "properties": {
-      "detailReason": "string",
+      "detailReason": "anyOf(string|null)",
       "reasonQuestionId": "integer"
     }
   },
@@ -870,12 +867,14 @@
       "displayOrder",
       "id",
       "questionText",
+      "requiresDetail",
       "targetType"
     ],
     "properties": {
       "displayOrder": "integer",
       "id": "integer",
       "questionText": "string",
+      "requiresDetail": "boolean",
       "targetType": "ref:DisputeSurveyTargetType"
     }
   },
@@ -1520,12 +1519,14 @@
     "required": [
       "displayOrder",
       "id",
-      "questionText"
+      "questionText",
+      "requiresDetail"
     ],
     "properties": {
       "displayOrder": "integer",
       "id": "integer",
-      "questionText": "string"
+      "questionText": "string",
+      "requiresDetail": "boolean"
     }
   },
   "ProposalReportResponse": {
@@ -1720,23 +1721,27 @@
     }
   },
   "UserWithdrawalRequest": {
-    "required": [],
+    "required": [
+      "reasonQuestionId"
+    ],
     "properties": {
       "detailReason": "anyOf(string|null)",
-      "reasonQuestionId": "anyOf(integer|null)"
+      "reasonQuestionId": "integer"
     }
   },
   "UserWithdrawalResponse": {
     "required": [
       "id",
+      "reasonQuestionId",
+      "reasonQuestionText",
       "userId",
       "withdrawnAt"
     ],
     "properties": {
       "detailReason": "anyOf(string|null)",
       "id": "integer",
-      "reasonQuestionId": "anyOf(integer|null)",
-      "reasonQuestionText": "anyOf(string|null)",
+      "reasonQuestionId": "integer",
+      "reasonQuestionText": "string",
       "userId": "string",
       "withdrawnAt": "string"
     }
