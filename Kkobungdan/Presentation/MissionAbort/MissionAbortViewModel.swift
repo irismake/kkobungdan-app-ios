@@ -89,20 +89,21 @@ final class MissionAbortViewModel: LoadableViewModel {
     }
     isSubmitting = true
     errorMessage = nil
-    let reason = trimmedDetail.isEmpty ? question.questionText : trimmedDetail
+    // 서버 detailReason 은 optional — 작성한 경우에만 보내고, 비었으면 키를 생략한다.
+    let detailReason = trimmedDetail.isEmpty ? nil : trimmedDetail
     do {
       switch submitTarget {
       case let .proposal(proposalID, useCase):
         _ = try await useCase.execute(
           proposalID: proposalID,
-          surveyQuestionID: question.id,
-          reason: reason
+          reasonQuestionID: question.id,
+          detailReason: detailReason
         )
       case let .offer(offerID, useCase):
         _ = try await useCase.execute(
           offerID: offerID,
-          surveyQuestionID: question.id,
-          reason: reason
+          reasonQuestionID: question.id,
+          detailReason: detailReason
         )
       }
       didSubmit = true

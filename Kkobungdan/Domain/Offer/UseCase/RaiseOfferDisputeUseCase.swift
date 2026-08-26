@@ -16,7 +16,7 @@ struct RaiseOfferDisputeUseCase {
     self.repository = repository
   }
 
-  func execute(offerID: Int64, surveyQuestionID: Int64, reason: String) async throws -> Offer {
-    try await repository.raiseDispute(offerID: offerID, surveyQuestionID: surveyQuestionID, reason: reason)
+  func execute(offerID: Int64, reasonQuestionID: Int64, detailReason: String?) async throws -> Offer {
+    try await repository.raiseDispute(offerID: offerID, reasonQuestionID: reasonQuestionID, detailReason: detailReason)
   }
 }

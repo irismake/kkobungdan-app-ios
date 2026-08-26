@@ -175,7 +175,7 @@ actor DummyBackendStore {
 
   /// 오더러 분쟁 제기. `POST /v1/proposal/{id}/dispute`
   /// 제기 당사자(actor)는 이 proposal 의 오더러다.
-  func raiseProposalDispute(proposalID: Int64, surveyQuestionID: Int64, reason: String) throws -> ProposalDetail {
+  func raiseProposalDispute(proposalID: Int64, reasonQuestionID: Int64, detailReason: String?) throws -> ProposalDetail {
     guard let proposalIndex = proposals.firstIndex(where: { $0.id == proposalID }) else {
       throw RepositoryError.notFound
     }
@@ -192,8 +192,8 @@ actor DummyBackendStore {
       proposalID: proposalID,
       offerID: disputedOfferID,
       actorID: ordererIDByProposalID[proposalID] ?? "",
-      surveyQuestionID: surveyQuestionID,
-      reason: reason
+      reasonQuestionID: reasonQuestionID,
+      detailReason: detailReason
     )
     return detail(updated)
   }
@@ -319,7 +319,7 @@ actor DummyBackendStore {
 
   /// 러너 분쟁 제기. `POST /v1/offer/{id}/dispute`
   /// 제기 당사자(actor)는 이 offer 의 러너다.
-  func raiseOfferDispute(offerID: Int64, surveyQuestionID: Int64, reason: String) throws -> Offer {
+  func raiseOfferDispute(offerID: Int64, reasonQuestionID: Int64, detailReason: String?) throws -> Offer {
     guard let offerIndex = offers.firstIndex(where: { $0.id == offerID }) else {
       throw RepositoryError.notFound
     }
@@ -332,8 +332,8 @@ actor DummyBackendStore {
       proposalID: updated.proposalID,
       offerID: updated.id,
       actorID: updated.runnerID,
-      surveyQuestionID: surveyQuestionID,
-      reason: reason
+      reasonQuestionID: reasonQuestionID,
+      detailReason: detailReason
     )
     return updated
   }
@@ -361,16 +361,16 @@ actor DummyBackendStore {
     proposalID: Int64,
     offerID: Int64?,
     actorID: String,
-    surveyQuestionID: Int64,
-    reason: String
+    reasonQuestionID: Int64,
+    detailReason: String?
   ) {
     disputeEvidenceByProposalID[proposalID] = DisputeEvidence(
       id: nextDisputeEvidenceID,
       proposalID: proposalID,
       offerID: offerID ?? 0,
       actorID: actorID,
-      reason: reason,
-      surveyQuestionID: surveyQuestionID,
+      reasonQuestionID: reasonQuestionID,
+      detailReason: detailReason,
       createdAt: Date()
     )
     nextDisputeEvidenceID += 1

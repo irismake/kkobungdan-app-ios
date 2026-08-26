@@ -15,8 +15,9 @@ struct DisputeEvidenceResponseDTO: Decodable {
   let proposalID: Int64
   let offerID: Int64
   let actorID: String
-  let reason: String
-  let surveyQuestionID: Int64
+  let reasonQuestionID: Int64
+  let reasonQuestionText: String
+  let detailReason: String?
   let createdAt: String
 
   enum CodingKeys: String, CodingKey {
@@ -24,21 +25,23 @@ struct DisputeEvidenceResponseDTO: Decodable {
     case proposalID = "proposalId"
     case offerID = "offerId"
     case actorID = "actorId"
-    case reason
-    case surveyQuestionID = "surveyQuestionId"
+    case reasonQuestionID = "reasonQuestionId"
+    case reasonQuestionText
+    case detailReason
     case createdAt
   }
 }
 
 extension DisputeEvidenceResponseDTO {
   func toDomain() -> DisputeEvidence {
+    // TODO: reasonQuestionText — UI 반영 시 엔티티에 추가
     DisputeEvidence(
       id: id,
       proposalID: proposalID,
       offerID: offerID,
       actorID: actorID,
-      reason: reason,
-      surveyQuestionID: surveyQuestionID,
+      reasonQuestionID: reasonQuestionID,
+      detailReason: detailReason,
       createdAt: DateFormatters.parse(createdAt)
     )
   }
