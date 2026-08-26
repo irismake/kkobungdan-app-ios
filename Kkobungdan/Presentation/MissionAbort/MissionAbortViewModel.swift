@@ -78,7 +78,6 @@ final class MissionAbortViewModel: LoadableViewModel {
     }
     await withLoading(fallback: "중단 사유를 불러오지 못했습니다.") {
       questions = try await fetchQuestionsUseCase.execute(targetType: submitTarget.surveyTargetType)
-        .sorted { $0.displayOrder < $1.displayOrder }
     }
   }
 

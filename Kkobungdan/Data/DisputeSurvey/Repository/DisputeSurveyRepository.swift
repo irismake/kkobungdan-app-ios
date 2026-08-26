@@ -19,6 +19,8 @@ final class DisputeSurveyRepository: DisputeSurveyRepositoryProtocol {
       "/v1/dispute-survey/questions",
       params: ["targetType": targetType.rawValue]
     )
-    return dtos.map { $0.toDomain() }
+    return dtos
+      .sorted { $0.displayOrder < $1.displayOrder }
+      .map { $0.toDomain() }
   }
 }
