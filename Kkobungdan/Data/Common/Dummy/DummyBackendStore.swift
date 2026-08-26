@@ -67,7 +67,7 @@ actor DummyBackendStore {
     switch proposalStatus {
     case .matched, .orderCompleted:
       return dummyOpenChatURL
-    case .holding, .posted, .offered, .allCompleted, .disputed, .resolved, .cancelled:
+    case .holding, .posted, .offered, .allCompleted, .disputed, .refundPending, .refunded, .cancelled:
       return nil
     }
   }
@@ -78,7 +78,7 @@ actor DummyBackendStore {
     switch offerStatus {
     case .accepted, .runnerCompleted:
       return dummyOpenChatURL
-    case .waiting, .allCompleted, .disputed, .resolved, .rejected, .cancelled:
+    case .waiting, .allCompleted, .disputed, .rejected, .cancelled:
       return nil
     }
   }
@@ -134,6 +134,7 @@ actor DummyBackendStore {
   }
 
   /// proposal 취소 시 관련 WAITING/ACCEPTED offer 도 같은 트랜잭션으로 REJECTED 전이.
+  /// 입금 전(HOLDING) 취소는 즉시 CANCELLED, 입금 확인 후(POSTED/OFFERED) 취소는 환불이 생성되어 REFUND_PENDING.
   func cancelProposal(id: Int64) throws -> Proposal {
     guard let index = proposals.firstIndex(where: { $0.id == id }) else {
       throw RepositoryError.notFound
@@ -142,7 +143,8 @@ actor DummyBackendStore {
     guard canEditOrCancel(existing.status) else {
       throw RepositoryError.conflict
     }
-    let cancelled = with(existing, status: .cancelled)
+    let cancelledStatus: ProposalStatus = existing.status == .holding ? .cancelled : .refundPending
+    let cancelled = with(existing, status: cancelledStatus)
     proposals[index] = cancelled
     rejectActiveOffers(forProposalID: id)
     return cancelled
@@ -173,7 +175,7 @@ actor DummyBackendStore {
 
   /// 오더러 분쟁 제기. `POST /v1/proposal/{id}/dispute`
   /// 제기 당사자(actor)는 이 proposal 의 오더러다.
-  func raiseProposalDispute(proposalID: Int64, surveyQuestionID: Int64, reason: String) throws -> ProposalDetail {
+  func raiseProposalDispute(proposalID: Int64, reasonQuestionID: Int64, detailReason: String?) throws -> ProposalDetail {
     guard let proposalIndex = proposals.firstIndex(where: { $0.id == proposalID }) else {
       throw RepositoryError.notFound
     }
@@ -190,8 +192,8 @@ actor DummyBackendStore {
       proposalID: proposalID,
       offerID: disputedOfferID,
       actorID: ordererIDByProposalID[proposalID] ?? "",
-      surveyQuestionID: surveyQuestionID,
-      reason: reason
+      reasonQuestionID: reasonQuestionID,
+      detailReason: detailReason
     )
     return detail(updated)
   }
@@ -317,7 +319,7 @@ actor DummyBackendStore {
 
   /// 러너 분쟁 제기. `POST /v1/offer/{id}/dispute`
   /// 제기 당사자(actor)는 이 offer 의 러너다.
-  func raiseOfferDispute(offerID: Int64, surveyQuestionID: Int64, reason: String) throws -> Offer {
+  func raiseOfferDispute(offerID: Int64, reasonQuestionID: Int64, detailReason: String?) throws -> Offer {
     guard let offerIndex = offers.firstIndex(where: { $0.id == offerID }) else {
       throw RepositoryError.notFound
     }
@@ -330,8 +332,8 @@ actor DummyBackendStore {
       proposalID: updated.proposalID,
       offerID: updated.id,
       actorID: updated.runnerID,
-      surveyQuestionID: surveyQuestionID,
-      reason: reason
+      reasonQuestionID: reasonQuestionID,
+      detailReason: detailReason
     )
     return updated
   }
@@ -359,16 +361,16 @@ actor DummyBackendStore {
     proposalID: Int64,
     offerID: Int64?,
     actorID: String,
-    surveyQuestionID: Int64,
-    reason: String
+    reasonQuestionID: Int64,
+    detailReason: String?
   ) {
     disputeEvidenceByProposalID[proposalID] = DisputeEvidence(
       id: nextDisputeEvidenceID,
       proposalID: proposalID,
       offerID: offerID ?? 0,
       actorID: actorID,
-      reason: reason,
-      surveyQuestionID: surveyQuestionID,
+      reasonQuestionID: reasonQuestionID,
+      detailReason: detailReason,
       createdAt: Date()
     )
     nextDisputeEvidenceID += 1

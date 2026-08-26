@@ -5,7 +5,8 @@
       "id": 0,
       "targetType": "ORDER",
       "questionText": "string",
-      "displayOrder": 0
+      "displayOrder": 0,
+      "requiresDetail": true
     }
   ],
   "message": "string"

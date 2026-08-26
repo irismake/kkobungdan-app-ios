@@ -1,0 +1,17 @@
+{
+  "id": 0,
+  "proposalId": 0,
+  "proposalStatus": "HOLDING",
+  "ordererId": "string",
+  "ordererName": "string",
+  "amount": 0,
+  "status": "REVIEW",
+  "requestedAt": "2026-06-12T18:00:00",
+  "processedAt": "2026-06-12T18:00:00",
+  "reason": "USER_CANCELLED",
+  "reasonDetail": "string",
+  "refundBankName": "string",
+  "refundAccountNumber": "string",
+  "refundAccountHolder": "string",
+  "adminNote": "string"
+}

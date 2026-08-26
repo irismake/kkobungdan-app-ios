@@ -11,11 +11,11 @@
 import Foundation
 
 struct DisputeRequest: Encodable {
-  let surveyQuestionID: Int64
-  let disputeReason: String
+  let reasonQuestionID: Int64
+  let detailReason: String?
 
   enum CodingKeys: String, CodingKey {
-    case surveyQuestionID = "surveyQuestionId"
-    case disputeReason
+    case reasonQuestionID = "reasonQuestionId"
+    case detailReason
   }
 }

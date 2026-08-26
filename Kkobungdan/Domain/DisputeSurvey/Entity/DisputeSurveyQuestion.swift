@@ -15,4 +15,6 @@ struct DisputeSurveyQuestion: Equatable, Identifiable {
   let targetType: DisputeSurveyTargetType
   let questionText: String
   let displayOrder: Int
+  /// 이 사유 선택 시 상세 사유 작성이 필수인지 여부.
+  let requiresDetail: Bool
 }

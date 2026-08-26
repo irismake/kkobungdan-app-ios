@@ -1,0 +1,9 @@
+{
+  "id": 0,
+  "ordererId": "string",
+  "ordererName": "string",
+  "errandFee": 0,
+  "status": "HOLDING",
+  "offerCount": 0,
+  "createdAt": "2026-06-12T18:00:00"
+}

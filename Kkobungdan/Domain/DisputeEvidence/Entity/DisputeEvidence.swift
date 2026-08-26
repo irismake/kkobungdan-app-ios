@@ -16,7 +16,7 @@ struct DisputeEvidence: Equatable, Identifiable {
   let offerID: Int64
   /// 분쟁을 제기한 당사자(러너/오더러) ID.
   let actorID: String
-  let reason: String
-  let surveyQuestionID: Int64
+  let reasonQuestionID: Int64
+  let detailReason: String?
   let createdAt: Date
 }

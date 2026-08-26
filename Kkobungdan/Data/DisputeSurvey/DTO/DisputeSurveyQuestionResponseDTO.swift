@@ -15,6 +15,7 @@ struct DisputeSurveyQuestionResponseDTO: Decodable {
   let targetType: String
   let questionText: String
   let displayOrder: Int
+  let requiresDetail: Bool
 }
 
 extension DisputeSurveyQuestionResponseDTO {
@@ -23,7 +24,8 @@ extension DisputeSurveyQuestionResponseDTO {
       id: id,
       targetType: DisputeSurveyTargetType(rawValue: targetType) ?? .order,
       questionText: questionText,
-      displayOrder: displayOrder
+      displayOrder: displayOrder,
+      requiresDetail: requiresDetail
     )
   }
 }

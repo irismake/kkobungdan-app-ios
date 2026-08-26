@@ -1,0 +1,27 @@
+{
+  "success": true,
+  "data": {
+    "content": [
+      {
+        "id": 0,
+        "proposalId": 0,
+        "runnerId": "string",
+        "runnerName": "string",
+        "runnerLevel": 0,
+        "status": "WAITING",
+        "accepted": true,
+        "hasDispute": true,
+        "amount": 0,
+        "openChatUrl": "string",
+        "createdAt": "2026-06-12T18:00:00"
+      }
+    ],
+    "totalElements": 0,
+    "totalPages": 0,
+    "pageNumber": 0,
+    "pageSize": 0,
+    "first": true,
+    "last": true
+  },
+  "message": "string"
+}

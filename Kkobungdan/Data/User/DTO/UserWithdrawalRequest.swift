@@ -8,7 +8,7 @@
 import Foundation
 
 struct UserWithdrawalRequest: Encodable {
-  let reasonQuestionID: Int64?
+  let reasonQuestionID: Int64
   let detailReason: String?
 
   enum CodingKeys: String, CodingKey {

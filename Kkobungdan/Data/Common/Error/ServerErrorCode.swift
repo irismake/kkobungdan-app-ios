@@ -7,9 +7,9 @@
 
 import Foundation
 
-/// 서버가 `ErrorResponse.error.code` 로 내려주는 값 전체(38종).
+/// 서버가 `ErrorResponse.error.code` 로 내려주는 값 중 iOS API 가 사용하는 값(38종).
 /// 분기는 상태코드·message 가 아니라 이 값으로만 한다. (message 문구는 예고 없이 바뀐다)
-/// 정본: 서버 저장소 `docs/api-spec/error-codes.md` — 기준일 2026-08-20
+/// 정본: 서버 저장소 `docs/api-spec/error-codes.md` — 기준일 2026-08-24
 enum ServerErrorCode: String, Decodable, CaseIterable {
   case unknown = "UNKNOWN"
 
@@ -29,6 +29,8 @@ enum ServerErrorCode: String, Decodable, CaseIterable {
   case proposalDeadlineInvalid = "PROPOSAL_DEADLINE_INVALID"
   /// 400. 심부름비가 1000원 미만.
   case proposalErrandFeeInvalid = "PROPOSAL_ERRAND_FEE_INVALID"
+  /// 400. 의뢰·지원 생성 전에 정산 계좌 등록이 필요함.
+  case settlementAccountRequired = "SETTLEMENT_ACCOUNT_REQUIRED"
   /// 400. 인증번호 불일치.
   case phoneVerificationCodeMismatch = "PHONE_VERIFICATION_CODE_MISMATCH"
   /// 400. 인증번호 만료.

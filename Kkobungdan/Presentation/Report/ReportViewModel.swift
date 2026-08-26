@@ -39,12 +39,12 @@ final class ReportViewModel: LoadableViewModel {
     reasons.first { $0.id == selectedReasonID }
   }
 
-  /// 선택한 사유가 상세 사유 작성을 요구하는지 여부.
-  /// 서버 스키마에 별도 플래그가 없어 "기타" 텍스트로 판별한다.
-  /// TODO: 서버가 필수 여부 플래그를 제공하면 그 값으로 교체한다.
+  /// 선택한 사유가 상세 사유 작성을 요구하는지 여부. 서버가 내려주는 `requiresDetail` 을 그대로 쓴다.
   /// 상세 사유 입력은 어떤 사유를 골라도 가능하고, 이 값은 "작성 필수" 여부만 가른다.
+  /// 서버도 같은 `requires_detail` 컬럼으로 검증한다 — 위반 시 400 VALIDATION_ERROR(details: detailReason).
+  /// 즉 이 가드는 UX 용이고, 서버가 이중 방어다.
   var isDetailRequired: Bool {
-    selectedReason?.questionText.contains("기타") ?? false
+    selectedReason?.requiresDetail ?? false
   }
 
   private var trimmedDetail: String {
