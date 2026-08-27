@@ -1814,7 +1814,7 @@
           "사용자"
         ],
         "summary": "회원 탈퇴",
-        "description": "현재 사용자의 개인정보를 삭제합니다. 탈퇴 사유는 필수이고, 해당 사유의 `requiresDetail`이 `true`(기타)이면 상세 사유도 필수입니다. 매칭 이후 진행 중인 거래, 분쟁 또는 정산이 있으면 탈퇴할 수 없습니다.",
+        "description": "현재 사용자의 개인정보를 삭제합니다. 탈퇴 사유는 필수이고, 해당 사유의 `requiresDetail`이 `true`(기타)이면 상세 사유도 필수입니다. 종결되지 않은 요청, 지원, 미션 또는 환불이 있으면 탈퇴할 수 없습니다. 입금 확인 대기(`HOLDING`) 요청도 차단 대상이며, 대기 중인 지원(`WAITING`)만 탈퇴와 함께 자동 취소됩니다.",
         "operationId": "withdraw_user_v1_user_delete",
         "requestBody": {
           "content": {
@@ -1983,7 +1983,67 @@
                       "success": false,
                       "error": {
                         "code": "USER_WITHDRAWAL_BLOCKED",
-                        "message": "진행 중인 임무, 분쟁 또는 정산이 있어 탈퇴할 수 없습니다. 모든 절차가 완료된 후 다시 이용해주세요.",
+                        "message": "진행 중인 요청이나 지원, 완료되지 않은 환불 또는 정산이 있어 탈퇴할 수 없습니다. 모든 절차가 완료된 후 다시 이용해주세요.",
+                        "details": null
+                      },
+                      "timestamp": "2026-06-01T12:00:00+09:00"
+                    }
+                  },
+                  "USER_WITHDRAWAL_BLOCKED_PROPOSAL_DEPOSIT": {
+                    "summary": "USER_WITHDRAWAL_BLOCKED_PROPOSAL_DEPOSIT",
+                    "value": {
+                      "success": false,
+                      "error": {
+                        "code": "USER_WITHDRAWAL_BLOCKED_PROPOSAL_DEPOSIT",
+                        "message": "입금 확인 중인 요청이 있어 탈퇴할 수 없습니다. 확인이 끝난 후 다시 이용해주세요.",
+                        "details": null
+                      },
+                      "timestamp": "2026-06-01T12:00:00+09:00"
+                    }
+                  },
+                  "USER_WITHDRAWAL_BLOCKED_PROPOSAL": {
+                    "summary": "USER_WITHDRAWAL_BLOCKED_PROPOSAL",
+                    "value": {
+                      "success": false,
+                      "error": {
+                        "code": "USER_WITHDRAWAL_BLOCKED_PROPOSAL",
+                        "message": "진행 중인 요청이 있어 탈퇴할 수 없습니다. 요청이 모두 종료된 후 다시 이용해주세요.",
+                        "details": null
+                      },
+                      "timestamp": "2026-06-01T12:00:00+09:00"
+                    }
+                  },
+                  "USER_WITHDRAWAL_BLOCKED_OFFER": {
+                    "summary": "USER_WITHDRAWAL_BLOCKED_OFFER",
+                    "value": {
+                      "success": false,
+                      "error": {
+                        "code": "USER_WITHDRAWAL_BLOCKED_OFFER",
+                        "message": "진행 중인 지원이 있어 탈퇴할 수 없습니다. 지원이 모두 종료된 후 다시 이용해주세요.",
+                        "details": null
+                      },
+                      "timestamp": "2026-06-01T12:00:00+09:00"
+                    }
+                  },
+                  "USER_WITHDRAWAL_BLOCKED_REFUND": {
+                    "summary": "USER_WITHDRAWAL_BLOCKED_REFUND",
+                    "value": {
+                      "success": false,
+                      "error": {
+                        "code": "USER_WITHDRAWAL_BLOCKED_REFUND",
+                        "message": "환불 처리가 끝나지 않아 탈퇴할 수 없습니다. 환불이 완료된 후 다시 이용해주세요.",
+                        "details": null
+                      },
+                      "timestamp": "2026-06-01T12:00:00+09:00"
+                    }
+                  },
+                  "USER_WITHDRAWAL_BLOCKED_PAYOUT": {
+                    "summary": "USER_WITHDRAWAL_BLOCKED_PAYOUT",
+                    "value": {
+                      "success": false,
+                      "error": {
+                        "code": "USER_WITHDRAWAL_BLOCKED_PAYOUT",
+                        "message": "수행비 지급이 끝나지 않아 탈퇴할 수 없습니다. 지급이 완료된 후 다시 이용해주세요.",
                         "details": null
                       },
                       "timestamp": "2026-06-01T12:00:00+09:00"
@@ -11775,6 +11835,7 @@
                     "unpaidCount": 3,
                     "disputeCount": 1,
                     "refundCount": 0,
+                    "depositReviewCount": 2,
                     "settlementCount": 2,
                     "reportCount": 1
                   },
@@ -17374,6 +17435,11 @@
             "title": "Refundcount",
             "description": "미처리 환불 수"
           },
+          "depositReviewCount": {
+            "type": "integer",
+            "title": "Depositreviewcount",
+            "description": "입금 대조 대기 환불 수"
+          },
           "settlementCount": {
             "type": "integer",
             "title": "Settlementcount",
@@ -17390,6 +17456,7 @@
           "unpaidCount",
           "disputeCount",
           "refundCount",
+          "depositReviewCount",
           "settlementCount",
           "reportCount"
         ],
@@ -19681,6 +19748,11 @@
           "SMS_SENDER_NOT_CONFIGURED",
           "USER_NOT_FOUND",
           "USER_WITHDRAWAL_BLOCKED",
+          "USER_WITHDRAWAL_BLOCKED_PROPOSAL_DEPOSIT",
+          "USER_WITHDRAWAL_BLOCKED_PROPOSAL",
+          "USER_WITHDRAWAL_BLOCKED_OFFER",
+          "USER_WITHDRAWAL_BLOCKED_REFUND",
+          "USER_WITHDRAWAL_BLOCKED_PAYOUT",
           "VALIDATION_ERROR",
           "HTTP_ERROR"
         ],
