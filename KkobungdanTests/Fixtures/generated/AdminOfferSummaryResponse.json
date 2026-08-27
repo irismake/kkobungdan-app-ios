@@ -1,0 +1,13 @@
+{
+  "id": 0,
+  "proposalId": 0,
+  "runnerId": "string",
+  "runnerName": "string",
+  "runnerLevel": 0,
+  "status": "WAITING",
+  "accepted": true,
+  "hasDispute": true,
+  "amount": 0,
+  "openChatUrl": "string",
+  "createdAt": "2026-06-12T18:00:00"
+}

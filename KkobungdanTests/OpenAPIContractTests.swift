@@ -60,7 +60,22 @@ final class OpenAPIContractTests: XCTestCase {
     /// 여기에 추가하면 "DTO 누락" 검증에서 제외된다. 실제 DTO 를 구현하면 여기서 빼고 `contracts` 에 등록한다.
     /// 빈 set = 서버의 모든 응답 스키마에 대응 DTO 가 있어야 함(미구현이면 빨간불).
     private static let knownUnregisteredResponseSchemas: Set<String> = [
-        // 예) "NotificationStatsResponse",  // 알림 통계 — UI 미연동
+        // 관리자 웹 전용 API — iOS 앱에서 호출하지 않음.
+        "AdminDisputeDetailResponse",
+        "AdminDisputeSummaryResponse",
+        "AdminOfferSummaryResponse",
+        "AdminPayoutDetailResponse",
+        "AdminProposalDetailResponse",
+        "AdminProposalReportResponse",
+        "AdminProposalResponse",
+        "AdminProposalSummaryResponse",
+        "AdminRefundDetailResponse",
+        "AdminRefundSummaryResponse",
+        "AdminSummaryResponse",
+        "AdminUserSummaryResponse",
+        "MissionResponse",
+        // DELETE /v1/user — 앱은 상태코드만 보고 응답 본문을 쓰지 않는다.
+        "UserWithdrawalResponse"
     ]
 
     /// 요청 바디(Encodable) ↔ 서버 요청 스키마 매핑. 인코딩한 JSON 키가 서버 스키마와 맞는지 검증한다.
@@ -69,7 +84,7 @@ final class OpenAPIContractTests: XCTestCase {
     private static let requestContracts: [EncodeContract] = [
         // Offer
         EncodeContract("OfferCreate", CreateOfferBody(proposalID: 0)),
-        EncodeContract("DisputeRequest", DisputeRequest(surveyQuestionID: 1, disputeReason: "사유")),
+        EncodeContract("DisputeRequest", DisputeRequest(reasonQuestionID: 1, detailReason: "사유")),
         // Settlement / User
         EncodeContract("SettlementAccountRequest", SettlementAccountRequest(
             bankName: "국민은행", accountNumber: "123", accountHolder: "홍길동"
@@ -116,8 +131,17 @@ final class OpenAPIContractTests: XCTestCase {
         EnumContract(
             "ErrorCode",
             ServerErrorCode.self,
-            // INVALID_STATUS: admin 전용 엔드포인트(/v1/admin/*)에서만 나온다 — 클라이언트가 호출하지 않음
-            knownMissingValues: ["INVALID_STATUS"],
+            // admin 전용 엔드포인트(/v1/admin/*)에서만 나온다 — iOS 앱에서 호출하지 않음.
+            knownMissingValues: [
+                "ADMIN_CREDENTIALS_INVALID",
+                "DISPUTE_ALREADY_REVIEWED",
+                "INVALID_STATUS",
+                "MISSION_NOT_FOUND",
+                "MISSION_NOT_RESOLVABLE",
+                "MISSION_NOT_SETTLEABLE",
+                "REFUND_NOT_FOUND",
+                "REFUND_NOT_PROCESSABLE"
+            ],
             // UNKNOWN: 서버가 보내지 않는 클라이언트 전용 센티널 (미등록 코드 흡수용)
             knownExtraValues: ["UNKNOWN"]
         )
@@ -126,7 +150,13 @@ final class OpenAPIContractTests: XCTestCase {
     /// 서버 스펙 enum 이지만 의도적으로 Swift enum 을 두지 않는 것 (DTO 가 String 으로 유지, 클라이언트 미사용).
     /// Swift enum 을 만들면 여기서 빼고 `enumContracts` 에 등록한다.
     private static let knownUnregisteredEnumSchemas: Set<String> = [
-        "ProposalReportStatus" // 신고 처리 상태 — 클라이언트 미사용 (ProposalReportResponseDTO.status: String)
+        "DisputeProcessStatus", // 관리자 웹 전용
+        "MissionResolution", // 관리자 웹 전용
+        "MissionStatus", // 관리자 웹 전용
+        "PayoutStatus", // 관리자 웹 전용
+        "ProposalReportStatus", // 신고 처리 상태 — 클라이언트 미사용 (ProposalReportResponseDTO.status: String)
+        "RefundReason", // 관리자 웹 전용
+        "RefundStatus" // 관리자 웹 전용
     ]
 
     // MARK: - 1. maximal: 모든 필드가 채워진 응답을 DTO 가 읽는가 (필드명·타입 변경 감지)

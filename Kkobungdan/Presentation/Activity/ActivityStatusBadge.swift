@@ -48,7 +48,7 @@ enum ActivityStatusBadge {
         return [completedBadge]
       case .disputed:
         return [disputedBadge]
-      case .rejected, .cancelled, .resolved:
+      case .rejected, .cancelled:
         return [cancelledBadge]
       }
     }
@@ -66,7 +66,7 @@ enum ActivityStatusBadge {
       return [completedBadge]
     case .disputed:
       return [disputedBadge]
-    case .cancelled, .resolved:
+    case .cancelled, .refundPending, .refunded:
       return [cancelledBadge]
     }
   }
@@ -86,7 +86,7 @@ enum ActivityStatusBadge {
       return [completedBadge]
     case .disputed:
       return [disputedBadge]
-    case .cancelled, .resolved:
+    case .cancelled, .refundPending, .refunded:
       return [cancelledBadge]
     }
   }
@@ -103,7 +103,7 @@ enum ActivityStatusBadge {
       return [completedBadge]
     case .disputed:
       return [disputedBadge]
-    case .rejected, .cancelled, .resolved:
+    case .rejected, .cancelled:
       return [cancelledBadge]
     }
   }

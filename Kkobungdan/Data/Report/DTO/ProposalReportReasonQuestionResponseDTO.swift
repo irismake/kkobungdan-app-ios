@@ -12,6 +12,7 @@ struct ProposalReportReasonQuestionResponseDTO: Decodable {
   let id: Int64
   let questionText: String
   let displayOrder: Int
+  let requiresDetail: Bool
 }
 
 extension ProposalReportReasonQuestionResponseDTO {
@@ -19,7 +20,8 @@ extension ProposalReportReasonQuestionResponseDTO {
     ReportReason(
       id: id,
       questionText: questionText,
-      displayOrder: displayOrder
+      displayOrder: displayOrder,
+      requiresDetail: requiresDetail
     )
   }
 }

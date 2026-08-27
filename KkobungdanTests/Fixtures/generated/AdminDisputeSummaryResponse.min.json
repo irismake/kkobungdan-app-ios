@@ -1,0 +1,11 @@
+{
+  "id": 0,
+  "proposalId": 0,
+  "offerId": 0,
+  "missionId": 0,
+  "requesterId": "string",
+  "requesterName": "string",
+  "requesterRole": "string",
+  "status": "PENDING",
+  "createdAt": "2026-06-12T18:00:00"
+}

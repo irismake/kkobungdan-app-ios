@@ -1,0 +1,12 @@
+{
+  "success": true,
+  "data": {
+    "id": 0,
+    "userId": "string",
+    "reasonQuestionId": 0,
+    "reasonQuestionText": "string",
+    "detailReason": "string",
+    "withdrawnAt": "2026-06-12T18:00:00"
+  },
+  "message": "string"
+}

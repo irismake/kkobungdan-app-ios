@@ -24,7 +24,8 @@ actor TestDisputeSurveyRepositoryImpl: DisputeSurveyRepositoryProtocol {
         id: Int64(index + 1),
         targetType: targetType,
         questionText: text,
-        displayOrder: index + 1
+        displayOrder: index + 1,
+        requiresDetail: text == "기타"
       )
     }
   }

@@ -16,22 +16,26 @@ struct ProposalReportResponseDTO: Decodable {
   let id: Int64
   let proposalID: Int64
   let reporterID: String
+  let reporterName: String?
   let reasonQuestionID: Int64
   let reasonQuestionText: String
   let detailReason: String?
   let status: String
   let createdAt: String
   let reviewedAt: String?
+  let proposalStatus: String?
 
   enum CodingKeys: String, CodingKey {
     case id
     case proposalID = "proposalId"
     case reporterID = "reporterId"
+    case reporterName
     case reasonQuestionID = "reasonQuestionId"
     case reasonQuestionText
     case detailReason
     case status
     case createdAt
     case reviewedAt
+    case proposalStatus
   }
 }

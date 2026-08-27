@@ -1,7 +1,7 @@
 {
   "success": true,
   "error": {
-    "code": "DISPUTE_EVIDENCE_NOT_FOUND",
+    "code": "ADMIN_CREDENTIALS_INVALID",
     "message": "string",
     "details": "string"
   },

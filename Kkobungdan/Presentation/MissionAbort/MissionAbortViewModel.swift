@@ -48,8 +48,12 @@ final class MissionAbortViewModel: LoadableViewModel {
     questions.first { $0.id == selectedQuestionID }
   }
 
+  /// 선택한 사유가 상세 사유 작성을 요구하는지 여부. 서버가 내려주는 `requiresDetail` 을 그대로 쓴다.
+  /// 상세 사유 입력은 어떤 사유를 골라도 가능하고, 이 값은 "작성 필수" 여부만 가른다.
+  /// 서버도 같은 `requires_detail` 컬럼으로 검증한다 — 위반 시 400 VALIDATION_ERROR(details: detailReason).
+  /// 즉 이 가드는 UX 용이고, 서버가 이중 방어다.
   var isDetailRequired: Bool {
-    selectedQuestion?.questionText.contains("기타") ?? false
+    selectedQuestion?.requiresDetail ?? false
   }
 
   private var trimmedDetail: String {
@@ -74,7 +78,6 @@ final class MissionAbortViewModel: LoadableViewModel {
     }
     await withLoading(fallback: "중단 사유를 불러오지 못했습니다.") {
       questions = try await fetchQuestionsUseCase.execute(targetType: submitTarget.surveyTargetType)
-        .sorted { $0.displayOrder < $1.displayOrder }
     }
   }
 
@@ -89,20 +92,21 @@ final class MissionAbortViewModel: LoadableViewModel {
     }
     isSubmitting = true
     errorMessage = nil
-    let reason = trimmedDetail.isEmpty ? question.questionText : trimmedDetail
+    // 서버 detailReason 은 optional — 작성한 경우에만 보내고, 비었으면 키를 생략한다.
+    let detailReason = trimmedDetail.isEmpty ? nil : trimmedDetail
     do {
       switch submitTarget {
       case let .proposal(proposalID, useCase):
         _ = try await useCase.execute(
           proposalID: proposalID,
-          surveyQuestionID: question.id,
-          reason: reason
+          reasonQuestionID: question.id,
+          detailReason: detailReason
         )
       case let .offer(offerID, useCase):
         _ = try await useCase.execute(
           offerID: offerID,
-          surveyQuestionID: question.id,
-          reason: reason
+          reasonQuestionID: question.id,
+          detailReason: detailReason
         )
       }
       didSubmit = true

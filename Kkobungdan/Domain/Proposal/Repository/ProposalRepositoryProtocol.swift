@@ -28,5 +28,5 @@ protocol ProposalRepositoryProtocol: Sendable {
   /// 오더러 수령 확인. `POST /v1/proposal/{id}/confirm-received` (상세와 동일한 ProposalDetailResponse 반환)
   func confirmReceived(proposalID: Int64) async throws -> ProposalDetail
   /// 오더러 분쟁 제기. `POST /v1/proposal/{id}/dispute` (상세와 동일한 ProposalDetailResponse 반환)
-  func raiseDispute(proposalID: Int64, surveyQuestionID: Int64, reason: String) async throws -> ProposalDetail
+  func raiseDispute(proposalID: Int64, reasonQuestionID: Int64, detailReason: String?) async throws -> ProposalDetail
 }

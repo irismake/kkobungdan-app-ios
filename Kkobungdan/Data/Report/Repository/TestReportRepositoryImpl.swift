@@ -21,7 +21,8 @@ actor TestReportRepositoryImpl: ReportRepositoryProtocol {
       ReportReason(
         id: Int64(index + 1),
         questionText: text,
-        displayOrder: index + 1
+        displayOrder: index + 1,
+        requiresDetail: text == "기타"
       )
     }
   }
