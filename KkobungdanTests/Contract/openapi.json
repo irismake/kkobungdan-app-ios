@@ -9228,6 +9228,30 @@
               }
             }
           },
+          "429": {
+            "description": "실패 응답",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "examples": {
+                  "ADMIN_LOGIN_LOCKED": {
+                    "summary": "ADMIN_LOGIN_LOCKED",
+                    "value": {
+                      "success": false,
+                      "error": {
+                        "code": "ADMIN_LOGIN_LOCKED",
+                        "message": "로그인 시도가 너무 많습니다. 잠시 후 다시 시도해주세요.",
+                        "details": null
+                      },
+                      "timestamp": "2026-06-01T12:00:00+09:00"
+                    }
+                  }
+                }
+              }
+            }
+          },
           "500": {
             "description": "실패 응답",
             "content": {
@@ -19705,6 +19729,7 @@
         "type": "string",
         "enum": [
           "ADMIN_CREDENTIALS_INVALID",
+          "ADMIN_LOGIN_LOCKED",
           "DISPUTE_ALREADY_REVIEWED",
           "DISPUTE_EVIDENCE_NOT_FOUND",
           "DUPLICATE_OFFER",
