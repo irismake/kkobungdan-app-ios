@@ -318,6 +318,7 @@
   },
   "AdminSummaryResponse": {
     "required": [
+      "depositReviewCount",
       "disputeCount",
       "refundCount",
       "reportCount",
@@ -325,6 +326,7 @@
       "unpaidCount"
     ],
     "properties": {
+      "depositReviewCount": "integer",
       "disputeCount": "integer",
       "refundCount": "integer",
       "reportCount": "integer",

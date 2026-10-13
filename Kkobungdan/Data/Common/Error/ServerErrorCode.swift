@@ -7,9 +7,9 @@
 
 import Foundation
 
-/// 서버가 `ErrorResponse.error.code` 로 내려주는 값 중 iOS API 가 사용하는 값(38종).
+/// 서버가 `ErrorResponse.error.code` 로 내려주는 값 중 iOS API 가 사용하는 값(43종).
 /// 분기는 상태코드·message 가 아니라 이 값으로만 한다. (message 문구는 예고 없이 바뀐다)
-/// 정본: 서버 저장소 `docs/api-spec/error-codes.md` — 기준일 2026-08-24
+/// 정본: 서버 저장소 `docs/api-spec/error-codes.md` — 기준일 2026-08-27
 enum ServerErrorCode: String, Decodable, CaseIterable {
   case unknown = "UNKNOWN"
 
@@ -86,8 +86,18 @@ enum ServerErrorCode: String, Decodable, CaseIterable {
   case duplicateProposalReport = "DUPLICATE_PROPOSAL_REPORT"
   /// 409. 이미 처리된 신고.
   case proposalReportNotReviewable = "PROPOSAL_REPORT_NOT_REVIEWABLE"
-  /// 409. 진행 중인 임무·분쟁·정산이 있어 탈퇴 불가.
+  /// 409. 진행 중인 요청·지원·환불·정산이 있어 탈퇴 불가(포괄 코드).
   case userWithdrawalBlocked = "USER_WITHDRAWAL_BLOCKED"
+  /// 409. 입금 확인 중인 요청이 있어 탈퇴 불가.
+  case userWithdrawalBlockedProposalDeposit = "USER_WITHDRAWAL_BLOCKED_PROPOSAL_DEPOSIT"
+  /// 409. 진행 중인 요청이 있어 탈퇴 불가.
+  case userWithdrawalBlockedProposal = "USER_WITHDRAWAL_BLOCKED_PROPOSAL"
+  /// 409. 진행 중인 지원이 있어 탈퇴 불가.
+  case userWithdrawalBlockedOffer = "USER_WITHDRAWAL_BLOCKED_OFFER"
+  /// 409. 완료되지 않은 환불이 있어 탈퇴 불가.
+  case userWithdrawalBlockedRefund = "USER_WITHDRAWAL_BLOCKED_REFUND"
+  /// 409. 완료되지 않은 수행비 지급이 있어 탈퇴 불가.
+  case userWithdrawalBlockedPayout = "USER_WITHDRAWAL_BLOCKED_PAYOUT"
 
   // MARK: - 권한 없음
 

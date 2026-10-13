@@ -13,6 +13,7 @@
   python3 Scripts/sync-openapi.py            # 스펙 받아 픽스처/current 갱신
   python3 Scripts/sync-openapi.py --accept   # 추가로 lock 을 current 로 승인
   python3 Scripts/sync-openapi.py --url http://other/openapi.json
+  python3 Scripts/sync-openapi.py --user ID --password PW   # 스테이징 docs Basic 인증
 
 워크플로:
   1) 평소엔 인자 없이 실행 → DTO 디코딩 테스트가 최신 스펙으로 돈다.
@@ -22,11 +23,13 @@
 from __future__ import annotations
 
 import argparse
+import base64
 import json
 import os
 import re
 import shutil
 import sys
+import urllib.error
 import urllib.parse
 import urllib.request
 
@@ -43,15 +46,18 @@ SAMPLE_DATETIME = "2026-06-12T18:00:00"
 # ─────────────────────────────── 서버 주소 결정 ──────────────────────────────
 # 계약 테스트는 항상 개발/테스트 서버를 기준으로 한다. (실서버 API_BASE_HOST 가 아님)
 DEV_HOST_KEY = "DEV_API_BASE_HOST"
+# 스테이징 docs/openapi.json 은 Basic 인증으로 보호되어 있다.
+DOCS_USER_KEY = "DEV_API_DOCS_USER"
+DOCS_PASSWORD_KEY = "DEV_API_DOCS_PASSWORD"
 
 
-def read_dev_api_base_host(path: str):
-    """Secrets.xcconfig 에서 `DEV_API_BASE_HOST = ...` 값을 읽는다 (없으면 None)."""
+def read_xcconfig_value(path: str, key: str):
+    """Secrets.xcconfig 에서 `<key> = ...` 값을 읽는다 (없으면 None)."""
     if not os.path.exists(path):
         return None
     with open(path, encoding="utf-8") as f:
         for line in f:
-            m = re.match(rf"\s*{DEV_HOST_KEY}\s*=\s*(\S+)", line)
+            m = re.match(rf"\s*{re.escape(key)}\s*=\s*(\S+)", line)
             if m:
                 return m.group(1)
     return None
@@ -75,7 +81,7 @@ def resolve_url(cli_url):
         return cli_url
     if os.environ.get("OPENAPI_URL"):
         return os.environ["OPENAPI_URL"]
-    host = read_dev_api_base_host(SECRETS_XCCONFIG)
+    host = read_xcconfig_value(SECRETS_XCCONFIG, DEV_HOST_KEY)
     if host:
         return openapi_url_from_host(host)
     raise SystemExit(
@@ -87,10 +93,39 @@ def resolve_url(cli_url):
     )
 
 
+def resolve_credentials(cli_user, cli_password):
+    """우선순위: --user/--password > 환경변수 > Secrets.xcconfig. 둘 다 있어야 인증한다."""
+    user = cli_user or os.environ.get("OPENAPI_USER") or read_xcconfig_value(SECRETS_XCCONFIG, DOCS_USER_KEY)
+    password = (
+        cli_password
+        or os.environ.get("OPENAPI_PASSWORD")
+        or read_xcconfig_value(SECRETS_XCCONFIG, DOCS_PASSWORD_KEY)
+    )
+    if user and password:
+        return user, password
+    return None
+
+
 # ─────────────────────────────── 스펙 다운로드 ───────────────────────────────
-def fetch(url: str) -> dict:
-    with urllib.request.urlopen(url, timeout=20) as resp:
-        return json.loads(resp.read().decode("utf-8"))
+def fetch(url: str, credentials=None) -> dict:
+    req = urllib.request.Request(url)
+    if credentials:
+        # Basic 인증을 선요청(preemptive)으로 붙인다. 리다이렉트(http→https)에도 헤더가 유지된다.
+        token = base64.b64encode(":".join(credentials).encode("utf-8")).decode("ascii")
+        req.add_header("Authorization", f"Basic {token}")
+    try:
+        with urllib.request.urlopen(req, timeout=20) as resp:
+            return json.loads(resp.read().decode("utf-8"))
+    except urllib.error.HTTPError as e:
+        if e.code in (401, 403):
+            raise SystemExit(
+                f"인증 실패({e.code}): {url}\n"
+                "스테이징 docs 는 Basic 인증이 필요합니다. 다음 중 하나로 지정하세요:\n"
+                f"  - Kkobungdan/Secrets.Debug.xcconfig 의 {DOCS_USER_KEY} / {DOCS_PASSWORD_KEY} (권장)\n"
+                "  - 환경변수 OPENAPI_USER / OPENAPI_PASSWORD (CI)\n"
+                "  - --user ID --password PW"
+            ) from e
+        raise
 
 
 # ─────────────────────────────── 정규화(스냅샷) ──────────────────────────────
@@ -236,11 +271,15 @@ def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--url", default=None, help="OpenAPI 스펙 URL (미지정 시 Secrets.xcconfig/환경변수에서 결정)")
     ap.add_argument("--accept", action="store_true", help="현재 스냅샷을 기준선(lock)으로 승인")
+    ap.add_argument("--user", default=None, help="docs Basic 인증 ID (미지정 시 Secrets.xcconfig/환경변수)")
+    ap.add_argument("--password", default=None, help="docs Basic 인증 비밀번호 (미지정 시 Secrets.xcconfig/환경변수)")
     args = ap.parse_args()
 
     url = resolve_url(args.url)
-    print(f"→ OpenAPI 스펙 다운로드: {url}")
-    spec = fetch(url)
+    credentials = resolve_credentials(args.user, args.password)
+    auth_note = f" (Basic 인증: {credentials[0]})" if credentials else ""
+    print(f"→ OpenAPI 스펙 다운로드: {url}{auth_note}")
+    spec = fetch(url, credentials)
     schemas = spec.get("components", {}).get("schemas", {})
     print(f"  스키마 {len(schemas)}개 발견")
 

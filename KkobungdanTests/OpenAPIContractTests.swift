@@ -134,6 +134,7 @@ final class OpenAPIContractTests: XCTestCase {
             // admin 전용 엔드포인트(/v1/admin/*)에서만 나온다 — iOS 앱에서 호출하지 않음.
             knownMissingValues: [
                 "ADMIN_CREDENTIALS_INVALID",
+                "ADMIN_LOGIN_LOCKED",
                 "DISPUTE_ALREADY_REVIEWED",
                 "INVALID_STATUS",
                 "MISSION_NOT_FOUND",

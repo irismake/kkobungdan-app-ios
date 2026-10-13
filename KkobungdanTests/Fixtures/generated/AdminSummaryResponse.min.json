@@ -2,6 +2,7 @@
   "unpaidCount": 0,
   "disputeCount": 0,
   "refundCount": 0,
+  "depositReviewCount": 0,
   "settlementCount": 0,
   "reportCount": 0
 }
