@@ -55,10 +55,17 @@ enum AppRouteFactory {
 
   // MARK: - Account Register (지원하기 → 계좌 등록)
 
-  static func makeAddOfferViewModel(proposalID: Int64) -> AddOfferViewModel {
-    AddOfferViewModel(
+  static func makeOfferAccountViewModel(proposalID: Int64) -> OfferAccountViewModel {
+    OfferAccountViewModel(
       proposalID: proposalID,
-      account: makeSettlementAccountInputModel(),
+      account: makeSettlementAccountInputModel()
+    )
+  }
+
+  static func makeOfferMessageViewModel(proposalID: Int64) -> OfferMessageViewModel {
+    OfferMessageViewModel(
+      proposalID: proposalID,
+      fetchProposalDetailUseCase: FetchProposalDetailUseCase(repository: DIContainer.proposalRepository),
       createOfferUseCase: CreateOfferUseCase(repository: DIContainer.offerRepository)
     )
   }

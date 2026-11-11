@@ -22,7 +22,9 @@ enum AppRoute: Hashable {
   /// 의뢰자가 자기 의뢰의 지원자 리스트를 보는 화면
   case runnerList(proposalID: Int64)
   /// 지원하기 → 계좌 등록 (임무 수행비 받을 계좌 입력)
-  case addOffer(proposalID: Int64)
+  case offerAccount(proposalID: Int64)
+  /// 계좌 등록 → 첫 인사(지원 메시지) 작성 + 실제 지원
+  case offerMessage(proposalID: Int64)
   /// 지원하기 성공 직후 안내 화면
   case offerComplete(proposalID: Int64, offerID: Int64)
   /// 의뢰 신고 사유 선택 화면
