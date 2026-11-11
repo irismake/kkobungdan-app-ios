@@ -13,5 +13,6 @@
 | DTO·엔티티 서버 일치 | [`.claude/rules/dto-entity-server-align.md`](.claude/rules/dto-entity-server-align.md) | [`.cursor/rules/dto-entity-server-align.mdc`](.cursor/rules/dto-entity-server-align.mdc) |
 | DTO 계약 테스트 등록 | [`.claude/rules/contract-test-dto.md`](.claude/rules/contract-test-dto.md) | [`.cursor/rules/contract-test-dto.mdc`](.cursor/rules/contract-test-dto.mdc) |
 | 로깅 (`Logger`) | [`.claude/rules/logging.md`](.claude/rules/logging.md) | [`.cursor/rules/logging.mdc`](.cursor/rules/logging.mdc) |
+| 프리뷰 코드 위치 | [`.claude/rules/preview-placement.md`](.claude/rules/preview-placement.md) | [`.cursor/rules/preview-placement.mdc`](.cursor/rules/preview-placement.mdc) |
 
 > Cursor 인덱스: [`CURSOR.md`](CURSOR.md)
