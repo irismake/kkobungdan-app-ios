@@ -11,7 +11,7 @@ struct RunnerCard: View {
   let nickname: String
   let level: Int
   let appliedAt: String
-  let onSelect: () -> Void
+  let onOpenChat: () -> Void
 
   var body: some View {
     VStack(alignment: .leading, spacing: 12) {
@@ -26,9 +26,9 @@ struct RunnerCard: View {
           .padding(.horizontal, 2)
       }
 
-      // 지원자 선택 버튼
-      Button(action: onSelect) {
-        Text("지원자 선택")
+      // 지원자와의 대화 보기 버튼
+      Button(action: onOpenChat) {
+        Text("대화 보기")
           .textStyle(.heading4)
           .foregroundColor(.white)
           .multilineTextAlignment(.center)
@@ -54,13 +54,13 @@ struct RunnerCard: View {
       nickname: "카야잼",
       level: 7,
       appliedAt: "2026. 1. 22. 오후 10:05:17 지원",
-      onSelect: {}
+      onOpenChat: {}
     )
     RunnerCard(
       nickname: "닉네임",
       level: 3,
       appliedAt: "2026. 1. 22. 오후 10:05:17 지원",
-      onSelect: {}
+      onOpenChat: {}
     )
   }
   .padding(16)

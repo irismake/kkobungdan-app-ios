@@ -12,6 +12,8 @@ struct OfferListView: View {
   var onBack: () -> Void = {}
   var onAccepted: () -> Void = {}
   var onSelectRunner: (_ proposalID: Int64, _ offerID: Int64) -> Void = { _, _ in }
+  /// 지원자 카드의 '대화 보기' → 해당 지원자와의 채팅 상세.
+  var onOpenChat: (Offer) -> Void = { _ in }
 
   @State private var isSelectModalPresented: Bool = false
   @State private var selectedRunner: Offer?
@@ -20,12 +22,14 @@ struct OfferListView: View {
     viewModel: OfferListViewModel,
     onBack: @escaping () -> Void = {},
     onAccepted: @escaping () -> Void = {},
-    onSelectRunner: @escaping (_ proposalID: Int64, _ offerID: Int64) -> Void = { _, _ in }
+    onSelectRunner: @escaping (_ proposalID: Int64, _ offerID: Int64) -> Void = { _, _ in },
+    onOpenChat: @escaping (Offer) -> Void = { _ in }
   ) {
     _viewModel = State(initialValue: viewModel)
     self.onBack = onBack
     self.onAccepted = onAccepted
     self.onSelectRunner = onSelectRunner
+    self.onOpenChat = onOpenChat
   }
 
   var body: some View {
@@ -87,9 +91,8 @@ struct OfferListView: View {
         nickname: runner.runnerName,
         level: runner.runnerLevel,
         appliedAt: DisplayFormatter.appliedAtString(runner.createdAt),
-        onSelect: {
-          selectedRunner = runner
-          isSelectModalPresented = true
+        onOpenChat: {
+          onOpenChat(runner)
         }
       )
     }

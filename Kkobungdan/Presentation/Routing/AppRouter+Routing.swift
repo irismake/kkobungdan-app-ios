@@ -142,6 +142,9 @@ extension AppRouter {
         },
         onSelectRunner: { proposalID, offerID in
           path.wrappedValue.append(.runnerDetail(proposalID: proposalID, offerID: offerID))
+        },
+        onOpenChat: { _ in
+          // TODO: 채팅 상세 화면 구현 후 해당 지원자와의 대화방으로 push
         }
       )
       .navigationBarBackButtonHidden(true)
