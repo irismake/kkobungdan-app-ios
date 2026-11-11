@@ -18,9 +18,6 @@ struct ContentView: View {
         AuthFlowView()
       }
     }
-    .onReceive(NotificationCenter.default.publisher(for: .authForcedLogout)) { _ in
-      session.isLoggedIn = false
-    }
   }
 }
 
