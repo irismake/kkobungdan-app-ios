@@ -17,19 +17,23 @@ struct MyProposalDetailView: View {
   var onShowRunners: () -> Void = {}
   var onAccepted: () -> Void = {}
   var onAbort: () -> Void = {}
+  /// 관련 대화 → 해당 지원자와의 채팅 상세.
+  var onOpenChat: (Offer) -> Void = { _ in }
 
   init(
     viewModel: MyProposalDetailViewModel,
     onBack: @escaping () -> Void = {},
     onShowRunners: @escaping () -> Void = {},
     onAccepted: @escaping () -> Void = {},
-    onAbort: @escaping () -> Void = {}
+    onAbort: @escaping () -> Void = {},
+    onOpenChat: @escaping (Offer) -> Void = { _ in }
   ) {
     _viewModel = State(initialValue: viewModel)
     self.onBack = onBack
     self.onShowRunners = onShowRunners
     self.onAccepted = onAccepted
     self.onAbort = onAbort
+    self.onOpenChat = onOpenChat
   }
 
   private var statusBadges: [BadgeItem] {
@@ -76,6 +80,8 @@ struct MyProposalDetailView: View {
             ScreenContainer {
               VStack(spacing: 12) {
                 proposalCardSection
+
+                relatedChatSection
 
                 if viewModel.proposal?.status == .holding {
                   AccountInfoCard(
@@ -226,6 +232,22 @@ struct MyProposalDetailView: View {
           Task { await viewModel.cancelProposal() }
         }
       }
+    }
+  }
+
+  /// 미션 생성 후에만 노출. 상태 문구는 요청 카드와 같은 배지 규칙(지원자의 offer 상태 기준).
+  @ViewBuilder
+  private var relatedChatSection: some View {
+    if let proposal = viewModel.proposal, !viewModel.relatedChatOffers.isEmpty {
+      ChatCard(items: viewModel.relatedChatOffers.map { offer in
+        ChatCardItem(
+          id: "\(offer.id)",
+          name: offer.runnerName,
+          statusText: ActivityStatusBadge.badges(proposal: proposal, myOfferStatus: offer.status).first?.text ?? "",
+          onOpenChat: { onOpenChat(offer) }
+        )
+      })
+      .padding(.top, 4) // 카드와 간격 16 (VStack spacing 12 + 4)
     }
   }
 

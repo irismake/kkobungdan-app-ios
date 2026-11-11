@@ -51,6 +51,15 @@ final class MyProposalDetailViewModel: LoadableViewModel {
   }
 
   /// 분쟁 중 조회한 증빙. 내가 중단을 신청한 당사자인지 판별하는 데 쓴다.
+  /// 관련 대화에 보일 지원자. 미션이 생성된 뒤(선택된 지원자가 있을 때)에만 채워진다.
+  /// 선택된 지원자 먼저, 그다음 선택되지 않은(rejected) 지원자.
+  var relatedChatOffers: [Offer] {
+    guard let matchedOffer else {
+      return []
+    }
+    return [matchedOffer] + offers.filter { $0.status == .rejected }
+  }
+
   var disputeEvidence: DisputeEvidence?
 
   /// 분쟁 중이고 중단을 신청한 당사자가 내가 아닌 경우(= 내가 중단을 당한 경우) → 문의하기 노출.
