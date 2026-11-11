@@ -37,16 +37,6 @@ final class NotificationViewModel: LoadableViewModel {
     self.repository = repository
   }
 
-  static func preview() -> NotificationViewModel {
-    let repo = NotificationRepositoryImpl()
-    let viewModel = NotificationViewModel(
-      fetchNotificationsUseCase: FetchNotificationsUseCase(repository: repo),
-      repository: repo
-    )
-    viewModel.notifications = AppNotification.dummyList
-    return viewModel
-  }
-
   @MainActor
   func load() async {
     await withLoading(fallback: "알림을 불러오지 못했어요.") {
@@ -122,5 +112,20 @@ final class NotificationViewModel: LoadableViewModel {
     } catch {
       errorMessage = error.userMessage(fallback: "알림 상태를 변경하지 못했어요.")
     }
+  }
+}
+
+// MARK: - Preview
+
+/// SwiftUI `#Preview` 전용 — 더미 데이터로 채운 VM 을 만든다. 운영 코드에서 호출하지 않는다.
+extension NotificationViewModel {
+  static func preview() -> NotificationViewModel {
+    let repo = NotificationRepositoryImpl()
+    let viewModel = NotificationViewModel(
+      fetchNotificationsUseCase: FetchNotificationsUseCase(repository: repo),
+      repository: repo
+    )
+    viewModel.notifications = AppNotification.dummyList
+    return viewModel
   }
 }

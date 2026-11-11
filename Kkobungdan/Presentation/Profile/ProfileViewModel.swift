@@ -37,18 +37,6 @@ final class ProfileViewModel: LoadableViewModel {
     self.tokenStorage = tokenStorage
   }
 
-  static func preview() -> ProfileViewModel {
-    let userRepo = DIContainer.userRepository
-    let viewModel = ProfileViewModel(
-      fetchUserDetailUseCase: FetchUserDetailUseCase(userRepository: userRepo),
-      updateAlarmUseCase: UpdateAlarmUseCase(userRepository: userRepo),
-      updateUserNameUseCase: UpdateUserNameUseCase(userRepository: userRepo),
-      logoutUseCase: LogoutUseCase(authRepository: DIContainer.authRepository)
-    )
-    viewModel.user = User.dummy
-    return viewModel
-  }
-
   @MainActor
   func load() async {
     await withLoading(fallback: "프로필을 불러오지 못했어요.") {
@@ -91,5 +79,22 @@ final class ProfileViewModel: LoadableViewModel {
     }
     didLogout = true
     isLoading = false
+  }
+}
+
+// MARK: - Preview
+
+/// SwiftUI `#Preview` 전용 — 더미 데이터로 채운 VM 을 만든다. 운영 코드에서 호출하지 않는다.
+extension ProfileViewModel {
+  static func preview() -> ProfileViewModel {
+    let userRepo = DIContainer.userRepository
+    let viewModel = ProfileViewModel(
+      fetchUserDetailUseCase: FetchUserDetailUseCase(userRepository: userRepo),
+      updateAlarmUseCase: UpdateAlarmUseCase(userRepository: userRepo),
+      updateUserNameUseCase: UpdateUserNameUseCase(userRepository: userRepo),
+      logoutUseCase: LogoutUseCase(authRepository: DIContainer.authRepository)
+    )
+    viewModel.user = User.dummy
+    return viewModel
   }
 }

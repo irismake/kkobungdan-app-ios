@@ -1,0 +1,22 @@
+## 프리뷰 코드 위치 규칙
+
+SwiftUI 프리뷰용 코드는 **파일 맨 아래**에 모으고, 바로 위에 용도 주석을 단다.
+
+1. **ViewModel `preview()` 팩토리**: 타입 본문 안에 두지 않는다. 파일 맨 아래 `// MARK: - Preview` 와 `extension` 으로 분리하고, 그 위에 "프리뷰 전용" 문서 주석을 단다.
+
+   ```swift
+   // MARK: - Preview
+
+   /// SwiftUI `#Preview` 전용 — 더미 데이터로 채운 VM 을 만든다. 운영 코드에서 호출하지 않는다.
+   extension HomeViewModel {
+     static func preview() -> HomeViewModel {
+       let viewModel = HomeViewModel(...)
+       viewModel.proposals = Proposal.dummyList
+       return viewModel
+     }
+   }
+   ```
+
+2. **`#Preview` 블록**: View 파일의 맨 아래에 둔다. `#Preview` 뒤에 다른 타입·extension 을 선언하지 않는다.
+
+3. **`preview()` 는 운영 코드에서 호출하지 않는다**: `#Preview` 와 다른 `preview()` 조립에서만 쓴다.

@@ -19,19 +19,24 @@ final class HomeViewModel: LoadableViewModel {
     self.fetchProposalsUseCase = fetchProposalsUseCase
   }
 
-  static func preview() -> HomeViewModel {
-    let viewModel = HomeViewModel(
-      fetchProposalsUseCase: FetchProposalsUseCase(repository: DIContainer.proposalRepository)
-    )
-    viewModel.proposals = Proposal.dummyList
-    return viewModel
-  }
-
   @MainActor
   func load() async {
     await withLoading(fallback: "요청 목록을 불러오지 못했어요.") {
       // 홈 피드는 아직 지원 가능한 공개 요청(등록 완료 / 새 지원 도착)만 노출한다.
       proposals = try await fetchProposalsUseCase.execute(status: [.posted, .offered])
     }
+  }
+}
+
+// MARK: - Preview
+
+/// SwiftUI `#Preview` 전용 — 더미 데이터로 채운 VM 을 만든다. 운영 코드에서 호출하지 않는다.
+extension HomeViewModel {
+  static func preview() -> HomeViewModel {
+    let viewModel = HomeViewModel(
+      fetchProposalsUseCase: FetchProposalsUseCase(repository: DIContainer.proposalRepository)
+    )
+    viewModel.proposals = Proposal.dummyList
+    return viewModel
   }
 }

@@ -37,13 +37,6 @@ final class WithdrawReasonViewModel: LoadableViewModel {
     self.tokenStorage = tokenStorage
   }
 
-  static func preview() -> WithdrawReasonViewModel {
-    WithdrawReasonViewModel(
-      fetchReasonsUseCase: FetchWithdrawalReasonsUseCase(userRepository: DIContainer.userRepository),
-      withdrawUseCase: WithdrawUserUseCase(userRepository: DIContainer.userRepository)
-    )
-  }
-
   private var selectedReason: WithdrawalReason? {
     reasons.first { $0.id == selectedID }
   }
@@ -111,5 +104,17 @@ final class WithdrawReasonViewModel: LoadableViewModel {
       withdrawLogger.error("회원 탈퇴 실패: \(error.localizedDescription)")
     }
     isSubmitting = false
+  }
+}
+
+// MARK: - Preview
+
+/// SwiftUI `#Preview` 전용 — 더미 데이터로 채운 VM 을 만든다. 운영 코드에서 호출하지 않는다.
+extension WithdrawReasonViewModel {
+  static func preview() -> WithdrawReasonViewModel {
+    WithdrawReasonViewModel(
+      fetchReasonsUseCase: FetchWithdrawalReasonsUseCase(userRepository: DIContainer.userRepository),
+      withdrawUseCase: WithdrawUserUseCase(userRepository: DIContainer.userRepository)
+    )
   }
 }
