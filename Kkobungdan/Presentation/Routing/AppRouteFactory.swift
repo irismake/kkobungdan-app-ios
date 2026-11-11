@@ -123,6 +123,15 @@ enum AppRouteFactory {
     )
   }
 
+  // MARK: - Notifications (홈 헤더 알림 버튼 → 알림 목록)
+
+  static func makeNotificationViewModel() -> NotificationViewModel {
+    NotificationViewModel(
+      fetchNotificationsUseCase: FetchNotificationsUseCase(repository: DIContainer.notificationRepository),
+      repository: DIContainer.notificationRepository
+    )
+  }
+
   // MARK: - Verification (AuthRoute — 회원가입·로그인 인증번호 확인 공용)
 
   static func makeVerificationViewModel(

@@ -39,4 +39,6 @@ enum AppRoute: Hashable {
   case addProposalDateTime(draft: AddProposalDraft)
   /// 새 의뢰 작성 — 3단계: 웨이팅비 입력 + 등록
   case addProposalFee(draft: AddProposalDraft)
+  /// 홈 헤더 알림 버튼 → 알림 목록
+  case notifications
 }

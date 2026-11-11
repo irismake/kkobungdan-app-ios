@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-/// 로그인 후 진입점이자 메인 탭 셸(홈·내 활동·알림·프로필).
+/// 로그인 후 진입점이자 메인 탭 셸(홈·내 활동·채팅·프로필). 알림은 홈 헤더 버튼에서 push.
 /// DIContainer 로 탭 루트 VM 을 조립한다. (비로그인 진입점 `AuthFlowView` 와 대칭)
 struct MainTabView: View {
   @Environment(\.scenePhase) private var scenePhase
@@ -18,13 +18,13 @@ struct MainTabView: View {
 
   @State private var profileViewModel: ProfileViewModel
   @State private var withdrawReasonViewModel: WithdrawReasonViewModel
-  @State private var notificationViewModel: NotificationViewModel
 
   /// 운영 진입점. DIContainer 로 탭 루트 VM 을 조립한다.
   init() {
     self.init(
       viewModel: HomeViewModel(
-        fetchProposalsUseCase: FetchProposalsUseCase(repository: DIContainer.proposalRepository)
+        fetchProposalsUseCase: FetchProposalsUseCase(repository: DIContainer.proposalRepository),
+        fetchNotificationStatsUseCase: FetchNotificationStatsUseCase(repository: DIContainer.notificationRepository)
       ),
       myProposalsViewModel: MyProposalsViewModel(
         fetchMyProposalsUseCase: FetchMyProposalsUseCase(repository: DIContainer.activityRepository)
@@ -42,10 +42,6 @@ struct MainTabView: View {
       withdrawReasonViewModel: WithdrawReasonViewModel(
         fetchReasonsUseCase: FetchWithdrawalReasonsUseCase(userRepository: DIContainer.userRepository),
         withdrawUseCase: WithdrawUserUseCase(userRepository: DIContainer.userRepository)
-      ),
-      notificationViewModel: NotificationViewModel(
-        fetchNotificationsUseCase: FetchNotificationsUseCase(repository: DIContainer.notificationRepository),
-        repository: DIContainer.notificationRepository
       )
     )
   }
@@ -56,15 +52,13 @@ struct MainTabView: View {
     myProposalsViewModel: MyProposalsViewModel,
     myOffersViewModel: MyOffersViewModel,
     profileViewModel: ProfileViewModel,
-    withdrawReasonViewModel: WithdrawReasonViewModel,
-    notificationViewModel: NotificationViewModel
+    withdrawReasonViewModel: WithdrawReasonViewModel
   ) {
     _viewModel = State(initialValue: viewModel)
     _myProposalsViewModel = State(initialValue: myProposalsViewModel)
     _myOffersViewModel = State(initialValue: myOffersViewModel)
     _profileViewModel = State(initialValue: profileViewModel)
     _withdrawReasonViewModel = State(initialValue: withdrawReasonViewModel)
-    _notificationViewModel = State(initialValue: notificationViewModel)
   }
 
   var body: some View {
@@ -80,20 +74,16 @@ struct MainTabView: View {
         PushRouteStore.shared.pending = nil
         await router.route(push: payload)
       }
-      // 최초 진입 + 포그라운드 푸시 도착 시 안읽음 뱃지를 갱신한다.
+      // 포그라운드 푸시 도착 시 목록·알림 뱃지를 갱신한다.
       .task(id: PushRouteStore.shared.foregroundPushCount) {
-        await notificationViewModel.refreshUnreadCount()
         if PushRouteStore.shared.foregroundPushCount > 0 {
           await refreshRootData()
         }
       }
-      // 백그라운드에 쌓인 알림 반영: 앱이 다시 활성화될 때 뱃지 갱신
+      // 백그라운드에 쌓인 알림 반영: 앱이 다시 활성화될 때 목록·알림 뱃지를 갱신한다.
       .onChange(of: scenePhase) { _, phase in
         if phase == .active {
-          Task {
-            await notificationViewModel.refreshUnreadCount()
-            await refreshRootData()
-          }
+          Task { await refreshRootData() }
         }
       }
       .onReceive(NotificationCenter.default.publisher(for: .proposalListNeedsRefresh)) { _ in
@@ -119,6 +109,9 @@ struct MainTabView: View {
           viewModel: viewModel,
           onSelectProposal: { proposal in
             router.homePath.append(.proposalDetail(proposalID: proposal.id))
+          },
+          onTapNotification: {
+            router.homePath.append(.notifications)
           }
         )
         .safeAreaInset(edge: .bottom, spacing: 0) {
@@ -165,15 +158,12 @@ struct MainTabView: View {
           }
         }
       }
-    case .notifications:
-      NotificationView(
-        viewModel: notificationViewModel,
-        onSelect: { payload in
-          Task { await router.route(push: payload) }
-        }
-      )
-      .safeAreaInset(edge: .bottom, spacing: 0) {
-        bottomBar
+    case .chat:
+      NavigationStack {
+        ChatListView()
+          .safeAreaInset(edge: .bottom, spacing: 0) {
+            bottomBar
+          }
       }
     case .profile:
       NavigationStack {
@@ -190,10 +180,7 @@ struct MainTabView: View {
 
   private var bottomBar: some View {
     ZStack(alignment: .topTrailing) {
-      BottomNavBar(
-        selectedTab: $router.selectedTab,
-        unreadCount: notificationViewModel.unreadCount
-      )
+      BottomNavBar(selectedTab: $router.selectedTab)
 
       if router.selectedTab == .home {
         FloatingActionButton {
@@ -212,7 +199,6 @@ struct MainTabView: View {
     myProposalsViewModel: .preview(),
     myOffersViewModel: .preview(),
     profileViewModel: .preview(),
-    withdrawReasonViewModel: .preview(),
-    notificationViewModel: .preview()
+    withdrawReasonViewModel: .preview()
   )
 }

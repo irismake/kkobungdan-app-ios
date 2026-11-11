@@ -1,22 +1,26 @@
 import SwiftUI
 
+/// 홈 헤더 알림 버튼에서 push 되는 알림 목록.
 struct NotificationView: View {
   @State private var viewModel: NotificationViewModel
 
   /// 딥링크 있는 알림 셀 탭 시 호출. 푸시 배너 탭과 동일한 라우팅을 태운다.
   var onSelect: (PushPayload) -> Void = { _ in }
+  var onBack: () -> Void = {}
 
   init(
     viewModel: NotificationViewModel,
-    onSelect: @escaping (PushPayload) -> Void = { _ in }
+    onSelect: @escaping (PushPayload) -> Void = { _ in },
+    onBack: @escaping () -> Void = {}
   ) {
     _viewModel = State(initialValue: viewModel)
     self.onSelect = onSelect
+    self.onBack = onBack
   }
 
   var body: some View {
     VStack(spacing: 0) {
-      TabPageHeader(title: "알림")
+      AppBar(title: "알림", onBack: onBack)
       ScrollView {
         LazyVStack(spacing: 0) {
           if viewModel.isLoading, viewModel.notifications.isEmpty {
@@ -60,12 +64,13 @@ struct NotificationView: View {
       }
       .background(Color.gray000)
       .refreshable {
-        await viewModel.syncNotifications()
+        await viewModel.load()
       }
     }
     .background(Color.gray000)
+    // 최초 진입 + 화면을 보는 중 포그라운드 푸시 도착 시 목록을 다시 불러온다.
     .task(id: PushRouteStore.shared.foregroundPushCount) {
-      await viewModel.syncNotifications()
+      await viewModel.load()
     }
     .errorToast($viewModel.errorMessage)
   }

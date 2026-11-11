@@ -135,6 +135,15 @@ extension AppRouter {
       .navigationBarBackButtonHidden(true)
     case .addProposalDraft, .addProposalDateTime, .addProposalFee:
       addProposalDestination(for: route, path: path)
+    case .notifications:
+      NotificationView(
+        viewModel: AppRouteFactory.makeNotificationViewModel(),
+        onSelect: { payload in
+          Task { await self.route(push: payload) }
+        },
+        onBack: { self.popLast(path: path) }
+      )
+      .navigationBarBackButtonHidden(true)
     }
   }
 }
