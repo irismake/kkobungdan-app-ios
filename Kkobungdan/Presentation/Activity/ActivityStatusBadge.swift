@@ -26,6 +26,11 @@ enum ActivityStatusBadge {
     badges(status: proposal.status, myOfferStatus: myOfferStatus)
   }
 
+  /// 채팅 목록 대화방용. 내가 지원자면 내 지원 상태, 요청자면 요청 상태 기준.
+  static func badges(chatRoom: ChatRoom) -> [BadgeItem] {
+    badges(status: chatRoom.proposalStatus, myOfferStatus: chatRoom.myOfferStatus)
+  }
+
   /// 상세(ProposalDetail) 응답용 오버로드. 목록 응답과 배지 규칙이 동일하다.
   static func badges(
     proposal: ProposalDetail,

@@ -19,6 +19,30 @@ actor DummyBackendStore {
   private var nextOfferID: Int64 = 1000
   private var disputeEvidenceByProposalID: [Int64: DisputeEvidence] = [:]
   private var nextDisputeEvidenceID: Int64 = 1
+  private var chatRooms: [ChatRoom] = ChatRoom.dummyList
+
+  // MARK: - Chat
+
+  /// 최근 메시지 순 대화방 목록.
+  func fetchChatRooms() -> [ChatRoom] {
+    chatRooms.sorted { $0.lastMessageAt > $1.lastMessageAt }
+  }
+
+  /// 모든 대화방의 안읽음 수를 0 으로 만든다.
+  func markAllChatRoomsAsRead() {
+    chatRooms = chatRooms.map {
+      ChatRoom(
+        id: $0.id,
+        counterpartName: $0.counterpartName,
+        proposalTitle: $0.proposalTitle,
+        lastMessage: $0.lastMessage,
+        lastMessageAt: $0.lastMessageAt,
+        proposalStatus: $0.proposalStatus,
+        myOfferStatus: $0.myOfferStatus,
+        unreadCount: 0
+      )
+    }
+  }
 
   // MARK: - Proposal
 

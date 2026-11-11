@@ -14,6 +14,7 @@ struct MainTabView: View {
   @State private var viewModel: HomeViewModel
   @State private var myProposalsViewModel: MyProposalsViewModel
   @State private var myOffersViewModel: MyOffersViewModel
+  @State private var chatListViewModel: ChatListViewModel
   @State private var router = AppRouter()
 
   @State private var profileViewModel: ProfileViewModel
@@ -33,6 +34,10 @@ struct MainTabView: View {
         fetchMyOffersUseCase: FetchMyOffersUseCase(repository: DIContainer.activityRepository),
         fetchProposalDetailUseCase: FetchProposalDetailUseCase(repository: DIContainer.proposalRepository)
       ),
+      chatListViewModel: ChatListViewModel(
+        fetchChatRoomsUseCase: FetchChatRoomsUseCase(repository: DIContainer.chatRepository),
+        markAllChatRoomsReadUseCase: MarkAllChatRoomsReadUseCase(repository: DIContainer.chatRepository)
+      ),
       profileViewModel: ProfileViewModel(
         fetchUserDetailUseCase: FetchUserDetailUseCase(userRepository: DIContainer.userRepository),
         updateAlarmUseCase: UpdateAlarmUseCase(userRepository: DIContainer.userRepository),
@@ -51,12 +56,14 @@ struct MainTabView: View {
     viewModel: HomeViewModel,
     myProposalsViewModel: MyProposalsViewModel,
     myOffersViewModel: MyOffersViewModel,
+    chatListViewModel: ChatListViewModel,
     profileViewModel: ProfileViewModel,
     withdrawReasonViewModel: WithdrawReasonViewModel
   ) {
     _viewModel = State(initialValue: viewModel)
     _myProposalsViewModel = State(initialValue: myProposalsViewModel)
     _myOffersViewModel = State(initialValue: myOffersViewModel)
+    _chatListViewModel = State(initialValue: chatListViewModel)
     _profileViewModel = State(initialValue: profileViewModel)
     _withdrawReasonViewModel = State(initialValue: withdrawReasonViewModel)
   }
@@ -65,6 +72,7 @@ struct MainTabView: View {
     tabContent
       .task {
         await viewModel.load()
+        await chatListViewModel.load()
       }
       // 푸시 배너 탭 딥링크 소비.
       .task(id: PushRouteStore.shared.pending) {
@@ -96,6 +104,7 @@ struct MainTabView: View {
     await viewModel.load()
     await myProposalsViewModel.load(status: router.activityFilter.proposalStatuses)
     await myOffersViewModel.load(status: router.activityFilter.offerStatuses)
+    await chatListViewModel.load()
   }
 
   // MARK: - Tab Content
@@ -160,10 +169,15 @@ struct MainTabView: View {
       }
     case .chat:
       NavigationStack {
-        ChatListView()
-          .safeAreaInset(edge: .bottom, spacing: 0) {
-            bottomBar
+        ChatListView(
+          viewModel: chatListViewModel,
+          onSelectRoom: { _ in
+            // TODO: 채팅방 화면 구현 후 해당 대화방으로 push
           }
+        )
+        .safeAreaInset(edge: .bottom, spacing: 0) {
+          bottomBar
+        }
       }
     case .profile:
       NavigationStack {
@@ -180,7 +194,10 @@ struct MainTabView: View {
 
   private var bottomBar: some View {
     ZStack(alignment: .topTrailing) {
-      BottomNavBar(selectedTab: $router.selectedTab)
+      BottomNavBar(
+        selectedTab: $router.selectedTab,
+        chatUnreadCount: chatListViewModel.unreadCount
+      )
 
       if router.selectedTab == .home {
         FloatingActionButton {
@@ -198,6 +215,7 @@ struct MainTabView: View {
     viewModel: .preview(),
     myProposalsViewModel: .preview(),
     myOffersViewModel: .preview(),
+    chatListViewModel: .preview(),
     profileViewModel: .preview(),
     withdrawReasonViewModel: .preview()
   )

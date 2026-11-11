@@ -30,6 +30,7 @@ enum TextStyle {
   case title3 // SemiBold 14/14/-0.4 (tight menu labels)
   case title4 // Bold 14/20/0
   case title5 // Bold 14/22/0
+  case title6 // Bold 16/22/0
   case body1 // Medium 16/24/-0.3
   case body2 // Medium 14/20/-0.1
   case body3 // Regular 14/20/-0.1
@@ -42,6 +43,7 @@ enum TextStyle {
   case caption5 // Regular 12/16/0
   case caption6 // Regular 12/14/-0.1
   case caption7 // Regular 12/18/0
+  case caption8 // Regular 11/20/0
   case button1 // Medium 14/24/-0.2
   case button2 // Medium 14/14/-0.4 (line-height 100%)
   case badge1 // SemiBold 12/24/-0.2 (탭바 뱃지 숫자)
@@ -52,13 +54,13 @@ enum TextStyle {
 
   var fontName: String {
     switch self {
-    case .display, .heading6, .heading7, .title4, .title5:
+    case .display, .heading6, .heading7, .title4, .title5, .title6:
       return "Pretendard-Bold"
     case .heading1, .heading2, .heading3, .heading4, .heading5, .title1, .title2, .title3, .caption4, .badge1:
       return "Pretendard-SemiBold"
     case .body1, .body2, .caption1, .caption3, .inputBody2, .inputBody3, .button1, .button2:
       return "Pretendard-Medium"
-    case .body3, .body4, .body5, .caption2, .caption5, .caption6, .caption7, .inputBody1, .inputBody4:
+    case .body3, .body4, .body5, .caption2, .caption5, .caption6, .caption7, .caption8, .inputBody1, .inputBody4:
       return "Pretendard-Regular"
     }
   }
@@ -69,9 +71,10 @@ enum TextStyle {
     case .heading1, .heading2: return 24
     case .heading6: return 20
     case .heading3, .heading7, .title1: return 18
-    case .heading4, .heading5, .body1, .body4, .inputBody1, .inputBody3, .inputBody4: return 16
+    case .heading4, .heading5, .title6, .body1, .body4, .inputBody1, .inputBody3, .inputBody4: return 16
     case .title2, .title3, .title4, .title5, .body2, .body3, .body5, .inputBody2, .button1, .button2: return 14
     case .caption1, .caption3, .caption2, .caption4, .caption5, .caption6, .caption7, .badge1: return 12
+    case .caption8: return 11
     }
   }
 
@@ -91,7 +94,7 @@ enum TextStyle {
     case .body2: return 20
     case .body3: return 20
     case .body4: return 24
-    case .body5, .title5: return 22
+    case .body5, .title5, .title6: return 22
     case .button1: return 24
     case .button2: return 14
     case .badge1: return 24
@@ -102,6 +105,7 @@ enum TextStyle {
     case .caption5: return 16
     case .caption6: return 14
     case .caption7: return 18
+    case .caption8: return 20
     case .inputBody1: return 20
     case .inputBody4: return 16
     case .inputBody2: return 17
@@ -120,7 +124,7 @@ enum TextStyle {
     case .heading4, .inputBody1, .inputBody2, .inputBody3, .inputBody4, .button1, .badge1: return -0.2
     case .caption2: return -0.15
     case .body2, .body3, .caption1, .caption6: return -0.1
-    case .caption3, .caption5, .caption7, .body5, .title4, .title5: return 0
+    case .caption3, .caption5, .caption7, .caption8, .body5, .title4, .title5, .title6: return 0
     }
   }
 }

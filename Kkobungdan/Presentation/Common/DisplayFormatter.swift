@@ -25,6 +25,22 @@ enum DisplayFormatter {
     return formatter
   }()
 
+  private static let chatTimeFormatter: DateFormatter = {
+    let formatter = DateFormatter()
+    formatter.locale = Locale(identifier: "ko_KR")
+    formatter.timeZone = TimeZone(identifier: "Asia/Seoul")
+    formatter.dateFormat = "a hh:mm"
+    return formatter
+  }()
+
+  private static let chatDateFormatter: DateFormatter = {
+    let formatter = DateFormatter()
+    formatter.locale = Locale(identifier: "ko_KR")
+    formatter.timeZone = TimeZone(identifier: "Asia/Seoul")
+    formatter.dateFormat = "M월 d일"
+    return formatter
+  }()
+
   private static let feeFormatter: NumberFormatter = {
     let formatter = NumberFormatter()
     formatter.numberStyle = .decimal
@@ -38,6 +54,15 @@ enum DisplayFormatter {
 
   static func timeString(_ date: Date) -> String {
     timeFormatter.string(from: date)
+  }
+
+  /// 채팅 목록 시각. 오늘이면 "오후 04:42", 이전이면 "11월 10일".
+  static func chatTimeString(_ date: Date, now: Date = Date()) -> String {
+    var calendar = Calendar(identifier: .gregorian)
+    calendar.timeZone = TimeZone(identifier: "Asia/Seoul") ?? .current
+    return calendar.isDate(date, inSameDayAs: now)
+      ? chatTimeFormatter.string(from: date)
+      : chatDateFormatter.string(from: date)
   }
 
   static func feeString(_ fee: Int) -> String {
