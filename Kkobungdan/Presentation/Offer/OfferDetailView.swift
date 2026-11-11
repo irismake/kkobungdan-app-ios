@@ -14,15 +14,19 @@ struct OfferDetailView: View {
   @State private var isCancelConfirmPresented: Bool = false
   var onBack: () -> Void = {}
   var onAbort: () -> Void = {}
+  /// 관련 대화 → 채팅 화면. nil 이면 관련 대화 섹션을 숨긴다. (내 지원 상세에서만 전달)
+  var onOpenChat: (() -> Void)?
 
   init(
     viewModel: OfferDetailViewModel,
     onBack: @escaping () -> Void = {},
-    onAbort: @escaping () -> Void = {}
+    onAbort: @escaping () -> Void = {},
+    onOpenChat: (() -> Void)? = nil
   ) {
     _viewModel = State(initialValue: viewModel)
     self.onBack = onBack
     self.onAbort = onAbort
+    self.onOpenChat = onOpenChat
   }
 
   var body: some View {
@@ -196,6 +200,19 @@ struct OfferDetailView: View {
         fee: DisplayFormatter.feeString(proposal.errandFee),
         badges: ActivityStatusBadge.badges(proposal: proposal)
       )
+
+      if let onOpenChat, let status = ActivityStatusBadge.badges(proposal: proposal).first {
+        // 상태 문구는 바로 위 요청 카드 배지와 같게 맞춘다.
+        ChatCard(items: [
+          ChatCardItem(
+            id: "\(proposal.id)",
+            name: proposal.ordererName,
+            statusText: status.text,
+            onOpenChat: onOpenChat
+          )
+        ])
+        .padding(.top, 4) // 카드와 간격 16 (VStack spacing 12 + 4)
+      }
     }
   }
 }

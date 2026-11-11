@@ -29,6 +29,7 @@ enum TextStyle {
   case title2 // SemiBold 14/20/-0.4
   case title3 // SemiBold 14/14/-0.4 (tight menu labels)
   case title4 // Bold 14/20/0
+  case title5 // Bold 14/22/0
   case body1 // Medium 16/24/-0.3
   case body2 // Medium 14/20/-0.1
   case body3 // Regular 14/20/-0.1
@@ -51,7 +52,7 @@ enum TextStyle {
 
   var fontName: String {
     switch self {
-    case .display, .heading6, .heading7, .title4:
+    case .display, .heading6, .heading7, .title4, .title5:
       return "Pretendard-Bold"
     case .heading1, .heading2, .heading3, .heading4, .heading5, .title1, .title2, .title3, .caption4, .badge1:
       return "Pretendard-SemiBold"
@@ -69,7 +70,7 @@ enum TextStyle {
     case .heading6: return 20
     case .heading3, .heading7, .title1: return 18
     case .heading4, .heading5, .body1, .body4, .inputBody1, .inputBody3, .inputBody4: return 16
-    case .title2, .title3, .title4, .body2, .body3, .body5, .inputBody2, .button1, .button2: return 14
+    case .title2, .title3, .title4, .title5, .body2, .body3, .body5, .inputBody2, .button1, .button2: return 14
     case .caption1, .caption3, .caption2, .caption4, .caption5, .caption6, .caption7, .badge1: return 12
     }
   }
@@ -90,7 +91,7 @@ enum TextStyle {
     case .body2: return 20
     case .body3: return 20
     case .body4: return 24
-    case .body5: return 22
+    case .body5, .title5: return 22
     case .button1: return 24
     case .button2: return 14
     case .badge1: return 24
@@ -119,7 +120,7 @@ enum TextStyle {
     case .heading4, .inputBody1, .inputBody2, .inputBody3, .inputBody4, .button1, .badge1: return -0.2
     case .caption2: return -0.15
     case .body2, .body3, .caption1, .caption6: return -0.1
-    case .caption3, .caption5, .caption7, .body5, .title4: return 0
+    case .caption3, .caption5, .caption7, .body5, .title4, .title5: return 0
     }
   }
 }

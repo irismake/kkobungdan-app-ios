@@ -115,6 +115,9 @@ extension AppRouter {
         onBack: { self.popLast(path: path) },
         onAbort: {
           path.wrappedValue.append(.missionAbort(target: .offer(offerID: offerID)))
+        },
+        onOpenChat: {
+          // TODO: 채팅 화면 구현 후 해당 대화방으로 push
         }
       )
       .navigationBarBackButtonHidden(true)
