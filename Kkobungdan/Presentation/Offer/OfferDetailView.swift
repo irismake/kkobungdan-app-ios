@@ -57,24 +57,26 @@ struct OfferDetailView: View {
 
       VStack(spacing: 0) {
         ScrollView {
-          VStack(alignment: .leading, spacing: 12) {
-            proposalCardSection
+          VStack(spacing: 0) {
+            VStack(alignment: .leading, spacing: 12) {
+              proposalCardSection
 
-            // 관련 대화는 항상 맨 아래
-            relatedChatSection
+              // 관련 대화는 항상 맨 아래
+              relatedChatSection
+            }
+            .padding(.horizontal, Layout.screenHorizontalPadding)
+            .padding(.vertical, 12)
+
+            // 고객센터 안내는 상세 내용과 함께 스크롤된다
+            Text("고객센터 \(SupportContact.email)")
+              .textStyle(.body3)
+              .foregroundColor(Color.gray700)
+              .multilineTextAlignment(.center)
+              .frame(maxWidth: .infinity)
+              .padding(.top, 20)
+              .padding(.bottom, 32)
           }
-          .padding(.horizontal, Layout.screenHorizontalPadding)
-          .padding(.vertical, 12)
         }
-
-        Spacer()
-
-        Text("고객센터 \(SupportContact.email)")
-          .textStyle(.body3)
-          .foregroundColor(Color.gray700)
-          .multilineTextAlignment(.center)
-          .frame(maxWidth: .infinity)
-          .padding(.bottom, 32)
       }
       .frame(maxHeight: .infinity)
       .overlay(alignment: .bottom) {

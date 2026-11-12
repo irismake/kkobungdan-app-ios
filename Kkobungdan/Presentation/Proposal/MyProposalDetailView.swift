@@ -104,16 +104,16 @@ struct MyProposalDetailView: View {
               }
             }
             .padding(.vertical, 12)
+
+            // 고객센터 안내는 상세 내용과 함께 스크롤된다
+            Text("고객센터 \(SupportContact.email)")
+              .textStyle(.body3)
+              .foregroundColor(Color.gray700)
+              .multilineTextAlignment(.center)
+              .frame(maxWidth: .infinity)
+              .padding(.top, 20)
+              .padding(.bottom, 32)
           }
-
-          Spacer()
-
-          Text("고객센터 \(SupportContact.email)")
-            .textStyle(.body3)
-            .foregroundColor(Color.gray700)
-            .multilineTextAlignment(.center)
-            .frame(maxWidth: .infinity)
-            .padding(.bottom, 32)
         }
       }
       .frame(maxHeight: .infinity)
