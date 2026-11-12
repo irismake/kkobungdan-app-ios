@@ -123,8 +123,7 @@ final class OpenAPIContractTests: XCTestCase {
         EnumContract("NotificationStatus", NotificationStatus.self, knownExtraValues: ["__unknown__"]),
         EnumContract("NotificationType", NotificationType.self, knownExtraValues: ["__unknown__"]),
         EnumContract("OfferStatus", OfferStatus.self),
-        // REPORTED — 배지 등 UI 가 없는 클라이언트 미사용 상태라 Swift 케이스를 두지 않는다.
-        EnumContract("ProposalStatus", ProposalStatus.self, knownMissingValues: ["REPORTED"]),
+        EnumContract("ProposalStatus", ProposalStatus.self),
         EnumContract("DisputeSurveyTargetType", DisputeSurveyTargetType.self),
         // 에러 코드. 미등록 값은 `ServerErrorCode.unknown` 으로 흡수되므로 디코딩은 깨지지 않지만,
         // 서버 문구 대신 화면별 fallback 이 뜨므로 이 테스트로 추가를 감지한다.

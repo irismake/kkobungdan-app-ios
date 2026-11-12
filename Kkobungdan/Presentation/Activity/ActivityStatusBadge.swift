@@ -66,7 +66,7 @@ enum ActivityStatusBadge {
       return [completedBadge]
     case .disputed:
       return [disputedBadge]
-    case .cancelled, .refundPending, .refunded:
+    case .cancelled, .refundPending, .refunded, .reported:
       return [cancelledBadge]
     }
   }
@@ -86,7 +86,7 @@ enum ActivityStatusBadge {
       return [completedBadge]
     case .disputed:
       return [disputedBadge]
-    case .cancelled, .refundPending, .refunded:
+    case .cancelled, .refundPending, .refunded, .reported:
       return [cancelledBadge]
     }
   }

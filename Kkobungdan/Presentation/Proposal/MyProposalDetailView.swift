@@ -151,7 +151,7 @@ struct MyProposalDetailView: View {
     switch viewModel.proposal?.status {
     case .disputed:
       return viewModel.isDisputedByCounterparty
-    case .allCompleted, .cancelled, .refundPending, .refunded:
+    case .allCompleted, .cancelled, .refundPending, .refunded, .reported:
       return false
     default:
       return true
@@ -206,7 +206,7 @@ struct MyProposalDetailView: View {
       } else {
         EmptyView()
       }
-    case .allCompleted, .cancelled, .refundPending, .refunded:
+    case .allCompleted, .cancelled, .refundPending, .refunded, .reported:
       EmptyView()
     default:
       VStack(spacing: 8) {
