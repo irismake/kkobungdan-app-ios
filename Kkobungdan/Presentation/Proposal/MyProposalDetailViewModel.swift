@@ -43,14 +43,8 @@ final class MyProposalDetailViewModel: LoadableViewModel {
   }
 
   /// 분쟁 중 조회한 증빙. 내가 중단을 신청한 당사자인지 판별하는 데 쓴다.
-  /// 관련 대화에 보일 지원자. 미션이 생성된 뒤(선택된 지원자가 있을 때)에만 채워진다.
-  /// 선택된 지원자 먼저, 그다음 선택되지 않은(rejected) 지원자.
-  var relatedChatOffers: [Offer] {
-    guard let matchedOffer else {
-      return []
-    }
-    return [matchedOffer] + offers.filter { $0.status == .rejected }
-  }
+  /// 관련 대화. 목록·순서·상태 모두 서버가 내려준 그대로 쓴다.
+  var relatedChatRooms: [ChatRoom] = []
 
   var disputeEvidence: DisputeEvidence?
 
@@ -71,6 +65,7 @@ final class MyProposalDetailViewModel: LoadableViewModel {
   private let confirmReceivedUseCase: ConfirmReceivedUseCase
   private let cancelProposalUseCase: CancelProposalUseCase
   private let fetchDisputeEvidenceUseCase: FetchDisputeEvidenceUseCase
+  private let fetchChatRoomsUseCase: FetchChatRoomsUseCase
 
   init(
     proposalID: Int64,
@@ -78,7 +73,8 @@ final class MyProposalDetailViewModel: LoadableViewModel {
     fetchOffersUseCase: FetchOffersByProposalUseCase,
     confirmReceivedUseCase: ConfirmReceivedUseCase,
     cancelProposalUseCase: CancelProposalUseCase,
-    fetchDisputeEvidenceUseCase: FetchDisputeEvidenceUseCase
+    fetchDisputeEvidenceUseCase: FetchDisputeEvidenceUseCase,
+    fetchChatRoomsUseCase: FetchChatRoomsUseCase
   ) {
     self.proposalID = proposalID
     self.fetchDetailUseCase = fetchDetailUseCase
@@ -86,6 +82,7 @@ final class MyProposalDetailViewModel: LoadableViewModel {
     self.confirmReceivedUseCase = confirmReceivedUseCase
     self.cancelProposalUseCase = cancelProposalUseCase
     self.fetchDisputeEvidenceUseCase = fetchDisputeEvidenceUseCase
+    self.fetchChatRoomsUseCase = fetchChatRoomsUseCase
   }
 
   /// proposal 상태별로 조회할 offer status 필터.
@@ -125,6 +122,9 @@ final class MyProposalDetailViewModel: LoadableViewModel {
       } else {
         disputeEvidence = nil
       }
+
+      // 관련 대화는 보조 정보 — 실패해도 상세 로딩을 막지 않는다.
+      relatedChatRooms = (try? await fetchChatRoomsUseCase.execute(proposalID: proposalID)) ?? []
     }
   }
 

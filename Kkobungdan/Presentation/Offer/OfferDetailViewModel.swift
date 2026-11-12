@@ -17,6 +17,8 @@ final class OfferDetailViewModel: LoadableViewModel {
   var errorMessage: String?
 
   var offer: OfferDetail?
+  /// 관련 대화. 목록·상태 모두 서버가 내려준 그대로 쓴다.
+  var relatedChatRooms: [ChatRoom] = []
   var isCompletingDelivery: Bool = false
   var isCancelling: Bool = false
   var didCancel: Bool = false
@@ -57,6 +59,7 @@ final class OfferDetailViewModel: LoadableViewModel {
   private let completeDeliveryUseCase: CompleteDeliveryUseCase
   private let cancelOfferUseCase: CancelOfferUseCase
   private let fetchDisputeEvidenceUseCase: FetchDisputeEvidenceUseCase
+  private let fetchChatRoomsUseCase: FetchChatRoomsUseCase
 
   init(
     proposalID: Int64,
@@ -65,7 +68,8 @@ final class OfferDetailViewModel: LoadableViewModel {
     fetchOfferDetailUseCase: FetchOfferDetailUseCase,
     completeDeliveryUseCase: CompleteDeliveryUseCase,
     cancelOfferUseCase: CancelOfferUseCase,
-    fetchDisputeEvidenceUseCase: FetchDisputeEvidenceUseCase
+    fetchDisputeEvidenceUseCase: FetchDisputeEvidenceUseCase,
+    fetchChatRoomsUseCase: FetchChatRoomsUseCase
   ) {
     self.proposalID = proposalID
     self.offerID = offerID
@@ -74,6 +78,7 @@ final class OfferDetailViewModel: LoadableViewModel {
     self.completeDeliveryUseCase = completeDeliveryUseCase
     self.cancelOfferUseCase = cancelOfferUseCase
     self.fetchDisputeEvidenceUseCase = fetchDisputeEvidenceUseCase
+    self.fetchChatRoomsUseCase = fetchChatRoomsUseCase
   }
 
   @MainActor
@@ -92,6 +97,9 @@ final class OfferDetailViewModel: LoadableViewModel {
       } else {
         disputeEvidence = nil
       }
+
+      // 관련 대화는 보조 정보 — 실패해도 상세 로딩을 막지 않는다.
+      relatedChatRooms = (try? await fetchChatRoomsUseCase.execute(proposalID: proposalID)) ?? []
     }
   }
 

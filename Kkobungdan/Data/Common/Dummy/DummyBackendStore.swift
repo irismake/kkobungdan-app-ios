@@ -59,6 +59,24 @@ actor DummyBackendStore {
     .sorted { $0.lastMessageAt > $1.lastMessageAt }
   }
 
+  /// 특정 요청의 내 대화방(관련 대화). 서버처럼 선택된 지원자의 대화를 먼저 내려준다.
+  func fetchChatRooms(proposalID: Int64) -> [ChatRoom] {
+    fetchAllChatRooms()
+      .filter { $0.proposalID == proposalID }
+      .sorted { lhs, rhs in
+        let lhsSelected = isSelectedOffer(lhs.id)
+        let rhsSelected = isSelectedOffer(rhs.id)
+        return lhsSelected != rhsSelected ? lhsSelected : lhs.lastMessageAt > rhs.lastMessageAt
+      }
+  }
+
+  private func isSelectedOffer(_ offerID: Int64) -> Bool {
+    guard let offer = offers.first(where: { $0.id == offerID }) else {
+      return false
+    }
+    return [.accepted, .runnerCompleted, .allCompleted, .disputed].contains(offer.status)
+  }
+
   /// 서버가 대화방 상태를 내려주는 동작을 흉내낸다 — 행님 대화는 요청 상태 기준.
   private static func chatRoomStatus(proposalStatus: ProposalStatus) -> ChatRoomStatus {
     switch proposalStatus {

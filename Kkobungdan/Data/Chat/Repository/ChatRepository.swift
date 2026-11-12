@@ -19,6 +19,11 @@ final class ChatRepository: ChatRepositoryProtocol {
     []
   }
 
+  // TODO: 서버 요청별 관련 대화 API 확정 시 연동
+  func fetchChatRooms(proposalID _: Int64) async throws -> [ChatRoom] {
+    []
+  }
+
   // TODO: 서버 채팅 읽음 처리 API 확정 시 연동
   func markAllAsRead() async throws {}
 }

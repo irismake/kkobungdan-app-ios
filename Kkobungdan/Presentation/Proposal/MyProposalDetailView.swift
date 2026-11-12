@@ -18,7 +18,7 @@ struct MyProposalDetailView: View {
   var onAccepted: () -> Void = {}
   var onAbort: () -> Void = {}
   /// 관련 대화 → 해당 지원자와의 채팅 상세.
-  var onOpenChat: (Offer) -> Void = { _ in }
+  var onOpenChat: (ChatRoom) -> Void = { _ in }
 
   init(
     viewModel: MyProposalDetailViewModel,
@@ -26,7 +26,7 @@ struct MyProposalDetailView: View {
     onShowRunners: @escaping () -> Void = {},
     onAccepted: @escaping () -> Void = {},
     onAbort: @escaping () -> Void = {},
-    onOpenChat: @escaping (Offer) -> Void = { _ in }
+    onOpenChat: @escaping (ChatRoom) -> Void = { _ in }
   ) {
     _viewModel = State(initialValue: viewModel)
     self.onBack = onBack
@@ -232,16 +232,16 @@ struct MyProposalDetailView: View {
     }
   }
 
-  /// 미션 생성 후에만 노출, 화면 맨 아래. 상태 문구는 요청 카드와 같은 배지 규칙(지원자의 offer 상태 기준).
+  /// 미션 생성 후에만 노출, 화면 맨 아래. 대화 목록·상태는 서버가 내려준 그대로.
   @ViewBuilder
   private var relatedChatSection: some View {
-    if let proposal = viewModel.proposal, !viewModel.relatedChatOffers.isEmpty {
-      ChatCard(items: viewModel.relatedChatOffers.map { offer in
+    if viewModel.matchedOffer != nil, !viewModel.relatedChatRooms.isEmpty {
+      ChatCard(items: viewModel.relatedChatRooms.map { room in
         ChatCardItem(
-          id: "\(offer.id)",
-          name: offer.runnerName,
-          statusText: ActivityStatusBadge.badges(proposal: proposal, myOfferStatus: offer.status).first?.text ?? "",
-          onOpenChat: { onOpenChat(offer) }
+          id: "\(room.id)",
+          name: room.counterpartName,
+          statusText: room.status.badge.text,
+          onOpenChat: { onOpenChat(room) }
         )
       })
       .padding(.top, 4) // 위 섹션과 간격 16 (VStack spacing 12 + 4)

@@ -119,7 +119,7 @@ extension AppRouter {
         onAbort: {
           path.wrappedValue.append(.missionAbort(target: .offer(offerID: offerID)))
         },
-        onOpenChat: {
+        onOpenChat: { _ in
           // TODO: 채팅 화면 구현 후 해당 대화방으로 push
         }
       )
