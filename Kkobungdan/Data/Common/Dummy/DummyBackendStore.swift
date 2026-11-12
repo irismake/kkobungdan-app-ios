@@ -19,28 +19,72 @@ actor DummyBackendStore {
   private var nextOfferID: Int64 = 1000
   private var disputeEvidenceByProposalID: [Int64: DisputeEvidence] = [:]
   private var nextDisputeEvidenceID: Int64 = 1
-  private var chatRooms: [ChatRoom] = ChatRoom.dummyList
+  /// offerID → 대화방 마지막 메시지. 대화방 자체는 offers 로부터 만든다.
+  private var chatMessageByOfferID: [Int64: DummyChatMessage] = ChatRoom.dummyLastMessageByOfferID
 
   // MARK: - Chat
 
-  /// 최근 메시지 순 대화방 목록.
-  func fetchChatRooms() -> [ChatRoom] {
-    chatRooms.sorted { $0.lastMessageAt > $1.lastMessageAt }
+  /// 내가 참여한 대화방 목록(최근 메시지 순).
+  /// 대화방은 지원(offer) 1건당 1개 — 내가 지원자이거나, 내 요청에 들어온 지원이면 내 대화방이다.
+  /// offer 는 삭제되지 않으므로(취소·환불은 상태 변경) 대화방도 사라지지 않는다.
+  func fetchAllChatRooms() -> [ChatRoom] {
+    let me = DummySession.currentUserID
+    return offers.compactMap { offer -> ChatRoom? in
+      guard let proposal = proposals.first(where: { $0.id == offer.proposalID }) else {
+        return nil
+      }
+      let ordererID = ordererIDByProposalID[proposal.id] ?? ""
+      let counterpartID: String
+      if offer.runnerID == me {
+        counterpartID = ordererID
+      } else if ordererID == me {
+        counterpartID = offer.runnerID
+      } else {
+        return nil
+      }
+      let message = chatMessageByOfferID[offer.id]
+      return ChatRoom(
+        id: offer.id,
+        proposalID: proposal.id,
+        counterpartName: DummySession.displayName(for: counterpartID),
+        proposalTitle: proposal.title,
+        lastMessage: message?.text ?? "지원했어요.",
+        lastMessageAt: message?.sentAt ?? offer.createdAt,
+        status: offer.runnerID == me
+          ? Self.chatRoomStatus(offerStatus: offer.status)
+          : Self.chatRoomStatus(proposalStatus: proposal.status),
+        unreadCount: message?.unreadCount ?? 0
+      )
+    }
+    .sorted { $0.lastMessageAt > $1.lastMessageAt }
+  }
+
+  /// 서버가 대화방 상태를 내려주는 동작을 흉내낸다 — 행님 대화는 요청 상태 기준.
+  private static func chatRoomStatus(proposalStatus: ProposalStatus) -> ChatRoomStatus {
+    switch proposalStatus {
+    case .holding, .posted, .offered: return .waiting
+    case .matched, .orderCompleted: return .inProgress
+    case .allCompleted: return .completed
+    case .disputed: return .disputed
+    case .cancelled, .refundPending, .refunded: return .cancelled
+    }
+  }
+
+  /// 서버가 대화방 상태를 내려주는 동작을 흉내낸다 — 꼬붕 대화는 내 지원 상태 기준.
+  private static func chatRoomStatus(offerStatus: OfferStatus) -> ChatRoomStatus {
+    switch offerStatus {
+    case .waiting: return .waiting
+    case .accepted, .runnerCompleted: return .inProgress
+    case .allCompleted: return .completed
+    case .disputed: return .disputed
+    case .rejected, .cancelled: return .cancelled
+    }
   }
 
   /// 모든 대화방의 안읽음 수를 0 으로 만든다.
   func markAllChatRoomsAsRead() {
-    chatRooms = chatRooms.map {
-      ChatRoom(
-        id: $0.id,
-        counterpartName: $0.counterpartName,
-        proposalTitle: $0.proposalTitle,
-        lastMessage: $0.lastMessage,
-        lastMessageAt: $0.lastMessageAt,
-        proposalStatus: $0.proposalStatus,
-        myOfferStatus: $0.myOfferStatus,
-        unreadCount: 0
-      )
+    chatMessageByOfferID = chatMessageByOfferID.mapValues {
+      DummyChatMessage(text: $0.text, sentAt: $0.sentAt, unreadCount: 0)
     }
   }
 

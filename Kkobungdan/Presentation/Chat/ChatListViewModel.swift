@@ -43,11 +43,7 @@ final class ChatListViewModel: LoadableViewModel {
     switch filter {
     case .all: return rooms
     case .unread: return rooms.filter { $0.unreadCount > 0 }
-    case .inProgress:
-      // 상태 배지가 '진행중'인 대화 (요청 카드와 같은 기준)
-      return rooms.filter {
-        ActivityStatusBadge.badges(chatRoom: $0).contains { $0.text == ActivityStatusBadge.inProgressBadge.text }
-      }
+    case .inProgress: return rooms.filter { $0.status == .inProgress }
     }
   }
 
@@ -86,7 +82,23 @@ extension ChatListViewModel {
       fetchChatRoomsUseCase: FetchChatRoomsUseCase(repository: DIContainer.chatRepository),
       markAllChatRoomsReadUseCase: MarkAllChatRoomsReadUseCase(repository: DIContainer.chatRepository)
     )
-    viewModel.rooms = ChatRoom.dummyList
+    viewModel.rooms = [
+      ChatRoom(
+        id: 20, proposalID: 3, counterpartName: "성실한치타", proposalTitle: "약국에서 약 수령",
+        lastMessage: "안녕하세요! 요청하신 시간에 도착할 수 있어요.", lastMessageAt: Date(),
+        status: .waiting, unreadCount: 1
+      ),
+      ChatRoom(
+        id: 30, proposalID: 4, counterpartName: "이웃주민1", proposalTitle: "택배 맡기기",
+        lastMessage: "내일 오전 10시에 편의점 앞에서 만나요.", lastMessageAt: Date().addingTimeInterval(-3600),
+        status: .inProgress, unreadCount: 0
+      ),
+      ChatRoom(
+        id: 82, proposalID: 12, counterpartName: "이웃주민4", proposalTitle: "세탁소 픽업",
+        lastMessage: "환불이 완료됐어요.", lastMessageAt: Date().addingTimeInterval(-86400),
+        status: .cancelled, unreadCount: 0
+      )
+    ]
     return viewModel
   }
 }

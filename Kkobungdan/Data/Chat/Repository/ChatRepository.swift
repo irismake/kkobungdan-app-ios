@@ -15,7 +15,7 @@ final class ChatRepository: ChatRepositoryProtocol {
   }
 
   // TODO: 서버 채팅 목록 API 확정 시 응답 DTO 추가 후 연동
-  func fetchChatRooms() async throws -> [ChatRoom] {
+  func fetchAllChatRooms() async throws -> [ChatRoom] {
     []
   }
 

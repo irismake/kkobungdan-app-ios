@@ -108,12 +108,13 @@ private struct ChatRoomRow: View {
       }
       .padding(.top, 5)
 
-      // 상태 배지는 요청 카드(ProposalCard)와 같은 컴포넌트·규칙
-      HStack(spacing: 4) {
-        ForEach(Array(ActivityStatusBadge.badges(chatRoom: room).enumerated()), id: \.offset) { _, badge in
-          Badge(text: badge.text, textColor: badge.textColor, bgColor: badge.bgColor, iconName: badge.iconName)
-        }
-      }
+      // 서버가 내려준 대화방 상태를 요청 카드(ProposalCard)와 같은 배지로 표시
+      Badge(
+        text: room.status.badge.text,
+        textColor: room.status.badge.textColor,
+        bgColor: room.status.badge.bgColor,
+        iconName: room.status.badge.iconName
+      )
       .padding(.top, 10)
     }
     .padding(.horizontal, 16)

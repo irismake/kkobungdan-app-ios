@@ -13,6 +13,6 @@ struct FetchChatRoomsUseCase {
   }
 
   func execute() async throws -> [ChatRoom] {
-    try await repository.fetchChatRooms()
+    try await repository.fetchAllChatRooms()
   }
 }

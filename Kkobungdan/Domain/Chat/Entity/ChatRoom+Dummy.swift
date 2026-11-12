@@ -5,51 +5,45 @@
 
 import Foundation
 
+/// 더미 대화방의 마지막 메시지. 대화방 자체는 `DummyBackendStore` 가 지원(offer) 데이터로 만든다.
+struct DummyChatMessage {
+  let text: String
+  let sentAt: Date
+  let unreadCount: Int
+}
+
 extension ChatRoom {
-  /// '성수동 행님' 대화는 내가 지원자(myOffer 있음), 나머지는 내가 요청자인 대화.
-  static let dummyList: [ChatRoom] = {
+  /// offerID → 마지막 메시지. `Offer.dummyList` 의 ID 와 맞춘다.
+  /// 여기 없는 대화방(새로 지원한 경우 등)은 지원 시각·기본 문구로 채운다.
+  static let dummyLastMessageByOfferID: [Int64: DummyChatMessage] = {
     let now = Date()
-    func make(
-      _ id: Int64,
-      _ name: String,
-      _ title: String,
-      _ message: String,
-      minutesAgo: Double,
-      _ proposalStatus: ProposalStatus,
-      myOffer: OfferStatus? = nil,
-      unread: Int = 0
-    ) -> ChatRoom {
-      ChatRoom(
-        id: id,
-        counterpartName: name,
-        proposalTitle: title,
-        lastMessage: message,
-        lastMessageAt: now.addingTimeInterval(-minutesAgo * 60),
-        proposalStatus: proposalStatus,
-        myOfferStatus: myOffer,
-        unreadCount: unread
-      )
+    func message(_ text: String, minutesAgo: Double, unread: Int = 0) -> DummyChatMessage {
+      DummyChatMessage(text: text, sentAt: now.addingTimeInterval(-minutesAgo * 60), unreadCount: unread)
     }
-    let bakery = "성수 베이커리 소금빵 웨이팅"
-    let gopchang = "강남역 곱창전골 웨이팅"
     return [
-      make(1, "성수동 행님", bakery, "검토 결과에 따른 지급과 환불이 완료됐어요. 사유: 요청 내용과 다름 · 현장에서 요청 내용이 변경되었어요.", minutesAgo: 1, .disputed, myOffer: .disputed),
-      make(2, "성수동 행님", bakery, "지원을 취소했어요. 메시지 전송이 종료됩니다.", minutesAgo: 2, .offered, myOffer: .cancelled),
-      make(3, "카야잼", bakery, "환불이 완료됐어요.", minutesAgo: 3, .refunded),
-      make(4, "카야잼", bakery, "정산이 완료됐어요.", minutesAgo: 4, .allCompleted),
-      make(5, "윤슬", bakery, "정산이 완료됐어요.", minutesAgo: 5, .allCompleted),
-      make(6, "카야잼", bakery, "모집을 재개했어요.", minutesAgo: 6, .posted),
-      make(7, "카야잼", bakery, "요청이 취소되어 모집과 지원이 종료됐어요.", minutesAgo: 7, .cancelled),
-      make(8, "카야잼", bakery, "임무가 완료되었어요. 대화 기록을 확인할 수 있어요.", minutesAgo: 8, .allCompleted),
-      make(9, "성수동 행님", bakery, "매칭이 확정되었어요.", minutesAgo: 9, .matched, myOffer: .accepted),
-      make(10, "성수동 행님", bakery, "다른 지원자와 매칭되어 대화가 종료되었어요.", minutesAgo: 10, .matched, myOffer: .rejected),
-      make(11, "카야잼", bakery, "매칭이 확정되었어요.", minutesAgo: 11, .matched),
-      make(12, "카야잼", bakery, "매칭이 확정되었어요.", minutesAgo: 12, .orderCompleted),
-      make(13, "카야잼", bakery, "안녕하세요! 요청하신 시간에 도착할 수 있어요. 만날 장소를 알려주세요.", minutesAgo: 13, .offered, unread: 1),
-      make(14, "윤슬", bakery, "안녕하세요! 요청하신 시간에 도착할 수 있어요. 만날 장소를 알려주세요.", minutesAgo: 14, .offered, unread: 1),
-      make(15, "성수동 행님", bakery, "지원 감사합니다. 오후 3시에 가게 입구에서 만나요!", minutesAgo: 15, .offered, myOffer: .waiting),
-      make(16, "카야잼", gopchang, "안녕하세요! 근처에 있어서 오후 3시부터 줄 설 수 있어요. 3명 자리 맞으실까요?", minutesAgo: 45, .offered, unread: 1),
-      make(17, "윤슬", gopchang, "안녕하세요, 시간 맞춰 도착할 수 있어요. 만날 장소를 알려주세요!", minutesAgo: 75, .offered, unread: 1)
+      // 내 요청 3 '약국에서 약 수령' — 지원자 3명
+      20: message("안녕하세요! 요청하신 시간에 도착할 수 있어요. 약국 위치 알려주세요.", minutesAgo: 20, unread: 1),
+      21: message("근처라서 바로 갈 수 있어요. 처방전은 어떻게 받으면 될까요?", minutesAgo: 35, unread: 1),
+      22: message("다른 지원자와 매칭되어 대화가 종료되었어요.", minutesAgo: 600),
+      // 내 지원 30 '택배 맡기기' — 매칭됨
+      30: message("내일 오전 10시에 편의점 앞에서 만나요.", minutesAgo: 90),
+      // 내 요청 5 '저녁 식사 픽업' — 선택 / 미선정 / 지원 취소
+      40: message("픽업 완료하면 연락드릴게요!", minutesAgo: 50, unread: 2),
+      41: message("다른 지원자와 매칭되어 대화가 종료되었어요.", minutesAgo: 1500),
+      42: message("지원을 취소했어요. 메시지 전송이 종료됩니다.", minutesAgo: 1560),
+      // 내 지원 50 '편의점 장보기 부탁' — 대기
+      50: message("지원 감사합니다. 오후 3시에 가게 입구에서 만나요!", minutesAgo: 55),
+      // 내 지원 51 '서류 전달' — 요청 취소
+      51: message("요청이 취소되어 모집과 지원이 종료됐어요.", minutesAgo: 2800),
+      // 내 요청 8 '공항 픽업 부탁' — 완료
+      60: message("정산이 완료됐어요.", minutesAgo: 5000),
+      // 내 지원 70 '병원 처방전 대리 수령', 80 '주말 이사 짐 옮기기' — 매칭됨
+      70: message("처방전 수령했어요. 어디로 가져다 드릴까요?", minutesAgo: 70),
+      80: message("매칭이 확정되었어요.", minutesAgo: 120),
+      // 내 요청 11 '도서관 도서 반납' — 완료
+      81: message("임무가 완료되었어요. 대화 기록을 확인할 수 있어요.", minutesAgo: 14000),
+      // 내 지원 82 '세탁소 픽업' — 환불
+      82: message("환불이 완료됐어요.", minutesAgo: 17000)
     ]
   }()
 }
