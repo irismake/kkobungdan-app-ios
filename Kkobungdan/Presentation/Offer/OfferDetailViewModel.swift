@@ -27,14 +27,6 @@ final class OfferDetailViewModel: LoadableViewModel {
     offer?.status == .accepted
   }
 
-  /// 카카오톡 오픈채팅방 링크. offer 가 ACCEPTED·RUNNER_COMPLETED 일 때만 노출한다.
-  var openChatURL: String? {
-    guard let offer, offer.status == .accepted || offer.status == .runnerCompleted else {
-      return nil
-    }
-    return offer.openChatURL
-  }
-
   /// 러너가 완료 처리를 마쳤고, 요청자(의뢰자) 확인을 기다리는 중인지 여부.
   var isWaitingForOrdererConfirm: Bool {
     offer?.status == .runnerCompleted

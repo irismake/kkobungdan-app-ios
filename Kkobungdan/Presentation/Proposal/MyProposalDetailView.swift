@@ -100,10 +100,6 @@ struct MyProposalDetailView: View {
                     appliedAt: DisplayFormatter.appliedAtString(matched.createdAt)
                   )
                 }
-
-                if let openChatURL = viewModel.openChatURL {
-                  OpenChatModal(urlString: openChatURL)
-                }
               }
             }
             .padding(.vertical, 12)

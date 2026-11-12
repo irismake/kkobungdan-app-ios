@@ -25,14 +25,6 @@ final class MyProposalDetailViewModel: LoadableViewModel {
     proposal?.status == .matched
   }
 
-  /// 카카오톡 오픈채팅방 링크. proposal 이 MATCHED·ORDER_COMPLETED 일 때만 노출한다.
-  var openChatURL: String? {
-    guard let proposal, proposal.status == .matched || proposal.status == .orderCompleted else {
-      return nil
-    }
-    return proposal.openChatURL
-  }
-
   /// 오더러가 수령 확인을 마쳤고, 러너 완료 처리를 기다리는 중인지 여부.
   var isWaitingForRunnerConfirm: Bool {
     proposal?.status == .orderCompleted

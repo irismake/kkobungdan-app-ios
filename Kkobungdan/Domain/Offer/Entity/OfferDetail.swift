@@ -17,5 +17,4 @@ struct OfferDetail: Equatable, Identifiable {
   let runnerName: String
   let status: OfferStatus
   let createdAt: Date
-  let openChatURL: String?
 }

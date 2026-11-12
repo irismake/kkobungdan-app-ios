@@ -23,14 +23,6 @@ final class ProposalDetailViewModel: LoadableViewModel {
     return proposal.ordererID == tokenStorage.userID
   }
 
-  /// 카카오톡 오픈채팅방 링크. proposal 이 MATCHED·ORDER_COMPLETED 일 때만 노출한다.
-  var openChatURL: String? {
-    guard let proposal, proposal.status == .matched || proposal.status == .orderCompleted else {
-      return nil
-    }
-    return proposal.openChatURL
-  }
-
   private let fetchDetailUseCase: FetchProposalDetailUseCase
   private let fetchOffersByProposalUseCase: FetchOffersByProposalUseCase
   private let tokenStorage: TokenStorage
