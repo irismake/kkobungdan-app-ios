@@ -81,8 +81,6 @@ struct MyProposalDetailView: View {
               VStack(spacing: 12) {
                 proposalCardSection
 
-                relatedChatSection
-
                 if viewModel.proposal?.status == .holding {
                   AccountInfoCard(
                     bankName: DepositAccount.bankName,
@@ -100,6 +98,9 @@ struct MyProposalDetailView: View {
                     appliedAt: DisplayFormatter.appliedAtString(matched.createdAt)
                   )
                 }
+
+                // 관련 대화는 항상 맨 아래
+                relatedChatSection
               }
             }
             .padding(.vertical, 12)
@@ -231,7 +232,7 @@ struct MyProposalDetailView: View {
     }
   }
 
-  /// 미션 생성 후에만 노출. 상태 문구는 요청 카드와 같은 배지 규칙(지원자의 offer 상태 기준).
+  /// 미션 생성 후에만 노출, 화면 맨 아래. 상태 문구는 요청 카드와 같은 배지 규칙(지원자의 offer 상태 기준).
   @ViewBuilder
   private var relatedChatSection: some View {
     if let proposal = viewModel.proposal, !viewModel.relatedChatOffers.isEmpty {
@@ -243,7 +244,7 @@ struct MyProposalDetailView: View {
           onOpenChat: { onOpenChat(offer) }
         )
       })
-      .padding(.top, 4) // 카드와 간격 16 (VStack spacing 12 + 4)
+      .padding(.top, 4) // 위 섹션과 간격 16 (VStack spacing 12 + 4)
     }
   }
 

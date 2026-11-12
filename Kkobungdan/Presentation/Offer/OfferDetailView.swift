@@ -59,6 +59,9 @@ struct OfferDetailView: View {
         ScrollView {
           VStack(alignment: .leading, spacing: 12) {
             proposalCardSection
+
+            // 관련 대화는 항상 맨 아래
+            relatedChatSection
           }
           .padding(.horizontal, Layout.screenHorizontalPadding)
           .padding(.vertical, 12)
@@ -196,19 +199,24 @@ struct OfferDetailView: View {
         fee: DisplayFormatter.feeString(proposal.errandFee),
         badges: ActivityStatusBadge.badges(proposal: proposal)
       )
+    }
+  }
 
-      if let onOpenChat, let status = ActivityStatusBadge.badges(proposal: proposal).first {
-        // 상태 문구는 바로 위 요청 카드 배지와 같게 맞춘다.
-        ChatCard(items: [
-          ChatCardItem(
-            id: "\(proposal.id)",
-            name: proposal.ordererName,
-            statusText: status.text,
-            onOpenChat: onOpenChat
-          )
-        ])
-        .padding(.top, 4) // 카드와 간격 16 (VStack spacing 12 + 4)
-      }
+  /// 내 지원 상세에서만(onOpenChat 전달 시) 노출, 화면 맨 아래.
+  @ViewBuilder
+  private var relatedChatSection: some View {
+    if let proposal = viewModel.proposal, let onOpenChat,
+       let status = ActivityStatusBadge.badges(proposal: proposal).first {
+      // 상태 문구는 요청 카드 배지와 같게 맞춘다.
+      ChatCard(items: [
+        ChatCardItem(
+          id: "\(proposal.id)",
+          name: proposal.ordererName,
+          statusText: status.text,
+          onOpenChat: onOpenChat
+        )
+      ])
+      .padding(.top, 4) // 위 섹션과 간격 16 (VStack spacing 12 + 4)
     }
   }
 }
