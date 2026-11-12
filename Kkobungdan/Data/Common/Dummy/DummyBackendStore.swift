@@ -14,23 +14,28 @@ import Foundation
 actor DummyBackendStore {
   private var proposals: [Proposal] = Proposal.dummyList
   private var ordererIDByProposalID: [Int64: String] = Proposal.dummyOrdererIDByProposalID
+  /// 매칭(미션 생성) 시각. 서버 내부 상태 흉내 — 매칭 이후 분쟁·환불로 끝나도 남는다.
+  /// 내 요청의 관련 대화를 미션 생성 후에만 내려줄 때 쓴다.
+  private var matchedAtByProposalID: [Int64: Date] = Proposal.dummyMatchedAtByProposalID
   private var offers: [Offer] = Offer.dummyList
   private var nextProposalID: Int64 = 100
   private var nextOfferID: Int64 = 1000
-  private var disputeEvidenceByProposalID: [Int64: DisputeEvidence] = [:]
-  private var nextDisputeEvidenceID: Int64 = 1
-  /// offerID → 대화방 마지막 메시지. 대화방 자체는 offers 로부터 만든다.
-  private var chatMessageByOfferID: [Int64: DummyChatMessage] = ChatRoom.dummyLastMessageByOfferID
+  private var disputeEvidenceByProposalID: [Int64: DisputeEvidence] = DisputeEvidence.dummyByProposalID
+  private var nextDisputeEvidenceID: Int64 = 100
+  /// offerID → 대화방. 대화방 상태는 요청·지원 상태와 별개로 저장하고, 아래 상태 전이마다 함께 갱신한다.
+  private var chatRoomByOfferID: [Int64: DummyChatRoom] = ChatRoom.dummyRoomByOfferID
 
   // MARK: - Chat
 
   /// 내가 참여한 대화방 목록(최근 메시지 순).
   /// 대화방은 지원(offer) 1건당 1개 — 내가 지원자이거나, 내 요청에 들어온 지원이면 내 대화방이다.
-  /// offer 는 삭제되지 않으므로(취소·환불은 상태 변경) 대화방도 사라지지 않는다.
+  /// 지원 시 생성되고 삭제되지 않는다.
   func fetchAllChatRooms() -> [ChatRoom] {
     let me = DummySession.currentUserID
-    return offers.compactMap { offer -> ChatRoom? in
-      guard let proposal = proposals.first(where: { $0.id == offer.proposalID }) else {
+    return chatRoomByOfferID.compactMap { offerID, room -> ChatRoom? in
+      guard let offer = offers.first(where: { $0.id == offerID }),
+            let proposal = proposals.first(where: { $0.id == offer.proposalID })
+      else {
         return nil
       }
       let ordererID = ordererIDByProposalID[proposal.id] ?? ""
@@ -42,68 +47,52 @@ actor DummyBackendStore {
       } else {
         return nil
       }
-      let message = chatMessageByOfferID[offer.id]
       return ChatRoom(
-        id: offer.id,
+        id: offerID,
         proposalID: proposal.id,
         counterpartName: DummySession.displayName(for: counterpartID),
         proposalTitle: proposal.title,
-        lastMessage: message?.text ?? "지원했어요.",
-        lastMessageAt: message?.sentAt ?? offer.createdAt,
-        status: offer.runnerID == me
-          ? Self.chatRoomStatus(offerStatus: offer.status)
-          : Self.chatRoomStatus(proposalStatus: proposal.status),
-        unreadCount: message?.unreadCount ?? 0
+        lastMessage: room.lastMessage,
+        lastMessageAt: room.lastMessageAt,
+        status: room.status,
+        unreadCount: room.unreadCount
       )
     }
     .sorted { $0.lastMessageAt > $1.lastMessageAt }
   }
 
-  /// 특정 요청의 내 대화방(관련 대화). 서버처럼 선택된 지원자의 대화를 먼저 내려준다.
+  /// 특정 요청의 내 대화방(관련 대화). 서버처럼 미션이 된 대화(진행중·완료·분쟁중)를 먼저 내려준다.
+  /// 내 요청(행님)이면 미션이 생성된 뒤에만 내려준다 — 분쟁 실패로 환불된 뒤에도 미션이 있었으므로 내려준다.
   func fetchChatRooms(proposalID: Int64) -> [ChatRoom] {
-    fetchAllChatRooms()
+    let isMyProposal = ordererIDByProposalID[proposalID] == DummySession.currentUserID
+    if isMyProposal, matchedAtByProposalID[proposalID] == nil {
+      return []
+    }
+    let missionStatuses: [ChatRoomStatus] = [.inProgress, .completed, .disputed]
+    return fetchAllChatRooms()
       .filter { $0.proposalID == proposalID }
       .sorted { lhs, rhs in
-        let lhsSelected = isSelectedOffer(lhs.id)
-        let rhsSelected = isSelectedOffer(rhs.id)
-        return lhsSelected != rhsSelected ? lhsSelected : lhs.lastMessageAt > rhs.lastMessageAt
+        let lhsMission = missionStatuses.contains(lhs.status)
+        let rhsMission = missionStatuses.contains(rhs.status)
+        return lhsMission != rhsMission ? lhsMission : lhs.lastMessageAt > rhs.lastMessageAt
       }
-  }
-
-  private func isSelectedOffer(_ offerID: Int64) -> Bool {
-    guard let offer = offers.first(where: { $0.id == offerID }) else {
-      return false
-    }
-    return [.accepted, .runnerCompleted, .allCompleted, .disputed].contains(offer.status)
-  }
-
-  /// 서버가 대화방 상태를 내려주는 동작을 흉내낸다 — 행님 대화는 요청 상태 기준.
-  private static func chatRoomStatus(proposalStatus: ProposalStatus) -> ChatRoomStatus {
-    switch proposalStatus {
-    case .holding, .posted, .offered: return .waiting
-    case .matched, .orderCompleted: return .inProgress
-    case .allCompleted: return .completed
-    case .disputed: return .disputed
-    case .cancelled, .refundPending, .refunded: return .cancelled
-    }
-  }
-
-  /// 서버가 대화방 상태를 내려주는 동작을 흉내낸다 — 꼬붕 대화는 내 지원 상태 기준.
-  private static func chatRoomStatus(offerStatus: OfferStatus) -> ChatRoomStatus {
-    switch offerStatus {
-    case .waiting: return .waiting
-    case .accepted, .runnerCompleted: return .inProgress
-    case .allCompleted: return .completed
-    case .disputed: return .disputed
-    case .rejected, .cancelled: return .cancelled
-    }
   }
 
   /// 모든 대화방의 안읽음 수를 0 으로 만든다.
   func markAllChatRoomsAsRead() {
-    chatMessageByOfferID = chatMessageByOfferID.mapValues {
-      DummyChatMessage(text: $0.text, sentAt: $0.sentAt, unreadCount: 0)
+    chatRoomByOfferID = chatRoomByOfferID.mapValues {
+      DummyChatRoom(status: $0.status, lastMessage: $0.lastMessage, lastMessageAt: $0.lastMessageAt, unreadCount: 0)
     }
+  }
+
+  /// 상태 전이에 맞춰 대화방 상태·마지막 메시지를 갱신한다. 대화방이 없으면 새로 만든다(지원 시 생성).
+  private func updateChatRoom(offerID: Int64, status: ChatRoomStatus, message: String) {
+    chatRoomByOfferID[offerID] = DummyChatRoom(
+      status: status,
+      lastMessage: message,
+      lastMessageAt: Date(),
+      unreadCount: chatRoomByOfferID[offerID]?.unreadCount ?? 0
+    )
   }
 
   // MARK: - Proposal
@@ -225,6 +214,7 @@ actor DummyBackendStore {
       $0.proposalID == proposalID && $0.status == .runnerCompleted
     }) {
       offers[offerIndex] = with(offers[offerIndex], status: .allCompleted)
+      updateChatRoom(offerID: offers[offerIndex].id, status: .completed, message: "임무가 완료되었어요. 대화 기록을 확인할 수 있어요.")
       let done = with(proposal, status: .allCompleted)
       proposals[proposalIndex] = done
       return detail(done)
@@ -248,6 +238,7 @@ actor DummyBackendStore {
     }) {
       offers[offerIndex] = with(offers[offerIndex], status: .disputed)
       disputedOfferID = offers[offerIndex].id
+      updateChatRoom(offerID: offers[offerIndex].id, status: .disputed, message: "임무 중단이 접수되었어요. 관리자 검토를 기다리고 있어요.")
     }
     recordDisputeEvidence(
       proposalID: proposalID,
@@ -283,6 +274,7 @@ actor DummyBackendStore {
       createdAt: Date()
     )
     offers.append(offer)
+    updateChatRoom(offerID: newID, status: .waiting, message: "지원했어요.")
     promoteToOfferedIfNeeded(proposalID: proposalID)
     return offer
   }
@@ -316,6 +308,7 @@ actor DummyBackendStore {
       throw RepositoryError.conflict
     }
     offers[index] = with(offers[index], status: .cancelled)
+    updateChatRoom(offerID: offerID, status: .cancelled, message: "지원을 취소했어요. 메시지 전송이 종료됩니다.")
   }
 
   /// `POST /v1/offer/{offerId}/accept` 의 인메모리 흉내.
@@ -339,6 +332,7 @@ actor DummyBackendStore {
     let rejectedCount = acceptOfferAndRejectOthers(acceptedOfferID: offerID, proposalID: offer.proposalID)
     let matched = with(proposal, status: .matched)
     proposals[proposalIndex] = matched
+    matchedAtByProposalID[matched.id] = Date()
 
     return OfferAcceptResult(
       proposalID: matched.id,
@@ -369,6 +363,7 @@ actor DummyBackendStore {
     if proposal.status == .orderCompleted {
       let done = with(offer, status: .allCompleted)
       offers[offerIndex] = done
+      updateChatRoom(offerID: offer.id, status: .completed, message: "임무가 완료되었어요. 대화 기록을 확인할 수 있어요.")
       proposals[proposalIndex] = with(proposal, status: .allCompleted)
       return done
     }
@@ -385,6 +380,7 @@ actor DummyBackendStore {
     }
     let updated = with(offers[offerIndex], status: .disputed)
     offers[offerIndex] = updated
+    updateChatRoom(offerID: updated.id, status: .disputed, message: "임무 중단이 접수되었어요. 관리자 검토를 기다리고 있어요.")
     if let proposalIndex = proposals.firstIndex(where: { $0.id == updated.proposalID }) {
       proposals[proposalIndex] = with(proposals[proposalIndex], status: .disputed)
     }
@@ -500,6 +496,7 @@ actor DummyBackendStore {
         continue
       }
       offers[index] = with(offer, status: .rejected)
+      updateChatRoom(offerID: offer.id, status: .cancelled, message: "요청이 취소되어 모집과 지원이 종료됐어요.")
     }
   }
 
@@ -520,8 +517,10 @@ actor DummyBackendStore {
       let offer = offers[index]
       if offer.id == acceptedOfferID {
         offers[index] = with(offer, status: .accepted)
+        updateChatRoom(offerID: offer.id, status: .inProgress, message: "매칭이 확정되었어요.")
       } else if offer.status == .waiting {
         offers[index] = with(offer, status: .rejected)
+        updateChatRoom(offerID: offer.id, status: .cancelled, message: "다른 지원자와 매칭되어 대화가 종료되었어요.")
         rejectedCount += 1
       }
     }

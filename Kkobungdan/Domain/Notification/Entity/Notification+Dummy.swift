@@ -41,6 +41,15 @@ extension AppNotification {
         deepLink: PushPayload(type: .meetingConfirmed, offerID: 30, proposalID: 4)
       ),
       AppNotification(
+        id: 6,
+        title: "임무 중단 접수",
+        body: "성실한치타님이 '꽃집 화분 픽업' 임무 중단을 신청했어요.",
+        createdAt: now.addingTimeInterval(-25 * 60),
+        isRead: false,
+        // 수신: 상대방(나 = 요청자) — proposal 14 의 선택된 지원 offer 90 이 분쟁 접수
+        deepLink: PushPayload(type: .disputeRaised, offerID: 90, proposalID: 14)
+      ),
+      AppNotification(
         id: 4,
         title: "정산 완료",
         body: "지난 주 심부름비 18,000원이 정산됐어요.",

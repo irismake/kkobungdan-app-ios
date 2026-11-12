@@ -22,8 +22,34 @@ extension Proposal {
     10: "user-a003",
     11: DummySession.currentUserID,
     12: "user-a004",
-    13: DummySession.currentUserID
+    13: DummySession.currentUserID,
+    14: DummySession.currentUserID,
+    15: "user-a001",
+    16: DummySession.currentUserID,
+    17: "user-a003",
+    18: DummySession.currentUserID,
+    19: "user-a004"
   ]
+
+  /// 더미 백엔드의 매칭(미션 생성) 시각. 꼬붕을 선택한 적 있는 요청만 — 서버 내부 상태 흉내.
+  /// 분쟁 실패로 환불된 요청(12·17·18)도 미션이 있었으므로 남아 있다.
+  static let dummyMatchedAtByProposalID: [Int64: Date] = {
+    let now = Date()
+    return [
+      4: now.addingTimeInterval(-2 * 86400 + 3600),
+      5: now.addingTimeInterval(-86400),
+      8: now.addingTimeInterval(-4 * 86400 + 3600),
+      9: now.addingTimeInterval(-7 * 86400 + 3600),
+      10: now.addingTimeInterval(-3000),
+      11: now.addingTimeInterval(-10 * 86400 + 3600),
+      12: now.addingTimeInterval(-12 * 86400 + 3600),
+      14: now.addingTimeInterval(-2 * 86400 + 3600),
+      15: now.addingTimeInterval(-3 * 86400 + 3600),
+      16: now.addingTimeInterval(-6 * 86400 + 3600),
+      17: now.addingTimeInterval(-4 * 86400 + 3600),
+      18: now.addingTimeInterval(-9 * 86400 + 3600)
+    ]
+  }()
 
   static let dummyList: [Proposal] = {
     let now = Date()
@@ -74,7 +100,7 @@ extension Proposal {
         content: "강남구청 민원실에 서류 1건 제출해 주세요. 번호표 대기 필요.",
         deadline: now.addingTimeInterval(-2 * 86400),
         errandFee: 5000,
-        status: .cancelled
+        status: .refunded
       ),
       Proposal(
         id: 7,
@@ -131,6 +157,61 @@ extension Proposal {
         deadline: now.addingTimeInterval(5 * 86400),
         errandFee: 4500,
         status: .posted
+      ),
+      // ── 분쟁 / 분쟁 종료 사례 (상태 정책: 분쟁 판정은 완료 또는 실패) ──
+      // 14: 내 요청, 분쟁중 — 꼬붕(성실한치타)이 분쟁 접수
+      Proposal(
+        id: 14,
+        title: "꽃집 화분 픽업",
+        content: "을지로 꽃집에서 화분 2개 픽업해서 사무실로 옮겨 주세요.",
+        deadline: now.addingTimeInterval(-86400),
+        errandFee: 6000,
+        status: .disputed
+      ),
+      // 15: 남의 요청, 분쟁중 — 내가(꼬붕) 분쟁 접수
+      Proposal(
+        id: 15,
+        title: "카페 원두 구매",
+        content: "성수동 로스터리에서 원두 2봉 구매 후 전달 부탁드립니다.",
+        deadline: now.addingTimeInterval(-2 * 86400),
+        errandFee: 4000,
+        status: .disputed
+      ),
+      // 16: 내 요청, 분쟁 → 완료 판정 (요청·지원 ALL_COMPLETED)
+      Proposal(
+        id: 16,
+        title: "우체국 등기 발송",
+        content: "서류 봉투 1개 등기로 발송하고 영수증 사진 보내 주세요.",
+        deadline: now.addingTimeInterval(-5 * 86400),
+        errandFee: 3000,
+        status: .allCompleted
+      ),
+      // 17: 남의 요청, 분쟁 → 실패 판정, 환불 대기 (요청 REFUND_PENDING · 지원 CANCELLED)
+      Proposal(
+        id: 17,
+        title: "편의점 택배 수령",
+        content: "GS25 편의점 택배 2개 수령해서 현관 앞에 두어 주세요.",
+        deadline: now.addingTimeInterval(-3 * 86400),
+        errandFee: 2500,
+        status: .refundPending
+      ),
+      // 18: 내 요청, 분쟁 → 실패 판정, 환불 완료 (요청 REFUNDED · 지원 CANCELLED)
+      Proposal(
+        id: 18,
+        title: "반찬가게 픽업",
+        content: "망원시장 반찬가게에서 예약한 반찬 픽업 부탁드립니다.",
+        deadline: now.addingTimeInterval(-8 * 86400),
+        errandFee: 3500,
+        status: .refunded
+      ),
+      // 19: 남의 요청, 신고 처리(REPORTED) — 대기 중이던 내 지원은 미선택(REJECTED)
+      Proposal(
+        id: 19,
+        title: "중고 노트북 대리 구매",
+        content: "중고거래 앱에서 찾은 노트북을 대신 결제하고 받아 주세요.",
+        deadline: now.addingTimeInterval(86400),
+        errandFee: 20000,
+        status: .reported
       )
     ]
   }()
