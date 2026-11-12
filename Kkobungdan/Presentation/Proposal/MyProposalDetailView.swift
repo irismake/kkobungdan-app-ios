@@ -232,10 +232,11 @@ struct MyProposalDetailView: View {
     }
   }
 
-  /// 미션 생성 후에만 노출, 화면 맨 아래. 대화 목록·상태는 서버가 내려준 그대로.
+  /// 서버가 내려준 관련 대화가 있으면 노출(미션 생성 전엔 서버가 빈 목록을 준다). 화면 맨 아래.
+  /// 대화 목록·상태는 서버가 내려준 그대로.
   @ViewBuilder
   private var relatedChatSection: some View {
-    if viewModel.matchedOffer != nil, !viewModel.relatedChatRooms.isEmpty {
+    if !viewModel.relatedChatRooms.isEmpty {
       ChatCard(items: viewModel.relatedChatRooms.map { room in
         ChatCardItem(
           id: "\(room.id)",
