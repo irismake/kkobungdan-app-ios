@@ -16,5 +16,6 @@
 | DTO 계약 테스트 등록 | [`.codex/rules/contract-test-dto.md`](.codex/rules/contract-test-dto.md) | [`.claude/rules/contract-test-dto.md`](.claude/rules/contract-test-dto.md) | [`.cursor/rules/contract-test-dto.mdc`](.cursor/rules/contract-test-dto.mdc) |
 | 로깅 (`Logger`) | [`.codex/rules/logging.md`](.codex/rules/logging.md) | [`.claude/rules/logging.md`](.claude/rules/logging.md) | [`.cursor/rules/logging.mdc`](.cursor/rules/logging.mdc) |
 | 프리뷰 코드 위치 | [`.codex/rules/preview-placement.md`](.codex/rules/preview-placement.md) | [`.claude/rules/preview-placement.md`](.claude/rules/preview-placement.md) | [`.cursor/rules/preview-placement.mdc`](.cursor/rules/preview-placement.mdc) |
+| 빌드 검증 | [`.codex/rules/no-build-verification.md`](.codex/rules/no-build-verification.md) | [`.claude/rules/no-build-verification.md`](.claude/rules/no-build-verification.md) | [`.cursor/rules/no-build-verification.mdc`](.cursor/rules/no-build-verification.mdc) |
 
 > Claude 인덱스: [`CLAUDE.md`](CLAUDE.md) · Cursor 인덱스: [`CURSOR.md`](CURSOR.md)
