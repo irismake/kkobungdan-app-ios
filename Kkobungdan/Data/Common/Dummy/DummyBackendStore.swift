@@ -14,9 +14,6 @@ import Foundation
 actor DummyBackendStore {
   private var proposals: [Proposal] = Proposal.dummyList
   private var ordererIDByProposalID: [Int64: String] = Proposal.dummyOrdererIDByProposalID
-  /// 매칭(미션 생성) 시각. 서버 내부 상태 흉내 — 매칭 이후 분쟁·환불로 끝나도 남는다.
-  /// 내 요청의 관련 대화를 미션 생성 후에만 내려줄 때 쓴다.
-  private var matchedAtByProposalID: [Int64: Date] = Proposal.dummyMatchedAtByProposalID
   private var offers: [Offer] = Offer.dummyList
   private var nextProposalID: Int64 = 100
   private var nextOfferID: Int64 = 1000
@@ -61,13 +58,9 @@ actor DummyBackendStore {
     .sorted { $0.lastMessageAt > $1.lastMessageAt }
   }
 
-  /// 특정 요청의 내 대화방(관련 대화). 서버처럼 미션이 된 대화(진행중·완료·분쟁중)를 먼저 내려준다.
-  /// 내 요청(행님)이면 미션이 생성된 뒤에만 내려준다 — 분쟁 실패로 환불된 뒤에도 미션이 있었으므로 내려준다.
+  /// 특정 요청의 내 대화방(관련 대화). 대화방이 있으면 상태와 무관하게 전부 내려준다(숨기지 않는다).
+  /// 서버처럼 미션이 된 대화(진행중·완료·분쟁중)를 먼저 정렬한다.
   func fetchChatRooms(proposalID: Int64) -> [ChatRoom] {
-    let isMyProposal = ordererIDByProposalID[proposalID] == DummySession.currentUserID
-    if isMyProposal, matchedAtByProposalID[proposalID] == nil {
-      return []
-    }
     let missionStatuses: [ChatRoomStatus] = [.inProgress, .completed, .disputed]
     return fetchAllChatRooms()
       .filter { $0.proposalID == proposalID }
@@ -332,7 +325,6 @@ actor DummyBackendStore {
     let rejectedCount = acceptOfferAndRejectOthers(acceptedOfferID: offerID, proposalID: offer.proposalID)
     let matched = with(proposal, status: .matched)
     proposals[proposalIndex] = matched
-    matchedAtByProposalID[matched.id] = Date()
 
     return OfferAcceptResult(
       proposalID: matched.id,

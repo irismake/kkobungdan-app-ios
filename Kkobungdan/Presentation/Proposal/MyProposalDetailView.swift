@@ -232,7 +232,7 @@ struct MyProposalDetailView: View {
     }
   }
 
-  /// 서버가 내려준 관련 대화가 있으면 노출(미션 생성 전엔 서버가 빈 목록을 준다). 화면 맨 아래.
+  /// 대화가 하나라도 있으면 상태와 무관하게 노출(클라이언트에서 거르지 않는다). 화면 맨 아래.
   /// 대화 목록·상태는 서버가 내려준 그대로.
   @ViewBuilder
   private var relatedChatSection: some View {

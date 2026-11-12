@@ -31,26 +31,6 @@ extension Proposal {
     19: "user-a004"
   ]
 
-  /// 더미 백엔드의 매칭(미션 생성) 시각. 꼬붕을 선택한 적 있는 요청만 — 서버 내부 상태 흉내.
-  /// 분쟁 실패로 환불된 요청(12·17·18)도 미션이 있었으므로 남아 있다.
-  static let dummyMatchedAtByProposalID: [Int64: Date] = {
-    let now = Date()
-    return [
-      4: now.addingTimeInterval(-2 * 86400 + 3600),
-      5: now.addingTimeInterval(-86400),
-      8: now.addingTimeInterval(-4 * 86400 + 3600),
-      9: now.addingTimeInterval(-7 * 86400 + 3600),
-      10: now.addingTimeInterval(-3000),
-      11: now.addingTimeInterval(-10 * 86400 + 3600),
-      12: now.addingTimeInterval(-12 * 86400 + 3600),
-      14: now.addingTimeInterval(-2 * 86400 + 3600),
-      15: now.addingTimeInterval(-3 * 86400 + 3600),
-      16: now.addingTimeInterval(-6 * 86400 + 3600),
-      17: now.addingTimeInterval(-4 * 86400 + 3600),
-      18: now.addingTimeInterval(-9 * 86400 + 3600)
-    ]
-  }()
-
   static let dummyList: [Proposal] = {
     let now = Date()
     return [
