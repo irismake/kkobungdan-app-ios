@@ -14,7 +14,8 @@ final class OfferRepository: OfferRepositoryProtocol {
     self.client = client
   }
 
-  func createOffer(proposalID: Int64) async throws -> Offer {
+  // TODO: message — 서버 OfferCreate 스펙에 필드가 추가되면 CreateOfferBody 에 실어 보낸다. (서버가 첫 채팅으로 넣음)
+  func createOffer(proposalID: Int64, message _: String) async throws -> Offer {
     let dto: OfferResponseDTO = try await client.post(
       "/v1/offer",
       body: CreateOfferBody(proposalID: proposalID)

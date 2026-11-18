@@ -26,4 +26,19 @@ final class ChatRepository: ChatRepositoryProtocol {
 
   // TODO: 서버 채팅 읽음 처리 API 확정 시 연동
   func markAllAsRead() async throws {}
+
+  // TODO: 서버 대화방 상세 API 확정 시 응답 DTO 추가 후 연동
+  func fetchChatRoom(roomID _: Int64) async throws -> ChatRoomDetail {
+    throw RepositoryError.notImplemented
+  }
+
+  // TODO: 서버 메시지 목록 API 확정 시 응답 DTO 추가 후 연동
+  func fetchMessages(roomID _: Int64) async throws -> [ChatMessage] {
+    throw RepositoryError.notImplemented
+  }
+
+  // TODO: 서버 메시지 전송 API 확정 시 요청 바디·응답 DTO 추가 후 연동
+  func sendMessage(roomID _: Int64, text _: String) async throws -> ChatMessage {
+    throw RepositoryError.notImplemented
+  }
 }

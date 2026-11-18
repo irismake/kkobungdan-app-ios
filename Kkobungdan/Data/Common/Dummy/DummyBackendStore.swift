@@ -21,6 +21,7 @@ actor DummyBackendStore {
   private var nextDisputeEvidenceID: Int64 = 100
   /// offerID → 대화방. 대화방 상태는 요청·지원 상태와 별개로 저장하고, 아래 상태 전이마다 함께 갱신한다.
   private var chatRoomByOfferID: [Int64: DummyChatRoom] = ChatRoom.dummyRoomByOfferID
+  private var nextChatMessageID: Int64 = 1_000_000
 
   // MARK: - Chat
 
@@ -73,19 +74,108 @@ actor DummyBackendStore {
 
   /// 모든 대화방의 안읽음 수를 0 으로 만든다.
   func markAllChatRoomsAsRead() {
-    chatRoomByOfferID = chatRoomByOfferID.mapValues {
-      DummyChatRoom(status: $0.status, lastMessage: $0.lastMessage, lastMessageAt: $0.lastMessageAt, unreadCount: 0)
+    for offerID in chatRoomByOfferID.keys {
+      chatRoomByOfferID[offerID]?.unreadCount = 0
     }
   }
 
-  /// 상태 전이에 맞춰 대화방 상태·마지막 메시지를 갱신한다. 대화방이 없으면 새로 만든다(지원 시 생성).
-  private func updateChatRoom(offerID: Int64, status: ChatRoomStatus, message: String) {
-    chatRoomByOfferID[offerID] = DummyChatRoom(
-      status: status,
-      lastMessage: message,
-      lastMessageAt: Date(),
-      unreadCount: chatRoomByOfferID[offerID]?.unreadCount ?? 0
+  /// 대화방 상세. 내가 참여한 대화방(내가 지원자이거나 내 요청에 들어온 지원)만 조회할 수 있다.
+  func fetchChatRoom(roomID: Int64) throws -> ChatRoomDetail {
+    let participant = try chatParticipant(roomID: roomID)
+    let offer = participant.offer
+    let proposal = participant.proposal
+    let didICompleteMission: Bool
+    switch participant.myRole {
+    case .runner:
+      didICompleteMission = offer.status == .runnerCompleted || offer.status == .allCompleted
+    case .orderer:
+      didICompleteMission = proposal.status == .orderCompleted || proposal.status == .allCompleted
+    }
+    return ChatRoomDetail(
+      id: roomID,
+      proposalID: proposal.id,
+      proposalTitle: proposal.title,
+      errandFee: proposal.errandFee,
+      deadline: proposal.deadline,
+      counterpartName: DummySession.displayName(for: participant.counterpartID),
+      myRole: participant.myRole,
+      status: participant.room.status,
+      didICompleteMission: didICompleteMission
     )
+  }
+
+  /// 대화방 메시지(오래된 순). 서버처럼 조회 시 그 대화방을 읽음 처리한다.
+  func fetchChatMessages(roomID: Int64) throws -> [ChatMessage] {
+    let participant = try chatParticipant(roomID: roomID)
+    chatRoomByOfferID[roomID]?.unreadCount = 0
+    return participant.room.messages.map { chatMessage($0) }
+  }
+
+  /// 메시지 전송. 대기중·진행중 대화방에만 보낼 수 있다.
+  func sendChatMessage(roomID: Int64, text: String) throws -> ChatMessage {
+    let participant = try chatParticipant(roomID: roomID)
+    guard participant.room.status == .waiting || participant.room.status == .inProgress else {
+      throw RepositoryError.conflict
+    }
+    let message = DummyChatMessage(
+      id: nextChatMessageID,
+      senderID: DummySession.currentUserID,
+      text: text,
+      sentAt: Date()
+    )
+    nextChatMessageID += 1
+    chatRoomByOfferID[roomID]?.messages.append(message)
+    return chatMessage(message)
+  }
+
+  private struct ChatParticipant {
+    let room: DummyChatRoom
+    let offer: Offer
+    let proposal: Proposal
+    let myRole: ChatRole
+    let counterpartID: String
+  }
+
+  private func chatParticipant(roomID: Int64) throws -> ChatParticipant {
+    guard let room = chatRoomByOfferID[roomID],
+          let offer = offers.first(where: { $0.id == roomID }),
+          let proposal = proposals.first(where: { $0.id == offer.proposalID })
+    else {
+      throw RepositoryError.notFound
+    }
+    let me = DummySession.currentUserID
+    let ordererID = ordererIDByProposalID[proposal.id] ?? ""
+    if offer.runnerID == me {
+      return ChatParticipant(room: room, offer: offer, proposal: proposal, myRole: .runner, counterpartID: ordererID)
+    }
+    if ordererID == me {
+      return ChatParticipant(room: room, offer: offer, proposal: proposal, myRole: .orderer, counterpartID: offer.runnerID)
+    }
+    throw RepositoryError.notFound
+  }
+
+  private func chatMessage(_ message: DummyChatMessage) -> ChatMessage {
+    let sender: ChatMessageSender
+    if let senderID = message.senderID {
+      sender = senderID == DummySession.currentUserID ? .me : .counterpart
+    } else {
+      sender = .system
+    }
+    return ChatMessage(id: message.id, sender: sender, text: message.text, sentAt: message.sentAt)
+  }
+
+  /// 상태 전이에 맞춰 대화방 상태를 바꾸고, 안내가 있으면 시스템 메시지로 남긴다.
+  /// 대화방이 없으면 새로 만든다(지원 시 생성).
+  private func updateChatRoom(offerID: Int64, status: ChatRoomStatus, systemMessage: String?) {
+    var room = chatRoomByOfferID[offerID] ?? DummyChatRoom(status: status, messages: [], unreadCount: 0)
+    room.status = status
+    if let systemMessage {
+      room.messages.append(
+        DummyChatMessage(id: nextChatMessageID, senderID: nil, text: systemMessage, sentAt: Date())
+      )
+      nextChatMessageID += 1
+    }
+    chatRoomByOfferID[offerID] = room
   }
 
   // MARK: - Proposal
@@ -207,13 +297,16 @@ actor DummyBackendStore {
       $0.proposalID == proposalID && $0.status == .runnerCompleted
     }) {
       offers[offerIndex] = with(offers[offerIndex], status: .allCompleted)
-      updateChatRoom(offerID: offers[offerIndex].id, status: .completed, message: "임무가 완료되었어요. 대화 기록을 확인할 수 있어요.")
+      updateChatRoom(offerID: offers[offerIndex].id, status: .completed, systemMessage: DummyChatSystemText.completed)
       let done = with(proposal, status: .allCompleted)
       proposals[proposalIndex] = done
       return detail(done)
     }
     let updated = with(proposal, status: .orderCompleted)
     proposals[proposalIndex] = updated
+    if let offer = offers.first(where: { $0.proposalID == proposalID && $0.status == .accepted }) {
+      updateChatRoom(offerID: offer.id, status: .inProgress, systemMessage: DummyChatSystemText.waitingRunnerComplete)
+    }
     return detail(updated)
   }
 
@@ -231,7 +324,7 @@ actor DummyBackendStore {
     }) {
       offers[offerIndex] = with(offers[offerIndex], status: .disputed)
       disputedOfferID = offers[offerIndex].id
-      updateChatRoom(offerID: offers[offerIndex].id, status: .disputed, message: "임무 중단이 접수되었어요. 관리자 검토를 기다리고 있어요.")
+      updateChatRoom(offerID: offers[offerIndex].id, status: .disputed, systemMessage: DummyChatSystemText.disputed)
     }
     recordDisputeEvidence(
       proposalID: proposalID,
@@ -246,11 +339,11 @@ actor DummyBackendStore {
   // MARK: - Offer
 
   /// 첫 offer 면 proposal POSTED/WAITING → OFFERED 로 같이 전이.
-  func createOffer(proposalID: Int64, runnerID: String) throws -> Offer {
+  /// 대화방을 만들고 '채팅 시작' 안내 뒤에 지원 메시지를 첫 채팅으로 넣는다.
+  func createOffer(proposalID: Int64, runnerID: String, message: String) throws -> Offer {
+    // 재지원 불가 — 취소·거절된 지원이 있어도 같은 요청에는 다시 지원할 수 없다.
     let duplicated = offers.contains {
-      $0.proposalID == proposalID
-        && $0.runnerID == runnerID
-        && ($0.status == .waiting || $0.status == .accepted)
+      $0.proposalID == proposalID && $0.runnerID == runnerID
     }
     if duplicated {
       throw RepositoryError.conflict
@@ -267,7 +360,13 @@ actor DummyBackendStore {
       createdAt: Date()
     )
     offers.append(offer)
-    updateChatRoom(offerID: newID, status: .waiting, message: "지원했어요.")
+    updateChatRoom(offerID: newID, status: .waiting, systemMessage: DummyChatSystemText.started)
+    if !message.isEmpty {
+      chatRoomByOfferID[newID]?.messages.append(
+        DummyChatMessage(id: nextChatMessageID, senderID: runnerID, text: message, sentAt: Date())
+      )
+      nextChatMessageID += 1
+    }
     promoteToOfferedIfNeeded(proposalID: proposalID)
     return offer
   }
@@ -301,7 +400,7 @@ actor DummyBackendStore {
       throw RepositoryError.conflict
     }
     offers[index] = with(offers[index], status: .cancelled)
-    updateChatRoom(offerID: offerID, status: .cancelled, message: "지원을 취소했어요. 메시지 전송이 종료됩니다.")
+    updateChatRoom(offerID: offerID, status: .cancelled, systemMessage: DummyChatSystemText.offerCancelled)
   }
 
   /// `POST /v1/offer/{offerId}/accept` 의 인메모리 흉내.
@@ -355,12 +454,13 @@ actor DummyBackendStore {
     if proposal.status == .orderCompleted {
       let done = with(offer, status: .allCompleted)
       offers[offerIndex] = done
-      updateChatRoom(offerID: offer.id, status: .completed, message: "임무가 완료되었어요. 대화 기록을 확인할 수 있어요.")
+      updateChatRoom(offerID: offer.id, status: .completed, systemMessage: DummyChatSystemText.completed)
       proposals[proposalIndex] = with(proposal, status: .allCompleted)
       return done
     }
     let updated = with(offer, status: .runnerCompleted)
     offers[offerIndex] = updated
+    updateChatRoom(offerID: offer.id, status: .inProgress, systemMessage: DummyChatSystemText.waitingOrdererComplete)
     return updated
   }
 
@@ -372,7 +472,7 @@ actor DummyBackendStore {
     }
     let updated = with(offers[offerIndex], status: .disputed)
     offers[offerIndex] = updated
-    updateChatRoom(offerID: updated.id, status: .disputed, message: "임무 중단이 접수되었어요. 관리자 검토를 기다리고 있어요.")
+    updateChatRoom(offerID: updated.id, status: .disputed, systemMessage: DummyChatSystemText.disputed)
     if let proposalIndex = proposals.firstIndex(where: { $0.id == updated.proposalID }) {
       proposals[proposalIndex] = with(proposals[proposalIndex], status: .disputed)
     }
@@ -488,7 +588,7 @@ actor DummyBackendStore {
         continue
       }
       offers[index] = with(offer, status: .rejected)
-      updateChatRoom(offerID: offer.id, status: .cancelled, message: "요청이 취소되어 모집과 지원이 종료됐어요.")
+      updateChatRoom(offerID: offer.id, status: .cancelled, systemMessage: DummyChatSystemText.notMatched)
     }
   }
 
@@ -509,10 +609,11 @@ actor DummyBackendStore {
       let offer = offers[index]
       if offer.id == acceptedOfferID {
         offers[index] = with(offer, status: .accepted)
-        updateChatRoom(offerID: offer.id, status: .inProgress, message: "매칭이 확정되었어요.")
+        // 매칭 확정은 별도 안내 없이 상태만 진행중으로 바뀐다.
+        updateChatRoom(offerID: offer.id, status: .inProgress, systemMessage: nil)
       } else if offer.status == .waiting {
         offers[index] = with(offer, status: .rejected)
-        updateChatRoom(offerID: offer.id, status: .cancelled, message: "다른 지원자와 매칭되어 대화가 종료되었어요.")
+        updateChatRoom(offerID: offer.id, status: .cancelled, systemMessage: DummyChatSystemText.notMatched)
         rejectedCount += 1
       }
     }

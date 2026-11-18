@@ -29,4 +29,19 @@ final class TestChatRepositoryImpl: ChatRepositoryProtocol {
     try await Task.sleep(nanoseconds: Self.simulatedLatency)
     await store.markAllChatRoomsAsRead()
   }
+
+  func fetchChatRoom(roomID: Int64) async throws -> ChatRoomDetail {
+    try await Task.sleep(nanoseconds: Self.simulatedLatency)
+    return try await store.fetchChatRoom(roomID: roomID)
+  }
+
+  func fetchMessages(roomID: Int64) async throws -> [ChatMessage] {
+    try await Task.sleep(nanoseconds: Self.simulatedLatency)
+    return try await store.fetchChatMessages(roomID: roomID)
+  }
+
+  func sendMessage(roomID: Int64, text: String) async throws -> ChatMessage {
+    try await Task.sleep(nanoseconds: Self.simulatedLatency)
+    return try await store.sendChatMessage(roomID: roomID, text: text)
+  }
 }

@@ -56,8 +56,11 @@ final class OfferMessageViewModel: LoadableViewModel {
     errorMessage = nil
     defer { isOffering = false }
     do {
-      // TODO: 지원 메시지(message) — 서버 OfferCreate 스펙에 필드가 추가되면 요청 바디에 실어 보낸다.
-      let offer = try await createOfferUseCase.execute(proposalID: proposalID)
+      // 지원 메시지는 서버가 대화방의 첫 채팅으로 넣는다.
+      let offer = try await createOfferUseCase.execute(
+        proposalID: proposalID,
+        message: message.trimmingCharacters(in: .whitespacesAndNewlines)
+      )
       return offer.id
     } catch {
       errorMessage = error.userMessage(fallback: "지원에 실패했어요. 잠시 후 다시 시도해주세요.")

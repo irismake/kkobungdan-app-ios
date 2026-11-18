@@ -30,6 +30,8 @@ extension Offer {
       make(id: 20, proposalID: 3, runnerID: "user-r001", status: .waiting, createdAt: now.addingTimeInterval(-50000)),
       make(id: 21, proposalID: 3, runnerID: "user-r002", status: .waiting, createdAt: now.addingTimeInterval(-48000)),
       make(id: 22, proposalID: 3, runnerID: "user-r003", status: .cancelled, createdAt: now.addingTimeInterval(-47000)),
+      // 지원 후 탈퇴한 사용자 — 서버가 지원을 취소하고 이름을 탈퇴 표시로 내려준다
+      make(id: 23, proposalID: 3, runnerID: "user-w001", status: .cancelled, createdAt: now.addingTimeInterval(-46000)),
       // proposal 4 (남의 proposal, MATCHED — 내가 RUNNER로 매칭됨)
       make(id: 30, proposalID: 4, runnerID: DummySession.currentUserID, status: .accepted, createdAt: now.addingTimeInterval(-2 * 86400)),
       make(id: 31, proposalID: 4, runnerID: "user-r002", status: .rejected, createdAt: now.addingTimeInterval(-2 * 86400 + 1800)),

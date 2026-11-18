@@ -26,6 +26,7 @@ enum DummySession {
     case "user-a002": return "이웃주민2"
     case "user-a003": return "이웃주민3"
     case "user-a004": return "이웃주민4"
+    case "user-w001": return "탈퇴한 사용자"
     default: return "러너"
     }
   }

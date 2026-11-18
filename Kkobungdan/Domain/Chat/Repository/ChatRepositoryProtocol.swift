@@ -12,4 +12,10 @@ protocol ChatRepositoryProtocol: Sendable {
   func fetchChatRooms(proposalID: Int64) async throws -> [ChatRoom]
   /// 모든 대화방을 읽음 처리한다.
   func markAllAsRead() async throws
+  /// 대화방 상세(요청 요약·상대·상태).
+  func fetchChatRoom(roomID: Int64) async throws -> ChatRoomDetail
+  /// 대화방 메시지 목록(오래된 순). 시스템 메시지 포함.
+  func fetchMessages(roomID: Int64) async throws -> [ChatMessage]
+  /// 메시지를 보낸다. 보낸 메시지를 돌려준다.
+  func sendMessage(roomID: Int64, text: String) async throws -> ChatMessage
 }
