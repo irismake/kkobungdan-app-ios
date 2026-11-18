@@ -136,7 +136,7 @@ App Store 에 출시된 버전에는 TestFlight 빌드도 올릴 수 없다. **�
 | [`release.yml`](../.github/workflows/release.yml) | `main` push | `production` | `fastlane release` |
 | [`version-check.yml`](../.github/workflows/version-check.yml) | `main` 대상 PR · `main` 머지 큐 | (없음) | `fastlane verify_release_version` |
 
-- 러너: 빌드는 `macos-26` + Xcode 26.0.1, 버전 검증은 `ubuntu-latest`
+- 러너: 빌드는 `macos-26` + Xcode 26.6 (iOS SDK 26.5), 버전 검증은 `ubuntu-latest`
 - 실패하면 빌드 로그가 아티팩트(`*-build-logs`, 7일 보관)로 올라간다.
 
 ### Fastlane lane (`fastlane/Fastfile`)
@@ -228,7 +228,7 @@ Required checks 목록, 머지 방식(feature→dev Squash, 승격 PR Merge comm
 | `... 브랜치에서만 실행할 수 있습니다` | TestFlight 는 dev·staging, App Store 는 main 에서만 실행된다. |
 | match 단계 실패 | `MATCH_*` Secret 값, `mobile-signing` 접근 권한(PAT), 프로필 만료 여부를 확인한다. |
 | 서명 단계에서 entitlements 불일치 | 프로필이 Push Notifications · Sign in with Apple 을 포함하지 않는다. `setup_signing` 을 `force: true` 로 다시 만든다. |
-| Xcode 선택 단계 실패 | 러너 이미지에 Xcode 26.0.1 이 없다. 워크플로의 `XCODE_VERSION` 을 이미지에 있는 버전으로 바꾼다. |
+| Xcode 선택 단계 실패 · `iOS xx is not installed` · `Unable to find a destination` | 러너 이미지에 그 Xcode 나 해당 iOS 플랫폼·시뮬레이터가 없다. [runner-images](https://github.com/actions/runner-images/tree/main/images/macos) 의 이미지 README 에서 **iOS SDK 와 시뮬레이터 런타임이 함께 설치된** Xcode 를 골라 세 워크플로의 `XCODE_VERSION` 을 같이 바꾼다. |
 | TestFlight 빌드가 "Missing Compliance" | Info.plist 의 `ITSAppUsesNonExemptEncryption` 이 빠졌는지 확인한다. |
 | Beta App Review 대기 중인데 staging 에 또 머지 | 정상 동작. 이전 빌드는 만료되고 새 빌드가 심사에 제출된다. |
 | 대기 중이던 워크플로가 취소됨 | 같은 워크플로가 대기 중일 때 새 실행이 오면 이전 대기 실행이 취소된다. 최신 커밋이 배포된다. |

@@ -79,10 +79,12 @@ feature/home  ──┘               │
 | 검사 | 러너 |
 |---|---|
 | Branch policy · Lint · Verify App Store version | `ubuntu-latest` (Xcode 불필요) |
-| Unit tests (Debug) · Build (Staging) · Build (Release) | `macos-26` + Xcode 26.0.1 (CD 와 같은 러너) |
+| Unit tests (Debug) · Build (Staging) · Build (Release) | `macos-26` + Xcode 26.6 · iOS SDK 26.5 (CD 와 같은 러너·Xcode) |
 
 > iOS 빌드·테스트는 Xcode 가 필요해 macOS 에서만 돌 수 있다. public 저장소라 Linux·macOS 기본 러너 모두 무료다.
 > `macos-15` 는 러너가 배정되지 않고 계속 대기하는 문제가 있어(2026-11-18) `macos-26` 으로 통일했다.
+> Xcode 는 이미지에 **iOS SDK 와 시뮬레이터 런타임이 함께 설치된 버전**이어야 한다. `macos-26` 의 Xcode 26.0.1 은 iOS 26.0 플랫폼이 없어 `Unable to find a destination` 으로 실패한다.
+> 러너가 계속 배정되지 않으면 GitHub macOS 용량 문제일 수 있다. `ci.yml`·`testflight.yml`·`release.yml` 의 `runs-on` 을 다른 macOS 레이블로 바꾸고, 그 이미지에 맞는 `XCODE_VERSION` 으로 같이 맞춘다.
 
 ## 시크릿을 쓰지 않는 이유와 방법
 
