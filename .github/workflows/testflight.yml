@@ -1,0 +1,86 @@
+# staging 브랜치에 머지(push)될 때마다 Staging 구성(스테이징 서버)으로 빌드해
+# TestFlight 외부 테스트 그룹(external_app_tester)에 배포한다. (Beta App Review 자동 제출)
+# App Store 정식 심사 제출은 이 워크플로에서 하지 않는다 → release.yml
+name: TestFlight (Staging)
+
+on:
+  push:
+    branches: [staging]
+  workflow_dispatch:
+
+# TestFlight(Staging)·App Store(Release) 업로드는 같은 앱 레코드의 빌드 번호를 공유하므로
+# 두 워크플로를 같은 그룹으로 묶어 한 번에 하나만 실행한다. (진행 중인 실행은 취소하지 않음)
+# 참고: GitHub 는 그룹당 대기 실행을 하나만 둔다. 대기 중에 새 실행이 오면 이전 대기 실행은 취소된다.
+concurrency:
+  group: app-store-connect-upload
+  cancel-in-progress: false
+
+env:
+  XCODE_VERSION: "26.0.1"
+
+jobs:
+  testflight:
+    name: Build & upload to TestFlight
+    runs-on: macos-26
+    environment: staging
+    # 빌드 + App Store Connect 빌드 처리 대기(외부 테스트 제출에 필요)
+    timeout-minutes: 90
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # TestFlight "테스트할 내용" 을 커밋 로그로 작성
+
+      - name: Select Xcode ${{ env.XCODE_VERSION }}
+        uses: maxim-lobanov/setup-xcode@v1
+        with:
+          xcode-version: ${{ env.XCODE_VERSION }}
+
+      - name: Set up Ruby (fastlane)
+        uses: ruby/setup-ruby@v1
+        with:
+          bundler-cache: true # .ruby-version + Gemfile.lock
+
+      - name: Write Secrets.Staging.xcconfig
+        env:
+          SECRETS_STAGING_XCCONFIG: ${{ secrets.SECRETS_STAGING_XCCONFIG }}
+        run: |
+          if [ -z "$SECRETS_STAGING_XCCONFIG" ]; then
+            echo "::error::SECRETS_STAGING_XCCONFIG secret 이 비어 있습니다."
+            exit 1
+          fi
+          echo "$SECRETS_STAGING_XCCONFIG" | base64 --decode > Kkobungdan/Secrets.Staging.xcconfig
+
+      - name: Cache Swift packages
+        uses: actions/cache@v4
+        with:
+          path: build/SourcePackages
+          key: spm-${{ runner.os }}-${{ hashFiles('Kkobungdan.xcodeproj/project.xcworkspace/xcshareddata/swiftpm/Package.resolved') }}
+          restore-keys: spm-${{ runner.os }}-
+
+      - name: fastlane beta
+        env:
+          ASC_KEY_ID: ${{ secrets.ASC_KEY_ID }}
+          ASC_ISSUER_ID: ${{ secrets.ASC_ISSUER_ID }}
+          ASC_KEY_P8: ${{ secrets.ASC_KEY_P8 }}
+          MATCH_GIT_URL: ${{ secrets.MATCH_GIT_URL }}
+          MATCH_PASSWORD: ${{ secrets.MATCH_PASSWORD }}
+          MATCH_GIT_BASIC_AUTHORIZATION: ${{ secrets.MATCH_GIT_BASIC_AUTHORIZATION }}
+          # 선택: 비우면 App Store Connect TestFlight "테스트 정보" 저장값을 그대로 쓴다.
+          BETA_CONTACT_EMAIL: ${{ secrets.BETA_CONTACT_EMAIL }}
+          BETA_CONTACT_FIRST_NAME: ${{ secrets.BETA_CONTACT_FIRST_NAME }}
+          BETA_CONTACT_LAST_NAME: ${{ secrets.BETA_CONTACT_LAST_NAME }}
+          BETA_CONTACT_PHONE: ${{ secrets.BETA_CONTACT_PHONE }}
+          BETA_DEMO_ACCOUNT_NAME: ${{ secrets.BETA_DEMO_ACCOUNT_NAME }}
+          BETA_DEMO_ACCOUNT_PASSWORD: ${{ secrets.BETA_DEMO_ACCOUNT_PASSWORD }}
+          BETA_REVIEW_NOTES: ${{ secrets.BETA_REVIEW_NOTES }}
+        run: bundle exec fastlane beta
+
+      - name: Upload build logs
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: testflight-build-logs
+          path: build/fastlane/logs
+          retention-days: 7
