@@ -28,6 +28,7 @@ permissions:
   contents: read
 
 env:
+  # macos-15 이미지의 Xcode 26.0.1 (macos-26 보다 러너가 많아 대기가 짧다)
   XCODE_VERSION: "26.0.1"
   # 로컬과 같은 버전으로 고정한다. (버전마다 규칙이 달라 결과가 바뀐다)
   SWIFTFORMAT_VERSION: "0.60.1"
@@ -74,48 +75,36 @@ jobs:
           echo "✓ $allowed → $BASE"
 
   # ── dev: 코드 스타일 ─────────────────────────────────────
+  # macOS 가 필요 없으므로 Linux 러너에서 공식 Docker 이미지(버전 고정)로 실행한다. (몇 초 만에 시작)
+  # 워크스페이스를 같은 경로로 마운트해 PR 주석의 파일 경로가 그대로 맞게 한다.
   lint:
     name: Lint
     if: github.base_ref == 'dev'
-    runs-on: macos-26
+    runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Install SwiftFormat ${{ env.SWIFTFORMAT_VERSION }}
-        run: |
-          curl -sSfL -o "$RUNNER_TEMP/swiftformat.zip" \
-            "https://github.com/nicklockwood/SwiftFormat/releases/download/${SWIFTFORMAT_VERSION}/swiftformat.zip"
-          unzip -q -o "$RUNNER_TEMP/swiftformat.zip" -d "$RUNNER_TEMP/swiftformat"
-          chmod +x "$RUNNER_TEMP/swiftformat/swiftformat"
-          echo "$RUNNER_TEMP/swiftformat" >> "$GITHUB_PATH"
-
-      - name: Install SwiftLint ${{ env.SWIFTLINT_VERSION }}
-        run: |
-          curl -sSfL -o "$RUNNER_TEMP/swiftlint.zip" \
-            "https://github.com/realm/SwiftLint/releases/download/${SWIFTLINT_VERSION}/portable_swiftlint.zip"
-          unzip -q -o "$RUNNER_TEMP/swiftlint.zip" -d "$RUNNER_TEMP/swiftlint"
-          chmod +x "$RUNNER_TEMP/swiftlint/swiftlint"
-          echo "$RUNNER_TEMP/swiftlint" >> "$GITHUB_PATH"
-
       # Xcode 빌드 페이즈와 같은 범위·설정 (앱 소스 Kkobungdan/ · Kkobungdan/.swiftformat)
-      - name: SwiftFormat
+      - name: SwiftFormat ${{ env.SWIFTFORMAT_VERSION }}
         run: |
-          swiftformat --version
-          swiftformat --lint --cache ignore --reporter github-actions-log Kkobungdan
+          docker run --rm -v "$GITHUB_WORKSPACE:$GITHUB_WORKSPACE" -w "$GITHUB_WORKSPACE" \
+            "ghcr.io/nicklockwood/swiftformat:${SWIFTFORMAT_VERSION}" \
+            --lint --cache ignore --reporter github-actions-log Kkobungdan
 
       # Xcode 빌드 페이즈와 같은 설정. error 는 실패, warning 은 PR 주석으로만 표시한다.
-      - name: SwiftLint
+      - name: SwiftLint ${{ env.SWIFTLINT_VERSION }}
         run: |
-          swiftlint version
-          swiftlint lint --no-cache --config Kkobungdan/.swiftlint.yml --reporter github-actions-logging
+          docker run --rm -v "$GITHUB_WORKSPACE:$GITHUB_WORKSPACE" -w "$GITHUB_WORKSPACE" \
+            "ghcr.io/realm/swiftlint:${SWIFTLINT_VERSION}" \
+            swiftlint lint --no-cache --config Kkobungdan/.swiftlint.yml --reporter github-actions-logging
 
   # ── dev: Debug 빌드 + 유닛 테스트 ────────────────────────
   unit-tests:
     name: Build & unit tests (Debug)
     if: github.base_ref == 'dev'
-    runs-on: macos-26
+    runs-on: macos-15
     timeout-minutes: 45
     steps:
       - name: Checkout
@@ -168,7 +157,7 @@ jobs:
   build-staging:
     name: Build (Staging)
     if: github.base_ref == 'staging'
-    runs-on: macos-26
+    runs-on: macos-15
     timeout-minutes: 45
     steps:
       - name: Checkout
@@ -208,7 +197,7 @@ jobs:
   build-release:
     name: Build (Release)
     if: github.base_ref == 'main'
-    runs-on: macos-26
+    runs-on: macos-15
     timeout-minutes: 45
     steps:
       - name: Checkout

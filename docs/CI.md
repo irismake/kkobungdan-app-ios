@@ -22,7 +22,7 @@ PR 대상 브랜치에 따라 검사 수준을 나눈다. **CI 는 PR 에서, CD
 | Job | 내용 |
 |---|---|
 | **Branch policy** | `staging` 은 `dev` 에서, `main` 은 `staging` 에서 온 PR 만 허용. fork PR 은 두 브랜치로 받지 않는다. |
-| **Lint** | SwiftFormat 0.60.1 (`Kkobungdan/` · `Kkobungdan/.swiftformat`) + SwiftLint 0.65.1 (`Kkobungdan/.swiftlint.yml`, error 만 실패). Xcode 빌드 페이즈와 같은 범위·설정. |
+| **Lint** | (Linux · Docker) SwiftFormat 0.60.1 (`Kkobungdan/` · `Kkobungdan/.swiftformat`) + SwiftLint 0.65.1 (`Kkobungdan/.swiftlint.yml`, error 만 실패). Xcode 빌드 페이즈와 같은 범위·설정. |
 | **Build & unit tests (Debug)** | 시뮬레이터 Debug 빌드 + `KkobungdanTests` 실행. dev PR 에서만 돈다. (staging·main 은 dev 를 거친 코드라 다시 돌리지 않는다) |
 | **Build (Staging)** | 기기용 Staging 빌드(서명 없음) + 구성 검증 |
 | **Build (Release)** | 기기용 Release 빌드(서명 없음) + 구성 검증 |
