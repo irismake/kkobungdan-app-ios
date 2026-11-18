@@ -12,7 +12,9 @@ struct ActionListSheetItem: Identifiable {
   var isDestructive: Bool = false
   let action: () -> Void
 
-  var id: String { title }
+  var id: String {
+    title
+  }
 }
 
 /// 제목·부제 아래에 액션 목록과 '닫기' 버튼을 두는 바텀시트. (예: 채팅 관리 메뉴)

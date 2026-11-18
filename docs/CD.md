@@ -1,7 +1,8 @@
-# 배포 가이드 (CI/CD)
+# CD (배포)
 
 꼬붕단 iOS 앱의 TestFlight·App Store 배포 흐름, 규칙, 설정, 문제 해결 방법을 정리한다.
 배포는 GitHub Actions + Fastlane 으로 자동화되어 있고, 사람이 하는 일은 **PR 머지**와 **App Store 출시 버튼**뿐이다.
+PR 검사는 [CI.md](CI.md) 를 참고한다.
 
 ---
 
