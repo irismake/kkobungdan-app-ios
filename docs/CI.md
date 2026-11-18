@@ -9,14 +9,14 @@
 | 대상 브랜치 | PR 생성·push | 머지 요청 (Merge Queue) | 머지 후 (CD) |
 |---|---|---|---|
 | `dev` | Branch policy · Lint | Unit tests (Debug) — Debug 빌드 + 유닛 테스트 | 없음 |
-| `staging` | Branch policy · Lint | Unit tests (Debug) · Build (Staging) + 설정 검증 | TestFlight 외부 테스트 자동 배포 |
-| `main` | Branch policy · Lint · Verify App Store version | Unit tests (Debug) · Build (Release) + 설정 검증 · Verify App Store version | App Store 심사 자동 제출 |
+| `staging` | Branch policy · Lint | Build (Staging) + 설정 검증 | TestFlight 외부 테스트 자동 배포 |
+| `main` | Branch policy · Lint · Verify App Store version | Build (Release) + 설정 검증 · Verify App Store version | App Store 심사 자동 제출 |
 
 - `feature/*` push, 브랜치 머지 후에는 CI 가 돌지 않는다.
 - 같은 PR 에 새 커밋을 push 하면 이전 PR 검사는 취소된다. 큐 검사는 취소하지 않는다.
 - **PR 업데이트 시에는 빌드·테스트를 하지 않는다.** (Linux 러너의 가벼운 검사만)
 - 유닛 테스트는 Debug 구성에서만 돈다. (Staging·Release 는 `ENABLE_TESTABILITY` 가 꺼져 있다) `xcodebuild test` 가 Debug 빌드를 먼저 하므로 dev 큐의 "Debug 빌드 + 유닛 테스트" 는 `Unit tests (Debug)` 한 job 이다.
-- staging·main 큐에서는 `Unit tests (Debug)` 와 배포 구성 빌드가 병렬로 돈다.
+- **유닛 테스트는 dev 큐에서만** 돈다. staging·main 으로 오는 코드는 dev 큐에서 이미 통과했으므로 배포 구성 빌드만 확인한다.
 
 ### 머지 흐름
 
@@ -57,7 +57,7 @@ feature/home  ──┘               │
 |---|---|---|
 | **Branch policy** | PR | `staging` 은 `dev` 에서, `main` 은 `staging` 에서 온 PR 만 허용. fork PR 은 두 브랜치로 받지 않는다. |
 | **Lint** | PR | (Linux · Docker) SwiftFormat 0.60.1 (`Kkobungdan/` · `Kkobungdan/.swiftformat`) + SwiftLint 0.65.1 (`Kkobungdan/.swiftlint.yml`, error 만 실패). Xcode 빌드 페이즈와 같은 범위·설정. |
-| **Unit tests (Debug)** | 큐 | 시뮬레이터용 Debug 빌드 + `KkobungdanTests` 실행 |
+| **Unit tests (Debug)** | 큐 (dev) | 시뮬레이터용 Debug 빌드 + `KkobungdanTests` 실행 |
 | **Build (Staging)** | 큐 (staging) | 기기용 Staging 빌드, 서명 없음 + 설정 검증 |
 | **Build (Release)** | 큐 (main) | 기기용 Release 빌드, 서명 없음 + 설정 검증 |
 | **Verify App Store version** | PR · 큐 (main) | App Store 출시 버전보다 높은지 등 ([CD.md §4](CD.md#4-버전-규칙)) |
@@ -93,8 +93,8 @@ CI 는 **배포 인증서·배포용 Secrets 를 쓰지 않는다.** (저장소�
 | 브랜치 | Required checks | PR 에서 | 큐에서 |
 |---|---|---|---|
 | `dev` | `Branch policy` · `Lint` · `Unit tests (Debug)` | Unit tests 는 건너뜀 | Branch policy·Lint 는 건너뜀 |
-| `staging` | `Branch policy` · `Lint` · `Unit tests (Debug)` · `Build (Staging)` | Unit tests·Build 는 건너뜀 | Branch policy·Lint 는 건너뜀 |
-| `main` | `Branch policy` · `Lint` · `Verify App Store version` · `Unit tests (Debug)` · `Build (Release)` | Unit tests·Build 는 건너뜀 | Branch policy·Lint 는 건너뜀 (버전 검사는 다시 실행) |
+| `staging` | `Branch policy` · `Lint` · `Build (Staging)` | Build 는 건너뜀 | Branch policy·Lint 는 건너뜀 |
+| `main` | `Branch policy` · `Lint` · `Verify App Store version` · `Build (Release)` | Build 는 건너뜀 | Branch policy·Lint 는 건너뜀 (버전 검사는 다시 실행) |
 
 - GitHub 는 **조건 불일치로 건너뛴 job 을 "성공" 으로 보고**한다. 그래서 PR 전용 검사는 큐에서, 큐 전용 빌드·테스트는 PR 에서 건너뛰어도 Required 평가가 끝난다.
 - 실제 차단: PR 검사 실패 → 큐에 넣을 수 없다 / 큐 빌드 실패 → PR 이 큐에서 빠지고 브랜치에 반영되지 않는다.

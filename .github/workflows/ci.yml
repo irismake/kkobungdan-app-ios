@@ -4,12 +4,12 @@
 #  대상 브랜치 | PR 생성·push (pull_request)                 | 머지 요청 (merge_group)
 #  -----------|---------------------------------------------|----------------------------------------------
 #  dev        | Branch policy · Lint                        | Unit tests (Debug)   ← Debug 빌드 + 유닛 테스트
-#  staging    | Branch policy · Lint                        | Unit tests (Debug) · Build (Staging) + 설정 검증
-#  main       | Branch policy · Lint (+ Verify App Store version) | Unit tests (Debug) · Build (Release) + 설정 검증 (+ Verify App Store version)
+#  staging    | Branch policy · Lint                        | Build (Staging) + 설정 검증
+#  main       | Branch policy · Lint (+ Verify App Store version) | Build (Release) + 설정 검증 (+ Verify App Store version)
 #
+#  - 유닛 테스트는 dev 큐에서만 돈다. staging·main 으로 오는 코드는 dev 큐에서 이미 통과했다.
 #  - 유닛 테스트는 Debug 구성에서만 돈다. (Staging·Release 는 ENABLE_TESTABILITY 가 꺼져 있다)
 #    `xcodebuild test` 가 Debug 빌드를 먼저 하므로 dev 큐의 "Debug 빌드 + 유닛 테스트" 는 Unit tests 한 job 이다.
-#  - staging·main 큐에서는 Unit tests 와 배포 구성 빌드를 병렬로 돌린다.
 #
 # Required Status Check 평가 방식
 #  - 브랜치마다 Required check 목록은 하나이고, PR 과 Merge Queue 양쪽에서 모두 결과가 있어야 한다.
@@ -120,10 +120,10 @@ jobs:
   #  실패하면 PR 이 큐에서 빠지고 브랜치에는 반영되지 않는다.
   # ════════════════════════════════════════════════════════════
 
-  # 공통: Debug 빌드(시뮬레이터) + 유닛 테스트. dev 큐에서는 이 job 이 "Debug 빌드 + Unit Test" 전부다.
+  # dev: Debug 빌드(시뮬레이터) + 유닛 테스트. dev 큐의 "Debug 빌드 + Unit Test" 전부다.
   unit-tests:
     name: Unit tests (Debug)
-    if: github.event_name == 'merge_group'
+    if: github.event_name == 'merge_group' && github.event.merge_group.base_ref == 'refs/heads/dev'
     runs-on: macos-15
     timeout-minutes: 45
     steps:
