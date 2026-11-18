@@ -1,28 +1,24 @@
-# main 에 머지된 vX.Y.Z 태그를 Release 구성(운영 API)으로 빌드해 App Store 심사에 제출한다.
+# main 에 머지(push)되면 Release 구성(운영 API)으로 빌드해 App Store 심사에 자동 제출한다.
 #
-#  - 수동 실행만 허용 (Actions → App Store Release → Run workflow, 태그 입력)
-#  - `production` 환경 승인자가 승인해야 job 이 시작된다 (Settings → Environments → production → Required reviewers)
-#  - 심사 통과 후 출시는 App Store Connect 에서 수동 (automatic_release: false)
+#  - main PR 머지 = 배포 승인. 별도 수동 실행·GitHub 승인 단계 없음.
+#  - 심사 승인 후 실제 출시는 App Store Connect 에서 수동 (automatic_release: false)
+#  - 릴리스 태그·GitHub Release 는 자동으로 만들지 않는다. (출시 후 수동 생성)
 #
-# Staging 빌드 제출 방지 (fastlane release lane):
-#  1. 태그 == v<MARKETING_VERSION>, HEAD == 태그 커밋, 태그 커밋이 origin/main 에 포함
-#  2. IPA Info.plist 검증: 구성=Release · 운영 API · 앱 이름에 STG 없음
-#  3. 방금 올린 빌드 번호만 심사에 제출 (TestFlight 의 Staging 빌드는 선택되지 않음)
+# fastlane release lane 이 하는 일
+#  1. 버전 검증: App Store 출시 버전보다 높은지, 같은 버전이 이미 승인되지 않았는지, 심사 진행 중인 제출이 없는지
+#  2. Release 구성 빌드 (빌드 번호 = App Store Connect 최대 번호 + 1, 커밋하지 않음)
+#  3. IPA 검증: 구성=Release · 운영 API(스테이징 호스트 아님) · 앱 이름에 STG 없음
+#  4. App Store Connect 업로드 → 방금 올린 빌드 번호만 심사 제출 (TestFlight 의 Staging 빌드는 선택되지 않음)
 name: App Store Release
 
 on:
-  workflow_dispatch:
-    inputs:
-      tag:
-        description: "출시할 버전 태그 (예: v1.0.3) — main 에 머지된 커밋이어야 한다"
-        required: true
-        type: string
+  push:
+    branches: [main]
 
-# TestFlight(Staging)·App Store(Release) 업로드는 같은 앱 레코드의 빌드 번호를 공유하므로
-# 두 워크플로를 같은 그룹으로 묶어 한 번에 하나만 실행한다. (진행 중인 실행은 취소하지 않음)
-# 참고: GitHub 는 그룹당 대기 실행을 하나만 둔다. 대기 중에 새 실행이 오면 이전 대기 실행은 취소된다.
+# App Store 배포는 한 번에 하나만. 진행 중인 실행은 취소하지 않는다.
+# (대기 중에 main 에 또 push 되면 이전 대기 실행은 취소되고 최신 커밋이 배포된다)
 concurrency:
-  group: app-store-connect-upload
+  group: appstore-release
   cancel-in-progress: false
 
 env:
@@ -32,24 +28,14 @@ jobs:
   release:
     name: Build & submit for App Store review
     runs-on: macos-26
+    # SECRETS_RELEASE_XCCONFIG 를 쓰기 위한 환경. 승인 단계를 두지 않으므로
+    # production 환경의 Required reviewers 는 해제하고, Deployment branches 를 main 으로 제한한다.
     environment: production
     timeout-minutes: 120
 
     steps:
-      - name: Validate tag format
-        env:
-          TAG: ${{ inputs.tag }}
-        run: |
-          if ! [[ "$TAG" =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
-            echo "::error::태그 형식이 올바르지 않습니다: $TAG (예: v1.0.3)"
-            exit 1
-          fi
-
-      - name: Checkout tag
+      - name: Checkout
         uses: actions/checkout@v4
-        with:
-          ref: refs/tags/${{ inputs.tag }}
-          fetch-depth: 0 # origin/main 포함 여부 검증
 
       - name: Select Xcode ${{ env.XCODE_VERSION }}
         uses: maxim-lobanov/setup-xcode@v1
@@ -92,7 +78,6 @@ jobs:
           MATCH_GIT_URL: ${{ secrets.MATCH_GIT_URL }}
           MATCH_PASSWORD: ${{ secrets.MATCH_PASSWORD }}
           MATCH_GIT_BASIC_AUTHORIZATION: ${{ secrets.MATCH_GIT_BASIC_AUTHORIZATION }}
-          RELEASE_TAG: ${{ inputs.tag }}
         run: bundle exec fastlane release
 
       - name: Upload build logs

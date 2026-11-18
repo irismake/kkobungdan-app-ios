@@ -1,6 +1,10 @@
-# staging 브랜치에 머지(push)될 때마다 Staging 구성(스테이징 서버)으로 빌드해
-# TestFlight 외부 테스트 그룹(external_app_tester)에 배포한다. (Beta App Review 자동 제출)
-# App Store 정식 심사 제출은 이 워크플로에서 하지 않는다 → release.yml
+# Staging 구성(스테이징 서버)으로 빌드해 TestFlight 외부 테스트 그룹(external_app_tester)에 배포한다.
+# (Beta App Review 자동 제출, 승인되면 외부 테스터에게 자동 배포·알림)
+#
+#  - staging : 머지(push) 시 자동 실행 + 수동 실행 가능
+#  - dev     : 수동 실행만 (Actions → TestFlight (Staging) → Run workflow → Branch: dev)
+#  - 그 외 브랜치에서는 실행하지 않는다.
+# App Store 정식 심사 제출은 이 워크플로에서 하지 않는다 → release.yml (main)
 name: TestFlight (Staging)
 
 on:
@@ -8,11 +12,12 @@ on:
     branches: [staging]
   workflow_dispatch:
 
-# TestFlight(Staging)·App Store(Release) 업로드는 같은 앱 레코드의 빌드 번호를 공유하므로
-# 두 워크플로를 같은 그룹으로 묶어 한 번에 하나만 실행한다. (진행 중인 실행은 취소하지 않음)
-# 참고: GitHub 는 그룹당 대기 실행을 하나만 둔다. 대기 중에 새 실행이 오면 이전 대기 실행은 취소된다.
+# TestFlight 배포는 한 번에 하나만 (dev·staging 공통). 진행 중인 실행은 취소하지 않는다.
+# GitHub 는 그룹당 대기 실행을 하나만 둬서, 대기 중에 새 실행이 오면 이전 대기 실행은 취소된다 → 최신 커밋 우선.
+# App Store 배포(release.yml)와는 그룹을 나눠 main 배포가 TestFlight 때문에 취소되지 않게 한다.
+# 두 워크플로가 같은 버전으로 동시에 돌아 빌드 번호가 겹치면 fastlane 이 번호를 다시 받아 재빌드한다.
 concurrency:
-  group: app-store-connect-upload
+  group: testflight
   cancel-in-progress: false
 
 env:
@@ -25,6 +30,9 @@ jobs:
     environment: staging
     # 빌드 + App Store Connect 빌드 처리 대기(외부 테스트 제출에 필요)
     timeout-minutes: 90
+
+    # dev·staging 외 브랜치에서 수동 실행하면 job 자체를 건너뛴다. (fastlane 에서도 한 번 더 검사)
+    if: github.ref == 'refs/heads/staging' || github.ref == 'refs/heads/dev'
 
     steps:
       - name: Checkout
