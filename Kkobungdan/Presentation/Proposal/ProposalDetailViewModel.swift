@@ -14,7 +14,8 @@ final class ProposalDetailViewModel: LoadableViewModel {
   var proposal: ProposalDetail?
   var isLoading: Bool = false
   var errorMessage: String?
-  var hasApplied: Bool = false
+  /// 이 요청에 대한 내 지원 ID (상태 무관 — 재지원 불가라 한 건). 있으면 내 지원 상세로 교체된다.
+  var myOfferID: Int64?
 
   var isMine: Bool {
     guard let proposal else {
@@ -47,9 +48,7 @@ final class ProposalDetailViewModel: LoadableViewModel {
       let (proposal, offers) = try await (proposalTask, offersTask)
       self.proposal = proposal
       let currentUserID = tokenStorage.userID
-      hasApplied = offers.contains {
-        $0.runnerID == currentUserID && ($0.status == .waiting || $0.status == .accepted)
-      }
+      myOfferID = offers.last { $0.runnerID == currentUserID }?.id
     }
   }
 }

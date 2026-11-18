@@ -24,6 +24,12 @@ extension AppRouter {
             path.wrappedValue[path.wrappedValue.count - 1] = .myProposalDetail(proposalID: proposalID)
           }
         },
+        onMyOffer: { offerID in
+          // 홈에서 탭한 요청에 내 지원이 있으면 내 지원 상세로 라우트를 교체한다.
+          if !path.wrappedValue.isEmpty {
+            path.wrappedValue[path.wrappedValue.count - 1] = .offerDetail(proposalID: proposalID, offerID: offerID)
+          }
+        },
         onReport: {
           path.wrappedValue.append(.report(proposalID: proposalID))
         }
