@@ -168,15 +168,24 @@ struct MainTabView: View {
         }
       }
     case .chat:
-      NavigationStack {
+      NavigationStack(path: $router.chatPath) {
         ChatListView(
           viewModel: chatListViewModel,
-          onSelectRoom: { _ in
-            // TODO: 채팅방 화면 구현 후 해당 대화방으로 push
+          onSelectRoom: { room in
+            router.chatPath.append(.chatRoom(roomID: room.id))
           }
         )
         .safeAreaInset(edge: .bottom, spacing: 0) {
           bottomBar
+        }
+        .navigationDestination(for: AppRoute.self) { route in
+          router.destination(for: route, path: $router.chatPath)
+        }
+      }
+      .onChange(of: router.chatPath) { _, newPath in
+        // 대화방에서 돌아오면 마지막 메시지·안읽음 수를 갱신한다.
+        if newPath.isEmpty {
+          Task { await chatListViewModel.load() }
         }
       }
     case .profile:

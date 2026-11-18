@@ -132,6 +132,21 @@ enum AppRouteFactory {
     )
   }
 
+  // MARK: - Chat Room (채팅 상세)
+
+  static func makeChatRoomViewModel(roomID: Int64) -> ChatRoomViewModel {
+    ChatRoomViewModel(
+      roomID: roomID,
+      fetchChatRoomDetailUseCase: FetchChatRoomDetailUseCase(repository: DIContainer.chatRepository),
+      fetchChatMessagesUseCase: FetchChatMessagesUseCase(repository: DIContainer.chatRepository),
+      sendChatMessageUseCase: SendChatMessageUseCase(repository: DIContainer.chatRepository),
+      cancelOfferUseCase: CancelOfferUseCase(repository: DIContainer.offerRepository),
+      acceptOfferUseCase: AcceptOfferUseCase(repository: DIContainer.offerRepository),
+      completeDeliveryUseCase: CompleteDeliveryUseCase(repository: DIContainer.offerRepository),
+      confirmReceivedUseCase: ConfirmReceivedUseCase(repository: DIContainer.proposalRepository)
+    )
+  }
+
   // MARK: - Notifications (홈 헤더 알림 버튼 → 알림 목록)
 
   static func makeNotificationViewModel() -> NotificationViewModel {

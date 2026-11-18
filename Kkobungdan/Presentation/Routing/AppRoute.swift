@@ -43,4 +43,6 @@ enum AppRoute: Hashable {
   case addProposalFee(draft: AddProposalDraft)
   /// 홈 헤더 알림 버튼 → 알림 목록
   case notifications
+  /// 채팅 상세. 대화방은 지원 1건당 1개라 roomID 는 지원(offer) ID 와 같다.
+  case chatRoom(roomID: Int64)
 }

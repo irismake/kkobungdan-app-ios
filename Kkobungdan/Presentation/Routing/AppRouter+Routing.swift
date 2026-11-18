@@ -110,8 +110,8 @@ extension AppRouter {
         onAbort: {
           path.wrappedValue.append(.missionAbort(target: .proposal(proposalID: proposalID)))
         },
-        onOpenChat: { _ in
-          // TODO: 채팅 상세 화면 구현 후 해당 지원자와의 대화방으로 push
+        onOpenChat: { room in
+          path.wrappedValue.append(.chatRoom(roomID: room.id))
         }
       )
       .navigationBarBackButtonHidden(true)
@@ -125,8 +125,8 @@ extension AppRouter {
         onAbort: {
           path.wrappedValue.append(.missionAbort(target: .offer(offerID: offerID)))
         },
-        onOpenChat: { _ in
-          // TODO: 채팅 화면 구현 후 해당 대화방으로 push
+        onOpenChat: { room in
+          path.wrappedValue.append(.chatRoom(roomID: room.id))
         }
       )
       .navigationBarBackButtonHidden(true)
@@ -152,8 +152,9 @@ extension AppRouter {
         onSelectRunner: { proposalID, offerID in
           path.wrappedValue.append(.runnerDetail(proposalID: proposalID, offerID: offerID))
         },
-        onOpenChat: { _ in
-          // TODO: 채팅 상세 화면 구현 후 해당 지원자와의 대화방으로 push
+        onOpenChat: { offer in
+          // 대화방은 지원 1건당 1개 — 대화방 ID 는 지원 ID 와 같다.
+          path.wrappedValue.append(.chatRoom(roomID: offer.id))
         }
       )
       .navigationBarBackButtonHidden(true)
@@ -166,6 +167,20 @@ extension AppRouter {
           Task { await self.route(push: payload) }
         },
         onBack: { self.popLast(path: path) }
+      )
+      .navigationBarBackButtonHidden(true)
+    case let .chatRoom(roomID):
+      ChatRoomView(
+        viewModel: AppRouteFactory.makeChatRoomViewModel(roomID: roomID),
+        onBack: { self.popLast(path: path) },
+        onOpenMission: { room in
+          switch room.myRole {
+          case .orderer:
+            path.wrappedValue.append(.myProposalDetail(proposalID: room.proposalID))
+          case .runner:
+            path.wrappedValue.append(.offerDetail(proposalID: room.proposalID, offerID: room.id))
+          }
+        }
       )
       .navigationBarBackButtonHidden(true)
     }
