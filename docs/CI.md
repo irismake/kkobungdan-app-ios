@@ -74,6 +74,16 @@ feature/home  ──┘               │
 | ATS 우회(`NSAppTransportSecurity`) | 없음 | 없음 |
 | 공통 | Bundle ID · 버전 · `ITSAppUsesNonExemptEncryption = false` | 〃 |
 
+## 러너
+
+| 검사 | 러너 |
+|---|---|
+| Branch policy · Lint · Verify App Store version | `ubuntu-latest` (Xcode 불필요) |
+| Unit tests (Debug) · Build (Staging) · Build (Release) | `macos-26` + Xcode 26.0.1 (CD 와 같은 러너) |
+
+> iOS 빌드·테스트는 Xcode 가 필요해 macOS 에서만 돌 수 있다. public 저장소라 Linux·macOS 기본 러너 모두 무료다.
+> `macos-15` 는 러너가 배정되지 않고 계속 대기하는 문제가 있어(2026-11-18) `macos-26` 으로 통일했다.
+
 ## 시크릿을 쓰지 않는 이유와 방법
 
 CI 는 **배포 인증서·배포용 Secrets 를 쓰지 않는다.** (저장소가 public 이고, fork PR 에는 Secrets 가 전달되지 않는다)
