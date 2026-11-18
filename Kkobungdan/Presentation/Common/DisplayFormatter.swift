@@ -65,6 +65,18 @@ enum DisplayFormatter {
       : chatDateFormatter.string(from: date)
   }
 
+  /// 채팅 메시지 시각. 항상 "오후 04:42".
+  static func messageTimeString(_ date: Date) -> String {
+    chatTimeFormatter.string(from: date)
+  }
+
+  /// 채팅 날짜 구분선용 — 두 시각이 같은 날(한국 시간)인지.
+  static func isSameChatDay(_ lhs: Date, _ rhs: Date) -> Bool {
+    var calendar = Calendar(identifier: .gregorian)
+    calendar.timeZone = TimeZone(identifier: "Asia/Seoul") ?? .current
+    return calendar.isDate(lhs, inSameDayAs: rhs)
+  }
+
   static func feeString(_ fee: Int) -> String {
     let amount = feeFormatter.string(from: NSNumber(value: fee)) ?? "\(fee)"
     return "\(amount)원"
