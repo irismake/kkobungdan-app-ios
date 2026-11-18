@@ -22,7 +22,8 @@ concurrency:
   cancel-in-progress: false
 
 env:
-  XCODE_VERSION: "26.0.1"
+  # macos-26 이미지에서 iOS 플랫폼(SDK 26.5)이 함께 설치된 Xcode. (26.0.1 은 iOS 26.0 플랫폼이 없어 빌드 불가)
+  XCODE_VERSION: "26.6"
 
 jobs:
   release:
