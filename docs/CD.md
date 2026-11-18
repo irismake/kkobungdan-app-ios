@@ -49,7 +49,7 @@ feature/* ──PR──▶ dev ──PR──▶ staging ──PR──▶ main
 
 ### 3-1. TestFlight 외부 테스트 (staging)
 
-1. `dev` → `staging` PR 을 만들어 머지한다.
+1. `dev` → `staging` PR 을 만들고, PR 검사가 통과하면 **머지 큐에 추가**한다. (큐에서 Staging 빌드·설정 검증이 통과해야 반영된다 — [CI.md](CI.md))
 2. **TestFlight (Staging)** 워크플로가 자동 실행된다. (빌드 + App Store Connect 처리 대기로 30~60분)
 3. 빌드가 `external_app_tester` 그룹에 추가되고 **Beta App Review 에 자동 제출**된다.
 4. Apple 이 승인하면 외부 테스터에게 자동 배포되고 알림이 간다.
@@ -66,8 +66,8 @@ Actions → **TestFlight (Staging)** → **Run workflow** → Branch 에서 `dev
 1. **버전을 올린다.** App Store 에 출시된 버전보다 높아야 한다. (아래 [4. 버전 규칙](#4-버전-규칙))
    - `dev` 에서 `MARKETING_VERSION` 을 올리는 PR 을 먼저 머지하고, staging 으로 TestFlight 검증을 마친다.
 2. `staging` → `main` PR 을 만든다.
-   - **Version Check** 워크플로의 `Verify App Store version` 체크가 통과해야 머지할 수 있다.
-3. PR 을 머지한다. **App Store Release** 워크플로가 자동 실행되어 심사에 제출한다.
+   - **Version Check** 워크플로의 `Verify App Store version` 체크가 통과해야 머지 큐에 넣을 수 있다.
+3. **머지 큐에 추가**한다. 큐에서 Release 빌드·설정 검증과 버전 검사가 다시 통과하면 `main` 에 반영되고, **App Store Release** 워크플로가 자동 실행되어 심사에 제출한다.
 4. App Store Connect 에서 심사 결과를 확인한다.
 5. 승인되면 App Store Connect → 앱 → 해당 버전 → **"이 버전 출시"** 로 수동 출시한다.
 6. 출시 후 릴리스 태그를 수동으로 만든다.
@@ -134,7 +134,7 @@ App Store 에 출시된 버전에는 TestFlight 빌드도 올릴 수 없다. **�
 |---|---|---|---|
 | [`testflight.yml`](../.github/workflows/testflight.yml) | `staging` push, 수동(dev·staging) | `staging` | `fastlane beta` |
 | [`release.yml`](../.github/workflows/release.yml) | `main` push | `production` | `fastlane release` |
-| [`version-check.yml`](../.github/workflows/version-check.yml) | `main` 대상 PR | (없음) | `fastlane verify_release_version` |
+| [`version-check.yml`](../.github/workflows/version-check.yml) | `main` 대상 PR · `main` 머지 큐 | (없음) | `fastlane verify_release_version` |
 
 - 러너: 빌드는 `macos-26` + Xcode 26.0.1, 버전 검증은 `ubuntu-latest`
 - 실패하면 빌드 로그가 아티팩트(`*-build-logs`, 7일 보관)로 올라간다.
@@ -192,14 +192,10 @@ xcconfig 를 바꾸면 해당 Secret 도 다시 등록해야 CI 에 반영된다
 | `staging` | `dev`, `staging` | 없음 |
 | `production` | `main` | **없음** (main 머지가 승인) |
 
-### 브랜치 보호
+### 브랜치 보호 · 머지 방식
 
-| 브랜치 | 규칙 |
-|---|---|
-| `main` | PR 필수 · Required status check **`Verify App Store version`** |
-| `staging` | PR 필수 (push 가 곧 외부 테스터 배포) |
-
-> `Verify App Store version` 은 한 번 실행되어야 status check 목록에 나타난다.
+`dev` · `staging` · `main` 모두 PR 필수 + Merge Queue + Required status checks 를 쓴다. (staging·main 은 push 가 곧 배포)
+Required checks 목록, 머지 방식(feature→dev Squash, 승격 PR Merge commit) 등 자세한 설정은 [CI.md](CI.md#브랜치-보호-설정) 에 정리되어 있다.
 
 ### 로그 보안
 

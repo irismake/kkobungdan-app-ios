@@ -1,28 +1,39 @@
-# PR 대상 브랜치에 따라 검사 수준을 나누는 CI. (CD 는 testflight.yml · release.yml)
+# PR 업데이트 시에는 빌드 없이 가벼운 검사만, 머지 요청(Merge Queue) 시에만 빌드·테스트를 수행하는 CI.
+# CD 는 testflight.yml · release.yml (머지 = 브랜치 push 후 실행, 변경 없음)
 #
-#  PR 대상    | 실행하는 job (= Required Status Check 이름)
-#  -----------|---------------------------------------------------------------
-#  dev        | Branch policy · Lint · Build & unit tests (Debug)
-#  staging    | Branch policy · Build (Staging)   (유닛 테스트는 dev PR 에서 이미 통과)
-#  main       | Branch policy · Build (Release)   (+ version-check.yml 의 Verify App Store version)
+#  대상 브랜치 | PR 생성·push (pull_request)                 | 머지 요청 (merge_group)
+#  -----------|---------------------------------------------|----------------------------------------------
+#  dev        | Branch policy · Lint                        | Unit tests (Debug)   ← Debug 빌드 + 유닛 테스트
+#  staging    | Branch policy · Lint                        | Unit tests (Debug) · Build (Staging) + 설정 검증
+#  main       | Branch policy · Lint (+ Verify App Store version) | Unit tests (Debug) · Build (Release) + 설정 검증 (+ Verify App Store version)
 #
-#  - PR 에서만 실행한다. feature push · dev/staging/main 머지 후에는 실행하지 않는다.
-#  - 같은 PR 이 갱신되면 이전 실행을 취소한다.
-#  - 배포 인증서·배포용 Secrets 를 쓰지 않는다. 서명 없이 빌드하고, xcconfig 는 가짜 값
-#    (Scripts/ci/write-stub-secrets.sh)으로 만든다. → fork PR 에서도 동작하고 로그·아티팩트에 민감정보가 없다.
-#  - 각 job 의 실행 여부는 PR 대상 브랜치로만 정해진다. 그래서 보호 브랜치마다 위 표의 job 을
-#    Required Status Check 로 등록하면 항상 실행되어 결과를 낸다. (조건 불일치로 건너뛴 job 은 "성공" 으로 보고되므로
-#    다른 브랜치용 job 을 Required 로 등록하지 않는다)
+#  - 유닛 테스트는 Debug 구성에서만 돈다. (Staging·Release 는 ENABLE_TESTABILITY 가 꺼져 있다)
+#    `xcodebuild test` 가 Debug 빌드를 먼저 하므로 dev 큐의 "Debug 빌드 + 유닛 테스트" 는 Unit tests 한 job 이다.
+#  - staging·main 큐에서는 Unit tests 와 배포 구성 빌드를 병렬로 돌린다.
+#
+# Required Status Check 평가 방식
+#  - 브랜치마다 Required check 목록은 하나이고, PR 과 Merge Queue 양쪽에서 모두 결과가 있어야 한다.
+#  - 그래서 PR 전용 job 은 merge_group 에서, 큐 전용 job 은 pull_request 에서 조건 불일치로 "건너뜀" 처리한다.
+#    GitHub 는 조건 불일치로 건너뛴 job 을 "성공" 으로 보고하므로 양쪽 모두 평가가 끝난다.
+#  - 실제 차단은: PR 검사 실패 → 큐에 넣을 수 없음 / 큐 검사 실패 → PR 이 큐에서 빠지고 브랜치에 반영되지 않음.
+#  - 다른 브랜치용 job 을 Required 로 등록하지 않는다. (그 브랜치에서는 항상 건너뜀 = 항상 성공)
+#
+# 공통
+#  - feature push · 브랜치 머지 후에는 실행하지 않는다.
+#  - 같은 PR 이 갱신되면 이전 실행을 취소한다. 큐 실행은 취소하지 않는다.
+#  - 배포 인증서·배포용 Secrets 를 쓰지 않는다. 서명 없이 빌드하고, xcconfig 는 가짜 값으로 만든다.
 name: iOS CI
 
 on:
   pull_request:
     branches: [dev, staging, main]
     types: [opened, synchronize, reopened, ready_for_review]
+  merge_group:
+    types: [checks_requested]
 
 concurrency:
-  group: ci-${{ github.event.pull_request.number }}
-  cancel-in-progress: true
+  group: ci-${{ github.event.pull_request.number || github.event.merge_group.head_ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 permissions:
   contents: read
@@ -45,9 +56,14 @@ env:
     CODE_SIGNING_ALLOWED=NO
 
 jobs:
-  # ── 공통: PR 출발 브랜치 검사 ─────────────────────────────
+  # ════════════════════════════════════════════════════════════
+  #  PR 생성·push — 빌드 없는 가벼운 검사
+  # ════════════════════════════════════════════════════════════
+
+  # 공통: PR 출발 브랜치 검사 (큐에서는 PR 단계에서 이미 통과했으므로 건너뜀)
   branch-policy:
     name: Branch policy
+    if: github.event_name == 'pull_request'
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
@@ -74,12 +90,11 @@ jobs:
           fi
           echo "✓ $allowed → $BASE"
 
-  # ── dev: 코드 스타일 ─────────────────────────────────────
-  # macOS 가 필요 없으므로 Linux 러너에서 공식 Docker 이미지(버전 고정)로 실행한다. (몇 초 만에 시작)
+  # 공통: 코드 스타일. macOS 가 필요 없어 Linux 러너에서 공식 Docker 이미지(버전 고정)로 실행한다.
   # 워크스페이스를 같은 경로로 마운트해 PR 주석의 파일 경로가 그대로 맞게 한다.
   lint:
     name: Lint
-    if: github.base_ref == 'dev'
+    if: github.event_name == 'pull_request'
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
@@ -100,33 +115,25 @@ jobs:
             "ghcr.io/realm/swiftlint:${SWIFTLINT_VERSION}" \
             swiftlint lint --no-cache --config Kkobungdan/.swiftlint.yml --reporter github-actions-logging
 
-  # ── dev: Debug 빌드 + 유닛 테스트 ────────────────────────
+  # ════════════════════════════════════════════════════════════
+  #  머지 요청 (Merge Queue) — 대상 브랜치 최신 상태 + 이 PR 을 합친 코드로 실제 빌드
+  #  실패하면 PR 이 큐에서 빠지고 브랜치에는 반영되지 않는다.
+  # ════════════════════════════════════════════════════════════
+
+  # 공통: Debug 빌드(시뮬레이터) + 유닛 테스트. dev 큐에서는 이 job 이 "Debug 빌드 + Unit Test" 전부다.
   unit-tests:
-    name: Build & unit tests (Debug)
-    if: github.base_ref == 'dev'
+    name: Unit tests (Debug)
+    if: github.event_name == 'merge_group'
     runs-on: macos-15
     timeout-minutes: 45
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Select Xcode ${{ env.XCODE_VERSION }}
-        uses: maxim-lobanov/setup-xcode@v1
+      - name: Setup
+        uses: ./.github/actions/ios-ci-setup
         with:
           xcode-version: ${{ env.XCODE_VERSION }}
-
-      - name: Ensure xcbeautify
-        run: command -v xcbeautify >/dev/null || brew install xcbeautify
-
-      - name: Write stub xcconfig (no secrets)
-        run: ./Scripts/ci/write-stub-secrets.sh
-
-      - name: Cache Swift packages
-        uses: actions/cache@v4
-        with:
-          path: build/SourcePackages
-          key: spm-${{ runner.os }}-${{ hashFiles('Kkobungdan.xcodeproj/project.xcworkspace/xcshareddata/swiftpm/Package.resolved') }}
-          restore-keys: spm-${{ runner.os }}-
 
       - name: Pick iPhone simulator
         run: |
@@ -135,7 +142,7 @@ jobs:
           echo "SIMULATOR=$sim" >> "$GITHUB_ENV"
           echo "▶︎ $sim"
 
-      - name: Build & test (KkobungdanTests)
+      - name: Test (KkobungdanTests)
         run: |
           set -o pipefail
           xcodebuild test $XCODEBUILD_COMMON \
@@ -153,35 +160,21 @@ jobs:
           path: build/ci/UnitTests.xcresult
           retention-days: 7
 
-  # ── staging: TestFlight 에 올릴 Staging 구성 빌드 검증 ────
+  # staging: TestFlight 에 올릴 Staging 구성 빌드 + 설정 검증
   build-staging:
     name: Build (Staging)
-    if: github.base_ref == 'staging'
+    if: github.event_name == 'merge_group' && github.event.merge_group.base_ref == 'refs/heads/staging'
     runs-on: macos-15
     timeout-minutes: 45
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Select Xcode ${{ env.XCODE_VERSION }}
-        uses: maxim-lobanov/setup-xcode@v1
+      - name: Setup
+        uses: ./.github/actions/ios-ci-setup
         with:
           xcode-version: ${{ env.XCODE_VERSION }}
 
-      - name: Ensure xcbeautify
-        run: command -v xcbeautify >/dev/null || brew install xcbeautify
-
-      - name: Write stub xcconfig (no secrets)
-        run: ./Scripts/ci/write-stub-secrets.sh
-
-      - name: Cache Swift packages
-        uses: actions/cache@v4
-        with:
-          path: build/SourcePackages
-          key: spm-${{ runner.os }}-${{ hashFiles('Kkobungdan.xcodeproj/project.xcworkspace/xcshareddata/swiftpm/Package.resolved') }}
-          restore-keys: spm-${{ runner.os }}-
-
-      # 실제 기기용(arm64) 빌드. 서명 없이 컴파일·링크까지만 확인한다.
       - name: Build Staging (iphoneos, unsigned)
         run: |
           set -o pipefail
@@ -193,33 +186,20 @@ jobs:
       - name: Verify Staging build configuration
         run: ./Scripts/ci/verify-build-config.sh Staging build/DerivedData/Build/Products/Staging-iphoneos/Kkobungdan.app
 
-  # ── main: App Store 에 낼 Release 구성 빌드 검증 ──────────
+  # main: App Store 에 낼 Release 구성 빌드 + 운영 API 설정 검증
   build-release:
     name: Build (Release)
-    if: github.base_ref == 'main'
+    if: github.event_name == 'merge_group' && github.event.merge_group.base_ref == 'refs/heads/main'
     runs-on: macos-15
     timeout-minutes: 45
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Select Xcode ${{ env.XCODE_VERSION }}
-        uses: maxim-lobanov/setup-xcode@v1
+      - name: Setup
+        uses: ./.github/actions/ios-ci-setup
         with:
           xcode-version: ${{ env.XCODE_VERSION }}
-
-      - name: Ensure xcbeautify
-        run: command -v xcbeautify >/dev/null || brew install xcbeautify
-
-      - name: Write stub xcconfig (no secrets)
-        run: ./Scripts/ci/write-stub-secrets.sh
-
-      - name: Cache Swift packages
-        uses: actions/cache@v4
-        with:
-          path: build/SourcePackages
-          key: spm-${{ runner.os }}-${{ hashFiles('Kkobungdan.xcodeproj/project.xcworkspace/xcshareddata/swiftpm/Package.resolved') }}
-          restore-keys: spm-${{ runner.os }}-
 
       - name: Build Release (iphoneos, unsigned)
         run: |
@@ -229,7 +209,7 @@ jobs:
             -destination "generic/platform=iOS" \
             | xcbeautify --renderer github-actions
 
-      # 운영 API 설정 검증: Release 가 Secrets.Release 를 읽고 스테이징 호스트가 아닌지, 앱 이름·ATS·암호화 신고.
+      # Release 가 Secrets.Release 를 읽고 스테이징 호스트가 아닌지, 앱 이름·ATS·암호화 신고.
       # (실제 운영 서버 값은 배포 시 fastlane verify_ipa! 가 다시 검증한다)
       - name: Verify Release build configuration
         run: ./Scripts/ci/verify-build-config.sh Release build/DerivedData/Build/Products/Release-iphoneos/Kkobungdan.app
