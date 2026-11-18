@@ -183,29 +183,10 @@ struct ActivityView: View {
 
   private var filterChips: some View {
     let cases = segment == .orderer ? ActivityStatusFilter.ordererCases : ActivityStatusFilter.runnerCases
-    return ScrollView(.horizontal, showsIndicators: false) {
-      HStack(spacing: 8) {
-        ForEach(cases, id: \.self) { item in
-          let isSelected = item == filter
-          Button {
-            filter = item
-          } label: {
-            Text(item.rawValue)
-              .textStyle(.title2, kerning: -0.1)
-              .foregroundColor(isSelected ? Color.indigo000 : Color.gray800)
-              .padding(.horizontal, 16)
-              .padding(.vertical, 6)
-              .background(isSelected ? Color.indigo500 : Color.gray200)
-              .clipShape(Capsule())
-          }
-          .buttonStyle(.plain)
-        }
-      }
-      .padding(.horizontal, 16)
+    return FilterChips(items: cases, selection: $filter) { $0.rawValue }
       .padding(.top, 16)
       .padding(.bottom, 4)
-    }
-    .background(Color.gray000)
+      .background(Color.gray000)
   }
 
   private func card(for proposal: MyProposal) -> some View {

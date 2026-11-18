@@ -14,5 +14,6 @@
 | DTO 계약 테스트 등록 | [`.claude/rules/contract-test-dto.md`](.claude/rules/contract-test-dto.md) | [`.cursor/rules/contract-test-dto.mdc`](.cursor/rules/contract-test-dto.mdc) | [`.codex/rules/contract-test-dto.md`](.codex/rules/contract-test-dto.md) |
 | 로깅 (`Logger`) | [`.claude/rules/logging.md`](.claude/rules/logging.md) | [`.cursor/rules/logging.mdc`](.cursor/rules/logging.mdc) | [`.codex/rules/logging.md`](.codex/rules/logging.md) |
 | 프리뷰 코드 위치 | [`.claude/rules/preview-placement.md`](.claude/rules/preview-placement.md) | [`.cursor/rules/preview-placement.mdc`](.cursor/rules/preview-placement.mdc) | [`.codex/rules/preview-placement.md`](.codex/rules/preview-placement.md) |
+| 빌드 검증 | [`.claude/rules/no-build-verification.md`](.claude/rules/no-build-verification.md) | [`.cursor/rules/no-build-verification.mdc`](.cursor/rules/no-build-verification.mdc) | [`.codex/rules/no-build-verification.md`](.codex/rules/no-build-verification.md) |
 
 > Cursor 인덱스: [`CURSOR.md`](CURSOR.md) · Codex 인덱스: [`AGENTS.md`](AGENTS.md)

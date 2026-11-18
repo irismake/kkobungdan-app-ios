@@ -16,12 +16,18 @@ extension AppRouter {
         viewModel: AppRouteFactory.makeProposalDetailViewModel(proposalID: proposalID),
         onBack: { self.popLast(path: path) },
         onOffer: {
-          path.wrappedValue.append(.addOffer(proposalID: proposalID))
+          path.wrappedValue.append(.offerAccount(proposalID: proposalID))
         },
         onMine: {
           // 홈에서 탭한 요청이 내 요청이면 내 요청 상세로 라우트를 교체한다.
           if !path.wrappedValue.isEmpty {
             path.wrappedValue[path.wrappedValue.count - 1] = .myProposalDetail(proposalID: proposalID)
+          }
+        },
+        onMyOffer: { offerID in
+          // 홈에서 탭한 요청에 내 지원이 있으면 내 지원 상세로 라우트를 교체한다.
+          if !path.wrappedValue.isEmpty {
+            path.wrappedValue[path.wrappedValue.count - 1] = .offerDetail(proposalID: proposalID, offerID: offerID)
           }
         },
         onReport: {
@@ -63,9 +69,18 @@ extension AppRouter {
         }
       )
       .navigationBarBackButtonHidden(true)
-    case let .addOffer(proposalID):
-      AddOfferView(
-        viewModel: AppRouteFactory.makeAddOfferViewModel(proposalID: proposalID),
+    case let .offerAccount(proposalID):
+      OfferAccountView(
+        viewModel: AppRouteFactory.makeOfferAccountViewModel(proposalID: proposalID),
+        onBack: { self.popLast(path: path) },
+        onRegistered: {
+          path.wrappedValue.append(.offerMessage(proposalID: proposalID))
+        }
+      )
+      .navigationBarBackButtonHidden(true)
+    case let .offerMessage(proposalID):
+      OfferMessageView(
+        viewModel: AppRouteFactory.makeOfferMessageViewModel(proposalID: proposalID),
         onBack: { self.popLast(path: path) },
         onApplied: { offerID in
           path.wrappedValue.append(.offerComplete(proposalID: proposalID, offerID: offerID))
@@ -94,6 +109,9 @@ extension AppRouter {
         },
         onAbort: {
           path.wrappedValue.append(.missionAbort(target: .proposal(proposalID: proposalID)))
+        },
+        onOpenChat: { room in
+          path.wrappedValue.append(.chatRoom(roomID: room.id))
         }
       )
       .navigationBarBackButtonHidden(true)
@@ -106,6 +124,9 @@ extension AppRouter {
         onBack: { self.popLast(path: path) },
         onAbort: {
           path.wrappedValue.append(.missionAbort(target: .offer(offerID: offerID)))
+        },
+        onOpenChat: { room in
+          path.wrappedValue.append(.chatRoom(roomID: room.id))
         }
       )
       .navigationBarBackButtonHidden(true)
@@ -130,11 +151,38 @@ extension AppRouter {
         },
         onSelectRunner: { proposalID, offerID in
           path.wrappedValue.append(.runnerDetail(proposalID: proposalID, offerID: offerID))
+        },
+        onOpenChat: { offer in
+          // 대화방은 지원 1건당 1개 — 대화방 ID 는 지원 ID 와 같다.
+          path.wrappedValue.append(.chatRoom(roomID: offer.id))
         }
       )
       .navigationBarBackButtonHidden(true)
     case .addProposalDraft, .addProposalDateTime, .addProposalFee:
       addProposalDestination(for: route, path: path)
+    case .notifications:
+      NotificationView(
+        viewModel: AppRouteFactory.makeNotificationViewModel(),
+        onSelect: { payload in
+          Task { await self.route(push: payload) }
+        },
+        onBack: { self.popLast(path: path) }
+      )
+      .navigationBarBackButtonHidden(true)
+    case let .chatRoom(roomID):
+      ChatRoomView(
+        viewModel: AppRouteFactory.makeChatRoomViewModel(roomID: roomID),
+        onBack: { self.popLast(path: path) },
+        onOpenMission: { room in
+          switch room.myRole {
+          case .orderer:
+            path.wrappedValue.append(.myProposalDetail(proposalID: room.proposalID))
+          case .runner:
+            path.wrappedValue.append(.offerDetail(proposalID: room.proposalID, offerID: room.id))
+          }
+        }
+      )
+      .navigationBarBackButtonHidden(true)
     }
   }
 }

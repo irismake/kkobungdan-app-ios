@@ -12,18 +12,23 @@ struct HomeView: View {
   @State private var viewModel: HomeViewModel
 
   var onSelectProposal: (Proposal) -> Void = { _ in }
+  var onTapNotification: () -> Void = {}
 
   init(
     viewModel: HomeViewModel,
-    onSelectProposal: @escaping (Proposal) -> Void = { _ in }
+    onSelectProposal: @escaping (Proposal) -> Void = { _ in },
+    onTapNotification: @escaping () -> Void = {}
   ) {
     _viewModel = State(initialValue: viewModel)
     self.onSelectProposal = onSelectProposal
+    self.onTapNotification = onTapNotification
   }
 
   var body: some View {
     VStack(spacing: 0) {
-      TabPageHeader(title: "홈")
+      TabPageHeader(title: "홈") {
+        NotificationBellButton(unreadCount: viewModel.unreadNotificationCount, action: onTapNotification)
+      }
       ScrollView {
         VStack(spacing: 12) {
           if viewModel.isLoading, viewModel.proposals.isEmpty {

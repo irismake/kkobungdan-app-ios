@@ -18,7 +18,7 @@ struct RunnerSelectModal: View {
     return "\(name)\(particle) 선택하시겠습니까?"
   }
 
-  private let description: String = "꼬붕 선택 시 카카오톡 채팅방이 자동 개설되며,\n입장 코드는 알림을 통해 안내됩니다."
+  private let description: String = "꼬붕을 선택하면 미션이 자동으로 시작됩니다.\n미션 취소를 원하실 경우 관리자에게 문의해 주세요."
 
   var body: some View {
     ZStack {

@@ -25,6 +25,22 @@ enum DisplayFormatter {
     return formatter
   }()
 
+  private static let chatTimeFormatter: DateFormatter = {
+    let formatter = DateFormatter()
+    formatter.locale = Locale(identifier: "ko_KR")
+    formatter.timeZone = TimeZone(identifier: "Asia/Seoul")
+    formatter.dateFormat = "a hh:mm"
+    return formatter
+  }()
+
+  private static let chatDateFormatter: DateFormatter = {
+    let formatter = DateFormatter()
+    formatter.locale = Locale(identifier: "ko_KR")
+    formatter.timeZone = TimeZone(identifier: "Asia/Seoul")
+    formatter.dateFormat = "M월 d일"
+    return formatter
+  }()
+
   private static let feeFormatter: NumberFormatter = {
     let formatter = NumberFormatter()
     formatter.numberStyle = .decimal
@@ -38,6 +54,27 @@ enum DisplayFormatter {
 
   static func timeString(_ date: Date) -> String {
     timeFormatter.string(from: date)
+  }
+
+  /// 채팅 목록 시각. 오늘이면 "오후 04:42", 이전이면 "11월 10일".
+  static func chatTimeString(_ date: Date, now: Date = Date()) -> String {
+    var calendar = Calendar(identifier: .gregorian)
+    calendar.timeZone = TimeZone(identifier: "Asia/Seoul") ?? .current
+    return calendar.isDate(date, inSameDayAs: now)
+      ? chatTimeFormatter.string(from: date)
+      : chatDateFormatter.string(from: date)
+  }
+
+  /// 채팅 메시지 시각. 항상 "오후 04:42".
+  static func messageTimeString(_ date: Date) -> String {
+    chatTimeFormatter.string(from: date)
+  }
+
+  /// 채팅 날짜 구분선용 — 두 시각이 같은 날(한국 시간)인지.
+  static func isSameChatDay(_ lhs: Date, _ rhs: Date) -> Bool {
+    var calendar = Calendar(identifier: .gregorian)
+    calendar.timeZone = TimeZone(identifier: "Asia/Seoul") ?? .current
+    return calendar.isDate(lhs, inSameDayAs: rhs)
   }
 
   static func feeString(_ fee: Int) -> String {

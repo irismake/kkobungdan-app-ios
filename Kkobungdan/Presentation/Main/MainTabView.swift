@@ -7,24 +7,25 @@
 
 import SwiftUI
 
-/// 로그인 후 진입점이자 메인 탭 셸(홈·내 활동·알림·프로필).
+/// 로그인 후 진입점이자 메인 탭 셸(홈·내 활동·채팅·프로필). 알림은 홈 헤더 버튼에서 push.
 /// DIContainer 로 탭 루트 VM 을 조립한다. (비로그인 진입점 `AuthFlowView` 와 대칭)
 struct MainTabView: View {
   @Environment(\.scenePhase) private var scenePhase
   @State private var viewModel: HomeViewModel
   @State private var myProposalsViewModel: MyProposalsViewModel
   @State private var myOffersViewModel: MyOffersViewModel
+  @State private var chatListViewModel: ChatListViewModel
   @State private var router = AppRouter()
 
   @State private var profileViewModel: ProfileViewModel
   @State private var withdrawReasonViewModel: WithdrawReasonViewModel
-  @State private var notificationViewModel: NotificationViewModel
 
   /// 운영 진입점. DIContainer 로 탭 루트 VM 을 조립한다.
   init() {
     self.init(
       viewModel: HomeViewModel(
-        fetchProposalsUseCase: FetchProposalsUseCase(repository: DIContainer.proposalRepository)
+        fetchProposalsUseCase: FetchProposalsUseCase(repository: DIContainer.proposalRepository),
+        fetchNotificationStatsUseCase: FetchNotificationStatsUseCase(repository: DIContainer.notificationRepository)
       ),
       myProposalsViewModel: MyProposalsViewModel(
         fetchMyProposalsUseCase: FetchMyProposalsUseCase(repository: DIContainer.activityRepository)
@@ -32,6 +33,10 @@ struct MainTabView: View {
       myOffersViewModel: MyOffersViewModel(
         fetchMyOffersUseCase: FetchMyOffersUseCase(repository: DIContainer.activityRepository),
         fetchProposalDetailUseCase: FetchProposalDetailUseCase(repository: DIContainer.proposalRepository)
+      ),
+      chatListViewModel: ChatListViewModel(
+        fetchChatRoomsUseCase: FetchChatRoomsUseCase(repository: DIContainer.chatRepository),
+        markAllChatRoomsReadUseCase: MarkAllChatRoomsReadUseCase(repository: DIContainer.chatRepository)
       ),
       profileViewModel: ProfileViewModel(
         fetchUserDetailUseCase: FetchUserDetailUseCase(userRepository: DIContainer.userRepository),
@@ -42,10 +47,6 @@ struct MainTabView: View {
       withdrawReasonViewModel: WithdrawReasonViewModel(
         fetchReasonsUseCase: FetchWithdrawalReasonsUseCase(userRepository: DIContainer.userRepository),
         withdrawUseCase: WithdrawUserUseCase(userRepository: DIContainer.userRepository)
-      ),
-      notificationViewModel: NotificationViewModel(
-        fetchNotificationsUseCase: FetchNotificationsUseCase(repository: DIContainer.notificationRepository),
-        repository: DIContainer.notificationRepository
       )
     )
   }
@@ -55,22 +56,23 @@ struct MainTabView: View {
     viewModel: HomeViewModel,
     myProposalsViewModel: MyProposalsViewModel,
     myOffersViewModel: MyOffersViewModel,
+    chatListViewModel: ChatListViewModel,
     profileViewModel: ProfileViewModel,
-    withdrawReasonViewModel: WithdrawReasonViewModel,
-    notificationViewModel: NotificationViewModel
+    withdrawReasonViewModel: WithdrawReasonViewModel
   ) {
     _viewModel = State(initialValue: viewModel)
     _myProposalsViewModel = State(initialValue: myProposalsViewModel)
     _myOffersViewModel = State(initialValue: myOffersViewModel)
+    _chatListViewModel = State(initialValue: chatListViewModel)
     _profileViewModel = State(initialValue: profileViewModel)
     _withdrawReasonViewModel = State(initialValue: withdrawReasonViewModel)
-    _notificationViewModel = State(initialValue: notificationViewModel)
   }
 
   var body: some View {
     tabContent
       .task {
         await viewModel.load()
+        await chatListViewModel.load()
       }
       // 푸시 배너 탭 딥링크 소비.
       .task(id: PushRouteStore.shared.pending) {
@@ -80,20 +82,16 @@ struct MainTabView: View {
         PushRouteStore.shared.pending = nil
         await router.route(push: payload)
       }
-      // 최초 진입 + 포그라운드 푸시 도착 시 안읽음 뱃지를 갱신한다.
+      // 포그라운드 푸시 도착 시 목록·알림 뱃지를 갱신한다.
       .task(id: PushRouteStore.shared.foregroundPushCount) {
-        await notificationViewModel.refreshUnreadCount()
         if PushRouteStore.shared.foregroundPushCount > 0 {
           await refreshRootData()
         }
       }
-      // 백그라운드에 쌓인 알림 반영: 앱이 다시 활성화될 때 뱃지 갱신
+      // 백그라운드에 쌓인 알림 반영: 앱이 다시 활성화될 때 목록·알림 뱃지를 갱신한다.
       .onChange(of: scenePhase) { _, phase in
         if phase == .active {
-          Task {
-            await notificationViewModel.refreshUnreadCount()
-            await refreshRootData()
-          }
+          Task { await refreshRootData() }
         }
       }
       .onReceive(NotificationCenter.default.publisher(for: .proposalListNeedsRefresh)) { _ in
@@ -106,6 +104,7 @@ struct MainTabView: View {
     await viewModel.load()
     await myProposalsViewModel.load(status: router.activityFilter.proposalStatuses)
     await myOffersViewModel.load(status: router.activityFilter.offerStatuses)
+    await chatListViewModel.load()
   }
 
   // MARK: - Tab Content
@@ -119,6 +118,9 @@ struct MainTabView: View {
           viewModel: viewModel,
           onSelectProposal: { proposal in
             router.homePath.append(.proposalDetail(proposalID: proposal.id))
+          },
+          onTapNotification: {
+            router.homePath.append(.notifications)
           }
         )
         .safeAreaInset(edge: .bottom, spacing: 0) {
@@ -165,15 +167,26 @@ struct MainTabView: View {
           }
         }
       }
-    case .notifications:
-      NotificationView(
-        viewModel: notificationViewModel,
-        onSelect: { payload in
-          Task { await router.route(push: payload) }
+    case .chat:
+      NavigationStack(path: $router.chatPath) {
+        ChatListView(
+          viewModel: chatListViewModel,
+          onSelectRoom: { room in
+            router.chatPath.append(.chatRoom(roomID: room.id))
+          }
+        )
+        .safeAreaInset(edge: .bottom, spacing: 0) {
+          bottomBar
         }
-      )
-      .safeAreaInset(edge: .bottom, spacing: 0) {
-        bottomBar
+        .navigationDestination(for: AppRoute.self) { route in
+          router.destination(for: route, path: $router.chatPath)
+        }
+      }
+      .onChange(of: router.chatPath) { _, newPath in
+        // 대화방에서 돌아오면 마지막 메시지·안읽음 수를 갱신한다.
+        if newPath.isEmpty {
+          Task { await chatListViewModel.load() }
+        }
       }
     case .profile:
       NavigationStack {
@@ -192,7 +205,7 @@ struct MainTabView: View {
     ZStack(alignment: .topTrailing) {
       BottomNavBar(
         selectedTab: $router.selectedTab,
-        unreadCount: notificationViewModel.unreadCount
+        chatUnreadCount: chatListViewModel.unreadCount
       )
 
       if router.selectedTab == .home {
@@ -211,8 +224,8 @@ struct MainTabView: View {
     viewModel: .preview(),
     myProposalsViewModel: .preview(),
     myOffersViewModel: .preview(),
+    chatListViewModel: .preview(),
     profileViewModel: .preview(),
-    withdrawReasonViewModel: .preview(),
-    notificationViewModel: .preview()
+    withdrawReasonViewModel: .preview()
   )
 }

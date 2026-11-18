@@ -55,10 +55,17 @@ enum AppRouteFactory {
 
   // MARK: - Account Register (지원하기 → 계좌 등록)
 
-  static func makeAddOfferViewModel(proposalID: Int64) -> AddOfferViewModel {
-    AddOfferViewModel(
+  static func makeOfferAccountViewModel(proposalID: Int64) -> OfferAccountViewModel {
+    OfferAccountViewModel(
       proposalID: proposalID,
-      account: makeSettlementAccountInputModel(),
+      account: makeSettlementAccountInputModel()
+    )
+  }
+
+  static func makeOfferMessageViewModel(proposalID: Int64) -> OfferMessageViewModel {
+    OfferMessageViewModel(
+      proposalID: proposalID,
+      fetchProposalDetailUseCase: FetchProposalDetailUseCase(repository: DIContainer.proposalRepository),
       createOfferUseCase: CreateOfferUseCase(repository: DIContainer.offerRepository)
     )
   }
@@ -72,7 +79,8 @@ enum AppRouteFactory {
       fetchOffersUseCase: FetchOffersByProposalUseCase(repository: DIContainer.offerRepository),
       confirmReceivedUseCase: ConfirmReceivedUseCase(repository: DIContainer.proposalRepository),
       cancelProposalUseCase: CancelProposalUseCase(repository: DIContainer.proposalRepository),
-      fetchDisputeEvidenceUseCase: FetchDisputeEvidenceUseCase(repository: DIContainer.disputeEvidenceRepository)
+      fetchDisputeEvidenceUseCase: FetchDisputeEvidenceUseCase(repository: DIContainer.disputeEvidenceRepository),
+      fetchChatRoomsUseCase: FetchChatRoomsUseCase(repository: DIContainer.chatRepository)
     )
   }
 
@@ -89,7 +97,8 @@ enum AppRouteFactory {
       fetchOfferDetailUseCase: FetchOfferDetailUseCase(repository: DIContainer.offerRepository),
       completeDeliveryUseCase: CompleteDeliveryUseCase(repository: DIContainer.offerRepository),
       cancelOfferUseCase: CancelOfferUseCase(repository: DIContainer.offerRepository),
-      fetchDisputeEvidenceUseCase: FetchDisputeEvidenceUseCase(repository: DIContainer.disputeEvidenceRepository)
+      fetchDisputeEvidenceUseCase: FetchDisputeEvidenceUseCase(repository: DIContainer.disputeEvidenceRepository),
+      fetchChatRoomsUseCase: FetchChatRoomsUseCase(repository: DIContainer.chatRepository)
     )
   }
 
@@ -120,6 +129,30 @@ enum AppRouteFactory {
       fetchAccountUseCase: FetchSettlementAccountUseCase(settlementRepository: DIContainer.settlementRepository),
       saveAccountUseCase: SaveSettlementAccountUseCase(settlementRepository: DIContainer.settlementRepository),
       fetchBankNamesUseCase: FetchSettlementBankNamesUseCase(settlementRepository: DIContainer.settlementRepository)
+    )
+  }
+
+  // MARK: - Chat Room (채팅 상세)
+
+  static func makeChatRoomViewModel(roomID: Int64) -> ChatRoomViewModel {
+    ChatRoomViewModel(
+      roomID: roomID,
+      fetchChatRoomDetailUseCase: FetchChatRoomDetailUseCase(repository: DIContainer.chatRepository),
+      fetchChatMessagesUseCase: FetchChatMessagesUseCase(repository: DIContainer.chatRepository),
+      sendChatMessageUseCase: SendChatMessageUseCase(repository: DIContainer.chatRepository),
+      cancelOfferUseCase: CancelOfferUseCase(repository: DIContainer.offerRepository),
+      acceptOfferUseCase: AcceptOfferUseCase(repository: DIContainer.offerRepository),
+      completeDeliveryUseCase: CompleteDeliveryUseCase(repository: DIContainer.offerRepository),
+      confirmReceivedUseCase: ConfirmReceivedUseCase(repository: DIContainer.proposalRepository)
+    )
+  }
+
+  // MARK: - Notifications (홈 헤더 알림 버튼 → 알림 목록)
+
+  static func makeNotificationViewModel() -> NotificationViewModel {
+    NotificationViewModel(
+      fetchNotificationsUseCase: FetchNotificationsUseCase(repository: DIContainer.notificationRepository),
+      repository: DIContainer.notificationRepository
     )
   }
 

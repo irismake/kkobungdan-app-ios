@@ -12,11 +12,12 @@ struct TestOfferRepositoryImpl: OfferRepositoryProtocol {
 
   let store: DummyBackendStore
 
-  func createOffer(proposalID: Int64) async throws -> Offer {
+  func createOffer(proposalID: Int64, message: String) async throws -> Offer {
     try await Task.sleep(nanoseconds: Self.simulatedLatency)
     return try await store.createOffer(
       proposalID: proposalID,
-      runnerID: DummySession.currentUserID
+      runnerID: DummySession.currentUserID,
+      message: message
     )
   }
 
