@@ -50,6 +50,7 @@ identifier_name:
     - id              # `id` 같은 일반적인 약어는 예외 처리
     - URL             # URL 같은 표준 명칭은 예외 처리
     - APIKey          # API 키 변수명도 예외 처리 가능
+    - me              # 채팅 발신자(나) · 현재 사용자 ID 를 뜻하는 도메인 용어
 
 # 7. SwiftLint 실행 결과 출력 형식
 reporter: "xcode"       # 결과를 Xcode 콘솔에서 볼 수 있도록 설정 (json, markdown 등 가능)
