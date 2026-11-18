@@ -12,6 +12,7 @@ struct ChatRoomView: View {
   @State private var isCancelConfirmPresented: Bool = false
   @State private var isAcceptModalPresented: Bool = false
   @State private var isCompleteModalPresented: Bool = false
+  @State private var isMenuPresented: Bool = false
   @FocusState private var isInputFocused: Bool
   var onBack: () -> Void = {}
   /// 요청 요약 바·'임무 보기' → 내 입장의 상세 화면(행님: 내 요청 상세, 꼬붕: 내 지원 상세).
@@ -59,8 +60,46 @@ struct ChatRoomView: View {
           }
         )
       }
+
+      if isMenuPresented, let room = viewModel.room {
+        ActionListSheet(
+          title: "채팅 관리",
+          subtitle: menuSubtitle(room),
+          items: menuItems,
+          onClose: { isMenuPresented = false }
+        )
+      }
     }
     .errorToast($viewModel.errorMessage)
+  }
+
+  // MARK: - Menu
+
+  /// "상대 이름 + 상대 입장 · 요청 제목" (예: 성수동 행님 · 성수 베이커리 소금빵 웨이팅)
+  private func menuSubtitle(_ room: ChatRoomDetail) -> String {
+    let counterpartRole = room.myRole == .runner ? "행님" : "꼬붕"
+    return "\(room.counterpartName) \(counterpartRole) · \(room.proposalTitle)"
+  }
+
+  private var menuItems: [ActionListSheetItem] {
+    var items: [ActionListSheetItem] = [
+      // TODO: 대화방 고정·알림·보관 API 확정 시 연동
+      ActionListSheetItem(title: "상단에 고정") { isMenuPresented = false },
+      ActionListSheetItem(title: "알림 끄기") { isMenuPresented = false },
+      ActionListSheetItem(title: "대화 보관하기") { isMenuPresented = false }
+    ]
+    // 지원 취소는 하단 액션 바와 같은 조건(꼬붕 · 대기중)에서만 노출한다.
+    if viewModel.bottomAction == .cancelOffer {
+      items.append(
+        ActionListSheetItem(title: "지원 취소", isDestructive: true) {
+          isMenuPresented = false
+          isCancelConfirmPresented = true
+        }
+      )
+    }
+    // TODO: 대화 신고 화면·API 확정 시 연동
+    items.append(ActionListSheetItem(title: "대화 신고") { isMenuPresented = false })
+    return items
   }
 
   private var contentView: some View {
@@ -119,7 +158,7 @@ struct ChatRoomView: View {
         .frame(maxWidth: .infinity, alignment: .leading)
 
       Button {
-        // TODO: 채팅 관리 메뉴 항목 확정 후 연결
+        isMenuPresented = true
       } label: {
         Text("···")
           .textStyle(.symbol1)
