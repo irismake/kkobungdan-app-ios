@@ -70,6 +70,12 @@ jobs:
             exit 1
           fi
           echo "$SECRETS_RELEASE_XCCONFIG" | base64 --decode > Kkobungdan/Secrets.Release.xcconfig
+          # public 저장소라 로그가 공개된다. 디코딩한 각 값을 로그에서 가린다.
+          grep -E '^[[:space:]]*[A-Z_][A-Z0-9_]*[[:space:]]*=' Kkobungdan/Secrets.Release.xcconfig \
+            | sed -E 's/^[^=]*=[[:space:]]*//; s/[[:space:]]+$//' \
+            | while IFS= read -r value; do
+                case "$value" in ""|http|https) ;; *) echo "::add-mask::$value" ;; esac
+              done
 
       - name: Cache Swift packages
         uses: actions/cache@v4
