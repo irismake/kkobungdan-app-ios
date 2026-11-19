@@ -23,6 +23,20 @@
 - **사용자 승인 없이 하지 않는다**: 커밋 · push · PR 생성 · 머지(Merge Queue 포함) · 배포(TestFlight · App Store · `fastlane` 실행) · 브랜치 보호 · Secrets · GitHub 설정 변경.
 - 실제 키가 든 파일(`Secrets*.xcconfig`, `GoogleService-Info.plist`)은 고치지 않는다. Secret · 토큰 값을 로그 · 문서 · 커밋 · 메모리에 남기지 않는다.
 
+## 작업 경로 · 역할
+
+메인 세션이 **오케스트레이터 겸 구현자**다 (사용자와 대화 · 경로 판정 · 승인 받기 · 구현 · 테스트). 보조 역할은 `.harness/agents/` 의 **planner** · **reviewer** 둘뿐이고, 역할마다 에이전트 하나만 쓴다. 같은 일을 여러 에이전트 · 다른 모델로 중복 실행하지 않는다.
+
+| 경로 | 기준 | 흐름 |
+|---|---|---|
+| S | 문구 · 스타일 · 한 파일의 단순 수정 | 바로 구현 |
+| M | 한 계층 안의 기능 · 버그 | 계획을 몇 줄로 공유 → 구현 |
+| L | 여러 계층에 걸침, 또는 위험 영역(`Data/Common/Network` · `Common/Token` · `DIContainer` · `project.pbxproj` · CI/CD · 서버 계약 · 동시성) | planner → **사용자 승인** → 구현 → reviewer → 지적 반영 → 재검토는 1회까지 |
+
+- 애매하면 한 단계 위 경로를 고른다. 사용자가 요청하면 경로와 관계없이 planner · reviewer 를 쓴다.
+- reviewer 에게는 요구사항과 비교 기준 ref 만 넘긴다. 구현 과정 설명을 넘기지 않는다 (독립성).
+- reviewer 지적을 반영하지 않기로 했으면 이유를 사용자에게 보고한다.
+
 ## Git
 
 - 브랜치: `feat/` · `fix/` · `refactor/` · `chore/` · `ci/` · `style/` + kebab-case, `dev` 에서 분기. 긴급 수정만 `hotfix/*` (main 에서 분기).

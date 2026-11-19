@@ -8,6 +8,7 @@
   2. 다른 규칙 사본(.codex/rules · .cursor · CURSOR.md)이 남아 있지 않은지
   3. core.md 는 paths 없이 항상 로드, 나머지는 paths 가 있고 각 패턴이 실제 파일에 하나 이상 맞는지 (경로 변경 감지)
   4. AGENTS.md 표가 모든 규칙 파일을 가리키고, 없는 파일을 가리키지 않는지
+  5. `.claude/agents` 가 `.harness/agents` 링크이고, 역할 파일마다 name(=파일명) · description · tools 가 있고 AGENTS.md 가 가리키는지
 """
 import re
 import subprocess
@@ -16,6 +17,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
 RULES = ROOT / ".harness/rules"
+AGENTS_DIR = ROOT / ".harness/agents"
 ALWAYS = {"core.md"}
 FORBIDDEN_COPIES = [".codex/rules", ".cursor", "CURSOR.md"]
 
@@ -75,12 +77,27 @@ def main():
     for name in sorted(referenced - set(rule_files)):
         problems.append(f"AGENTS.md 가 없는 규칙 파일을 가리킵니다: {name}")
 
+    agents_link = ROOT / ".claude/agents"
+    if not agents_link.is_symlink() or agents_link.resolve() != AGENTS_DIR.resolve():
+        problems.append(".claude/agents 가 .harness/agents 의 심볼릭 링크가 아닙니다.")
+    role_files = sorted(AGENTS_DIR.glob("*.md"))
+    for path in role_files:
+        m = re.match(r"---\n(.*?)\n---\n", path.read_text(), re.S)
+        fields = dict(re.findall(r"^(\w+):\s*(.+)$", m.group(1), re.M)) if m else {}
+        for key in ("name", "description", "tools"):
+            if key not in fields:
+                problems.append(f"agents/{path.name}: frontmatter 에 {key} 가 없습니다.")
+        if fields.get("name") and fields["name"] != path.stem:
+            problems.append(f"agents/{path.name}: name 이 파일명과 다릅니다 ({fields['name']}).")
+        if f".harness/agents/{path.name}" not in agents:
+            problems.append(f"AGENTS.md 가 agents/{path.name} 을 가리키지 않습니다.")
+
     if problems:
         print("규칙 검사 실패:")
         for p in problems:
             print(f"  - {p}")
         sys.exit(1)
-    print(f"규칙 검사 통과: {len(rule_files)}개 (항상 로드 {len(ALWAYS & set(rule_files))}개)")
+    print(f"규칙 검사 통과: 규칙 {len(rule_files)}개 (항상 로드 {len(ALWAYS & set(rule_files))}개) · 역할 {len(role_files)}개")
 
 
 if __name__ == "__main__":

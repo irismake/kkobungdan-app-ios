@@ -17,6 +17,13 @@
 | 테스트 · TDD | `KkobungdanTests/` · `Scripts/test.sh` | [`testing.md`](.harness/rules/testing.md) |
 | CI/CD · 브랜치 · 배포 · Xcode 프로젝트 설정 | `.github/` · `Scripts/ci/` · `fastlane/` · `project.pbxproj` | [`cicd.md`](.harness/rules/cicd.md) |
 
+## 역할 (`.harness/agents/`)
+
+작업 경로(S · M · L)와 역할은 `core.md` 의 "작업 경로 · 역할" 을 따른다. Codex 는 서브에이전트 없이 다음처럼 수행한다.
+
+- **L 경로 계획**: [`planner.md`](.harness/agents/planner.md) 의 출력 형식대로 계획만 작성해 사용자 승인을 받은 뒤 구현한다.
+- **리뷰**: 사용자가 리뷰를 요청하면 [`reviewer.md`](.harness/agents/reviewer.md) 지침을 따른다. 독립 리뷰가 필요하면 구현한 세션이 아니라 **새 세션**에서 요구사항과 기준 ref 만 받아 수행한다.
+
 각 규칙 파일 맨 위 `paths` 가 정확한 대상 경로다. (Claude Code 는 이 값으로 자동 로드한다)
 
 Codex 전용 규칙은 현재 없다. 생기면 이 파일에만 적는다.

@@ -13,6 +13,7 @@
 | `no-build-verification` 규칙 | 단계형 검증(빠른 검증 매번 / 빌드·테스트는 큰 작업 완료 시)으로 개정한다. 검증 스크립트가 생기는 5단계에서 반영. |
 | Required Status Check | dev·staging·main 모두 [CI.md](../CI.md) 표대로 등록되어 동작 중이다. 하네스 범위에서 제외. |
 | 성과 측정 | 벤치마크 · 수동 지표 기록은 하지 않는다. 기준선 + 토큰 · 시간 · CI 자동 집계만 유지. |
+| 진행 방식 | 하네스 작업은 브랜치 `chore/harness` 하나에서 단계마다 커밋 하나. push · PR 은 사용자 요청 시에만. 하네스 자체가 관리 부담이 되지 않게 최소 구조로, 필요한 것만 단계적으로 추가한다. |
 
 ---
 
@@ -135,8 +136,8 @@ Scripts/harness/          # 검증 스크립트
 | 단계 | 산출물 | 완료 조건 |
 |---|---|---|
 | 1. 현황 분석 | 이 문서 · Cursor 제거 · 기준선 ([01-baseline.md](01-baseline.md)) | 합의 ✅ |
-| 2. 규칙 단일 출처화 · 컨텍스트 최적화 | `.harness/rules` (공통 원본), 작업별 선택 로딩, 규칙 정비, 일치 검사 스크립트 ([02-rules.md](02-rules.md)) | Claude · Codex 가 같은 원본을 참조, 공통 규칙만 상시 로드 |
-| 3. 에이전트 역할 분리 | 역할 정의 (계획 · 구현 · 리뷰), 역할당 에이전트 하나 | — |
+| 2. 규칙 단일 출처화 · 컨텍스트 최적화 | `.harness/rules` (공통 원본), 작업별 선택 로딩, 규칙 정비, 일치 검사 스크립트 ([02-rules.md](02-rules.md)) | Claude · Codex 가 같은 원본을 참조, 공통 규칙만 상시 로드 ✅ |
+| 3. 에이전트 역할 분리 | `.harness/agents/` (planner · reviewer), `core.md` 작업 경로(S · M · L), Codex 수행 방법 ([03-roles.md](03-roles.md)) | Claude 에 역할 등록 · Codex 지침 연결 ✅ |
 | 4. 작업 워크플로 · TDD | 작업 유형별 절차 (스킬) | — |
 | 5. 자동 검증 · Quality Gate | 검증 스크립트 · 훅, `no-build-verification` 개정, `TokenStorage` `print` 재발 방지 | — |
 | 6. 독립 AI 리뷰 · 피드백 루프 | 리뷰어 1개, 실수 → 규칙 · 테스트 · 검증 반영 절차 | — |
