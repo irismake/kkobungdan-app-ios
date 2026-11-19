@@ -6,6 +6,9 @@
 //
 
 import Foundation
+import OSLog
+
+private let tokenLogger = Logger(subsystem: "com.kkobungdan.Kkobungdan", category: "Auth")
 
 final class TokenStorage {
   static let shared = TokenStorage()
@@ -20,9 +23,9 @@ final class TokenStorage {
     get { defaults.string(forKey: accessKey) }
     set {
       defaults.set(newValue, forKey: accessKey)
-      #if DEBUG
-        print("[TokenStorage] accessToken: \(newValue ?? "nil")")
-      #endif
+      // 토큰 값은 남기지 않는다 (저장 · 삭제 여부만).
+      let action = newValue == nil ? "삭제" : "저장"
+      tokenLogger.debug("access token \(action, privacy: .public)")
     }
   }
 
@@ -50,9 +53,8 @@ final class TokenStorage {
   }
 
   private init() {
-    #if DEBUG
-      print("[TokenStorage] stored accessToken: \(defaults.string(forKey: accessKey) ?? "nil")")
-    #endif
+    let state = defaults.string(forKey: accessKey) == nil ? "없음" : "있음"
+    tokenLogger.debug("저장된 access token \(state, privacy: .public)")
     // 더미 모드에서는 로그인 응답이 없어 userID 가 비어 있다.
     // 더미 데이터가 모두 DummySession.currentUserID 기준이므로 본인 식별자를 맞춰 저장한다.
     if DIContainer.isDummy, userID == nil {
