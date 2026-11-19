@@ -53,6 +53,11 @@ feature/* ──PR──▶ dev ──PR──▶ staging ──PR──▶ main
 2. **TestFlight (Staging)** 워크플로가 자동 실행된다. (빌드 + App Store Connect 처리 대기로 30~60분)
 3. 빌드가 `external_app_tester` 그룹에 추가되고 **Beta App Review 에 자동 제출**된다.
 4. Apple 이 승인하면 외부 테스터에게 자동 배포되고 알림이 간다.
+5. 워크플로 결과 확인 — **빌드가 TestFlight 에 업로드되면 워크플로는 성공(✅)** 이다.
+   - 실행 요약 **✅ TestFlight 외부 테스트 제출 완료** → 베타 심사 승인을 기다린다.
+   - 실행 요약·주석 **⚠️ TestFlight 업로드 완료 — 외부 배포는 직접 해야 합니다** → 외부 그룹 배포·베타 심사 제출만 실패한 것이다.
+     App Store Connect → TestFlight 에서 해당 빌드를 `external_app_tester` 에 추가하고 베타 심사에 제출한다. 워크플로는 다시 실행하지 않는다.
+   - 워크플로 실패(❌) 는 빌드·업로드 단계 문제다. → [10. 문제 해결](#10-문제-해결)
    - 새 버전의 첫 빌드는 심사에 보통 수 시간~1일 걸린다.
    - 같은 버전의 후속 빌드는 심사 없이 바로 승인되는 경우가 많다.
 
@@ -228,6 +233,7 @@ Required checks 목록, 머지 방식(feature→dev Squash, 승격 PR Merge comm
 | `MARKETING_VERSION(...)이 App Store 출시 버전(...) 이하입니다` | `dev` 에서 버전을 올린다. |
 | `... 은 이미 승인된 버전입니다` | 출시하거나, App Store Connect 에서 개발자 거절 후 재실행하거나, 버전을 올린다. |
 | `App Store 심사 제출이 이미 진행 중입니다` (main PR·버전 검사) | App Store Connect 에서 기존 제출을 취소한 뒤 다시 시도한다. |
+| TestFlight (Staging) 가 ✅ 인데 ⚠️ **외부 배포는 직접 해야 합니다** 경고 | 업로드는 끝났고 외부 그룹 배포·베타 심사 제출만 실패했다. 실행 요약의 "오류 내용" 에 원인이 있다. App Store Connect → TestFlight 에서 직접 그룹에 추가하고 베타 심사에 제출한다. |
 | App Store Release 가 ✅ 인데 ⚠️ **심사는 직접 제출해야 합니다** 경고 | 업로드는 끝났고 심사 자동 제출만 실패했다. 실행 요약의 "Apple 응답" 에 원인이 있다. App Store Connect 에서 누락 항목을 채우고 직접 심사에 제출한다. |
 | `IPA 검증 실패(...)` | 해당 `SECRETS_*_XCCONFIG` Secret 내용이 맞는지, 빌드 구성 설정이 바뀌지 않았는지 확인한다. |
 | `Secrets.<구성>.xcconfig 에 ... 가 없습니다` | xcconfig Secret 에 해당 키가 빠졌다. 파일을 고쳐 다시 base64 로 등록한다. |
