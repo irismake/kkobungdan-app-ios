@@ -27,6 +27,7 @@
 | 버그 수정 (재현 테스트 먼저) | [`bugfix`](.harness/skills/bugfix/SKILL.md) |
 | 서버 API 스펙 변경 반영 | [`api-sync`](.harness/skills/api-sync/SKILL.md) |
 | 커밋 · PR (사용자 요청 시만) | [`pr`](.harness/skills/pr/SKILL.md) |
+| 실수 · 규칙 위반 · 반복 지적 → 재발 방지 | [`feedback`](.harness/skills/feedback/SKILL.md) |
 
 ## 검증
 

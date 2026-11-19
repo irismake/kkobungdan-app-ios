@@ -35,7 +35,8 @@
 
 - 애매하면 한 단계 위 경로를 고른다. 사용자가 요청하면 경로와 관계없이 planner · reviewer 를 쓴다.
 - reviewer 에게는 요구사항과 비교 기준 ref 만 넘긴다. 구현 과정 설명을 넘기지 않는다 (독립성).
-- reviewer 지적을 반영하지 않기로 했으면 이유를 사용자에게 보고한다.
+- reviewer 지적은 하나씩 "반영 / 반영 안 함(이유)" 으로 정리해 사용자에게 보고한다.
+- 사용자가 실수를 지적했거나, 같은 유형의 문제가 다시 나왔거나, 규칙이 실제 코드와 다르면 `feedback` 스킬로 재발 방지 수단(검사 · 테스트 · 규칙)까지 반영한다. 기록은 `.harness/feedback-log.md`.
 
 ## Git
 
@@ -45,7 +46,7 @@
 
 ## 작업 절차 · 빌드 · 테스트
 
-- 반복 작업은 스킬(`.harness/skills/`)을 따른다: `feature`(기능 · 리팩토링, TDD) · `bugfix`(재현 테스트 먼저) · `api-sync`(서버 계약 반영) · `pr`(커밋 · PR, 요청 시만).
+- 반복 작업은 스킬(`.harness/skills/`)을 따른다: `feature`(기능 · 리팩토링, TDD) · `bugfix`(재현 테스트 먼저) · `api-sync`(서버 계약 반영) · `pr`(커밋 · PR, 요청 시만) · `feedback`(실수 → 재발 방지).
 - 테스트는 `./Scripts/test.sh [테스트클래스[/메서드]]` 로 실행한다. 스킬의 TDD 단계(RED · GREEN · 회귀)에서는 사용자 요청 없이 실행한다.
 - 작업을 마치기 전에 `Scripts/harness/verify.sh` (규칙 일치 · 코드 규칙 · SwiftFormat · SwiftLint) 를 통과시킨다. TDD 스킬을 따랐으면 `verify.sh full` (전체 테스트 포함). Claude 는 편집 · 종료 훅이 자동으로 검사하고, 위험 명령 · 보호 파일은 훅이 막는다.
 - 그 밖의 `xcodebuild build` · 배포 구성 빌드는 사용자가 요청했을 때만 실행한다.
