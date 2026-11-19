@@ -33,7 +33,7 @@
 
 Codex 에는 Claude 훅이 없다. 대신 다음을 직접 지킨다.
 
-- 작업을 마치기 전에 `Scripts/harness/verify.sh` (TDD 스킬을 따랐으면 `verify.sh full`)를 실행하고 통과시킨다.
+- 작업을 마치기 전에 `Scripts/harness/verify.sh` 를 실행하고 통과시킨다. 빌드 · 전체 테스트는 로컬에서 돌리지 않는다 (CI 머지 큐).
 - 커밋은 git 훅(`.githooks/`)이 다시 검사한다. `--no-verify` 로 우회하지 않는다.
 - `core.md` 의 승인 필요 작업 · 보호 파일 목록을 스스로 지킨다 (Claude 는 훅이 막는다: `Scripts/harness/hooks/pre_tool.py`).
 

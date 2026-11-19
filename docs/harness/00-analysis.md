@@ -141,7 +141,7 @@ Scripts/harness/          # 검증 스크립트
 | 4. 작업 워크플로 · TDD | 스킬 4개 (feature · bugfix · api-sync · pr), 단일 테스트 실행 · 테스트 파일 등록 도구, 검증 규칙 개정 ([04-workflow.md](04-workflow.md)) | Claude 에 스킬 등록 · Codex 표 연결 ✅ |
 | 5. 자동 검증 · Quality Gate | 코드 · 규칙 검사기, Claude 훅 3종, git 훅, `verify.sh` ([05-quality-gate.md](05-quality-gate.md)) | 위험 동작 차단 · 위반 검출 확인 ✅ |
 | 6. 독립 AI 리뷰 · 피드백 루프 | reviewer 실행 확인, `feedback` 스킬 · 로그 ([06-review-feedback.md](06-review-feedback.md)) | 실제 리뷰 1회 · 기록 5건 ✅ |
-| 7. 기존 CI/CD 연동 | 검증 스크립트를 기존 `Lint` job 에 연결 | — |
+| 7. 기존 CI/CD 연동 | `Lint` job 에 하네스 검사 2단계 추가 (Required check 이름 유지), PR 줄 주석, Secret · 키 파일 · 토큰 로깅 검사 추가, 빌드 · 전체 테스트는 로컬 검증에서 빼고 Merge Queue 로 일원화 | 새 클론에서 CI 단계 재현 · 위반 검출 ✅ |
 | 8. 실제 사용 · 측정 · 최적화 | 기준선 대비 비교 | — |
 
 ## 10. 예상 문제 및 트레이드오프

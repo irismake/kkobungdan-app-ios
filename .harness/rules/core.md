@@ -22,6 +22,7 @@
 - 기존 아키텍처 · 컴포넌트 · 스타일을 따른다. 프로젝트에 없는 라이브러리 · 패턴을 들일 때는 먼저 묻는다.
 - **사용자 승인 없이 하지 않는다**: 커밋 · push · PR 생성 · 머지(Merge Queue 포함) · 배포(TestFlight · App Store · `fastlane` 실행) · 브랜치 보호 · Secrets · GitHub 설정 변경.
 - 실제 키가 든 파일(`Secrets*.xcconfig`, `GoogleService-Info.plist`)은 고치지 않는다. Secret · 토큰 값을 로그 · 문서 · 커밋 · 메모리에 남기지 않는다.
+- 키 · 인증서(`*.p8` · `*.p12` · `*.mobileprovision` 등) · `.env` · `Secrets.*.xcconfig` 를 커밋하지 않는다 (`git add -f` 금지). 키를 코드 · 문서에 붙여 넣었으면 지우는 것으로 끝내지 말고 사용자에게 알려 폐기 · 재발급하게 한다.
 
 ## 작업 경로 · 역할
 
@@ -47,9 +48,9 @@
 ## 작업 절차 · 빌드 · 테스트
 
 - 반복 작업은 스킬(`.harness/skills/`)을 따른다: `feature`(기능 · 리팩토링, TDD) · `bugfix`(재현 테스트 먼저) · `api-sync`(서버 계약 반영) · `pr`(커밋 · PR, 요청 시만) · `feedback`(실수 → 재발 방지).
-- 테스트는 `./Scripts/test.sh [테스트클래스[/메서드]]` 로 실행한다. 스킬의 TDD 단계(RED · GREEN · 회귀)에서는 사용자 요청 없이 실행한다.
-- 작업을 마치기 전에 `Scripts/harness/verify.sh` (규칙 일치 · 코드 규칙 · SwiftFormat · SwiftLint) 를 통과시킨다. TDD 스킬을 따랐으면 `verify.sh full` (전체 테스트 포함). Claude 는 편집 · 종료 훅이 자동으로 검사하고, 위험 명령 · 보호 파일은 훅이 막는다.
-- 그 밖의 `xcodebuild build` · 배포 구성 빌드는 사용자가 요청했을 때만 실행한다.
+- 테스트는 `./Scripts/test.sh <테스트클래스>[/<메서드>]` 로 **해당 테스트만** 실행한다. 스킬의 TDD 단계(RED · GREEN)에서는 사용자 요청 없이 실행한다.
+- 작업을 마치기 전에 `Scripts/harness/verify.sh` (규칙 일치 · 코드 규칙 · SwiftFormat · SwiftLint, 수 초) 를 통과시킨다. Claude 는 편집 · 종료 훅이 자동으로 검사하고, 위험 명령 · 보호 파일은 훅이 막는다.
+- **로컬 검증에 빌드 · 전체 테스트를 넣지 않는다** (오래 걸린다). 전체 테스트 · Debug · Staging · Release 빌드는 CI Merge Queue 가 맡는다. 사용자가 요청할 때만 로컬에서 실행한다.
 - 실행하지 않은 검증은 결과를 보고하지 않는다 ("빌드 성공" · "테스트 통과" 등). 실행 결과만 근거로 쓴다.
 
 ## 규칙 관리

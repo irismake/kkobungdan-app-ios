@@ -8,7 +8,7 @@ paths:
 
 ## 구성
 
-- 대상: `KkobungdanTests` (XCTest, `@testable import Kkobungdan`). 실행: `./Scripts/test.sh` 전체, `./Scripts/test.sh <클래스>[/<메서드>]` 하나만. CI 는 dev 머지 큐에서 Debug 로 실행한다.
+- 대상: `KkobungdanTests` (XCTest, `@testable import Kkobungdan`). 실행: `./Scripts/test.sh <클래스>[/<메서드>]` (작업 중), `./Scripts/test.sh` 전체는 사용자가 요청할 때만. 전체 테스트는 CI 머지 큐(dev · hotfix 의 main)가 Debug 로 실행한다.
 - **테스트 타깃은 파일 동기화 그룹이 아니다.** 새 테스트 파일은 `python3 Scripts/harness/add_test_file.py <경로>` 로 `project.pbxproj` 에 등록해야 컴파일된다. 등록하지 않으면 테스트가 실행되지 않은 채 "통과" 로 보인다. (앱 타깃 `Kkobungdan/` 은 폴더 동기화라 등록이 필요 없다)
 - 이름: `test_<한국어로_기대_동작>` (예: `test_401_INVALID_TOKEN_이면_갱신하고_원요청을_재시도한다`). 파일 맨 위 주석에 무엇을 고정하는 테스트인지 적는다.
 - 네트워크는 `URLProtocol` 스텁으로 대체한다 (`Network/HTTPClientAuthTests.swift` 의 `StubURLProtocol` 참고). `TokenStorage.shared` 를 건드리면 `tearDown` 에서 `clear()` 한다.

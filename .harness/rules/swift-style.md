@@ -15,4 +15,5 @@ paths:
 
 - `print` · `debugPrint` · `dump` 를 쓰지 않는다. `OSLog` 의 `Logger` 를 쓴다.
 - 파일 단위 `private let xxxLogger = Logger(subsystem: "com.kkobungdan.Kkobungdan", category: "<기능>")`. category 는 기능 영역 (`Network` · `Auth` · `Push` …).
+- **인증 정보(토큰 · 비밀번호 · Authorization 헤더 · 쿠키)를 로그에 넣지 않는다.** 필요하면 "저장 / 삭제", "있음 / 없음" 같은 상태만 남긴다 (`TokenStorage` 참고). 디버깅에 값이 꼭 필요하면 `privacy: .private` 로 가린다 (`AppDelegate` 의 FCM 토큰).
 - 레벨: `debug`(개발 추적) · `info`(정상 흐름) · `warning` / `error` / `fault`(이상 · 실패). 예시는 `Data/Common/Network/HTTPClient.swift`.

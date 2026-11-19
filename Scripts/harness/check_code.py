@@ -9,10 +9,13 @@
   python3 Scripts/harness/check_code.py --file <경로>     # 파일 하나 (편집 직후 훅)
   … --lint                                              # 바뀐 앱 소스에 SwiftFormat · SwiftLint 도 실행 (CI Lint 와 같은 설정)
 
+검사: 키 · 인증서 · .env · Secrets xcconfig 커밋 / 키 · 토큰 값 / 로그 속 인증 정보 / print · .font /
+      계약 테스트 미등록 DTO / 계층 의존 / 프리뷰 위치 / 테스트 미등록 (+ --lint: SwiftFormat · SwiftLint)
 추가된 줄 · 새 파일만 본다. 이미 있던 위반은 세지 않는다.
 판단이 필요한 것(요구사항 충족 · 설계 적합성 · 동시성 경합)은 검사하지 않는다 → reviewer.
 """
 import argparse
+import os
 import re
 import shutil
 import subprocess
@@ -31,6 +34,32 @@ RESPONSE_DTO_RE = re.compile(r"^\s*(?:public\s+|internal\s+)?struct\s+(\w+Respon
 DOMAIN_IMPORT_RE = re.compile(r"^\s*import\s+(SwiftUI|UIKit)\b")
 DOMAIN_REF_RE = re.compile(r"\b(\w+DTO|HTTPClient|DIContainer|DummyBackendStore)\b")
 PRESENTATION_REF_RE = re.compile(r"\b(\w+DTO|HTTPClient)\b")
+# ── 보안 ──────────────────────────────────────────────
+# 커밋하면 안 되는 파일 (.gitignore 를 -f 로 우회해 추가하는 경우까지 잡는다)
+SECRET_FILE_RE = re.compile(
+    r"(\.(p8|p12|pem|key|cer|mobileprovision|jks|keystore)$)"
+    r"|((^|/)\.env(\.[\w.-]+)?$)"
+    r"|((^|/)Secrets(\.(?!example\.)[A-Za-z]+)?\.xcconfig$)"
+)
+# 형식이 확실한 키 · 토큰만 (일반 단어 "API_KEY" 같은 매칭은 하지 않는다 → 오탐 방지)
+SECRET_VALUE_RES = [
+    ("개인 키", re.compile(r"-----BEGIN (RSA |EC |OPENSSH |DSA |ENCRYPTED )?PRIVATE KEY-----")),
+    ("GitHub 토큰", re.compile(r"\b(gh[pousr]_[A-Za-z0-9]{36}|github_pat_[A-Za-z0-9_]{50,})\b")),
+    ("AWS 액세스 키", re.compile(r"\bAKIA[0-9A-Z]{16}\b")),
+    ("Slack 토큰", re.compile(r"\bxox[abprs]-[A-Za-z0-9-]{10,}")),
+    ("Google API 키", re.compile(r"\bAIza[0-9A-Za-z_-]{35}\b")),
+    ("AI API 키", re.compile(r"\bsk-(ant-)?[A-Za-z0-9_-]{32,}")),
+]
+# 공개로 커밋하도록 설계된 값이 들어 있는 파일 (Firebase 클라이언트 설정)
+SECRET_VALUE_ALLOW = re.compile(r"(^|/)GoogleService-Info\.plist$")
+# 로그 호출 안의 문자열 보간에 인증 정보 이름이 들어가는지
+LOG_CALL_RE = re.compile(r"(\b\w*[Ll]ogger\.(debug|info|notice|warning|error|fault|trace|critical|log)|\bNSLog|(?<![\w.])(print|debugPrint|dump))\(")
+INTERPOLATION_RE = re.compile(r"\\\(([^)]*)\)")
+SENSITIVE_NAME_RE = re.compile(r"(?i)(token|password|passwd|secret|authorization|cookie|credential|apikey|api_key)")
+# OSLog 가 기기 로그에서 값을 가리는 보간은 허용한다 (예: FCM 토큰)
+MASKED_RE = re.compile(r"privacy:\s*\.(private|sensitive)")
+MAX_SCAN_BYTES = 2_000_000
+
 TOP_DECL_RE = re.compile(r"^(?:@\w+\s+)*(?:private\s+|fileprivate\s+|public\s+|final\s+)*(struct|class|enum|extension|actor|protocol)\s")
 
 
@@ -53,9 +82,12 @@ def parse_added(diff):
 
 
 def whole_file(path):
+    file = ROOT / path
     try:
-        return [(i, l) for i, l in enumerate((ROOT / path).read_text(errors="ignore").splitlines(), 1)]
-    except FileNotFoundError:
+        if file.stat().st_size > MAX_SCAN_BYTES:
+            return []
+        return [(i, l) for i, l in enumerate(file.read_text(errors="ignore").splitlines(), 1)]
+    except (FileNotFoundError, IsADirectoryError):
         return []
 
 
@@ -69,13 +101,13 @@ def changes(args):
             return {rel: whole_file(rel)}, {rel}
         return parse_added(git("diff", "-U0", "--no-color", "HEAD", "--", rel)), set()
     if args.staged:
-        added = parse_added(git("diff", "--cached", "-U0", "--no-color", "--diff-filter=AM", "--", "*.swift"))
+        added = parse_added(git("diff", "--cached", "-U0", "--no-color", "--diff-filter=AM"))
         new = set(git("diff", "--cached", "--name-only", "--diff-filter=A").split())
         return added, new
     base = git("merge-base", args.base, "HEAD").strip()
-    added = parse_added(git("diff", "-U0", "--no-color", "--diff-filter=AM", base, "--", "*.swift"))
+    added = parse_added(git("diff", "-U0", "--no-color", "--diff-filter=AM", base))
     new = set(git("diff", "--name-only", "--diff-filter=A", base).split())
-    for rel in git("ls-files", "--others", "--exclude-standard", "--", "*.swift").split():
+    for rel in git("ls-files", "--others", "--exclude-standard").split():
         added[rel] = whole_file(rel)
         new.add(rel)
     return added, new
@@ -90,9 +122,20 @@ def check(added, new):
 
     def report(rule, path, line, message, doc):
         out.append(f"[{rule}] {path}:{line} — {message} (규칙: .harness/rules/{doc})")
+        if os.environ.get("GITHUB_ACTIONS") == "true":  # PR 화면의 해당 줄에 표시
+            print(f"::error file={path},line={line},title=하네스 {rule}::{message} (.harness/rules/{doc})")
+
+    for path in sorted(new):
+        if SECRET_FILE_RE.search(path):
+            report("secret-file", path, 1, "키 · 인증서 · 환경변수 · Secrets xcconfig 파일은 커밋하지 않는다", "core.md")
 
     contract = CONTRACT_TESTS.read_text() if CONTRACT_TESTS.exists() else ""
     for path, lines in sorted(added.items()):
+        if not SECRET_VALUE_ALLOW.search(path):
+            for no, text in lines:
+                for label, pattern in SECRET_VALUE_RES:
+                    if pattern.search(text):
+                        report("secret-value", path, no, f"{label}로 보이는 값이 들어 있다 — 제거하고 키를 폐기 · 재발급한다", "core.md")
         if not path.endswith(".swift"):
             continue
         app = path.startswith(APP)
@@ -103,6 +146,10 @@ def check(added, new):
                 continue
             if app and PRINT_RE.search(text):
                 report("logging", path, no, "print/debugPrint/dump 대신 Logger 를 쓴다", "swift-style.md")
+            if app and LOG_CALL_RE.search(text) and any(
+                    SENSITIVE_NAME_RE.search(expr) and not MASKED_RE.search(expr)
+                    for expr in INTERPOLATION_RE.findall(text)):
+                report("sensitive-log", path, no, "토큰 · 비밀번호 등 인증 정보를 로그에 넣지 않는다 (상태만 남긴다)", "swift-style.md")
             if presentation and FONT_RE.search(text):
                 report("text-style", path, no, ".font(...) 대신 .textStyle(...) 을 쓴다", "swiftui.md")
             if app and "/DTO/" in path and (m := RESPONSE_DTO_RE.match(text)):
