@@ -1,0 +1,217 @@
+# PR 업데이트 시에는 빌드 없이 가벼운 검사만, 머지 요청(Merge Queue) 시에만 빌드·테스트를 수행하는 CI.
+# CD 는 testflight.yml · release.yml (머지 = 브랜치 push 후 실행, 변경 없음)
+#
+#  대상 브랜치 | PR 생성·push (pull_request)                 | 머지 요청 (merge_group)
+#  -----------|---------------------------------------------|----------------------------------------------
+#  dev        | Branch policy · Lint                        | Unit tests (Debug)   ← Debug 빌드 + 유닛 테스트
+#  staging    | Branch policy · Lint                        | Build (Staging) + 설정 검증
+#  main       | Branch policy · Lint (+ Verify App Store version) | Build (Release) + 설정 검증 (+ Verify App Store version)
+#
+#  - 유닛 테스트는 dev 큐에서만 돈다. staging·main 으로 오는 코드는 dev 큐에서 이미 통과했다.
+#  - 유닛 테스트는 Debug 구성에서만 돈다. (Staging·Release 는 ENABLE_TESTABILITY 가 꺼져 있다)
+#    `xcodebuild test` 가 Debug 빌드를 먼저 하므로 dev 큐의 "Debug 빌드 + 유닛 테스트" 는 Unit tests 한 job 이다.
+#
+# Required Status Check 평가 방식
+#  - 브랜치마다 Required check 목록은 하나이고, PR 과 Merge Queue 양쪽에서 모두 결과가 있어야 한다.
+#  - 그래서 PR 전용 job 은 merge_group 에서, 큐 전용 job 은 pull_request 에서 조건 불일치로 "건너뜀" 처리한다.
+#    GitHub 는 조건 불일치로 건너뛴 job 을 "성공" 으로 보고하므로 양쪽 모두 평가가 끝난다.
+#  - 실제 차단은: PR 검사 실패 → 큐에 넣을 수 없음 / 큐 검사 실패 → PR 이 큐에서 빠지고 브랜치에 반영되지 않음.
+#  - 다른 브랜치용 job 을 Required 로 등록하지 않는다. (그 브랜치에서는 항상 건너뜀 = 항상 성공)
+#
+# 공통
+#  - feature push · 브랜치 머지 후에는 실행하지 않는다.
+#  - 같은 PR 이 갱신되면 이전 실행을 취소한다. 큐 실행은 취소하지 않는다.
+#  - 배포 인증서·배포용 Secrets 를 쓰지 않는다. 서명 없이 빌드하고, xcconfig 는 가짜 값으로 만든다.
+name: iOS CI
+
+on:
+  pull_request:
+    branches: [dev, staging, main]
+    types: [opened, synchronize, reopened, ready_for_review]
+  merge_group:
+    types: [checks_requested]
+
+concurrency:
+  group: ci-${{ github.event.pull_request.number || github.event.merge_group.head_ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+permissions:
+  contents: read
+
+env:
+  # macos-26 이미지의 Xcode 26.6 (iOS SDK 26.5 + iOS 26.5 시뮬레이터). CD 와 같은 러너·Xcode.
+  # Xcode 26.0.1 은 이미지에 iOS 26.0 플랫폼·시뮬레이터가 없어 빌드·테스트가 불가하다.
+  # macos-15 풀은 러너 배정이 되지 않는 문제가 있었다. (2026-11-18)
+  XCODE_VERSION: "26.6"
+  # 로컬과 같은 버전으로 고정한다. (버전마다 규칙이 달라 결과가 바뀐다)
+  SWIFTFORMAT_VERSION: "0.60.1"
+  SWIFTLINT_VERSION: "0.65.1"
+  # SPM 패키지를 Package.resolved 그대로 쓰고, 산출물을 한곳에 모은다.
+  XCODEBUILD_COMMON: >-
+    -project Kkobungdan.xcodeproj
+    -scheme Kkobungdan
+    -clonedSourcePackagesDirPath build/SourcePackages
+    -derivedDataPath build/DerivedData
+    -disableAutomaticPackageResolution
+    -skipPackagePluginValidation
+    -skipMacroValidation
+    CODE_SIGNING_ALLOWED=NO
+
+jobs:
+  # ════════════════════════════════════════════════════════════
+  #  PR 생성·push — 빌드 없는 가벼운 검사
+  # ════════════════════════════════════════════════════════════
+
+  # 공통: PR 출발 브랜치 검사 (큐에서는 PR 단계에서 이미 통과했으므로 건너뜀)
+  branch-policy:
+    name: Branch policy
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Check source branch
+        env:
+          BASE: ${{ github.base_ref }}
+          HEAD: ${{ github.head_ref }}
+          HEAD_REPO: ${{ github.event.pull_request.head.repo.full_name }}
+          BASE_REPO: ${{ github.repository }}
+        run: |
+          echo "PR: $HEAD → $BASE"
+          case "$BASE" in
+            staging) allowed="dev" ;;
+            main)    allowed="staging" ;;
+            *)       echo "✓ $BASE 대상 PR 은 출발 브랜치 제한 없음"; exit 0 ;;
+          esac
+          if [ "$HEAD_REPO" != "$BASE_REPO" ]; then
+            echo "::error::$BASE 로는 fork 저장소의 PR 을 받을 수 없습니다."
+            exit 1
+          fi
+          if [ "$HEAD" != "$allowed" ]; then
+            echo "::error::$BASE 로는 $allowed 브랜치에서 온 PR 만 머지할 수 있습니다. (현재: $HEAD)"
+            exit 1
+          fi
+          echo "✓ $allowed → $BASE"
+
+  # 공통: 코드 스타일. macOS 가 필요 없어 Linux 러너에서 공식 Docker 이미지(버전 고정)로 실행한다.
+  # 워크스페이스를 같은 경로로 마운트해 PR 주석의 파일 경로가 그대로 맞게 한다.
+  lint:
+    name: Lint
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      # Xcode 빌드 페이즈와 같은 범위·설정 (앱 소스 Kkobungdan/ · Kkobungdan/.swiftformat)
+      - name: SwiftFormat ${{ env.SWIFTFORMAT_VERSION }}
+        run: |
+          docker run --rm -v "$GITHUB_WORKSPACE:$GITHUB_WORKSPACE" -w "$GITHUB_WORKSPACE" \
+            "ghcr.io/nicklockwood/swiftformat:${SWIFTFORMAT_VERSION}" \
+            --lint --cache ignore --reporter github-actions-log Kkobungdan
+
+      # Xcode 빌드 페이즈와 같은 설정. error 는 실패, warning 은 PR 주석으로만 표시한다.
+      - name: SwiftLint ${{ env.SWIFTLINT_VERSION }}
+        run: |
+          docker run --rm -v "$GITHUB_WORKSPACE:$GITHUB_WORKSPACE" -w "$GITHUB_WORKSPACE" \
+            "ghcr.io/realm/swiftlint:${SWIFTLINT_VERSION}" \
+            swiftlint lint --no-cache --config Kkobungdan/.swiftlint.yml --reporter github-actions-logging
+
+  # ════════════════════════════════════════════════════════════
+  #  머지 요청 (Merge Queue) — 대상 브랜치 최신 상태 + 이 PR 을 합친 코드로 실제 빌드
+  #  실패하면 PR 이 큐에서 빠지고 브랜치에는 반영되지 않는다.
+  # ════════════════════════════════════════════════════════════
+
+  # dev: Debug 빌드(시뮬레이터) + 유닛 테스트. dev 큐의 "Debug 빌드 + Unit Test" 전부다.
+  unit-tests:
+    name: Unit tests (Debug)
+    if: github.event_name == 'merge_group' && github.event.merge_group.base_ref == 'refs/heads/dev'
+    runs-on: macos-26
+    timeout-minutes: 45
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup
+        uses: ./.github/actions/ios-ci-setup
+        with:
+          xcode-version: ${{ env.XCODE_VERSION }}
+
+      - name: Pick iPhone simulator
+        run: |
+          sim="$(xcrun simctl list devices available | grep -oE 'iPhone [^(]+' | head -1 | sed 's/[[:space:]]*$//')"
+          [ -n "$sim" ] || { echo "::error::사용 가능한 iPhone 시뮬레이터가 없습니다."; exit 1; }
+          echo "SIMULATOR=$sim" >> "$GITHUB_ENV"
+          echo "▶︎ $sim"
+
+      - name: Test (KkobungdanTests)
+        run: |
+          set -o pipefail
+          xcodebuild test $XCODEBUILD_COMMON \
+            -configuration Debug \
+            -destination "platform=iOS Simulator,name=${SIMULATOR}" \
+            -only-testing:KkobungdanTests \
+            -resultBundlePath build/ci/UnitTests.xcresult \
+            | xcbeautify --renderer github-actions
+
+      - name: Upload test results
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: unit-test-results
+          path: build/ci/UnitTests.xcresult
+          retention-days: 7
+
+  # staging: TestFlight 에 올릴 Staging 구성 빌드 + 설정 검증
+  build-staging:
+    name: Build (Staging)
+    if: github.event_name == 'merge_group' && github.event.merge_group.base_ref == 'refs/heads/staging'
+    runs-on: macos-26
+    timeout-minutes: 45
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup
+        uses: ./.github/actions/ios-ci-setup
+        with:
+          xcode-version: ${{ env.XCODE_VERSION }}
+
+      - name: Build Staging (iphoneos, unsigned)
+        run: |
+          set -o pipefail
+          xcodebuild build $XCODEBUILD_COMMON \
+            -configuration Staging \
+            -destination "generic/platform=iOS" \
+            | xcbeautify --renderer github-actions
+
+      - name: Verify Staging build configuration
+        run: ./Scripts/ci/verify-build-config.sh Staging build/DerivedData/Build/Products/Staging-iphoneos/Kkobungdan.app
+
+  # main: App Store 에 낼 Release 구성 빌드 + 운영 API 설정 검증
+  build-release:
+    name: Build (Release)
+    if: github.event_name == 'merge_group' && github.event.merge_group.base_ref == 'refs/heads/main'
+    runs-on: macos-26
+    timeout-minutes: 45
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup
+        uses: ./.github/actions/ios-ci-setup
+        with:
+          xcode-version: ${{ env.XCODE_VERSION }}
+
+      - name: Build Release (iphoneos, unsigned)
+        run: |
+          set -o pipefail
+          xcodebuild build $XCODEBUILD_COMMON \
+            -configuration Release \
+            -destination "generic/platform=iOS" \
+            | xcbeautify --renderer github-actions
+
+      # Release 가 Secrets.Release 를 읽고 스테이징 호스트가 아닌지, 앱 이름·ATS·암호화 신고.
+      # (실제 운영 서버 값은 배포 시 fastlane verify_ipa! 가 다시 검증한다)
+      - name: Verify Release build configuration
+        run: ./Scripts/ci/verify-build-config.sh Release build/DerivedData/Build/Products/Release-iphoneos/Kkobungdan.app

@@ -3,7 +3,7 @@
 <plist version="1.0">
 <dict>
 	<key>CFBundleDisplayName</key>
-	<string>꼬붕단</string>
+	<string>$(APP_DISPLAY_NAME)</string>
 	<key>UIAppFonts</key>
 	<array>
 		<string>Pretendard-Thin.ttf</string>
@@ -35,6 +35,12 @@
 	<array>
 		<string>remote-notification</string>
 	</array>
+	<!-- 표준 HTTPS 외 비면제 암호화를 쓰지 않는다. (없으면 TestFlight 빌드가 Missing Compliance 로 멈춘다) -->
+	<key>ITSAppUsesNonExemptEncryption</key>
+	<false/>
+	<!-- 빌드 구성 이름(Debug/Staging/Release). fastlane 이 업로드 전 IPA 검증에 쓴다. -->
+	<key>APP_BUILD_CONFIGURATION</key>
+	<string>$(CONFIGURATION)</string>
 	<key>KAKAO_NATIVE_APP_KEY</key>
 	<string>$(KAKAO_NATIVE_APP_KEY)</string>
 	<key>API_BASE_HOST</key>
