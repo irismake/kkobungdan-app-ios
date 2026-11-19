@@ -8,7 +8,8 @@
 import Foundation
 
 protocol OfferRepositoryProtocol: Sendable {
-  func createOffer(proposalID: Int64) async throws -> Offer
+  /// 지원한다. `message`(지원 메시지)는 서버가 대화방의 첫 채팅으로 넣는다.
+  func createOffer(proposalID: Int64, message: String) async throws -> Offer
   /// proposalID 의 제안 목록. `status` 다중값 필터(`status=A&status=B`), 빈 배열이면 전체 상태.
   func fetchOffersByProposal(proposalID: Int64, status: [OfferStatus]) async throws -> [Offer]
   func fetchOfferDetail(offerID: Int64) async throws -> OfferDetail

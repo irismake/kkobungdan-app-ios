@@ -25,14 +25,6 @@ final class MyProposalDetailViewModel: LoadableViewModel {
     proposal?.status == .matched
   }
 
-  /// 카카오톡 오픈채팅방 링크. proposal 이 MATCHED·ORDER_COMPLETED 일 때만 노출한다.
-  var openChatURL: String? {
-    guard let proposal, proposal.status == .matched || proposal.status == .orderCompleted else {
-      return nil
-    }
-    return proposal.openChatURL
-  }
-
   /// 오더러가 수령 확인을 마쳤고, 러너 완료 처리를 기다리는 중인지 여부.
   var isWaitingForRunnerConfirm: Bool {
     proposal?.status == .orderCompleted
@@ -51,6 +43,9 @@ final class MyProposalDetailViewModel: LoadableViewModel {
   }
 
   /// 분쟁 중 조회한 증빙. 내가 중단을 신청한 당사자인지 판별하는 데 쓴다.
+  /// 관련 대화. 목록·순서·상태 모두 서버가 내려준 그대로 쓴다.
+  var relatedChatRooms: [ChatRoom] = []
+
   var disputeEvidence: DisputeEvidence?
 
   /// 분쟁 중이고 중단을 신청한 당사자가 내가 아닌 경우(= 내가 중단을 당한 경우) → 문의하기 노출.
@@ -70,6 +65,7 @@ final class MyProposalDetailViewModel: LoadableViewModel {
   private let confirmReceivedUseCase: ConfirmReceivedUseCase
   private let cancelProposalUseCase: CancelProposalUseCase
   private let fetchDisputeEvidenceUseCase: FetchDisputeEvidenceUseCase
+  private let fetchChatRoomsUseCase: FetchChatRoomsUseCase
 
   init(
     proposalID: Int64,
@@ -77,7 +73,8 @@ final class MyProposalDetailViewModel: LoadableViewModel {
     fetchOffersUseCase: FetchOffersByProposalUseCase,
     confirmReceivedUseCase: ConfirmReceivedUseCase,
     cancelProposalUseCase: CancelProposalUseCase,
-    fetchDisputeEvidenceUseCase: FetchDisputeEvidenceUseCase
+    fetchDisputeEvidenceUseCase: FetchDisputeEvidenceUseCase,
+    fetchChatRoomsUseCase: FetchChatRoomsUseCase
   ) {
     self.proposalID = proposalID
     self.fetchDetailUseCase = fetchDetailUseCase
@@ -85,13 +82,14 @@ final class MyProposalDetailViewModel: LoadableViewModel {
     self.confirmReceivedUseCase = confirmReceivedUseCase
     self.cancelProposalUseCase = cancelProposalUseCase
     self.fetchDisputeEvidenceUseCase = fetchDisputeEvidenceUseCase
+    self.fetchChatRoomsUseCase = fetchChatRoomsUseCase
   }
 
   /// proposal 상태별로 조회할 offer status 필터.
   /// 미입금(HOLDING)·종료(취소/환불) 상태는 offer 목록을 조회하지 않으므로 `nil`.
   private func offerStatusFilter(for status: ProposalStatus) -> [OfferStatus]? {
     switch status {
-    case .holding, .cancelled, .refundPending, .refunded:
+    case .holding, .cancelled, .refundPending, .refunded, .reported:
       return nil
     case .posted, .offered:
       return [.waiting]
@@ -124,6 +122,9 @@ final class MyProposalDetailViewModel: LoadableViewModel {
       } else {
         disputeEvidence = nil
       }
+
+      // 관련 대화는 보조 정보 — 실패해도 상세 로딩을 막지 않는다.
+      relatedChatRooms = (try? await fetchChatRoomsUseCase.execute(proposalID: proposalID)) ?? []
     }
   }
 

@@ -26,6 +26,8 @@ enum ProposalStatus: String, CaseIterable {
   case refundPending = "REFUND_PENDING"
   /// 환불 완료
   case refunded = "REFUNDED"
+  /// 신고 처리 (게시글 신고가 승인돼 내려감)
+  case reported = "REPORTED"
   /// 오더 취소 (입금 전 취소 등 환불이 필요 없는 종료)
   case cancelled = "CANCELLED"
 }

@@ -14,6 +14,7 @@ final class AppRouter {
   var selectedTab: HomeTab = .home
   var homePath: [AppRoute] = []
   var activityPath: [AppRoute] = []
+  var chatPath: [AppRoute] = []
   var activitySegment: ActivitySegment = .orderer
   var activityFilter: ActivityStatusFilter = .all
 

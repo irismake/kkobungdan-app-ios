@@ -22,7 +22,9 @@ enum AppRoute: Hashable {
   /// 의뢰자가 자기 의뢰의 지원자 리스트를 보는 화면
   case runnerList(proposalID: Int64)
   /// 지원하기 → 계좌 등록 (임무 수행비 받을 계좌 입력)
-  case addOffer(proposalID: Int64)
+  case offerAccount(proposalID: Int64)
+  /// 계좌 등록 → 첫 인사(지원 메시지) 작성 + 실제 지원
+  case offerMessage(proposalID: Int64)
   /// 지원하기 성공 직후 안내 화면
   case offerComplete(proposalID: Int64, offerID: Int64)
   /// 의뢰 신고 사유 선택 화면
@@ -39,4 +41,8 @@ enum AppRoute: Hashable {
   case addProposalDateTime(draft: AddProposalDraft)
   /// 새 의뢰 작성 — 3단계: 웨이팅비 입력 + 등록
   case addProposalFee(draft: AddProposalDraft)
+  /// 홈 헤더 알림 버튼 → 알림 목록
+  case notifications
+  /// 채팅 상세. 대화방은 지원 1건당 1개라 roomID 는 지원(offer) ID 와 같다.
+  case chatRoom(roomID: Int64)
 }

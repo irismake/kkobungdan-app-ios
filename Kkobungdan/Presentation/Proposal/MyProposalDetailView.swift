@@ -17,19 +17,23 @@ struct MyProposalDetailView: View {
   var onShowRunners: () -> Void = {}
   var onAccepted: () -> Void = {}
   var onAbort: () -> Void = {}
+  /// 관련 대화 → 해당 지원자와의 채팅 상세.
+  var onOpenChat: (ChatRoom) -> Void = { _ in }
 
   init(
     viewModel: MyProposalDetailViewModel,
     onBack: @escaping () -> Void = {},
     onShowRunners: @escaping () -> Void = {},
     onAccepted: @escaping () -> Void = {},
-    onAbort: @escaping () -> Void = {}
+    onAbort: @escaping () -> Void = {},
+    onOpenChat: @escaping (ChatRoom) -> Void = { _ in }
   ) {
     _viewModel = State(initialValue: viewModel)
     self.onBack = onBack
     self.onShowRunners = onShowRunners
     self.onAccepted = onAccepted
     self.onAbort = onAbort
+    self.onOpenChat = onOpenChat
   }
 
   private var statusBadges: [BadgeItem] {
@@ -95,22 +99,21 @@ struct MyProposalDetailView: View {
                   )
                 }
 
-                if let openChatURL = viewModel.openChatURL {
-                  OpenChatModal(urlString: openChatURL)
-                }
+                // 관련 대화는 항상 맨 아래
+                relatedChatSection
               }
             }
             .padding(.vertical, 12)
+
+            // 고객센터 안내는 상세 내용과 함께 스크롤된다
+            Text("고객센터 \(SupportContact.email)")
+              .textStyle(.body3)
+              .foregroundColor(Color.gray700)
+              .multilineTextAlignment(.center)
+              .frame(maxWidth: .infinity)
+              .padding(.top, 20)
+              .padding(.bottom, 32)
           }
-
-          Spacer()
-
-          Text("고객센터 \(SupportContact.email)")
-            .textStyle(.body3)
-            .foregroundColor(Color.gray700)
-            .multilineTextAlignment(.center)
-            .frame(maxWidth: .infinity)
-            .padding(.bottom, 32)
         }
       }
       .frame(maxHeight: .infinity)
@@ -148,7 +151,7 @@ struct MyProposalDetailView: View {
     switch viewModel.proposal?.status {
     case .disputed:
       return viewModel.isDisputedByCounterparty
-    case .allCompleted, .cancelled, .refundPending, .refunded:
+    case .allCompleted, .cancelled, .refundPending, .refunded, .reported:
       return false
     default:
       return true
@@ -203,7 +206,7 @@ struct MyProposalDetailView: View {
       } else {
         EmptyView()
       }
-    case .allCompleted, .cancelled, .refundPending, .refunded:
+    case .allCompleted, .cancelled, .refundPending, .refunded, .reported:
       EmptyView()
     default:
       VStack(spacing: 8) {
@@ -226,6 +229,23 @@ struct MyProposalDetailView: View {
           Task { await viewModel.cancelProposal() }
         }
       }
+    }
+  }
+
+  /// 대화가 하나라도 있으면 상태와 무관하게 노출(클라이언트에서 거르지 않는다). 화면 맨 아래.
+  /// 대화 목록·상태는 서버가 내려준 그대로.
+  @ViewBuilder
+  private var relatedChatSection: some View {
+    if !viewModel.relatedChatRooms.isEmpty {
+      ChatCard(items: viewModel.relatedChatRooms.map { room in
+        ChatCardItem(
+          id: "\(room.id)",
+          name: room.counterpartName,
+          statusText: room.status.badge.text,
+          onOpenChat: { onOpenChat(room) }
+        )
+      })
+      .padding(.top, 4) // 위 섹션과 간격 16 (VStack spacing 12 + 4)
     }
   }
 

@@ -13,9 +13,9 @@
 		17998B8C2FB3300000519818 /* FirebaseMessaging in Frameworks */ = {isa = PBXBuildFile; productRef = 17998B8B2FB3300000519818 /* FirebaseMessaging */; };
 		17998B8D2FB3300000519818 /* FirebaseRemoteConfig in Frameworks */ = {isa = PBXBuildFile; productRef = 17998B8E2FB3300000519818 /* FirebaseRemoteConfig */; };
 		51C3EC1C17DD888E91B05D34 /* OpenAPIContractTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 769A8E30735BE0CF6AAD18CD /* OpenAPIContractTests.swift */; };
-		A1B2C3D40000000000000012 /* NotificationDecodingTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D40000000000000011 /* NotificationDecodingTests.swift */; };
-		A1B2C3D40000000000000002 /* HTTPClientAuthTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D40000000000000001 /* HTTPClientAuthTests.swift */; };
 		A00E989D86E760420C109F8D /* generated in Resources */ = {isa = PBXBuildFile; fileRef = F08BF9D1714EBF74399CB740 /* generated */; };
+		A1B2C3D40000000000000002 /* HTTPClientAuthTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D40000000000000001 /* HTTPClientAuthTests.swift */; };
+		A1B2C3D40000000000000012 /* NotificationDecodingTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D40000000000000011 /* NotificationDecodingTests.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -31,9 +31,9 @@
 /* Begin PBXFileReference section */
 		4CCDB922354A64DABBCBDCD9 /* KkobungdanTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = KkobungdanTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		769A8E30735BE0CF6AAD18CD /* OpenAPIContractTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = OpenAPIContractTests.swift; sourceTree = "<group>"; };
-		A1B2C3D40000000000000011 /* NotificationDecodingTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = NotificationDecodingTests.swift; sourceTree = "<group>"; };
-		A1B2C3D40000000000000001 /* HTTPClientAuthTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = HTTPClientAuthTests.swift; sourceTree = "<group>"; };
 		7F6958982F5863060051C58F /* Kkobungdan.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Kkobungdan.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		A1B2C3D40000000000000001 /* HTTPClientAuthTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = HTTPClientAuthTests.swift; sourceTree = "<group>"; };
+		A1B2C3D40000000000000011 /* NotificationDecodingTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = NotificationDecodingTests.swift; sourceTree = "<group>"; };
 		B6AFA8466E90BB29072E4AFB /* Contract */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = folder; path = Contract; sourceTree = "<group>"; };
 		EC4B64719BF76ECF765355C1 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS18.0.sdk/System/Library/Frameworks/Foundation.framework; sourceTree = DEVELOPER_DIR; };
 		F08BF9D1714EBF74399CB740 /* generated */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = folder; name = generated; path = Fixtures/generated; sourceTree = "<group>"; };
@@ -82,22 +82,6 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		A1B2C3D40000000000000013 /* Notification */ = {
-			isa = PBXGroup;
-			children = (
-				A1B2C3D40000000000000011 /* NotificationDecodingTests.swift */,
-			);
-			path = Notification;
-			sourceTree = "<group>";
-		};
-		A1B2C3D40000000000000003 /* Network */ = {
-			isa = PBXGroup;
-			children = (
-				A1B2C3D40000000000000001 /* HTTPClientAuthTests.swift */,
-			);
-			path = Network;
-			sourceTree = "<group>";
-		};
 		4F91F07D7F9DB1D105D00983 /* KkobungdanTests */ = {
 			isa = PBXGroup;
 			children = (
@@ -143,6 +127,22 @@
 				8547015C8C36EAF32007CED3 /* iOS */,
 			);
 			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		A1B2C3D40000000000000003 /* Network */ = {
+			isa = PBXGroup;
+			children = (
+				A1B2C3D40000000000000001 /* HTTPClientAuthTests.swift */,
+			);
+			path = Network;
+			sourceTree = "<group>";
+		};
+		A1B2C3D40000000000000013 /* Notification */ = {
+			isa = PBXGroup;
+			children = (
+				A1B2C3D40000000000000011 /* NotificationDecodingTests.swift */,
+			);
+			path = Notification;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -269,7 +269,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "if [ -x \"/opt/homebrew/bin/swiftlint\" ]; then\n    echo \"Running SwiftLint...\"\n    /opt/homebrew/bin/swiftlint lint --no-cache --config \"${SRCROOT}/Kkobungdan/.swiftlint.yml\"\nelse\n    echo \"warning: SwiftLint not installed, install with 'brew install swiftlint'\"\nfi\n";
+			shellScript = "if [ \"${CI}\" = \"true\" ]; then\n    echo \"CI: lint runs in a separate workflow step, skipping\"\n    exit 0\nfi\nif [ -x \"/opt/homebrew/bin/swiftlint\" ]; then\n    echo \"Running SwiftLint...\"\n    /opt/homebrew/bin/swiftlint lint --no-cache --config \"${SRCROOT}/Kkobungdan/.swiftlint.yml\"\nelse\n    echo \"warning: SwiftLint not installed, install with 'brew install swiftlint'\"\nfi\n";
 		};
 		7F6958A92F5864920051C58F /* SwiftFormat */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -288,7 +288,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "export PATH=\"$PATH:/opt/homebrew/bin\"\nif which swiftformat > /dev/null; then\n  swiftformat --lint --cache ignore Kkobungdan\nelse\n  echo \"warning: SwiftFormat not installed, download from https://github.com/nicklockwood/SwiftFormat\"\nfi\n";
+			shellScript = "if [ \"${CI}\" = \"true\" ]; then\n    echo \"CI: lint runs in a separate workflow step, skipping\"\n    exit 0\nfi\nexport PATH=\"$PATH:/opt/homebrew/bin\"\nif which swiftformat > /dev/null; then\n  swiftformat --lint --cache ignore Kkobungdan\nelse\n  echo \"warning: SwiftFormat not installed, download from https://github.com/nicklockwood/SwiftFormat\"\nfi\n";
 		};
 /* End PBXShellScriptBuildPhase section */
 
@@ -447,6 +447,7 @@
 			baseConfigurationReferenceAnchor = 7F69589A2F5863060051C58F /* Kkobungdan */;
 			baseConfigurationReferenceRelativePath = Secrets.Debug.xcconfig;
 			buildSettings = {
+				APP_DISPLAY_NAME = "꼬붕단";
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = Kkobungdan/Kkobungdan.entitlements;
@@ -475,7 +476,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "@executable_path/Frameworks";
 				"LD_RUNPATH_SEARCH_PATHS[sdk=macosx*]" = "@executable_path/../Frameworks";
 				MACOSX_DEPLOYMENT_TARGET = 15.6;
-				MARKETING_VERSION = 1.0.2;
+				MARKETING_VERSION = 1.0.3;
 				PRODUCT_BUNDLE_IDENTIFIER = com.kkobungdan.Kkobungdan;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				REGISTER_APP_GROUPS = YES;
@@ -496,6 +497,7 @@
 			baseConfigurationReferenceAnchor = 7F69589A2F5863060051C58F /* Kkobungdan */;
 			baseConfigurationReferenceRelativePath = Secrets.Release.xcconfig;
 			buildSettings = {
+				APP_DISPLAY_NAME = "꼬붕단";
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = Kkobungdan/Kkobungdan.entitlements;
@@ -523,7 +525,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "@executable_path/Frameworks";
 				"LD_RUNPATH_SEARCH_PATHS[sdk=macosx*]" = "@executable_path/../Frameworks";
 				MACOSX_DEPLOYMENT_TARGET = 15.6;
-				MARKETING_VERSION = 1.0.2;
+				MARKETING_VERSION = 1.0.3;
 				PRODUCT_BUNDLE_IDENTIFIER = com.kkobungdan.Kkobungdan;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				REGISTER_APP_GROUPS = YES;
@@ -572,6 +574,128 @@
 			};
 			name = Debug;
 		};
+		4DD6E76AB7130759C539CFF9 /* Staging */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReferenceAnchor = 7F69589A2F5863060051C58F /* Kkobungdan */;
+			baseConfigurationReferenceRelativePath = Secrets.Staging.xcconfig;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEVELOPMENT_TEAM = 6AW4DY5F93;
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = NO;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				SWIFT_COMPILATION_MODE = wholemodule;
+			};
+			name = Staging;
+		};
+		6FFDA5976F96EB6EBC7573A7 /* Staging */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReferenceAnchor = 7F69589A2F5863060051C58F /* Kkobungdan */;
+			baseConfigurationReferenceRelativePath = Secrets.Staging.xcconfig;
+			buildSettings = {
+				APP_DISPLAY_NAME = "꼬붕단 STG";
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = Kkobungdan/Kkobungdan.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 8;
+				DEVELOPMENT_TEAM = 6AW4DY5F93;
+				ENABLE_APP_SANDBOX = YES;
+				ENABLE_HARDENED_RUNTIME = YES;
+				ENABLE_PREVIEWS = YES;
+				ENABLE_USER_SELECTED_FILES = readonly;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = Kkobungdan/Info.plist;
+				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphoneos*]" = YES;
+				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphonesimulator*]" = YES;
+				"INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents[sdk=iphoneos*]" = YES;
+				"INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents[sdk=iphonesimulator*]" = YES;
+				"INFOPLIST_KEY_UILaunchScreen_Generation[sdk=iphoneos*]" = YES;
+				"INFOPLIST_KEY_UILaunchScreen_Generation[sdk=iphonesimulator*]" = YES;
+				"INFOPLIST_KEY_UIStatusBarStyle[sdk=iphoneos*]" = UIStatusBarStyleDefault;
+				"INFOPLIST_KEY_UIStatusBarStyle[sdk=iphonesimulator*]" = UIStatusBarStyleDefault;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_PREPROCESS = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.6;
+				LD_RUNPATH_SEARCH_PATHS = "@executable_path/Frameworks";
+				"LD_RUNPATH_SEARCH_PATHS[sdk=macosx*]" = "@executable_path/../Frameworks";
+				MACOSX_DEPLOYMENT_TARGET = 15.6;
+				MARKETING_VERSION = 1.0.3;
+				PRODUCT_BUNDLE_IDENTIFIER = com.kkobungdan.Kkobungdan;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				REGISTER_APP_GROUPS = YES;
+				SDKROOT = iphoneos;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 1;
+			};
+			name = Staging;
+		};
+		5B9FA5A7BF47D6D15FD4545C /* Staging */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				CODE_SIGN_STYLE = Automatic;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.6;
+				PRODUCT_BUNDLE_IDENTIFIER = com.kkobungdan.KkobungdanTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SWIFT_VERSION = 5.0;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Kkobungdan.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/Kkobungdan";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Staging;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -579,6 +703,7 @@
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				B22814F55DB1A8896511300B /* Release */,
+				5B9FA5A7BF47D6D15FD4545C /* Staging */,
 				B4BE4D2D04C35032767080BE /* Debug */,
 			);
 			defaultConfigurationIsVisible = 0;
@@ -589,6 +714,7 @@
 			buildConfigurations = (
 				7F6958A12F5863070051C58F /* Debug */,
 				7F6958A22F5863070051C58F /* Release */,
+				4DD6E76AB7130759C539CFF9 /* Staging */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
@@ -598,6 +724,7 @@
 			buildConfigurations = (
 				7F6958A42F5863070051C58F /* Debug */,
 				7F6958A52F5863070051C58F /* Release */,
+				6FFDA5976F96EB6EBC7573A7 /* Staging */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

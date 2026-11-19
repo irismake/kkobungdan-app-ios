@@ -1,0 +1,598 @@
+# Kkobungdan iOS 배포 lane
+#
+#   bundle exec fastlane beta                    # Staging 구성(스테이징 API) → TestFlight 외부 테스트 (dev·staging)
+#   bundle exec fastlane release                 # Release 구성(운영 API)   → App Store 심사 자동 제출 (main)
+#   bundle exec fastlane verify_release_version  # main PR 검증: App Store 출시 버전보다 높은지 (빌드 없음)
+#   bundle exec fastlane setup_signing           # [로컬] match 인증서·프로필 생성 (이미 있으면 불필요)
+#
+# 브랜치 정책
+#   dev     : 자동 배포 없음 · 수동 실행 시 TestFlight 외부 테스트
+#   staging : 머지 시 TestFlight 외부 테스트 자동 배포 · 수동 실행 가능
+#   main    : 머지 시 App Store 심사 자동 제출 · 승인 후 출시는 App Store Connect 에서 수동
+# 릴리스 태그·GitHub Release 는 자동으로 만들지 않는다. (출시 후 수동 생성)
+#
+# beta / release 는 CI(GitHub Actions) 전용이다. 서명을 match 프로필로 바꾸려고
+# project.pbxproj 를 수정하므로, 로컬에서 돌리면 작업 트리가 더러워진다.
+# 로컬에서 꼭 돌려야 하면 FASTLANE_ALLOW_LOCAL=1 을 주고, 끝난 뒤 pbxproj 변경을 되돌린다.
+#
+# 필요한 환경변수
+#   ASC_KEY_ID / ASC_ISSUER_ID / ASC_KEY_P8(base64)   App Store Connect API Key
+#   MATCH_GIT_URL / MATCH_PASSWORD / MATCH_GIT_BASIC_AUTHORIZATION   (beta · release)
+# 선택 (비우면 App Store Connect 의 TestFlight "테스트 정보" 에 저장된 값을 그대로 쓴다)
+#   BETA_CONTACT_EMAIL / BETA_CONTACT_FIRST_NAME / BETA_CONTACT_LAST_NAME / BETA_CONTACT_PHONE
+#   BETA_DEMO_ACCOUNT_NAME / BETA_DEMO_ACCOUNT_PASSWORD / BETA_REVIEW_NOTES
+
+require "json"
+require "tmpdir"
+
+default_platform(:ios)
+
+# Staging · Release 모두 같은 Bundle ID = 같은 App Store Connect 앱 레코드 · 같은 match 프로필.
+#   Staging : 꼬붕단 STG (스테이징 API) → 이 앱의 TestFlight 외부 테스트 그룹
+#   Release : 꼬붕단     (운영 API)     → 이 앱의 App Store 출시
+# 서버는 빌드 구성(Secrets.<구성>.xcconfig)으로만 갈린다.
+APP_ID = "com.kkobungdan.Kkobungdan"
+TEAM_ID = "6AW4DY5F93"
+PROJECT = "Kkobungdan.xcodeproj"
+SCHEME = "Kkobungdan"
+APP_TARGET = "Kkobungdan"
+OUTPUT_DIR = "build/fastlane"
+SOURCE_PACKAGES_DIR = "build/SourcePackages"
+
+EXTERNAL_TEST_GROUPS = ["external_app_tester"].freeze
+# hotfix/* 는 main 에 넣기 전 실기기 확인용 (스테이징 API · STG 빌드)
+BETA_BRANCHES = ["dev", "staging", "hotfix/*"].freeze
+RELEASE_BRANCHES = ["main"].freeze
+STAGING_NAME_MARKER = "STG"
+
+# 같은 빌드 번호로 이미 업로드된 경우(동시 실행·재실행) 번호를 다시 받아 재빌드하는 최대 횟수
+MAX_BUILD_ATTEMPTS = 3
+DUPLICATE_BUILD_ERROR = /ITMS-90189|Redundant Binary Upload|already uploaded a build with build number/i
+
+# App Store 버전 상태 (App Store Connect API appVersionState)
+#  - 승인 이후 상태: 이 버전에는 새 빌드를 올리거나 다시 제출할 수 없다 → 버전을 올려야 한다
+APPROVED_VERSION_STATES = %w[
+  ACCEPTED PENDING_DEVELOPER_RELEASE PENDING_APPLE_RELEASE
+  PROCESSING_FOR_DISTRIBUTION READY_FOR_DISTRIBUTION
+].freeze
+
+platform :ios do
+  before_all do
+    # 버전 검증(verify_release_version)은 Linux 러너에서도 돌므로 키체인 준비는 macOS 에서만
+    setup_ci if is_ci && FastlaneCore::Helper.mac?
+  end
+
+  desc "유닛 테스트 (KkobungdanTests)"
+  lane :test do
+    run_tests(
+      project: PROJECT,
+      scheme: SCHEME,
+      device: ENV.fetch("TEST_DEVICE", "iPhone 17"),
+      only_testing: ["KkobungdanTests"],
+      cloned_source_packages_path: SOURCE_PACKAGES_DIR,
+      result_bundle: true,
+      output_directory: "#{OUTPUT_DIR}/test"
+    )
+  end
+
+  desc "Staging 구성(스테이징 API)으로 빌드해 TestFlight 외부 테스트 그룹에 배포 (Beta App Review 자동 제출)"
+  lane :beta do
+    ensure_ci_or_allowed!
+    ensure_branch!(BETA_BRANCHES, purpose: "TestFlight 배포")
+    api_key = asc_api_key
+    app = asc_app(api_key: api_key)
+
+    version = get_version_string
+    version_gate!(app, version, submitting_for_review: false)
+
+    build_number = build_and_upload(configuration: "Staging", api_key: api_key, app: app)
+
+    # ── 여기부터는 업로드가 끝난 상태 ──
+    # 빌드가 TestFlight 에 올라갔으면 워크플로는 성공으로 끝낸다.
+    # 외부 그룹 배포·Beta App Review 제출이 실패하면 실패 대신 ⚠️ 경고로 알리고,
+    # App Store Connect 에서 직접 그룹 추가·심사 제출하게 한다. (App Store 배포와 같은 기준)
+    begin
+      # 업로드·처리가 끝난 빌드를 외부 그룹에 배포한다.
+      #  - Beta App Review 자동 제출. 승인(보통 수 시간~1일)은 기다리지 않는다.
+      #    그룹이 미리 지정되어 있어 승인되는 즉시 external_app_tester 에 배포되고 외부 테스터에게 알림이 간다.
+      #  - 같은 버전의 빌드는 한 번에 하나만 심사받을 수 있다. 이전 빌드가 심사 대기/심사 중이면
+      #    그 빌드를 만료시키고 이 빌드를 제출한다. (staging 은 최신 빌드가 우선)
+      upload_to_testflight(
+        {
+          api_key: api_key,
+          app_identifier: APP_ID,
+          # 이미 올린 빌드를 배포하므로 IPA 가 없다. 플랫폼을 명시하지 않으면 fastlane 이
+          # "Please enter the app's platform" 을 물어 CI(비대화형)에서 실패한다.
+          app_platform: "ios",
+          distribute_only: true,
+          app_version: version,
+          build_number: build_number.to_s,
+          skip_waiting_for_build_processing: false,
+          distribute_external: true,
+          groups: EXTERNAL_TEST_GROUPS,
+          submit_beta_review: true,
+          reject_build_waiting_for_review: true,
+          notify_external_testers: true,
+          uses_non_exempt_encryption: false,
+          changelog: staging_changelog
+        }.merge(beta_review_info_options)
+      )
+
+      report_testflight_result(version: version, build_number: build_number)
+    rescue StandardError => e
+      report_testflight_result(version: version, build_number: build_number, distribute_error: e)
+    end
+  end
+
+  desc "Release 구성(운영 API)으로 빌드해 App Store 심사 자동 제출 (승인 후 출시는 App Store Connect 에서 수동)"
+  lane :release do
+    ensure_ci_or_allowed!
+    ensure_branch!(RELEASE_BRANCHES, purpose: "App Store 심사 제출")
+    api_key = asc_api_key
+    app = asc_app(api_key: api_key)
+
+    version = get_version_string
+    # 1차 검증은 빌드 전에(빠른 실패). 거절된 제출 취소는 업로드가 끝난 뒤 제출 직전에만 한다.
+    version_gate!(app, version, submitting_for_review: true)
+
+    build_number = build_and_upload(configuration: "Release", api_key: api_key, app: app)
+
+    # ── 여기부터는 업로드가 끝난 상태 ──
+    # 빌드가 App Store Connect 에 올라갔으면 워크플로는 성공으로 끝낸다.
+    # 심사 자동 제출이 실패하면(필수 정보 누락·진행 중인 제출 등) 실패 대신 ⚠️ 경고로 알리고,
+    # 심사는 App Store Connect 에서 직접 제출하게 한다.
+    begin
+      version_gate!(app, version, submitting_for_review: true, cancel_rejected_submission: true)
+
+      # build_number 를 명시해, 같은 버전으로 TestFlight 에 올라가 있는 Staging 빌드가
+      # 심사 대상으로 선택될 여지를 없앤다. (방금 검증·업로드한 Release 빌드만 제출)
+      # deliver 는 build_number 와 ipa 를 함께 받지 않으므로 바이너리 업로드는 build_and_upload 에서 끝낸다.
+      upload_to_app_store(
+        api_key: api_key,
+        app_identifier: APP_ID,
+        app_version: version,
+        build_number: build_number.to_s,
+        skip_binary_upload: true,
+        skip_metadata: true,
+        skip_screenshots: true,
+        submit_for_review: true,
+        automatic_release: false,
+        force: true,
+        run_precheck_before_submit: false
+      )
+      report_release_result(version: version, build_number: build_number)
+    rescue StandardError => e
+      report_release_result(version: version, build_number: build_number, submit_error: e)
+    end
+  end
+
+  desc "main PR 검증: MARKETING_VERSION 이 App Store 출시 버전보다 높고, 제출 가능한 상태인지 (빌드·서명 없음)"
+  lane :verify_release_version do
+    api_key = asc_api_key
+    app = asc_app(api_key: api_key)
+    version = get_version_string
+    version_gate!(app, version, submitting_for_review: true)
+    UI.success("버전 검증 통과: #{version}")
+  end
+
+  desc "[로컬] match 저장소에 Distribution 인증서 + App Store 프로필 생성 (mobile-signing 에 이미 있으면 불필요)"
+  lane :setup_signing do
+    UI.user_error!("setup_signing 은 로컬에서만 실행합니다. CI 는 readonly 로 가져오기만 한다.") if is_ci
+    api_key = asc_api_key
+
+    # 이미 있으면 재사용하고, 없을 때만 Apple Developer 에 생성한다.
+    # App ID 의 Capability(Push · Sign in with Apple)를 바꾼 뒤에는 force: true 로 프로필을 다시 만든다.
+    match(
+      type: "appstore",
+      app_identifier: [APP_ID],
+      readonly: false,
+      api_key: api_key
+    )
+  end
+
+  # ── helpers ────────────────────────────────────────────
+
+  private_lane :asc_api_key do
+    app_store_connect_api_key(
+      key_id: ENV.fetch("ASC_KEY_ID"),
+      issuer_id: ENV.fetch("ASC_ISSUER_ID"),
+      key_content: ENV.fetch("ASC_KEY_P8"),
+      is_key_content_base64: true
+    )
+  end
+
+  # 빌드 번호 발급 → 빌드 → IPA 검증 → 업로드(처리 완료까지 대기). 업로드한 빌드 번호를 돌려준다.
+  #
+  # 빌드 번호 = max(App Store Connect 에 올라간 모든 빌드 번호, 저장소 값) + 1. 저장소에는 커밋하지 않는다.
+  #  - 재실행: 이전 실행이 올린 빌드가 App Store Connect 에 있으므로 자연히 다음 번호를 쓴다.
+  #  - 동시 실행: 워크플로 concurrency 로 같은 워크플로는 한 번에 하나만 돈다. 그래도 TestFlight 와
+  #    App Store 배포가 같은 버전으로 동시에 돌아 번호가 겹치면, 업로드가 거절(ITMS-90189)되므로
+  #    번호를 다시 받아 재빌드한다. (최대 MAX_BUILD_ATTEMPTS 회)
+  private_lane :build_and_upload do |options|
+    configuration = options[:configuration]
+    attempt = 0
+    begin
+      attempt += 1
+      build_number = next_build_number(app: options[:app])
+      UI.message("빌드 번호 #{build_number} (#{configuration}, 시도 #{attempt}/#{MAX_BUILD_ATTEMPTS})")
+
+      ipa = build_signed_ipa(configuration: configuration, build_number: build_number, api_key: options[:api_key])
+      verify_ipa!(ipa, configuration: configuration)
+
+      upload_to_testflight(
+        api_key: options[:api_key],
+        app_identifier: APP_ID,
+        ipa: ipa,
+        skip_submission: true,
+        skip_waiting_for_build_processing: false,
+        uses_non_exempt_encryption: false
+      )
+      build_number
+    rescue StandardError => e
+      raise unless e.message.to_s.match?(DUPLICATE_BUILD_ERROR) && attempt < MAX_BUILD_ATTEMPTS
+
+      UI.important("빌드 번호 #{build_number} 가 이미 사용되었습니다. 번호를 다시 받아 재빌드합니다.")
+      retry
+    end
+  end
+
+  private_lane :next_build_number do |options|
+    # 버전과 무관하게 이 앱에 올라간 빌드(처리 중·실패 포함) 중 가장 큰 번호
+    uploaded = Spaceship::ConnectAPI::Build.all(app_id: options[:app].id, sort: "-uploadedDate", limit: 200)
+                                           .map { |build| build.version.to_i }
+                                           .max.to_i
+    in_repo = project_build_setting("CURRENT_PROJECT_VERSION").to_i
+    [uploaded, in_repo].max + 1
+  end
+
+  private_lane :build_signed_ipa do |options|
+    configuration = options[:configuration]
+
+    # mobile-signing 저장소의 기존 App Store 인증서·프로필을 읽기 전용으로 가져온다. (새로 만들지 않음)
+    match(type: "appstore", app_identifier: [APP_ID], readonly: true, api_key: options[:api_key])
+    profile_name = lane_context[SharedValues::MATCH_PROVISIONING_PROFILE_MAPPING][APP_ID]
+
+    # 앱 타깃의 해당 구성만 수동 서명 + match 프로필로 전환 (SPM 패키지는 건드리지 않는다)
+    update_code_signing_settings(
+      path: PROJECT,
+      use_automatic_signing: false,
+      targets: [APP_TARGET],
+      build_configurations: [configuration],
+      team_id: TEAM_ID,
+      code_sign_identity: "Apple Distribution",
+      profile_name: profile_name
+    )
+
+    build_app(
+      project: PROJECT,
+      scheme: SCHEME,
+      configuration: configuration,
+      export_method: "app-store",
+      export_options: { provisioningProfiles: { APP_ID => profile_name } },
+      cloned_source_packages_path: SOURCE_PACKAGES_DIR,
+      disable_package_automatic_updates: true,
+      xcargs: "CURRENT_PROJECT_VERSION=#{options[:build_number]}",
+      output_directory: OUTPUT_DIR,
+      output_name: "Kkobungdan-#{configuration}.ipa",
+      buildlog_path: "#{OUTPUT_DIR}/logs",
+      clean: true
+    )
+  end
+end
+
+# ── App Store Connect ─────────────────────────────────────
+
+# 조회에 실패하면 예외가 그대로 올라가 lane(= 검증)이 실패한다.
+def asc_app(api_key:)
+  Spaceship::ConnectAPI.token = Spaceship::ConnectAPI::Token.from(hash: api_key)
+  app = Spaceship::ConnectAPI::App.find(APP_ID)
+  UI.user_error!("App Store Connect 에서 #{APP_ID} 앱을 찾지 못했습니다.") unless app
+  app
+end
+
+# 버전 검증
+#  1. App Store 에 출시된 버전보다 높아야 한다. (출시 1.0.3 → 1.0.4 이상)
+#  2. 같은 버전이 이미 승인됐으면(출시 대기 포함) 새 빌드를 올릴 수 없다.
+#  3. (심사 제출 시) 이미 심사 대기/심사 중인 제출이 있으면 새로 제출할 수 없다. (자동 취소하지 않음)
+#     거절된 제출(UNRESOLVED_ISSUES)은 main 배포 시 취소하고 새 빌드로 다시 제출한다.
+#  아직 출시되지 않은 같은 버전의 재빌드·재제출(준비 중·거절됨·개발자 거절 등)은 허용한다.
+def version_gate!(app, version, submitting_for_review:, cancel_rejected_submission: false)
+  live = app.get_live_app_store_version(platform: Spaceship::ConnectAPI::Platform::IOS)
+  live_version = live&.version_string
+
+  if live_version && Gem::Version.new(version) <= Gem::Version.new(live_version)
+    UI.user_error!(
+      "MARKETING_VERSION(#{version})이 App Store 출시 버전(#{live_version}) 이하입니다. " \
+      "#{next_patch(live_version)} 이상으로 올려주세요."
+    )
+  end
+
+  same = app.get_app_store_versions(
+    filter: { versionString: version, platform: Spaceship::ConnectAPI::Platform::IOS }
+  ).first
+  state = same&.app_version_state
+  if APPROVED_VERSION_STATES.include?(state)
+    UI.user_error!(
+      "#{version} 은 이미 승인된 버전입니다(#{state}). 승인된 버전에는 새 빌드를 올릴 수 없습니다. " \
+      "App Store Connect 에서 출시하거나 개발자 거절 후 다시 시도하거나, 버전을 올려주세요."
+    )
+  end
+
+  if submitting_for_review
+    submission = app.get_in_progress_review_submission(platform: Spaceship::ConnectAPI::Platform::IOS)
+    case submission&.state
+    when nil
+      # 진행 중인 제출 없음
+    when Spaceship::ConnectAPI::ReviewSubmission::ReviewSubmissionState::UNRESOLVED_ISSUES
+      # 거절된 제출. 그대로 두면 deliver 가 새 제출을 거부하므로 배포 시에만 취소하고 새 빌드로 다시 제출한다.
+      if cancel_rejected_submission
+        cancel_review_submission!(submission)
+      else
+        UI.important("이전 심사 제출이 거절 상태입니다. main 배포 시 자동 취소 후 새 빌드로 다시 제출합니다.")
+      end
+    else
+      UI.user_error!(
+        "App Store 심사 제출이 이미 진행 중입니다(#{submission.state}). 심사 대기·심사 중인 제출은 자동으로 취소하지 않습니다. " \
+        "새 빌드로 다시 제출하려면 App Store Connect 에서 기존 제출을 취소한 뒤 다시 실행하세요."
+      )
+    end
+  end
+
+  UI.message("버전 확인: #{version} (출시 버전: #{live_version || '없음'}, 이 버전 상태: #{state || '미생성'})")
+end
+
+def cancel_review_submission!(submission)
+  UI.important("거절된 이전 심사 제출(#{submission.id})을 취소하고 새 빌드로 다시 제출합니다.")
+  submission.cancel_submission
+  # 취소는 비동기(CANCELING)라 끝날 때까지 기다린다. (최대 약 3분)
+  30.times do
+    state = Spaceship::ConnectAPI::ReviewSubmission.get(review_submission_id: submission.id).state
+    return if state != Spaceship::ConnectAPI::ReviewSubmission::ReviewSubmissionState::CANCELING
+
+    sleep(6)
+  end
+  UI.user_error!("이전 심사 제출 취소가 끝나지 않았습니다. 잠시 후 워크플로를 재실행하세요.")
+end
+
+def next_patch(version)
+  major, minor, patch = version.split(".").map(&:to_i)
+  [major, minor, patch.to_i + 1].join(".")
+end
+
+# ── App Store 배포 결과 알림 ─────────────────────────────────
+
+# 업로드 이후 결과를 로그 · GitHub Actions 경고(annotation) · 실행 요약(Step Summary)에 남긴다.
+#  - submit_error 없음: 심사 제출 완료 (승인 후 출시는 수동)
+#  - submit_error 있음: 업로드는 완료, 심사 자동 제출만 실패 → ⚠️ 직접 제출 안내 (워크플로는 성공)
+def report_release_result(version:, build_number:, submit_error: nil)
+  build = "#{version} (#{build_number})"
+
+  if submit_error.nil?
+    UI.success("App Store 심사 제출 완료: #{build} — 승인 후 App Store Connect 에서 직접 출시하세요.")
+    write_step_summary(<<~MD)
+      ## ✅ App Store 심사 제출 완료
+
+      | 항목 | 값 |
+      |---|---|
+      | 빌드 | `#{build}` |
+      | 업로드 | 완료 |
+      | 심사 제출 | 완료 |
+
+      심사 승인 후 **App Store Connect 에서 직접 출시**하세요. (자동 출시 안 함)
+    MD
+    return
+  end
+
+  reason = clean_error_message(submit_error)
+
+  UI.important("⚠️ 빌드 #{build} 업로드 완료 — 심사 자동 제출에 실패했습니다.")
+  UI.important("App Store Connect 에서 누락 항목을 채운 뒤 직접 \"심사에 제출\" 하세요.")
+  UI.important("원인: #{reason}")
+
+  github_warning(
+    "⚠️ App Store 심사는 직접 제출해야 합니다",
+    "빌드 #{build} 업로드 완료. 심사 자동 제출 실패 — App Store Connect 에서 직접 \"심사에 제출\" 하세요. 원인: #{reason}"
+  )
+
+  write_step_summary(<<~MD)
+    ## ⚠️ 업로드 완료 — 심사는 직접 제출해야 합니다
+
+    빌드 **`#{build}`** 는 App Store Connect 에 올라갔지만 **심사 자동 제출에 실패**했습니다.
+
+    1. App Store Connect → 앱 → iOS 앱 **#{version}** 을 연다. (빌드 `#{build_number}` 가 연결되어 있다)
+    2. 누락된 항목(예: 이 버전의 새로운 기능, 앱 규정 준수 등)을 채운다.
+    3. **심사에 제출**을 누른다.
+
+    워크플로를 다시 실행할 필요는 없습니다. (다시 실행하면 새 빌드 번호로 또 업로드합니다)
+
+    <details><summary>Apple 응답 (원인)</summary>
+
+    ```
+    #{reason}
+    ```
+    </details>
+  MD
+end
+
+# TestFlight(Staging) 업로드 이후 결과를 로그 · GitHub Actions 경고 · 실행 요약에 남긴다.
+#  - distribute_error 없음: 외부 그룹 배포 + Beta App Review 제출 완료
+#  - distribute_error 있음: 업로드는 완료, 외부 배포만 실패 → ⚠️ 직접 배포 안내 (워크플로는 성공)
+def report_testflight_result(version:, build_number:, distribute_error: nil)
+  build = "#{version} (#{build_number})"
+  groups = EXTERNAL_TEST_GROUPS.join(", ")
+
+  if distribute_error.nil?
+    UI.success("TestFlight 외부 테스트 제출 완료: #{build} → #{groups}")
+    write_step_summary(<<~MD)
+      ## ✅ TestFlight 외부 테스트 제출 완료
+
+      | 항목 | 값 |
+      |---|---|
+      | 빌드 | `#{build}` (Staging · 스테이징 API) |
+      | 업로드 | 완료 |
+      | 외부 그룹 | `#{groups}` |
+      | Beta App Review | 제출 완료 — 승인되면 외부 테스터에게 자동 배포·알림 |
+    MD
+    return
+  end
+
+  reason = clean_error_message(distribute_error)
+
+  UI.important("⚠️ 빌드 #{build} TestFlight 업로드 완료 — 외부 그룹 배포·베타 심사 제출에 실패했습니다.")
+  UI.important("App Store Connect → TestFlight 에서 빌드 #{build_number} 를 #{groups} 에 직접 추가하고 베타 심사에 제출하세요.")
+  UI.important("원인: #{reason}")
+
+  github_warning(
+    "⚠️ TestFlight 외부 배포는 직접 해야 합니다",
+    "빌드 #{build} 업로드 완료. 외부 그룹(#{groups}) 배포·베타 심사 제출 실패 — App Store Connect → TestFlight 에서 직접 추가·제출하세요. 원인: #{reason}"
+  )
+
+  write_step_summary(<<~MD)
+    ## ⚠️ TestFlight 업로드 완료 — 외부 배포는 직접 해야 합니다
+
+    빌드 **`#{build}`** 는 TestFlight 에 올라갔지만 **외부 그룹 배포·Beta App Review 제출에 실패**했습니다.
+    지금은 외부 테스터가 이 빌드를 받을 수 없습니다.
+
+    1. App Store Connect → 앱 → **TestFlight** → 빌드 **#{build_number}** 를 연다.
+    2. 외부 그룹 **`#{groups}`** 에 추가한다. ("테스트할 내용" 이 비어 있으면 입력)
+    3. **베타 앱 심사에 제출**한다. (같은 버전이 이미 승인된 적이 있으면 바로 배포된다)
+
+    워크플로를 다시 실행할 필요는 없습니다. (다시 실행하면 새 빌드 번호로 또 업로드합니다)
+
+    <details><summary>오류 내용 (원인)</summary>
+
+    ```
+    #{reason}
+    ```
+    </details>
+  MD
+end
+
+def clean_error_message(error)
+  reason = error.message.to_s.gsub(/\e\[[0-9;]*m/, "").strip
+  reason.length > 800 ? "#{reason[0, 800]}…" : reason
+end
+
+# GitHub Actions 경고(annotation). 한 줄이어야 하므로 줄바꿈을 %0A 로 바꾼다.
+def github_warning(title, message)
+  return unless ENV["GITHUB_ACTIONS"]
+
+  escaped = message.gsub("%", "%25").gsub("\r", "").gsub("\n", "%0A")
+  puts("::warning title=#{title}::#{escaped}")
+end
+
+def write_step_summary(markdown)
+  path = ENV["GITHUB_STEP_SUMMARY"]
+  return if path.to_s.empty?
+
+  File.open(path, "a") { |f| f.puts(markdown) }
+end
+
+# ── 검증 ──────────────────────────────────────────────────
+
+def ensure_ci_or_allowed!
+  return if is_ci || ENV["FASTLANE_ALLOW_LOCAL"] == "1"
+
+  UI.user_error!("beta / release 는 CI 전용입니다. (로컬 실행: FASTLANE_ALLOW_LOCAL=1, 끝난 뒤 pbxproj 변경 되돌리기)")
+end
+
+# GitHub Actions 에서는 실행 브랜치(GITHUB_REF_NAME), 로컬에서는 현재 git 브랜치로 판단한다.
+def ensure_branch!(allowed, purpose:)
+  branch = ENV["GITHUB_REF_NAME"].to_s
+  branch = git_branch.to_s if branch.empty?
+  # "hotfix/*" 처럼 끝이 /* 인 항목은 접두어로 비교한다.
+  return if allowed.any? { |pattern| pattern.end_with?("/*") ? branch.start_with?(pattern.delete_suffix("*")) : pattern == branch }
+
+  UI.user_error!("#{purpose}는 #{allowed.join(' · ')} 브랜치에서만 실행할 수 있습니다. (현재: #{branch.empty? ? '알 수 없음' : branch})")
+end
+
+# 업로드 직전, 실제로 만들어진 IPA 의 Info.plist 로 빌드 구성·서버·앱 이름을 확인한다.
+#   Staging : 구성=Staging · 스테이징 API · 앱 이름에 STG
+#   Release : 구성=Release · 운영 API(스테이징 호스트 아님) · 앱 이름에 STG 없음
+# 호스트 값은 로그에 남기지 않는다.
+def verify_ipa!(ipa, configuration:)
+  info = ipa_info_plist(ipa)
+  fail_ipa = ->(reason) { UI.user_error!("IPA 검증 실패(#{configuration}): #{reason} — 업로드하지 않습니다.") }
+
+  fail_ipa.call("Bundle ID 가 #{APP_ID} 가 아닙니다.") unless info["CFBundleIdentifier"] == APP_ID
+  built_with = info["APP_BUILD_CONFIGURATION"]
+  fail_ipa.call("#{built_with.inspect} 구성으로 빌드된 IPA 입니다.") unless built_with == configuration
+
+  expected_host = xcconfig_value(configuration, "API_BASE_HOST")
+  fail_ipa.call("API_BASE_HOST 가 Secrets.#{configuration}.xcconfig 값과 다릅니다.") unless info["API_BASE_HOST"] == expected_host
+
+  display_name = info["CFBundleDisplayName"].to_s
+  case configuration
+  when "Release"
+    staging_host = xcconfig_value("Release", "DEV_API_BASE_HOST")
+    fail_ipa.call("운영 빌드가 스테이징 API 를 바라봅니다.") if info["API_BASE_HOST"] == staging_host
+    fail_ipa.call("운영 빌드의 앱 이름(#{display_name})에 #{STAGING_NAME_MARKER} 가 있습니다.") if display_name.include?(STAGING_NAME_MARKER)
+  when "Staging"
+    fail_ipa.call("Staging 빌드의 앱 이름(#{display_name})에 #{STAGING_NAME_MARKER} 가 없습니다.") unless display_name.include?(STAGING_NAME_MARKER)
+  end
+
+  UI.success("IPA 검증 통과: #{configuration} · #{display_name} · #{info['CFBundleShortVersionString']} (#{info['CFBundleVersion']})")
+end
+
+def ipa_info_plist(ipa)
+  Dir.mktmpdir do |dir|
+    sh("unzip", "-q", "-o", ipa, "Payload/*.app/Info.plist", "-d", dir, log: false)
+    plist = Dir[File.join(dir, "Payload", "*.app", "Info.plist")].first
+    UI.user_error!("IPA 에서 Info.plist 를 찾지 못했습니다.") unless plist
+    JSON.parse(sh("plutil", "-convert", "json", "-o", "-", plist, log: false))
+  end
+end
+
+def xcconfig_value(configuration, key)
+  path = File.expand_path("../Kkobungdan/Secrets.#{configuration}.xcconfig", __dir__)
+  UI.user_error!("Secrets.#{configuration}.xcconfig 가 없습니다.") unless File.exist?(path)
+  value = File.read(path)[/^\s*#{key}\s*=\s*(.*?)\s*$/, 1]
+  UI.user_error!("Secrets.#{configuration}.xcconfig 에 #{key} 가 없습니다.") if value.to_s.empty?
+  value
+end
+
+# ── TestFlight 정보 ───────────────────────────────────────
+
+# 외부 테스트 "테스트할 내용". 최근 커밋 제목을 쓰고, 스테이징 빌드임을 맨 앞에 밝힌다.
+def staging_changelog
+  commits = changelog_from_git_commits(
+    commits_count: 20,
+    pretty: "- %s",
+    merge_commit_filtering: "exclude_merges",
+    quiet: true
+  ).to_s.strip
+  header = "[STAGING · 스테이징 서버] 테스트용 빌드입니다. 실제 서비스 데이터와 분리되어 있습니다."
+  [header, commits].reject(&:empty?).join("\n\n")[0, 4000]
+rescue StandardError
+  "[STAGING · 스테이징 서버] 테스트용 빌드입니다."
+end
+
+# Beta App Review 정보. 환경변수가 있을 때만 덮어쓰고, 없으면 App Store Connect 저장값을 유지한다.
+def beta_review_info_options
+  info = {
+    contact_email: ENV["BETA_CONTACT_EMAIL"],
+    contact_first_name: ENV["BETA_CONTACT_FIRST_NAME"],
+    contact_last_name: ENV["BETA_CONTACT_LAST_NAME"],
+    contact_phone: ENV["BETA_CONTACT_PHONE"],
+    demo_account_name: ENV["BETA_DEMO_ACCOUNT_NAME"],
+    demo_account_password: ENV["BETA_DEMO_ACCOUNT_PASSWORD"],
+    notes: ENV["BETA_REVIEW_NOTES"]
+  }.reject { |_, v| v.to_s.empty? }
+  return {} if info.empty?
+
+  info[:demo_account_required] = info.key?(:demo_account_name)
+  { beta_app_review_info: info }
+end
+
+def get_version_string
+  project_build_setting("MARKETING_VERSION")
+end
+
+# agvtool(VERSIONING_SYSTEM) 을 쓰지 않으므로 pbxproj 에서 직접 읽는다. (모든 구성이 같은 값을 쓴다)
+def project_build_setting(key)
+  pbxproj = File.read(File.expand_path("../#{PROJECT}/project.pbxproj", __dir__))
+  values = pbxproj.scan(/^\s*#{key} = ([^;]+);/).flatten.map(&:strip).uniq
+  UI.user_error!("#{key} 를 pbxproj 에서 찾지 못했습니다.") if values.empty?
+  UI.user_error!("#{key} 값이 구성마다 다릅니다: #{values.join(', ')}") if values.size > 1
+  values.first
+end

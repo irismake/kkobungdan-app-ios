@@ -14,15 +14,19 @@ struct OfferDetailView: View {
   @State private var isCancelConfirmPresented: Bool = false
   var onBack: () -> Void = {}
   var onAbort: () -> Void = {}
+  /// 관련 대화 → 채팅 화면. nil 이면 관련 대화 섹션을 숨긴다. (내 지원 상세에서만 전달)
+  var onOpenChat: ((ChatRoom) -> Void)?
 
   init(
     viewModel: OfferDetailViewModel,
     onBack: @escaping () -> Void = {},
-    onAbort: @escaping () -> Void = {}
+    onAbort: @escaping () -> Void = {},
+    onOpenChat: ((ChatRoom) -> Void)? = nil
   ) {
     _viewModel = State(initialValue: viewModel)
     self.onBack = onBack
     self.onAbort = onAbort
+    self.onOpenChat = onOpenChat
   }
 
   var body: some View {
@@ -53,25 +57,26 @@ struct OfferDetailView: View {
 
       VStack(spacing: 0) {
         ScrollView {
-          VStack(alignment: .leading, spacing: 12) {
-            proposalCardSection
+          VStack(spacing: 0) {
+            VStack(alignment: .leading, spacing: 12) {
+              proposalCardSection
 
-            if let openChatURL = viewModel.openChatURL {
-              OpenChatModal(urlString: openChatURL)
+              // 관련 대화는 항상 맨 아래
+              relatedChatSection
             }
+            .padding(.horizontal, Layout.screenHorizontalPadding)
+            .padding(.vertical, 12)
+
+            // 고객센터 안내는 상세 내용과 함께 스크롤된다
+            Text("고객센터 \(SupportContact.email)")
+              .textStyle(.body3)
+              .foregroundColor(Color.gray700)
+              .multilineTextAlignment(.center)
+              .frame(maxWidth: .infinity)
+              .padding(.top, 20)
+              .padding(.bottom, 32)
           }
-          .padding(.horizontal, Layout.screenHorizontalPadding)
-          .padding(.vertical, 12)
         }
-
-        Spacer()
-
-        Text("고객센터 \(SupportContact.email)")
-          .textStyle(.body3)
-          .foregroundColor(Color.gray700)
-          .multilineTextAlignment(.center)
-          .frame(maxWidth: .infinity)
-          .padding(.bottom, 32)
       }
       .frame(maxHeight: .infinity)
       .overlay(alignment: .bottom) {
@@ -196,6 +201,22 @@ struct OfferDetailView: View {
         fee: DisplayFormatter.feeString(proposal.errandFee),
         badges: ActivityStatusBadge.badges(proposal: proposal)
       )
+    }
+  }
+
+  /// 내 지원 상세에서만(onOpenChat 전달 시) 노출, 화면 맨 아래. 대화 목록·상태는 서버가 내려준 그대로.
+  @ViewBuilder
+  private var relatedChatSection: some View {
+    if let onOpenChat, !viewModel.relatedChatRooms.isEmpty {
+      ChatCard(items: viewModel.relatedChatRooms.map { room in
+        ChatCardItem(
+          id: "\(room.id)",
+          name: room.counterpartName,
+          statusText: room.status.badge.text,
+          onOpenChat: { onOpenChat(room) }
+        )
+      })
+      .padding(.top, 4) // 위 섹션과 간격 16 (VStack spacing 12 + 4)
     }
   }
 }

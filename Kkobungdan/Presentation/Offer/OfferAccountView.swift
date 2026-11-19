@@ -1,19 +1,19 @@
 //
-//  AddOfferView.swift
+//  OfferAccountView.swift
 //  Kkobungdan
 //
 //  Created by 김가희 on 5/30/26.
 //
-//  지원하기 → 지원 완료 사이에 들어가는 계좌 등록 화면.
-//  임무 수행비를 받을 계좌번호·은행을 입력한 뒤 실제 offer 를 생성한다.
+//  지원 흐름 1단계: 계좌 등록. (요청 상세 → 계좌 등록 → 첫 인사(OfferMessageView) → 지원 완료)
+//  임무 수행비를 받을 계좌번호·은행을 등록한 뒤 첫 인사 단계로 넘어간다.
 //
 
 import SwiftUI
 
-struct AddOfferView: View {
-  @State private var viewModel: AddOfferViewModel
+struct OfferAccountView: View {
+  @State private var viewModel: OfferAccountViewModel
   var onBack: () -> Void = {}
-  var onApplied: (Int64) -> Void = { _ in }
+  var onRegistered: () -> Void = {}
 
   @FocusState private var focus: Field?
 
@@ -23,13 +23,13 @@ struct AddOfferView: View {
   }
 
   init(
-    viewModel: AddOfferViewModel,
+    viewModel: OfferAccountViewModel,
     onBack: @escaping () -> Void = {},
-    onApplied: @escaping (Int64) -> Void = { _ in }
+    onRegistered: @escaping () -> Void = {}
   ) {
     _viewModel = State(initialValue: viewModel)
     self.onBack = onBack
-    self.onApplied = onApplied
+    self.onRegistered = onRegistered
   }
 
   var body: some View {
@@ -50,10 +50,10 @@ struct AddOfferView: View {
     .frame(maxWidth: .infinity, maxHeight: .infinity)
     .background(Color.white)
     .safeAreaInset(edge: .bottom, spacing: 0) {
-      BottomActionBar(title: "임무 지원하기", isEnabled: viewModel.canOffer) {
+      BottomActionBar(title: "다음", isEnabled: viewModel.canProceed) {
         Task {
-          if let offerID = await viewModel.offer() {
-            onApplied(offerID)
+          if await viewModel.registerAccount() {
+            onRegistered()
           }
         }
       }
@@ -70,7 +70,6 @@ struct AddOfferView: View {
     }
     .navigationBarBackButtonHidden(true)
     .task { await viewModel.account.loadAccount() }
-    .errorToast($viewModel.errorMessage)
     .errorToast($account.errorMessage)
   }
 
@@ -150,7 +149,7 @@ struct AddOfferView: View {
 }
 
 #Preview {
-  AddOfferView(
-    viewModel: AppRouteFactory.makeAddOfferViewModel(proposalID: 1)
+  OfferAccountView(
+    viewModel: AppRouteFactory.makeOfferAccountViewModel(proposalID: 1)
   )
 }

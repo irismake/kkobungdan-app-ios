@@ -8,6 +8,7 @@
 //   - 갱신 시도: 401 `INVALID_TOKEN` 이고, 실패한 요청이 `/v1/auth/refresh` 가 아닐 때만
 //   - 강제 로그아웃: `/v1/auth/refresh` 응답이 `INVALID_TOKEN`·`USER_NOT_FOUND` 일 때만
 //   - 그 외 401(미등록 코드 등): 세션은 그대로 두고 서버 에러를 전달
+//   - 강제 로그아웃 신호는 `SessionViewModel` 이 직접 받는다 (스플래시 중에도 놓치지 않도록)
 //
 
 @testable import Kkobungdan
@@ -263,5 +264,33 @@ private final class SpyAuthRepository: AuthRepositoryProtocol, @unchecked Sendab
 
     func logout(refreshToken _: String) async throws {
         fatalError("이 테스트에서 호출되지 않습니다.")
+    }
+}
+
+
+// MARK: - 강제 로그아웃 신호 → 세션
+
+/// 강제 로그아웃 신호는 화면(ContentView)이 아니라 앱 시작부터 살아 있는 `SessionViewModel` 이 받아야 한다.
+/// 화면이 받으면 스플래시 중(ContentView 생성 전) 온 신호를 놓쳐, 토큰 없이 로그인 상태로 남는다.
+final class SessionForcedLogoutTests: XCTestCase {
+    override func tearDown() {
+        TokenStorage.shared.clear()
+        super.tearDown()
+    }
+
+    @MainActor
+    func test_강제_로그아웃_신호를_받으면_로그아웃_상태가_된다() async {
+        TokenStorage.shared.refreshToken = "refresh-token"
+        let center = NotificationCenter()
+        let session = SessionViewModel(notificationCenter: center)
+        XCTAssertTrue(session.isLoggedIn, "전제: 로그인 상태로 시작한다.")
+
+        center.post(name: .authForcedLogout, object: nil)
+        // 관찰자 블록은 main 큐로 전달된다 — 한 바퀴 돌려 처리되길 기다린다.
+        let drained = expectation(description: "main queue drained")
+        OperationQueue.main.addOperation { drained.fulfill() }
+        await fulfillment(of: [drained], timeout: 1)
+
+        XCTAssertFalse(session.isLoggedIn)
     }
 }

@@ -30,13 +30,6 @@ final class MyOffersViewModel: LoadableViewModel {
     self.fetchProposalDetailUseCase = fetchProposalDetailUseCase
   }
 
-  static func preview() -> MyOffersViewModel {
-    MyOffersViewModel(
-      fetchMyOffersUseCase: FetchMyOffersUseCase(repository: DIContainer.activityRepository),
-      fetchProposalDetailUseCase: FetchProposalDetailUseCase(repository: DIContainer.proposalRepository)
-    )
-  }
-
   @MainActor
   func load(status: [OfferStatus] = []) async {
     await withLoading(fallback: "웨이팅 기록을 불러오지 못했어요.") {
@@ -66,5 +59,17 @@ final class MyOffersViewModel: LoadableViewModel {
       }
       return map
     }
+  }
+}
+
+// MARK: - Preview
+
+/// SwiftUI `#Preview` 전용 — 더미 데이터로 채운 VM 을 만든다. 운영 코드에서 호출하지 않는다.
+extension MyOffersViewModel {
+  static func preview() -> MyOffersViewModel {
+    MyOffersViewModel(
+      fetchMyOffersUseCase: FetchMyOffersUseCase(repository: DIContainer.activityRepository),
+      fetchProposalDetailUseCase: FetchProposalDetailUseCase(repository: DIContainer.proposalRepository)
+    )
   }
 }

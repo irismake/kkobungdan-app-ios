@@ -12,6 +12,8 @@ struct ProposalDetailView: View {
   var onBack: () -> Void = {}
   var onOffer: () -> Void = {}
   var onMine: () -> Void = {}
+  /// 내가 지원한 요청이면 내 지원 상세로 교체한다.
+  var onMyOffer: (Int64) -> Void = { _ in }
   var onReport: () -> Void = {}
 
   init(
@@ -19,12 +21,14 @@ struct ProposalDetailView: View {
     onBack: @escaping () -> Void = {},
     onOffer: @escaping () -> Void = {},
     onMine: @escaping () -> Void = {},
+    onMyOffer: @escaping (Int64) -> Void = { _ in },
     onReport: @escaping () -> Void = {}
   ) {
     _viewModel = State(initialValue: viewModel)
     self.onBack = onBack
     self.onOffer = onOffer
     self.onMine = onMine
+    self.onMyOffer = onMyOffer
     self.onReport = onReport
   }
 
@@ -36,10 +40,6 @@ struct ProposalDetailView: View {
         ScrollView {
           VStack(alignment: .leading, spacing: 12) {
             proposalCardSection
-
-            if let openChatURL = viewModel.openChatURL {
-              OpenChatModal(urlString: openChatURL)
-            }
           }
           .padding(.horizontal, Layout.screenHorizontalPadding)
           .padding(.vertical, 12)
@@ -54,8 +54,9 @@ struct ProposalDetailView: View {
 
       VStack(spacing: 0) {
         FillButton(
-          title: offerButtonTitle,
-          isEnabled: !viewModel.hasApplied
+          title: "지원하기",
+          // 불러오기 전·교체 직전(내 요청/내 지원)에는 누르지 못하게 막는다.
+          isEnabled: viewModel.proposal != nil && !viewModel.isMine && viewModel.myOfferID == nil
         ) {
           onOffer()
         }
@@ -67,15 +68,14 @@ struct ProposalDetailView: View {
     .background(Color.gray000)
     .task {
       await viewModel.load()
+      // 내 요청 → 내 요청 상세, 내 지원 있음 → 내 지원 상세, 둘 다 아니면 이 화면(지원하기)
       if viewModel.isMine {
         onMine()
+      } else if let offerID = viewModel.myOfferID {
+        onMyOffer(offerID)
       }
     }
     .errorToast($viewModel.errorMessage)
-  }
-
-  private var offerButtonTitle: String {
-    viewModel.hasApplied ? "지원 완료" : "지원하기"
   }
 
   private var reportButton: some View {

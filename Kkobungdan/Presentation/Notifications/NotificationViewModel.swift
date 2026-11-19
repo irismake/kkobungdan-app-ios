@@ -6,13 +6,6 @@
 //
 
 import Foundation
-import OSLog
-import UserNotifications
-
-private let notificationLogger = Logger(
-  subsystem: "com.kkobungdan.Kkobungdan",
-  category: "Notification"
-)
 
 @Observable
 final class NotificationViewModel: LoadableViewModel {
@@ -20,8 +13,6 @@ final class NotificationViewModel: LoadableViewModel {
   var isLoading: Bool = false
   var isLoadingMore: Bool = false
   var errorMessage: String?
-  /// 탭바 뱃지에 쓰는 전체 안읽음 개수. (목록은 페이지 단위라 stats API 로 별도 조회)
-  var unreadCount: Int = 0
 
   private var page = 1
   private var hasNext = false
@@ -37,16 +28,6 @@ final class NotificationViewModel: LoadableViewModel {
     self.repository = repository
   }
 
-  static func preview() -> NotificationViewModel {
-    let repo = NotificationRepositoryImpl()
-    let viewModel = NotificationViewModel(
-      fetchNotificationsUseCase: FetchNotificationsUseCase(repository: repo),
-      repository: repo
-    )
-    viewModel.notifications = AppNotification.dummyList
-    return viewModel
-  }
-
   @MainActor
   func load() async {
     await withLoading(fallback: "알림을 불러오지 못했어요.") {
@@ -54,29 +35,6 @@ final class NotificationViewModel: LoadableViewModel {
       notifications = firstPage.notifications
       page = 1
       hasNext = firstPage.hasNext
-    }
-  }
-
-  /// 목록과 뱃지를 한 번에 동기화한다.
-  @MainActor
-  func syncNotifications() async {
-    await load()
-    await refreshUnreadCount()
-  }
-
-  /// 서버 통계를 탭바와 앱 아이콘 뱃지에 함께 반영한다.
-  @MainActor
-  func refreshUnreadCount() async {
-    do {
-      let serverUnreadCount = try await repository.fetchStats().unread
-      unreadCount = serverUnreadCount
-      do {
-        try await UNUserNotificationCenter.current().setBadgeCount(serverUnreadCount)
-      } catch {
-        notificationLogger.error("앱 아이콘 뱃지 갱신 실패: \(error)")
-      }
-    } catch {
-      notificationLogger.error("안읽음 개수 갱신 실패: \(error)")
     }
   }
 
@@ -104,7 +62,7 @@ final class NotificationViewModel: LoadableViewModel {
   @MainActor
   func markAsRead(id: Int) async {
     do {
-      let markedCount = try await repository.markAsRead(ids: [id])
+      _ = try await repository.markAsRead(ids: [id])
       if let index = notifications.firstIndex(where: { $0.id == id }) {
         let existing = notifications[index]
         notifications[index] = AppNotification(
@@ -116,11 +74,23 @@ final class NotificationViewModel: LoadableViewModel {
           deepLink: existing.deepLink
         )
       }
-      // 통계 조회가 실패하더라도 서버가 실제 변경한 수만큼만 임시 반영한다.
-      unreadCount = max(0, unreadCount - markedCount)
-      await refreshUnreadCount()
     } catch {
       errorMessage = error.userMessage(fallback: "알림 상태를 변경하지 못했어요.")
     }
+  }
+}
+
+// MARK: - Preview
+
+/// SwiftUI `#Preview` 전용 — 더미 데이터로 채운 VM 을 만든다. 운영 코드에서 호출하지 않는다.
+extension NotificationViewModel {
+  static func preview() -> NotificationViewModel {
+    let repo = NotificationRepositoryImpl()
+    let viewModel = NotificationViewModel(
+      fetchNotificationsUseCase: FetchNotificationsUseCase(repository: repo),
+      repository: repo
+    )
+    viewModel.notifications = AppNotification.dummyList
+    return viewModel
   }
 }

@@ -51,14 +51,14 @@ struct OfferDetailResponseDTO: Decodable {
 extension OfferDetailResponseDTO {
   func toDomain() -> OfferDetail {
     // TODO: ordererID, ordererName, ordererLevel, runnerLevel, acceptedAt, runnerConfirmedAt, ordererConfirmedAt, disputedAt, resolvedAt — UI 반영 시 OfferDetail 엔티티에 추가
+    // openChatURL: 카카오 오픈채팅 대신 앱 채팅을 쓰므로 매핑하지 않는다 (서버 필드 제거 시 DTO 에서도 삭제)
     OfferDetail(
       id: id,
       proposalID: proposalID,
       runnerID: runnerID,
       runnerName: runnerName,
       status: OfferStatus(rawValue: status) ?? .waiting,
-      createdAt: DateFormatters.parse(createdAt),
-      openChatURL: openChatURL
+      createdAt: DateFormatters.parse(createdAt)
     )
   }
 }
