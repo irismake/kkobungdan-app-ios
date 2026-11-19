@@ -12,6 +12,7 @@
 | 중복 검증 | AI 를 더 붙이지 않고 **결정적 스크립트**(lint · validator · CI)로 해결한다. |
 | `no-build-verification` 규칙 | 단계형 검증(빠른 검증 매번 / 빌드·테스트는 큰 작업 완료 시)으로 개정한다. 검증 스크립트가 생기는 5단계에서 반영. |
 | Required Status Check | dev·staging·main 모두 [CI.md](../CI.md) 표대로 등록되어 동작 중이다. 하네스 범위에서 제외. |
+| 성과 측정 | 벤치마크 · 수동 지표 기록은 하지 않는다. 기준선 + 토큰 · 시간 · CI 자동 집계만 유지. |
 
 ---
 
@@ -35,7 +36,7 @@
 - 훅 · 스킬 · 서브에이전트 없음.
 - 프로젝트 지식 일부가 개인 auto-memory 에만 있어 다른 에이전트와 공유되지 않는다.
 - 문서화되지 않은 규칙: 아키텍처·의존성, 동시성, Git·커밋·PR, 테스트, 에이전트 금지 행동.
-- **규칙만 있고 강제가 없는 사례**: logging 규칙이 `print` 를 금지하지만 `TokenStorage.swift` 에 `print` 가 남아 access token 을 출력한다 (DEBUG 한정). → 4단계 첫 피드백 루프 사례.
+- **규칙만 있고 강제가 없는 사례**: logging 규칙이 `print` 를 금지하지만 `TokenStorage.swift` 에 `print` 가 남아 access token 을 출력한다 (DEBUG 한정). → 5단계 첫 재발 방지 사례.
 
 ## 3. 테스트 및 CI/CD
 
@@ -71,7 +72,7 @@
 원칙: **검증 스크립트 하나를 세 곳에서 호출한다.** 에이전트가 훅을 우회해도 CI 에서 같은 스크립트가 막는다.
 
 ```
-L4 Context   규칙 단일 출처 ──생성──▶ .claude/rules · .codex/rules · 인덱스
+L4 Context   .harness/rules (원본) ◀── .claude/rules (심볼릭 링크) · AGENTS.md (선택 표)
 L3 Workflow  skills + 위험도별 경로 (S/M/L)
 L2 Trigger   Claude 훅 │ git 훅 (pre-commit · commit-msg) │ CI Lint job
 L1 Gate      Scripts/harness/*.sh  (빠른 검증 / 전체 검증)
@@ -114,7 +115,7 @@ CI 연계: 새 검증은 기존 `Lint` job 의 step 으로 추가한다 → Requ
 ## 7. 권장 디렉터리 구조
 
 ```
-AGENTS.md / CLAUDE.md     # 진입점 (생성 또는 최소 수작업)
+AGENTS.md / CLAUDE.md     # 진입점 (2단계 확정 구조: 02-rules.md)
 .harness/
   rules/                  # 규칙 단일 출처 (적용 경로 frontmatter)
   skills/<name>/SKILL.md
@@ -129,25 +130,25 @@ Scripts/harness/          # 검증 스크립트
 
 ## 8~9. 단계별 계획 · 산출물 · 완료 조건
 
+> 2026-11-19 계획 수정: 하네스가 무거워지지 않도록 성과 측정(벤치마크 · 수동 지표)은 빼고 실제 개발 환경 개선에 집중한다. 측정은 기준선 문서와 토큰 · 시간 · CI 자동 집계만 유지한다.
+
 | 단계 | 산출물 | 완료 조건 |
 |---|---|---|
-| 1. 현황 분석 | 이 문서 · Cursor 제거 | 합의 ✅ |
-| 2. 기준선 | 과거 PR·CI 집계 스크립트, 작업 로그 양식, 토큰 집계 스크립트 | 과거 데이터로 기준선 표 생성 |
-| 3. 규칙 단일 출처화 | `.harness/rules`, 생성·`--check` 스크립트, 경로별 로딩, 누락 규칙 추가 | drift 가 CI 에서 실패 |
-| 4. 결정적 검증 + CI | 검증 스크립트, SwiftLint 커스텀 규칙, Lint job 연동, `TokenStorage` `print` 루프 | 위반 PR 이 CI 에서 차단 |
-| 5. 훅 | Claude 훅, git 훅, 빠른/전체 검증, `no-build-verification` 개정 | 위험 명령·보호 파일 변경 차단 |
-| 6. 스킬 | 스킬 6개 (입력·출력·실행·완료 조건) | 실제 작업 1건씩 수행 |
-| 7. 오케스트레이션 | 경로 판정, 리뷰어 서브에이전트, 수정 루프 | M·L 각 1건 완주 |
-| 8. 메모리 | incident·decision 템플릿, 개인 메모리 레포 이관 | incident 1건 → 강제 장치 커밋 |
-| 9. 도구 | 시뮬레이터·스크린샷 MCP 시범 | 채택 여부 결정 |
-| 10. 효과 검증 | 전후 비교 리포트 | 지표 표 + 해석 |
+| 1. 현황 분석 | 이 문서 · Cursor 제거 · 기준선 ([01-baseline.md](01-baseline.md)) | 합의 ✅ |
+| 2. 규칙 단일 출처화 · 컨텍스트 최적화 | `.harness/rules` (공통 원본), 작업별 선택 로딩, 규칙 정비, 일치 검사 스크립트 ([02-rules.md](02-rules.md)) | Claude · Codex 가 같은 원본을 참조, 공통 규칙만 상시 로드 |
+| 3. 에이전트 역할 분리 | 역할 정의 (계획 · 구현 · 리뷰), 역할당 에이전트 하나 | — |
+| 4. 작업 워크플로 · TDD | 작업 유형별 절차 (스킬) | — |
+| 5. 자동 검증 · Quality Gate | 검증 스크립트 · 훅, `no-build-verification` 개정, `TokenStorage` `print` 재발 방지 | — |
+| 6. 독립 AI 리뷰 · 피드백 루프 | 리뷰어 1개, 실수 → 규칙 · 테스트 · 검증 반영 절차 | — |
+| 7. 기존 CI/CD 연동 | 검증 스크립트를 기존 `Lint` job 에 연결 | — |
+| 8. 실제 사용 · 측정 · 최적화 | 기준선 대비 비교 | — |
 
 ## 10. 예상 문제 및 트레이드오프
 
 - 훅 지연·오탐 → 빠른 검증은 수 초 이내, 오탐도 incident 로 기록.
 - Codex 의 훅 지원 범위가 Claude 와 다를 수 있음 → git 훅 + CI 가 공통 차단선.
 - 리뷰어 서브에이전트 토큰 → L 경로에만, 증가량 측정.
-- 생성 스크립트 복잡도 ↔ 불일치 원천 차단.
+- 규칙 사본 대신 심볼릭 링크 하나 + 검사 스크립트로 불일치를 막는다 (생성 스크립트 없음).
 - 1인 프로젝트라 표본이 작음 → 수치 + 사례 병행.
 - "최초 통과율" 지표가 작업 쪼개기를 유도할 수 있음.
 

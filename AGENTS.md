@@ -1,21 +1,21 @@
-# Kkobungdan iOS
+# Kkobungdan iOS — Codex
 
-## AI 규칙
+프로젝트 규칙 원본은 **`.harness/rules/`** 이고 Claude Code 와 같은 파일을 쓴다. Codex 는 이 파일만 자동으로 읽으므로 아래 순서를 따른다.
 
-규칙 본문은 Codex(`.codex/rules/*.md`) · Claude(`.claude/rules/*.md`)에 **동일 내용**으로 분리되어 있다. 수정 시 **해당 도메인 파일을 모두** 갱신한다.
+1. 작업을 시작하기 전에 [`.harness/rules/core.md`](.harness/rules/core.md) 를 읽는다. (항상)
+2. 작업 대상 · 유형에 해당하는 규칙만 아래 표에서 골라 추가로 읽는다. 해당하지 않는 규칙은 읽지 않는다.
 
-**Codex 는 이 파일만 자동으로 읽는다. 작업을 시작하기 전에 아래 표의 `.codex/rules/*.md` 를 모두 읽고 그대로 따른다.**
+| 작업 | 주요 대상 | 규칙 |
+|---|---|---|
+| Swift 코드 전반 (포맷 · 린트 · 로깅) | `*.swift` | [`swift-style.md`](.harness/rules/swift-style.md) |
+| 아키텍처 · 계층 · DI · ViewModel | `Domain/` · `Data/` · `*ViewModel.swift` · `Routing/` | [`architecture.md`](.harness/rules/architecture.md) |
+| SwiftUI 화면 · 컴포넌트 · 텍스트 스타일 | `Presentation/` · `Common/Components/` | [`swiftui.md`](.harness/rules/swiftui.md) |
+| API 연동 · DTO · 오류 · 계약 테스트 | `Data/` · `OpenAPIContractTests` · `Contract/` | [`api.md`](.harness/rules/api.md) |
+| 더미 백엔드 | `Data/Common/Dummy/` · `Test*RepositoryImpl` · `DIContainer` | [`dummy-backend.md`](.harness/rules/dummy-backend.md) |
+| 비동기 · 동시성 | `Data/` · `*ViewModel.swift` · `Common/Token/` · `AppDelegate` | [`concurrency.md`](.harness/rules/concurrency.md) |
+| 테스트 · TDD | `KkobungdanTests/` · `Scripts/test.sh` | [`testing.md`](.harness/rules/testing.md) |
+| CI/CD · 브랜치 · 배포 · Xcode 프로젝트 설정 | `.github/` · `Scripts/ci/` · `fastlane/` · `project.pbxproj` | [`cicd.md`](.harness/rules/cicd.md) |
 
-| 규칙 | Codex | Claude |
-|------|--------|--------|
-| 통일 (최우선) | [`.codex/rules/00-ai-rules-unified.md`](.codex/rules/00-ai-rules-unified.md) | [`.claude/rules/00-ai-rules-unified.md`](.claude/rules/00-ai-rules-unified.md) |
-| 텍스트 스타일 | [`.codex/rules/text-style.md`](.codex/rules/text-style.md) | [`.claude/rules/text-style.md`](.claude/rules/text-style.md) |
-| 더미 백엔드 | [`.codex/rules/dummy-backend-store.md`](.codex/rules/dummy-backend-store.md) | [`.claude/rules/dummy-backend-store.md`](.claude/rules/dummy-backend-store.md) |
-| DTO 스키마별 분리 / 엔티티 공유 | [`.codex/rules/separate-dto-entity.md`](.codex/rules/separate-dto-entity.md) | [`.claude/rules/separate-dto-entity.md`](.claude/rules/separate-dto-entity.md) |
-| DTO·엔티티 서버 일치 | [`.codex/rules/dto-entity-server-align.md`](.codex/rules/dto-entity-server-align.md) | [`.claude/rules/dto-entity-server-align.md`](.claude/rules/dto-entity-server-align.md) |
-| DTO 계약 테스트 등록 | [`.codex/rules/contract-test-dto.md`](.codex/rules/contract-test-dto.md) | [`.claude/rules/contract-test-dto.md`](.claude/rules/contract-test-dto.md) |
-| 로깅 (`Logger`) | [`.codex/rules/logging.md`](.codex/rules/logging.md) | [`.claude/rules/logging.md`](.claude/rules/logging.md) |
-| 프리뷰 코드 위치 | [`.codex/rules/preview-placement.md`](.codex/rules/preview-placement.md) | [`.claude/rules/preview-placement.md`](.claude/rules/preview-placement.md) |
-| 빌드 검증 | [`.codex/rules/no-build-verification.md`](.codex/rules/no-build-verification.md) | [`.claude/rules/no-build-verification.md`](.claude/rules/no-build-verification.md) |
+각 규칙 파일 맨 위 `paths` 가 정확한 대상 경로다. (Claude Code 는 이 값으로 자동 로드한다)
 
-> Claude 인덱스: [`CLAUDE.md`](CLAUDE.md)
+Codex 전용 규칙은 현재 없다. 생기면 이 파일에만 적는다.
