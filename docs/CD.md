@@ -68,6 +68,8 @@ Actions → **TestFlight (Staging)** → **Run workflow** → Branch 에서 `dev
 
 ### 3-3. App Store 출시 (main)
 
+> 긴급 수정은 [3-4. Hotfix](#3-4-hotfix-긴급-수정) 를 따른다.
+
 1. **버전을 올린다.** App Store 에 출시된 버전보다 높아야 한다. (아래 [4. 버전 규칙](#4-버전-규칙))
    - `dev` 에서 `MARKETING_VERSION` 을 올리는 PR 을 먼저 머지하고, staging 으로 TestFlight 검증을 마친다.
 2. `staging` → `main` PR 을 만든다.
@@ -88,6 +90,18 @@ Actions → **TestFlight (Staging)** → **Run workflow** → Branch 에서 `dev
    ```
 
 ---
+
+### 3-4. Hotfix (긴급 수정)
+
+운영 코드의 긴급 수정은 `hotfix/*` → main 으로 바로 출시한다. 정책·절차는 [CI.md — Hotfix](CI.md#hotfix).
+
+1. `main` 에서 `hotfix/<이름>` 을 만들고 수정 + **버전을 출시 버전보다 높게** 올린다. (예: 1.0.2 → 1.0.3)
+2. (선택) **TestFlight (Staging)** 을 `hotfix/<이름>` 브랜치로 수동 실행해 실기기 확인.
+3. `hotfix/<이름> → main` PR → 머지 큐 (유닛 테스트 · Release 빌드 · 버전 검사).
+4. main 반영 → **App Store 업로드 + 심사 자동 제출** (3-3 과 동일, 출시는 수동).
+5. 자동으로 열리는 **`main → dev` 역반영 PR 을 Merge commit 으로 머지** (우회 머지). dev 버전은 hotfix 보다 높게.
+
+> 역반영을 빠뜨리면 다음 `staging → main` PR 의 Branch policy 가 실패한다.
 
 ## 4. 버전 규칙
 
@@ -142,7 +156,8 @@ App Store 에 출시된 버전에는 TestFlight 빌드도 올릴 수 없다. **�
 
 | 파일 | 트리거 | 환경 | 하는 일 |
 |---|---|---|---|
-| [`testflight.yml`](../.github/workflows/testflight.yml) | `staging` push, 수동(dev·staging) | `staging` | `fastlane beta` |
+| [`testflight.yml`](../.github/workflows/testflight.yml) | `staging` push, 수동(dev·staging·hotfix/*) | `staging` | `fastlane beta` |
+| [`hotfix-backmerge.yml`](../.github/workflows/hotfix-backmerge.yml) | `main` push (hotfix 머지일 때) | (없음) | `main → dev` 역반영 PR 자동 생성 |
 | [`release.yml`](../.github/workflows/release.yml) | `main` push | `production` | `fastlane release` |
 | [`version-check.yml`](../.github/workflows/version-check.yml) | `main` 대상 PR · `main` 머지 큐 | (없음) | `fastlane verify_release_version` |
 
@@ -199,7 +214,7 @@ xcconfig 를 바꾸면 해당 Secret 도 다시 등록해야 CI 에 반영된다
 
 | 환경 | Deployment branches | 승인자 |
 |---|---|---|
-| `staging` | `dev`, `staging` | 없음 |
+| `staging` | `dev`, `staging`, `hotfix/*` | 없음 |
 | `production` | `main` | **없음** (main 머지가 승인) |
 
 ### 브랜치 보호 · 머지 방식

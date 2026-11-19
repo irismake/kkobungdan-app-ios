@@ -40,7 +40,8 @@ OUTPUT_DIR = "build/fastlane"
 SOURCE_PACKAGES_DIR = "build/SourcePackages"
 
 EXTERNAL_TEST_GROUPS = ["external_app_tester"].freeze
-BETA_BRANCHES = ["dev", "staging"].freeze
+# hotfix/* 는 main 에 넣기 전 실기기 확인용 (스테이징 API · STG 빌드)
+BETA_BRANCHES = ["dev", "staging", "hotfix/*"].freeze
 RELEASE_BRANCHES = ["main"].freeze
 STAGING_NAME_MARKER = "STG"
 
@@ -499,7 +500,8 @@ end
 def ensure_branch!(allowed, purpose:)
   branch = ENV["GITHUB_REF_NAME"].to_s
   branch = git_branch.to_s if branch.empty?
-  return if allowed.include?(branch)
+  # "hotfix/*" 처럼 끝이 /* 인 항목은 접두어로 비교한다.
+  return if allowed.any? { |pattern| pattern.end_with?("/*") ? branch.start_with?(pattern.delete_suffix("*")) : pattern == branch }
 
   UI.user_error!("#{purpose}는 #{allowed.join(' · ')} 브랜치에서만 실행할 수 있습니다. (현재: #{branch.empty? ? '알 수 없음' : branch})")
 end
