@@ -39,6 +39,11 @@ APP_TARGET = "Kkobungdan"
 OUTPUT_DIR = "build/fastlane"
 SOURCE_PACKAGES_DIR = "build/SourcePackages"
 
+# TestFlight 그룹. Staging 빌드만 이 그룹들에 배포한다. (App Store 용 Release 빌드는 그룹에 넣지 않는다)
+#  - 내부: 심사 없이 바로 배포. App Store Connect 의 내부 그룹 "자동 배포" 는 꺼 둔다.
+#          (켜 두면 Release 빌드(운영 API)까지 내부 테스터에게 간다)
+#  - 외부: Beta App Review 승인 후 배포
+INTERNAL_TEST_GROUPS = ["internal_app_tester"].freeze
 EXTERNAL_TEST_GROUPS = ["external_app_tester"].freeze
 # hotfix/* 는 main 에 넣기 전 실기기 확인용 (스테이징 API · STG 빌드)
 BETA_BRANCHES = ["dev", "staging", "hotfix/*"].freeze
@@ -95,6 +100,7 @@ platform :ios do
       # 업로드·처리가 끝난 빌드를 외부 그룹에 배포한다.
       #  - Beta App Review 자동 제출. 승인(보통 수 시간~1일)은 기다리지 않는다.
       #    그룹이 미리 지정되어 있어 승인되는 즉시 external_app_tester 에 배포되고 외부 테스터에게 알림이 간다.
+      #  - 내부 그룹(internal_app_tester)은 심사 없이 바로 배포된다.
       #  - 같은 버전의 빌드는 한 번에 하나만 심사받을 수 있다. 이전 빌드가 심사 대기/심사 중이면
       #    그 빌드를 만료시키고 이 빌드를 제출한다. (staging 은 최신 빌드가 우선)
       upload_to_testflight(
@@ -109,7 +115,7 @@ platform :ios do
           build_number: build_number.to_s,
           skip_waiting_for_build_processing: false,
           distribute_external: true,
-          groups: EXTERNAL_TEST_GROUPS,
+          groups: INTERNAL_TEST_GROUPS + EXTERNAL_TEST_GROUPS,
           submit_beta_review: true,
           reject_build_waiting_for_review: true,
           notify_external_testers: true,
@@ -419,19 +425,19 @@ end
 #  - distribute_error 있음: 업로드는 완료, 외부 배포만 실패 → ⚠️ 직접 배포 안내 (워크플로는 성공)
 def report_testflight_result(version:, build_number:, distribute_error: nil)
   build = "#{version} (#{build_number})"
-  groups = EXTERNAL_TEST_GROUPS.join(", ")
+  groups = (INTERNAL_TEST_GROUPS + EXTERNAL_TEST_GROUPS).join(", ")
 
   if distribute_error.nil?
-    UI.success("TestFlight 외부 테스트 제출 완료: #{build} → #{groups}")
+    UI.success("TestFlight 배포 완료: #{build} → 내부 #{INTERNAL_TEST_GROUPS.join(", ")} (바로) · 외부 #{EXTERNAL_TEST_GROUPS.join(", ")} (베타 심사 제출)")
     write_step_summary(<<~MD)
-      ## ✅ TestFlight 외부 테스트 제출 완료
+      ## ✅ TestFlight 내부·외부 테스트 배포 완료
 
       | 항목 | 값 |
       |---|---|
       | 빌드 | `#{build}` (Staging · 스테이징 API) |
       | 업로드 | 완료 |
-      | 외부 그룹 | `#{groups}` |
-      | Beta App Review | 제출 완료 — 승인되면 외부 테스터에게 자동 배포·알림 |
+      | 내부 그룹 | `#{INTERNAL_TEST_GROUPS.join(", ")}` — 바로 배포 (심사 없음) |
+      | 외부 그룹 | `#{EXTERNAL_TEST_GROUPS.join(", ")}` — Beta App Review 제출, 승인되면 자동 배포·알림 |
     MD
     return
   end
