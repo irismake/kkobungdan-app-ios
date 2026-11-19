@@ -18,6 +18,18 @@
 - 유닛 테스트는 Debug 구성에서만 돈다. (Staging·Release 는 `ENABLE_TESTABILITY` 가 꺼져 있다) `xcodebuild test` 가 Debug 빌드를 먼저 하므로 dev 큐의 "Debug 빌드 + 유닛 테스트" 는 `Unit tests (Debug)` 한 job 이다.
 - **유닛 테스트는 dev 큐에서만** 돈다. staging·main 으로 오는 코드는 dev 큐에서 이미 통과했으므로 배포 구성 빌드만 확인한다.
 
+### 앱 코드 변경이 없으면 빌드·테스트 생략
+
+머지 큐는 먼저 **`Changes`** job(Linux, 수 초)으로 "대상 브랜치 → 머지될 코드" 사이의 변경 파일을 본다. ([`Scripts/ci/detect-app-changes.sh`](../Scripts/ci/detect-app-changes.sh))
+
+| 변경 경로 | 큐의 macOS 빌드·테스트 |
+|---|---|
+| `Kkobungdan/` · `KkobungdanTests/` · `Kkobungdan.xcodeproj/`(Package.resolved 포함) · `Scripts/ci/` · `.github/workflows/ci.yml` · `.github/actions/` | 실행 |
+| 그 외만 (`docs/` · `fastlane/` · CD 워크플로 · `*.md` 등, 이력 맞춤 머지) | **건너뜀** (Required check 는 "성공" 으로 통과) |
+
+- `Changes` job 이 실패하면 건너뛰지 않고 **실행**한다. (검사 누락 방지)
+- `fastlane/` 은 CI 빌드에 쓰이지 않는다. staging·main 반영 후 CD(TestFlight·App Store)가 어차피 빌드한다.
+
 ### 머지 흐름
 
 1. PR 을 연다 → PR 검사가 돈다.
@@ -109,6 +121,7 @@ main ──▶ hotfix/<이름>  (main 에서 분기, 버전 = App Store 출시 �
 |---|---|---|
 | **Branch policy** | PR | `staging` ← `dev` 만 / `main` ← `staging` · `hotfix/*` 만. fork PR 은 두 브랜치로 받지 않는다. `staging → main` 은 **main 의 커밋이 모두 staging 에 있는지**(hotfix 역반영 누락), `hotfix/* → main` 은 **dev 의 미출시 커밋이 섞이지 않았는지** 확인한다. ([`Scripts/ci/branch-policy.sh`](../Scripts/ci/branch-policy.sh)) |
 | **Lint** | PR | (Linux · Docker) SwiftFormat 0.60.1 (`Kkobungdan/` · `Kkobungdan/.swiftformat`) + SwiftLint 0.65.1 (`Kkobungdan/.swiftlint.yml`, error 만 실패). Xcode 빌드 페이즈와 같은 범위·설정. |
+| **Changes** | 큐 | 앱 코드 변경 여부 판단. 변경이 없으면 아래 빌드·테스트 생략 |
 | **Unit tests (Debug)** | 큐 (dev · main) | 시뮬레이터용 Debug 빌드 + `KkobungdanTests` 실행. main 큐는 hotfix(dev 큐를 거치지 않음) 때문에 돌린다. (Build (Release) 와 병렬) |
 | **Build (Staging)** | 큐 (staging) | 기기용 Staging 빌드, 서명 없음 + 설정 검증 |
 | **Build (Release)** | 큐 (main) | 기기용 Release 빌드, 서명 없음 + 설정 검증 |

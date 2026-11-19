@@ -12,6 +12,11 @@
 #  - 유닛 테스트는 Debug 구성에서만 돈다. (Staging·Release 는 ENABLE_TESTABILITY 가 꺼져 있다)
 #    `xcodebuild test` 가 Debug 빌드를 먼저 하므로 dev 큐의 "Debug 빌드 + 유닛 테스트" 는 Unit tests 한 job 이다.
 #
+# 앱 코드 변경이 없으면 빌드·테스트 생략 (Changes job · Scripts/ci/detect-app-changes.sh)
+#  - 큐 대상 브랜치 → 머지될 코드 사이에 앱 코드(Kkobungdan/, KkobungdanTests/, Kkobungdan.xcodeproj/, Scripts/ci/,
+#    ci.yml, .github/actions/) 변경이 없으면 macOS 빌드·테스트를 건너뛴다. (docs·fastlane·CD 워크플로만 바뀐 경우 등)
+#  - Changes job 이 실패하면 건너뛰지 않고 실행한다.
+#
 # Required Status Check 평가 방식
 #  - 브랜치마다 Required check 목록은 하나이고, PR 과 Merge Queue 양쪽에서 모두 결과가 있어야 한다.
 #  - 그래서 PR 전용 job 은 merge_group 에서, 큐 전용 job 은 pull_request 에서 조건 불일치로 "건너뜀" 처리한다.
@@ -116,14 +121,39 @@ jobs:
   #  실패하면 PR 이 큐에서 빠지고 브랜치에는 반영되지 않는다.
   # ════════════════════════════════════════════════════════════
 
+  # 큐에서 앱 코드가 바뀌는지 확인한다. 바뀌지 않으면(문서·CD 설정·이력 맞춤 머지 등) 아래 macOS 빌드·테스트를 건너뛴다.
+  # 건너뛴 job 은 "성공" 으로 보고되어 Required check 는 통과한다.
+  # 이 job 이 실패하면 빌드·테스트를 건너뛰지 않고 실행한다. (검사 누락 방지)
+  changes:
+    name: Changes
+    if: github.event_name == 'merge_group'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    outputs:
+      app: ${{ steps.diff.outputs.app }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Detect app changes
+        id: diff
+        env:
+          BASE_SHA: ${{ github.event.merge_group.base_sha }}
+          HEAD_SHA: ${{ github.event.merge_group.head_sha }}
+        run: ./Scripts/ci/detect-app-changes.sh
+
   # dev · main: Debug 빌드(시뮬레이터) + 유닛 테스트.
   #  - dev 큐: "Debug 빌드 + Unit Test" 전부다.
   #  - main 큐: hotfix/* 는 dev 큐를 거치지 않으므로 main 큐에서 테스트한다. (Build (Release) 와 병렬, 대기 시간 증가 없음)
   unit-tests:
     name: Unit tests (Debug)
+    needs: changes
     if: >-
-      github.event_name == 'merge_group' &&
-      (github.event.merge_group.base_ref == 'refs/heads/dev' || github.event.merge_group.base_ref == 'refs/heads/main')
+      always() && github.event_name == 'merge_group' &&
+      (github.event.merge_group.base_ref == 'refs/heads/dev' || github.event.merge_group.base_ref == 'refs/heads/main') &&
+      (needs.changes.result != 'success' || needs.changes.outputs.app == 'true')
     runs-on: macos-26
     timeout-minutes: 45
     steps:
@@ -163,7 +193,11 @@ jobs:
   # staging: TestFlight 에 올릴 Staging 구성 빌드 + 설정 검증
   build-staging:
     name: Build (Staging)
-    if: github.event_name == 'merge_group' && github.event.merge_group.base_ref == 'refs/heads/staging'
+    needs: changes
+    if: >-
+      always() && github.event_name == 'merge_group' &&
+      github.event.merge_group.base_ref == 'refs/heads/staging' &&
+      (needs.changes.result != 'success' || needs.changes.outputs.app == 'true')
     runs-on: macos-26
     timeout-minutes: 45
     steps:
@@ -189,7 +223,11 @@ jobs:
   # main: App Store 에 낼 Release 구성 빌드 + 운영 API 설정 검증
   build-release:
     name: Build (Release)
-    if: github.event_name == 'merge_group' && github.event.merge_group.base_ref == 'refs/heads/main'
+    needs: changes
+    if: >-
+      always() && github.event_name == 'merge_group' &&
+      github.event.merge_group.base_ref == 'refs/heads/main' &&
+      (needs.changes.result != 'success' || needs.changes.outputs.app == 'true')
     runs-on: macos-26
     timeout-minutes: 45
     steps:
