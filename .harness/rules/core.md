@@ -47,6 +47,7 @@
 
 - 반복 작업은 스킬(`.harness/skills/`)을 따른다: `feature`(기능 · 리팩토링, TDD) · `bugfix`(재현 테스트 먼저) · `api-sync`(서버 계약 반영) · `pr`(커밋 · PR, 요청 시만).
 - 테스트는 `./Scripts/test.sh [테스트클래스[/메서드]]` 로 실행한다. 스킬의 TDD 단계(RED · GREEN · 회귀)에서는 사용자 요청 없이 실행한다.
+- 작업을 마치기 전에 `Scripts/harness/verify.sh` (규칙 일치 · 코드 규칙 · SwiftFormat · SwiftLint) 를 통과시킨다. TDD 스킬을 따랐으면 `verify.sh full` (전체 테스트 포함). Claude 는 편집 · 종료 훅이 자동으로 검사하고, 위험 명령 · 보호 파일은 훅이 막는다.
 - 그 밖의 `xcodebuild build` · 배포 구성 빌드는 사용자가 요청했을 때만 실행한다.
 - 실행하지 않은 검증은 결과를 보고하지 않는다 ("빌드 성공" · "테스트 통과" 등). 실행 결과만 근거로 쓴다.
 

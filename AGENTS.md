@@ -28,6 +28,14 @@
 | 서버 API 스펙 변경 반영 | [`api-sync`](.harness/skills/api-sync/SKILL.md) |
 | 커밋 · PR (사용자 요청 시만) | [`pr`](.harness/skills/pr/SKILL.md) |
 
+## 검증
+
+Codex 에는 Claude 훅이 없다. 대신 다음을 직접 지킨다.
+
+- 작업을 마치기 전에 `Scripts/harness/verify.sh` (TDD 스킬을 따랐으면 `verify.sh full`)를 실행하고 통과시킨다.
+- 커밋은 git 훅(`.githooks/`)이 다시 검사한다. `--no-verify` 로 우회하지 않는다.
+- `core.md` 의 승인 필요 작업 · 보호 파일 목록을 스스로 지킨다 (Claude 는 훅이 막는다: `Scripts/harness/hooks/pre_tool.py`).
+
 ## 역할 (`.harness/agents/`)
 
 작업 경로(S · M · L)와 역할은 `core.md` 의 "작업 경로 · 역할" 을 따른다. Codex 는 서브에이전트 없이 다음처럼 수행한다.

@@ -20,7 +20,7 @@ description: 꼬붕단 서버 OpenAPI 스펙 변경을 iOS DTO · 엔티티 · �
    - 새 스키마를 앱이 쓰면 DTO 를 만들고 계약 테스트에 등록, 안 쓰면 `knownUnregistered…` 목록에 사유와 함께 추가.
    - enum 값이 늘면 알 수 없는 값에서 화면이 깨지지 않는지 확인한다.
    - `requiresDetail` 처럼 스펙에 안 보이는 서버 검증은 `reason-survey.md` 참고.
-5. **테스트**: `./Scripts/test.sh OpenAPIContractTests` → 통과하면 전체.
+5. **테스트**: `./Scripts/test.sh OpenAPIContractTests` → 통과하면 `Scripts/harness/verify.sh full`.
 6. **기준선 승인**: 변경을 반영한 뒤 사용자 확인을 받아 `python3 Scripts/sync-openapi.py --accept` (lock 갱신).
 
 ## 출력 (보고)
