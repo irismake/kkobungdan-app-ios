@@ -1,4 +1,4 @@
-# Staging 구성(스테이징 서버)으로 빌드해 TestFlight 외부 테스트 그룹(external_app_tester)에 배포한다.
+# Staging 구성(스테이징 서버)으로 빌드해 TestFlight 내부(internal_app_tester)·외부(external_app_tester) 테스트 그룹에 배포한다.
 # (Beta App Review 자동 제출, 승인되면 외부 테스터에게 자동 배포·알림)
 #
 #  - staging : 머지(push) 시 자동 실행 + 수동 실행 가능

@@ -10,7 +10,7 @@
 |---|---|---|---|
 | `dev` | Branch policy · Lint | Unit tests (Debug) — Debug 빌드 + 유닛 테스트 | 없음 |
 | `staging` | Branch policy · Lint | Build (Staging) + 설정 검증 | TestFlight 외부 테스트 자동 배포 |
-| `main` (← `staging` · `hotfix/*`) | Branch policy · Lint · Verify App Store version | Unit tests (Debug) · Build (Release) + 설정 검증 · Verify App Store version | App Store 심사 자동 제출 (hotfix 면 dev 역반영 PR 자동 생성) |
+| `main` (← `staging` · `hotfix/*`) | Branch policy · Lint · Verify App Store version | Build (Release) + 설정 검증 · Verify App Store version · Unit tests (Debug) (**hotfix 만**) | App Store 심사 자동 제출 (hotfix 면 dev 역반영 PR 자동 생성) |
 
 - `feature/*` push, 브랜치 머지 후에는 CI 가 돌지 않는다.
 - 같은 PR 에 새 커밋을 push 하면 이전 PR 검사는 취소된다. 큐 검사는 취소하지 않는다.
@@ -72,7 +72,7 @@ main ──▶ hotfix/<이름>  (main 에서 분기, 버전 = App Store 출시 �
            │  (선택) TestFlight 수동 배포로 실기기 확인
            │  PR → main
            │    PR : Branch policy · Lint · Verify App Store version
-           │    큐 : Unit tests (Debug) · Build (Release) · Verify App Store version
+           │    큐 : Unit tests (Debug) · Build (Release) · Verify App Store version   (hotfix 커밋은 1개)
            ▼  Merge commit
           main ──▶ App Store 업로드 + 심사 자동 제출 (실패 시 ⚠️ 직접 제출, 출시는 수동)
            │
@@ -83,6 +83,8 @@ main ──▶ hotfix/<이름>  (main 에서 분기, 버전 = App Store 출시 �
 ### 절차
 
 1. `main` 에서 `hotfix/<이름>` 브랜치를 만든다. **dev·staging 의 커밋을 섞지 않는다.** (Branch policy 가 막는다)
+   - **커밋은 1개만** 허용한다. (main 큐는 Merge commit 이라 squash 를 쓸 수 없어, 커밋 1개로 squash 와 같은 결과를 낸다)
+     여러 개가 되었으면 PR 전에 합친다: `git reset --soft origin/main && git commit -m "fix: …" && git push --force-with-lease`
 2. 수정 + `MARKETING_VERSION` 을 App Store 출시 버전보다 높게 올린다. (예: 출시 1.0.2 → 1.0.3)
 3. (선택) Actions → **TestFlight (Staging)** → Run workflow → Branch: `hotfix/<이름>` 으로 실기기 확인. (스테이징 API · STG 빌드)
 4. `hotfix/<이름> → main` PR → 검사 통과 후 **머지 큐**에 추가. 큐에서 유닛 테스트·Release 빌드가 통과해야 반영된다.
@@ -104,13 +106,13 @@ main ──▶ hotfix/<이름>  (main 에서 분기, 버전 = App Store 출시 �
 |---|---|
 | 역반영 PR 자동 생성 | hotfix 가 main 에 들어오면 `main → dev` PR 을 연다. 이미 열린 역반영 PR 이 있으면 새로 만들지 않는다. |
 | `staging → main` Branch policy | main 의 일반 커밋(머지 커밋 제외) 중 **staging 에 없는 것이 있으면 실패**. 역반영을 안 했거나 Squash 로 했으면 다음 정기 출시가 막힌다. |
-| `hotfix/* → main` Branch policy | hotfix 브랜치에 dev 의 미출시 커밋이 섞이면 실패. |
+| `hotfix/* → main` Branch policy | hotfix 브랜치에 dev 의 미출시 커밋이 섞이면 실패. **커밋이 2개 이상이면 실패** (1개로 합치기). |
 
 ### 머지 방식과의 관계
 
 | PR | 머지 경로 | 머지 방식 |
 |---|---|---|
-| `hotfix/* → main` | main 머지 큐 | Merge commit (main 큐 설정 그대로) |
+| `hotfix/* → main` | main 머지 큐 | Merge commit (main 큐 설정 그대로) — **hotfix 커밋 1개 강제**로 squash 와 같은 결과 |
 | `main → dev` (역반영) | **우회 머지** | **Merge commit** |
 | `feature/* → dev` | dev 머지 큐 | Squash (변경 없음) |
 | `dev → staging` · `staging → main` | 머지 큐 | Merge commit (변경 없음) |
@@ -121,8 +123,8 @@ main ──▶ hotfix/<이름>  (main 에서 분기, 버전 = App Store 출시 �
 |---|---|---|
 | **Branch policy** | PR | `staging` ← `dev` 만 / `main` ← `staging` · `hotfix/*` 만. fork PR 은 두 브랜치로 받지 않는다. `staging → main` 은 **main 의 커밋이 모두 staging 에 있는지**(hotfix 역반영 누락), `hotfix/* → main` 은 **dev 의 미출시 커밋이 섞이지 않았는지** 확인한다. ([`Scripts/ci/branch-policy.sh`](../Scripts/ci/branch-policy.sh)) |
 | **Lint** | PR | (Linux · Docker) SwiftFormat 0.60.1 (`Kkobungdan/` · `Kkobungdan/.swiftformat`) + SwiftLint 0.65.1 (`Kkobungdan/.swiftlint.yml`, error 만 실패). Xcode 빌드 페이즈와 같은 범위·설정. |
-| **Changes** | 큐 | 앱 코드 변경 여부 판단. 변경이 없으면 아래 빌드·테스트 생략 |
-| **Unit tests (Debug)** | 큐 (dev · main) | 시뮬레이터용 Debug 빌드 + `KkobungdanTests` 실행. main 큐는 hotfix(dev 큐를 거치지 않음) 때문에 돌린다. (Build (Release) 와 병렬) |
+| **Changes** | 큐 | 앱 코드 변경 여부 판단(변경이 없으면 빌드·테스트 생략) + main 큐에서 PR 출발 브랜치가 hotfix 인지 판단 (조회 실패 시 hotfix 로 취급해 테스트 실행) |
+| **Unit tests (Debug)** | 큐 (dev · main 의 hotfix) | 시뮬레이터용 Debug 빌드 + `KkobungdanTests` 실행. main 큐에서는 **PR 출발 브랜치가 `hotfix/*` 일 때만** 돈다 (hotfix 는 dev 큐를 거치지 않음). staging → main 은 dev 큐에서 이미 테스트했으므로 생략. |
 | **Build (Staging)** | 큐 (staging) | 기기용 Staging 빌드, 서명 없음 + 설정 검증 |
 | **Build (Release)** | 큐 (main) | 기기용 Release 빌드, 서명 없음 + 설정 검증 |
 | **Verify App Store version** | PR · 큐 (main) | App Store 출시 버전보다 높은지 등 ([CD.md §4](CD.md#4-버전-규칙)) |
@@ -171,7 +173,7 @@ CI 는 **배포 인증서·배포용 Secrets 를 쓰지 않는다.** (저장소�
 |---|---|---|---|
 | `dev` | `Branch policy` · `Lint` · `Unit tests (Debug)` | Unit tests 는 건너뜀 | Branch policy·Lint 는 건너뜀 |
 | `staging` | `Branch policy` · `Lint` · `Build (Staging)` | Build 는 건너뜀 | Branch policy·Lint 는 건너뜀 |
-| `main` | `Branch policy` · `Lint` · `Verify App Store version` · `Unit tests (Debug)` · `Build (Release)` | Unit tests·Build 는 건너뜀 | Branch policy·Lint 는 건너뜀 (버전 검사는 다시 실행) |
+| `main` | `Branch policy` · `Lint` · `Verify App Store version` · `Unit tests (Debug)` · `Build (Release)` | Unit tests·Build 는 건너뜀 | Branch policy·Lint 는 건너뜀 (버전 검사는 다시 실행). Unit tests 는 hotfix 가 아니면 건너뜀 |
 
 - GitHub 는 **조건 불일치로 건너뛴 job 을 "성공" 으로 보고**한다. 그래서 PR 전용 검사는 큐에서, 큐 전용 빌드·테스트는 PR 에서 건너뛰어도 Required 평가가 끝난다.
 - 실제 차단: PR 검사 실패 → 큐에 넣을 수 없다 / 큐 빌드 실패 → PR 이 큐에서 빠지고 브랜치에 반영되지 않는다.

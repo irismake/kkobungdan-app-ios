@@ -19,8 +19,8 @@ feature/* ──PR──▶ dev ──PR──▶ staging ──PR──▶ main
 
 | 브랜치 | 자동 배포 | 수동 배포 | 대상 | 서버 |
 |---|---|---|---|---|
-| `dev` | 없음 | TestFlight 외부 테스트 | `external_app_tester` | 스테이징 |
-| `staging` | 머지 시 TestFlight 외부 테스트 | 가능 | `external_app_tester` | 스테이징 |
+| `dev` | 없음 | TestFlight 내부·외부 테스트 | `internal_app_tester` · `external_app_tester` | 스테이징 |
+| `staging` | 머지 시 TestFlight 내부·외부 테스트 | 가능 | `internal_app_tester` · `external_app_tester` | 스테이징 |
 | `main` | 머지 시 App Store 심사 제출 | 없음 | App Store | 운영 |
 
 - **`main` PR 머지 = 배포 승인**이다. 머지하면 바로 심사에 제출되므로 머지 전에 버전·변경 내용을 확인한다.
@@ -51,7 +51,8 @@ feature/* ──PR──▶ dev ──PR──▶ staging ──PR──▶ main
 
 1. `dev` → `staging` PR 을 만들고, PR 검사가 통과하면 **머지 큐에 추가**한다. (큐에서 Staging 빌드·설정 검증이 통과해야 반영된다 — [CI.md](CI.md))
 2. **TestFlight (Staging)** 워크플로가 자동 실행된다. (빌드 + App Store Connect 처리 대기로 30~60분)
-3. 빌드가 `external_app_tester` 그룹에 추가되고 **Beta App Review 에 자동 제출**된다.
+3. 빌드가 **내부 `internal_app_tester`(심사 없이 바로 배포)** 와 **외부 `external_app_tester`(Beta App Review 자동 제출)** 그룹에 추가된다.
+   - App Store Connect 의 내부 그룹 **"자동 배포" 는 끈다.** 켜 두면 main 배포의 Release 빌드(운영 API)까지 내부 테스터에게 간다.
 4. Apple 이 승인하면 외부 테스터에게 자동 배포되고 알림이 간다.
 5. 워크플로 결과 확인 — **빌드가 TestFlight 에 업로드되면 워크플로는 성공(✅)** 이다.
    - 실행 요약 **✅ TestFlight 외부 테스트 제출 완료** → 베타 심사 승인을 기다린다.
@@ -96,6 +97,7 @@ Actions → **TestFlight (Staging)** → **Run workflow** → Branch 에서 `dev
 운영 코드의 긴급 수정은 `hotfix/*` → main 으로 바로 출시한다. 정책·절차는 [CI.md — Hotfix](CI.md#hotfix).
 
 1. `main` 에서 `hotfix/<이름>` 을 만들고 수정 + **버전을 출시 버전보다 높게** 올린다. (예: 1.0.2 → 1.0.3)
+   **커밋은 1개로** 만든다. (Branch policy 가 강제, squash 와 같은 결과)
 2. (선택) **TestFlight (Staging)** 을 `hotfix/<이름>` 브랜치로 수동 실행해 실기기 확인.
 3. `hotfix/<이름> → main` PR → 머지 큐 (유닛 테스트 · Release 빌드 · 버전 검사).
 4. main 반영 → **App Store 업로드 + 심사 자동 제출** (3-3 과 동일, 출시는 수동).
@@ -168,7 +170,7 @@ App Store 에 출시된 버전에는 TestFlight 빌드도 올릴 수 없다. **�
 
 | lane | 설명 |
 |---|---|
-| `beta` | Staging 빌드 → IPA 검증 → 업로드 → `external_app_tester` 배포 + Beta App Review 제출 |
+| `beta` | Staging 빌드 → IPA 검증 → 업로드 → `internal_app_tester` 배포 · `external_app_tester` 배포 + Beta App Review 제출 |
 | `release` | Release 빌드 → IPA 검증 → 업로드 → 해당 빌드로 App Store 심사 제출 |
 | `verify_release_version` | 빌드 없이 버전 규칙만 검증 |
 | `test` | 유닛 테스트 (`KkobungdanTests`) |

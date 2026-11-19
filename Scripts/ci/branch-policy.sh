@@ -7,7 +7,7 @@
 #   dev       | 제한 없음                 | (main → dev 역반영 포함)
 #   staging   | dev                       |
 #   main      | staging                   | main 의 커밋이 모두 staging 에 있어야 한다 (hotfix 역반영 누락 방지)
-#   main      | hotfix/*                  | dev 에만 있는 미출시 커밋이 섞이면 안 된다
+#   main      | hotfix/*                  | dev 에만 있는 미출시 커밋이 섞이면 안 된다 · 커밋은 1개만 (squash 와 같은 결과)
 #
 #   staging·main 은 fork PR 을 받지 않는다.
 #
@@ -62,7 +62,13 @@ case "$HEAD" in
       done | head -20
       fail "hotfix 브랜치에 dev 의 미출시 커밋이 섞여 있습니다. main 에서 hotfix 브랜치를 다시 만들어 수정만 담으세요."
     fi
-    echo "✓ $HEAD → main (hotfix 커밋 ${own}개, dev 커밋 섞이지 않음)"
+    # hotfix 는 커밋 1개만 허용한다. (main 큐는 Merge commit 이라 squash 대신 커밋 1개로 같은 결과를 낸다)
+    if [ "$own" != "1" ]; then
+      echo "hotfix 커밋 ${own}개:"
+      git log --format='  %h %s' "$HEAD_SHA" "^$REMOTE/main" | head -20
+      fail "hotfix 는 커밋 1개만 허용합니다. (현재 ${own}개) 하나로 합친 뒤 다시 push 하세요: git reset --soft $REMOTE/main && git commit -m \"fix: …\" && git push --force-with-lease"
+    fi
+    echo "✓ $HEAD → main (hotfix 커밋 1개, dev 커밋 섞이지 않음)"
     ;;
   *)
     fail "main 으로는 staging 또는 hotfix/* 브랜치에서 온 PR 만 머지할 수 있습니다. (현재: $HEAD)"
