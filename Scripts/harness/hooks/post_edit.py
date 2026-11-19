@@ -4,6 +4,7 @@ Claude Code PostToolUse 훅 (Edit · Write). 방금 고친 Swift 파일 하나�
 위반이 있으면 exit 2 + stderr 로 Claude 에게 알려 그 자리에서 고치게 한다. (파일 하나라 1~2초)
 """
 import json
+import os
 import subprocess
 import sys
 from pathlib import Path
@@ -24,7 +25,7 @@ def main():
         return
     result = subprocess.run(
         [sys.executable, str(ROOT / "Scripts/harness/check_code.py"), "--file", str(rel), "--lint"],
-        cwd=ROOT, capture_output=True, text=True,
+        cwd=ROOT, capture_output=True, text=True, env={**os.environ, "HARNESS_SOURCE": "claude-post-edit"},
     )
     if result.returncode != 0:
         print(f"[하네스] {rel} 검사 결과 — 고친 뒤 계속하세요.\n{result.stdout}{result.stderr}", file=sys.stderr)

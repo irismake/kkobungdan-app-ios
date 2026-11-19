@@ -10,6 +10,10 @@ import json
 import re
 import shlex
 import sys
+from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+import events  # noqa: E402
 
 PROTECTED_BRANCHES = {"dev", "staging", "main"}
 
@@ -48,6 +52,7 @@ FILE_ASK = [
 
 
 def decide(decision, reason):
+    events.record(decision, source="claude-pre-tool", reason=reason)
     print(json.dumps({"hookSpecificOutput": {
         "hookEventName": "PreToolUse",
         "permissionDecision": decision,

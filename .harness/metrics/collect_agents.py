@@ -199,6 +199,40 @@ def to_markdown(result):
     return "\n".join(lines)
 
 
+def hook_events(since, until):
+    """하네스 검사 기록 (Scripts/harness/events.py). 로컬에서 잡힌 위반 수 — CI 에서 처음 잡힌 수(collect_github)와 비교한다."""
+    path = OUT_DIR / "hook-events.jsonl"
+    if not path.exists():
+        return None
+    runs, rules, blocks = Counter(), Counter(), Counter()
+    for d in read_jsonl(path):
+        ts = parse_time(d.get("ts"))
+        if not ts or (since and ts < since) or (until and ts >= until):
+            continue
+        if d.get("source") == "claude-pre-tool":
+            blocks[(d.get("result"), d.get("reason"))] += 1
+            continue
+        runs[(d.get("source"), d.get("result"))] += 1
+        rules.update(d.get("rules") or [])
+    return {
+        "runs": {f"{s}:{r}": n for (s, r), n in sorted(runs.items())},
+        "violations_by_rule": dict(rules.most_common()),
+        "pre_tool": {f"{r}: {reason}": n for (r, reason), n in blocks.most_common()},
+    }
+
+
+def hooks_markdown(h):
+    if not h:
+        return "\n## 하네스 검사 기록\n\n기록 없음 (`.harness/metrics/out/hook-events.jsonl`)"
+    sources = sorted({k.split(":")[0] for k in h["runs"]})
+    lines = ["", "## 하네스 검사 기록 (로컬)", "", "| 실행 위치 | 통과 | 위반 발견 |", "|---|---|---|"]
+    for s in sources:
+        lines.append(f"| {s} | {h['runs'].get(s + ':pass', 0)} | {h['runs'].get(s + ':fail', 0)} |")
+    lines += ["", "- 규칙별 위반: " + (", ".join(f"{k} {v}" for k, v in h["violations_by_rule"].items()) or "없음")]
+    lines += ["- 명령 · 파일 차단(deny) · 확인(ask): " + (", ".join(f"{k} ({v})" for k, v in h["pre_tool"].items()) or "없음")]
+    return "\n".join(lines)
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument("--since", help="이 날짜(포함) 이후 시작한 세션 (YYYY-MM-DD, UTC)")
@@ -212,12 +246,14 @@ def main():
         "range": f"{args.since or '처음'} ~ {args.until or '현재'}",
         "collected_at": datetime.now(timezone.utc).isoformat(timespec="seconds"),
         "summary": summarize(sessions),
+        "hooks": hook_events(since, until),
         "sessions": sessions,
     }
     OUT_DIR.mkdir(parents=True, exist_ok=True)
     out = OUT_DIR / f"agents-{datetime.now().strftime('%Y%m%d')}.json"
     out.write_text(json.dumps(result, ensure_ascii=False, indent=2))
     print(to_markdown(result))
+    print(hooks_markdown(result["hooks"]))
     print(f"\n세션별 집계: {out.relative_to(REPO_ROOT)}", file=sys.stderr)
 
 

@@ -16,6 +16,9 @@ import subprocess
 import sys
 from pathlib import Path
 
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+import events  # noqa: E402
+
 ROOT = Path(__file__).resolve().parents[2]
 RULES = ROOT / ".harness/rules"
 AGENTS_DIR = ROOT / ".harness/agents"
@@ -110,6 +113,7 @@ def main():
         if f".harness/skills/{folder}/SKILL.md" not in agents:
             problems.append(f"AGENTS.md 가 skills/{folder} 를 가리키지 않습니다.")
 
+    events.record("fail" if problems else "pass", check="rules", rules=["rules-sync"] * len(problems))
     if problems:
         print("규칙 검사 실패:")
         for p in problems:

@@ -6,6 +6,7 @@
 #       Scripts/harness/verify.sh --base origin/main    # hotfix 등 기준 브랜치 지정
 set -euo pipefail
 cd "$(dirname "$0")/../.."
+export HARNESS_SOURCE="${HARNESS_SOURCE:-verify}"
 
 python3 Scripts/harness/check_rules.py
 python3 Scripts/harness/check_code.py --lint "$@"

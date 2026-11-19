@@ -22,6 +22,9 @@ import subprocess
 import sys
 from pathlib import Path
 
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+import events  # noqa: E402
+
 ROOT = Path(__file__).resolve().parents[2]
 APP = "Kkobungdan/"
 TESTS = "KkobungdanTests/"
@@ -222,6 +225,9 @@ def main():
     problems = check(added, new)
     if args.lint:
         problems += lint(sorted(set(added) | new))
+    rule_ids = [re.match(r"\[([\w-]+)\]", p).group(1) for p in problems if re.match(r"\[([\w-]+)\]", p)]
+    events.record("fail" if problems else "pass", check="code", rules=rule_ids,
+                  paths=sorted({m.group(1) for p in problems if (m := re.match(r"\[[\w-]+\] ([^:]+):", p))}))
     if problems:
         print("규칙 위반:")
         for p in problems:

@@ -3,6 +3,7 @@
 # stage 된 변경만 본다. 우회(--no-verify)해도 PR CI 가 같은 검사를 다시 한다.
 set -euo pipefail
 cd "$(git rev-parse --show-toplevel)"
+export HARNESS_SOURCE="${HARNESS_SOURCE:-git-pre-commit}"
 
 python3 Scripts/harness/check_code.py --staged --lint
 
