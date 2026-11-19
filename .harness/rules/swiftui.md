@@ -11,7 +11,7 @@ paths:
 
 ## 기존 스타일 우선
 
-- 공통 컴포넌트(`Common/Components/`) · 텍스트 스타일 · 색 토큰(`Color.gray900` 등, `UIColor+AppColors.swift`)을 먼저 쓴다. raw 색 · 폰트를 새로 만들지 않는다.
+- 공통 컴포넌트(`Common/Components/` — `AppBar` · `BottomActionBar` · `ContentTextField` · `Badge` 등) · 텍스트 스타일 · 색 토큰(`Color.gray900` 등, `UIColor+AppColors.swift`)을 먼저 쓴다. raw 색 · 폰트를 새로 만들지 않고, 디자인 하나에 맞추려고 공통 컴포넌트에 옵션(예: 글자 크기)을 추가하지 않는다.
 - 디자인(Figma) 값이 기존 것과 조금 다르면 **가장 가까운 기존 것으로 구현하고, 차이를 목록으로 보고한 뒤 맞출지 묻는다.** 새 `TextStyle` 케이스 · 토큰 밖 색 · 컴포넌트 옵션은 사용자가 승인했을 때만 추가한다.
 
 ## 텍스트 스타일

@@ -11,6 +11,7 @@
 | 아키텍처 · 계층 · DI · ViewModel | `Domain/` · `Data/` · `*ViewModel.swift` · `Routing/` | [`architecture.md`](.harness/rules/architecture.md) |
 | SwiftUI 화면 · 컴포넌트 · 텍스트 스타일 | `Presentation/` · `Common/Components/` | [`swiftui.md`](.harness/rules/swiftui.md) |
 | API 연동 · DTO · 오류 · 계약 테스트 | `Data/` · `OpenAPIContractTests` · `Contract/` | [`api.md`](.harness/rules/api.md) |
+| 분쟁 · 신고 · 탈퇴 사유 입력 | `Presentation/{Report,Withdraw,MissionAbort}/` · 관련 `Data/` · `Domain/` | [`reason-survey.md`](.harness/rules/reason-survey.md) |
 | 더미 백엔드 | `Data/Common/Dummy/` · `Test*RepositoryImpl` · `DIContainer` | [`dummy-backend.md`](.harness/rules/dummy-backend.md) |
 | 비동기 · 동시성 | `Data/` · `*ViewModel.swift` · `Common/Token/` · `AppDelegate` | [`concurrency.md`](.harness/rules/concurrency.md) |
 | 테스트 · TDD | `KkobungdanTests/` · `Scripts/test.sh` | [`testing.md`](.harness/rules/testing.md) |

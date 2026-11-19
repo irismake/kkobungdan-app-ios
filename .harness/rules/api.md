@@ -32,6 +32,6 @@ paths:
 - 응답 DTO 와 같은 원칙으로 서버 요청 스키마와 완전히 일치시킨다. 새 요청 바디는 `requestContracts` 에 `EncodeContract` 로 등록한다.
 - 서버가 받지만 UI 가 아직 없는 필드는 struct 에 선언하고 `static let stubXxx` 기본값 + TODO 로 보낸다. UI 반영 시 호출부 실제 값으로 바꾸고 stub 을 지운다.
 
-## 사유 입력 (`requiresDetail`)
+## 사유 입력
 
-- 분쟁 · 신고 · 탈퇴의 `detailReason` 필수 여부는 선택한 사유의 `requiresDetail` 로 서버가 검증한다 (스펙에는 optional 로만 보인다). 클라이언트도 이 플래그로 판단한다. 문구("기타" 등)로 추측하지 않는다.
+- 분쟁 · 신고 · 탈퇴의 `detailReason` 정책은 `reason-survey.md` 를 따른다 (스펙에 드러나지 않는 서버 검증이 있다).
