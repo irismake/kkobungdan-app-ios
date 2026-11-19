@@ -96,6 +96,7 @@ Actions → **TestFlight (Staging)** → **Run workflow** → Branch 에서 `dev
 운영 코드의 긴급 수정은 `hotfix/*` → main 으로 바로 출시한다. 정책·절차는 [CI.md — Hotfix](CI.md#hotfix).
 
 1. `main` 에서 `hotfix/<이름>` 을 만들고 수정 + **버전을 출시 버전보다 높게** 올린다. (예: 1.0.2 → 1.0.3)
+   **커밋은 1개로** 만든다. (Branch policy 가 강제, squash 와 같은 결과)
 2. (선택) **TestFlight (Staging)** 을 `hotfix/<이름>` 브랜치로 수동 실행해 실기기 확인.
 3. `hotfix/<이름> → main` PR → 머지 큐 (유닛 테스트 · Release 빌드 · 버전 검사).
 4. main 반영 → **App Store 업로드 + 심사 자동 제출** (3-3 과 동일, 출시는 수동).
