@@ -159,7 +159,6 @@ struct TermsAgreementBottomsheet: View {
         .overlay(Circle().stroke(isChecked ? Color.clear : Color.gray300, lineWidth: 2))
         .frame(width: size, height: size)
 
-      // TODO: 체크 박스 완료된 이미지 반영
       if isChecked {
         Image("icon_check")
           .renderingMode(.template)
