@@ -3,6 +3,7 @@
 #
 #  - staging : 머지(push) 시 자동 실행 + 수동 실행 가능
 #  - dev     : 수동 실행만 (Actions → TestFlight (Staging) → Run workflow → Branch: dev)
+#  - hotfix/*: 수동 실행만 — main 에 넣기 전 실기기 확인용 (스테이징 API · STG 빌드)
 #  - 그 외 브랜치에서는 실행하지 않는다.
 # App Store 정식 심사 제출은 이 워크플로에서 하지 않는다 → release.yml (main)
 name: TestFlight (Staging)
@@ -32,8 +33,10 @@ jobs:
     # 빌드 + App Store Connect 빌드 처리 대기(외부 테스트 제출에 필요)
     timeout-minutes: 90
 
-    # dev·staging 외 브랜치에서 수동 실행하면 job 자체를 건너뛴다. (fastlane 에서도 한 번 더 검사)
-    if: github.ref == 'refs/heads/staging' || github.ref == 'refs/heads/dev'
+    # dev·staging·hotfix/* 외 브랜치에서 수동 실행하면 job 자체를 건너뛴다. (fastlane 에서도 한 번 더 검사)
+    if: >-
+      github.ref == 'refs/heads/staging' || github.ref == 'refs/heads/dev' ||
+      startsWith(github.ref, 'refs/heads/hotfix/')
 
     steps:
       - name: Checkout
