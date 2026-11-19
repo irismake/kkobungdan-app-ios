@@ -17,6 +17,17 @@
 | 테스트 · TDD | `KkobungdanTests/` · `Scripts/test.sh` | [`testing.md`](.harness/rules/testing.md) |
 | CI/CD · 브랜치 · 배포 · Xcode 프로젝트 설정 | `.github/` · `Scripts/ci/` · `fastlane/` · `project.pbxproj` | [`cicd.md`](.harness/rules/cicd.md) |
 
+## 작업 절차 (`.harness/skills/`)
+
+해당하는 작업이면 시작할 때 그 스킬 파일을 읽고 절차대로 진행한다.
+
+| 작업 | 스킬 |
+|---|---|
+| 기능 추가 · 변경 · 리팩토링 (TDD) | [`feature`](.harness/skills/feature/SKILL.md) |
+| 버그 수정 (재현 테스트 먼저) | [`bugfix`](.harness/skills/bugfix/SKILL.md) |
+| 서버 API 스펙 변경 반영 | [`api-sync`](.harness/skills/api-sync/SKILL.md) |
+| 커밋 · PR (사용자 요청 시만) | [`pr`](.harness/skills/pr/SKILL.md) |
+
 ## 역할 (`.harness/agents/`)
 
 작업 경로(S · M · L)와 역할은 `core.md` 의 "작업 경로 · 역할" 을 따른다. Codex 는 서브에이전트 없이 다음처럼 수행한다.

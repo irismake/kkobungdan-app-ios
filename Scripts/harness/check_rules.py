@@ -9,6 +9,7 @@
   3. core.md 는 paths 없이 항상 로드, 나머지는 paths 가 있고 각 패턴이 실제 파일에 하나 이상 맞는지 (경로 변경 감지)
   4. AGENTS.md 표가 모든 규칙 파일을 가리키고, 없는 파일을 가리키지 않는지
   5. `.claude/agents` 가 `.harness/agents` 링크이고, 역할 파일마다 name(=파일명) · description · tools 가 있고 AGENTS.md 가 가리키는지
+  6. `.claude/skills` 가 `.harness/skills` 링크이고, 스킬마다 name(=폴더명) · description 이 있고 AGENTS.md 가 가리키는지
 """
 import re
 import subprocess
@@ -18,6 +19,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[2]
 RULES = ROOT / ".harness/rules"
 AGENTS_DIR = ROOT / ".harness/agents"
+SKILLS_DIR = ROOT / ".harness/skills"
 ALWAYS = {"core.md"}
 FORBIDDEN_COPIES = [".codex/rules", ".cursor", "CURSOR.md"]
 
@@ -92,12 +94,28 @@ def main():
         if f".harness/agents/{path.name}" not in agents:
             problems.append(f"AGENTS.md 가 agents/{path.name} 을 가리키지 않습니다.")
 
+    skills_link = ROOT / ".claude/skills"
+    if not skills_link.is_symlink() or skills_link.resolve() != SKILLS_DIR.resolve():
+        problems.append(".claude/skills 가 .harness/skills 의 심볼릭 링크가 아닙니다.")
+    skill_files = sorted(SKILLS_DIR.glob("*/SKILL.md"))
+    for path in skill_files:
+        m = re.match(r"---\n(.*?)\n---\n", path.read_text(), re.S)
+        fields = dict(re.findall(r"^(\w+):\s*(.+)$", m.group(1), re.M)) if m else {}
+        folder = path.parent.name
+        for key in ("name", "description"):
+            if key not in fields:
+                problems.append(f"skills/{folder}: frontmatter 에 {key} 가 없습니다.")
+        if fields.get("name") and fields["name"] != folder:
+            problems.append(f"skills/{folder}: name 이 폴더명과 다릅니다 ({fields['name']}).")
+        if f".harness/skills/{folder}/SKILL.md" not in agents:
+            problems.append(f"AGENTS.md 가 skills/{folder} 를 가리키지 않습니다.")
+
     if problems:
         print("규칙 검사 실패:")
         for p in problems:
             print(f"  - {p}")
         sys.exit(1)
-    print(f"규칙 검사 통과: 규칙 {len(rule_files)}개 (항상 로드 {len(ALWAYS & set(rule_files))}개) · 역할 {len(role_files)}개")
+    print(f"규칙 검사 통과: 규칙 {len(rule_files)}개 (항상 로드 {len(ALWAYS & set(rule_files))}개) · 역할 {len(role_files)}개 · 스킬 {len(skill_files)}개")
 
 
 if __name__ == "__main__":
