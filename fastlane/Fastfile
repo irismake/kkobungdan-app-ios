@@ -95,6 +95,9 @@ platform :ios do
       {
         api_key: api_key,
         app_identifier: APP_ID,
+        # 이미 올린 빌드를 배포하므로 IPA 가 없다. 플랫폼을 명시하지 않으면 fastlane 이
+        # "Please enter the app's platform" 을 물어 CI(비대화형)에서 실패한다.
+        app_platform: "ios",
         distribute_only: true,
         app_version: version,
         build_number: build_number.to_s,
