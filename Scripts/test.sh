@@ -1,7 +1,9 @@
 #!/usr/bin/env bash
 #
 # KkobungdanTests(DTO 디코딩 · OpenAPI 계약 테스트)를 실행한다. Xcode 의 ⌘U 와 같다.
-# 사용: ./Scripts/test.sh
+# 사용: ./Scripts/test.sh                       # 전체
+#       ./Scripts/test.sh HTTPClientAuthTests   # 테스트 클래스 하나 (TDD 반복용)
+#       ./Scripts/test.sh HTTPClientAuthTests/test_xxx   # 테스트 메서드 하나
 #
 set -euo pipefail
 cd "$(dirname "$0")/.."
@@ -23,4 +25,4 @@ xcodebuild test \
   -project Kkobungdan.xcodeproj \
   -scheme Kkobungdan \
   -destination "platform=iOS Simulator,name=${SIM_NAME}" \
-  -only-testing:KkobungdanTests
+  "-only-testing:KkobungdanTests${1:+/$1}"

@@ -1,0 +1,13 @@
+#!/usr/bin/env bash
+# 커밋 전 검사 (Claude · Codex · 사람 공통). 설치: Scripts/harness/install-git-hooks.sh
+# stage 된 변경만 본다. 우회(--no-verify)해도 PR CI 가 같은 검사를 다시 한다.
+set -euo pipefail
+cd "$(git rev-parse --show-toplevel)"
+export HARNESS_SOURCE="${HARNESS_SOURCE:-git-pre-commit}"
+
+python3 Scripts/harness/check_code.py --staged --lint
+
+# 규칙 · 역할 · 스킬 · 진입점을 바꿨으면 일치 검사
+if git diff --cached --name-only | grep -qE '^(\.harness/|\.claude/|AGENTS\.md|CLAUDE\.md)'; then
+  python3 Scripts/harness/check_rules.py
+fi

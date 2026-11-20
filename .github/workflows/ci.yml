@@ -100,8 +100,11 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
+      # 하네스 코드 검사가 PR 대상 브랜치와 비교하므로 전체 이력이 필요하다.
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       # Xcode 빌드 페이즈와 같은 범위·설정 (앱 소스 Kkobungdan/ · Kkobungdan/.swiftformat)
       - name: SwiftFormat ${{ env.SWIFTFORMAT_VERSION }}
@@ -116,6 +119,20 @@ jobs:
           docker run --rm -v "$GITHUB_WORKSPACE:$GITHUB_WORKSPACE" -w "$GITHUB_WORKSPACE" \
             "ghcr.io/realm/swiftlint:${SWIFTLINT_VERSION}" \
             swiftlint lint --no-cache --config Kkobungdan/.swiftlint.yml --reporter github-actions-logging
+
+      # 하네스(.harness/) — 로컬 훅 · git 훅을 우회해도 여기서 막는다. 앞 단계가 실패해도 결과를 모두 보여 준다.
+      # 규칙 · 역할 · 스킬 단일 출처: 사본 · 끊긴 paths · AGENTS.md 표 누락
+      - name: Harness rules
+        if: ${{ !cancelled() }}
+        run: python3 Scripts/harness/check_rules.py
+
+      # PR 변경분(추가된 줄 · 새 파일)의 코드 규칙: Secret · 키 파일 · 키 값 · 로그 속 인증 정보 · print · .font ·
+      # 계약 테스트 미등록 DTO · 계층 의존 · 프리뷰 위치 · 테스트 미등록
+      - name: Harness code rules
+        if: ${{ !cancelled() }}
+        env:
+          BASE_REF: ${{ github.base_ref }}
+        run: python3 Scripts/harness/check_code.py --base "origin/$BASE_REF"
 
   # ════════════════════════════════════════════════════════════
   #  머지 요청 (Merge Queue) — 대상 브랜치 최신 상태 + 이 PR 을 합친 코드로 실제 빌드

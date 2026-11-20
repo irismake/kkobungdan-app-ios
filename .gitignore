@@ -37,3 +37,6 @@ fastlane/test_output/
 *.p8
 *.p12
 *.cer
+
+### Harness metrics (로컬 집계 원본 — 커밋하지 않음)
+.harness/metrics/out/

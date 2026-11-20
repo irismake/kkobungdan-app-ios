@@ -1,0 +1,16 @@
+#!/usr/bin/env bash
+# 커밋 메시지 형식: <type>: <요약>  (규칙: .harness/rules/core.md "Git")
+set -euo pipefail
+first_line="$(head -1 "$1")"
+
+# git 이 만드는 메시지는 그대로 둔다
+case "$first_line" in
+  "Merge "*|"Revert "*|"fixup! "*|"squash! "*|"amend! "*) exit 0 ;;
+esac
+
+types='feat|fix|refactor|chore|style|test|docs|ci|release|backmerge'
+if ! printf '%s' "$first_line" | grep -qE "^(${types})(\([^)]+\))?: .+"; then
+  echo "❌ 커밋 메시지는 '<type>: <요약>' 형식이어야 합니다. (type: ${types//|/, })" >&2
+  echo "   지금: ${first_line}" >&2
+  exit 1
+fi
