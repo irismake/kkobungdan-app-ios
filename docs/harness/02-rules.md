@@ -34,7 +34,7 @@ Scripts/harness/check_rules.py   일치 검사
 | `dummy-backend-store` | `dummy-backend.md` |
 | (없음 — 코드 · 문서 · 사용자 결정에서 정리) | `architecture.md` · `concurrency.md` · `testing.md` · `cicd.md` · `core.md` 의 용어 · 작업 범위 · Git |
 
-새 규칙은 코드에 이미 있는 패턴(`DIContainer`, `LoadableViewModel`, actor 사용, 빌드 설정)과 `docs/CI.md` · `docs/CD.md`, 사용자가 이전에 내린 결정(채팅 숨김 금지, `requiresDetail`, 같은 Bundle ID, 기존 스타일 우선)만 옮겼다. TDD 절차만 이번 계획에서 사용자가 요청해 추가했다.
+새 규칙은 코드에 이미 있는 패턴(`DIContainer`, `LoadableViewModel`, actor 사용, 빌드 설정)과 `docs/Deployment/CI.md` · `docs/Deployment/CD.md`, 사용자가 이전에 내린 결정(채팅 숨김 금지, `requiresDetail`, 같은 Bundle ID, 기존 스타일 우선)만 옮겼다. TDD 절차만 이번 계획에서 사용자가 요청해 추가했다.
 
 ### 정리한 충돌
 
@@ -48,7 +48,7 @@ Scripts/harness/check_rules.py   일치 검사
 | 사본 · 끊긴 경로 없음 | `check_rules.py` (사본 존재 · 맞는 파일 없는 `paths` · 표 누락을 실패 처리, 위반을 일부러 만들어 실패 확인) | ✅ |
 | Claude 선택 로딩 | 헤드리스 세션 기록의 로드된 규칙 확인 — 아무 파일도 안 읽으면 `CLAUDE.md` · `core.md` 만, `Data/Common/DIContainer.swift` 를 읽으면 architecture · api · dummy-backend · swift-style · concurrency 추가 (swiftui · testing · cicd 는 로드 안 됨) | ✅ |
 | Codex 선택 로딩 | 이 머신에 Codex CLI 가 없어 실행 확인은 못 함. `AGENTS.md` 지시 + 링크 검사만 | ⚠️ 정적 확인만 |
-| CI/CD · 개발 정책과 일치 | `cicd.md` · `core.md` 를 `docs/CI.md` · `docs/CD.md` · 브랜치 보호 설정과 대조 | ✅ |
+| CI/CD · 개발 정책과 일치 | `cicd.md` · `core.md` 를 `docs/Deployment/CI.md` · `docs/Deployment/CD.md` · 브랜치 보호 설정과 대조 | ✅ |
 
 ## 컨텍스트 변화 (Claude, 세션 시작 시 첫 호출 입력 토큰, claude-opus-5-5)
 

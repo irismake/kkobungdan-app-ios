@@ -11,7 +11,7 @@
 | 에이전트 수 | **역할당 하나.** 교차 모델 리뷰(Codex 가 Claude 결과를 다시 리뷰 등)는 하지 않는다. 토큰 절약 우선. |
 | 중복 검증 | AI 를 더 붙이지 않고 **결정적 스크립트**(lint · validator · CI)로 해결한다. |
 | `no-build-verification` 규칙 | 4단계에서 개정: 스킬의 TDD 단계에서는 요청 없이 테스트 실행, 그 밖의 빌드는 요청 시만. |
-| Required Status Check | dev·staging·main 모두 [CI.md](../CI.md) 표대로 등록되어 동작 중이다. 하네스 범위에서 제외. |
+| Required Status Check | dev·staging·main 모두 [CI.md](../Deployment/CI.md) 표대로 등록되어 동작 중이다. 하네스 범위에서 제외. |
 | 성과 측정 | 벤치마크 · 수동 지표 기록은 하지 않는다. 기준선 + 토큰 · 시간 · CI 자동 집계만 유지. |
 | 진행 방식 | 하네스 작업은 브랜치 `chore/harness` 하나에서 단계마다 커밋 하나. push · PR 은 사용자 요청 시에만. 하네스 자체가 관리 부담이 되지 않게 최소 구조로, 필요한 것만 단계적으로 추가한다. |
 
@@ -42,8 +42,8 @@
 ## 3. 테스트 및 CI/CD
 
 - 테스트: `KkobungdanTests` 3개 파일 · 19개 테스트 — OpenAPI 계약 테스트, 알림 디코딩, HTTPClient 401 처리. ViewModel·UseCase·UI 테스트 없음.
-- CI: PR 에서 Branch policy · Lint(Linux), Merge Queue 에서 Unit tests / Staging · Release 빌드 + 설정 검증(macOS). 자세한 내용은 [CI.md](../CI.md).
-- CD: staging → TestFlight, main → App Store 심사 제출, hotfix → 역반영 PR 자동 생성. [CD.md](../CD.md).
+- CI: PR 에서 Branch policy · Lint(Linux), Merge Queue 에서 Unit tests / Staging · Release 빌드 + 설정 검증(macOS). 자세한 내용은 [CI.md](../Deployment/CI.md).
+- CD: staging → TestFlight, main → App Store 심사 제출, hotfix → 역반영 PR 자동 생성. [CD.md](../Deployment/CD.md).
 - **PR 단계에는 빌드가 없다** → 컴파일 오류가 Merge Queue 에서 처음 발견된다.
 - SwiftLint warning 은 머지를 막지 않는다.
 

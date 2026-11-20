@@ -20,7 +20,7 @@
 
 ### 앱 코드 변경이 없으면 빌드·테스트 생략
 
-머지 큐는 먼저 **`Changes`** job(Linux, 수 초)으로 "대상 브랜치 → 머지될 코드" 사이의 변경 파일을 본다. ([`Scripts/ci/detect-app-changes.sh`](../Scripts/ci/detect-app-changes.sh))
+머지 큐는 먼저 **`Changes`** job(Linux, 수 초)으로 "대상 브랜치 → 머지될 코드" 사이의 변경 파일을 본다. ([`Scripts/ci/detect-app-changes.sh`](../../Scripts/ci/detect-app-changes.sh))
 
 | 변경 경로 | 큐의 macOS 빌드·테스트 |
 |---|---|
@@ -121,8 +121,8 @@ main ──▶ hotfix/<이름>  (main 에서 분기, 버전 = App Store 출시 �
 
 | Job | 시점 | 내용 |
 |---|---|---|
-| **Branch policy** | PR | `staging` ← `dev` 만 / `main` ← `staging` · `hotfix/*` 만. fork PR 은 두 브랜치로 받지 않는다. `staging → main` 은 **main 의 커밋이 모두 staging 에 있는지**(hotfix 역반영 누락), `hotfix/* → main` 은 **dev 의 미출시 커밋이 섞이지 않았는지** 확인한다. ([`Scripts/ci/branch-policy.sh`](../Scripts/ci/branch-policy.sh)) |
-| **Lint** | PR | (Linux · Docker) SwiftFormat 0.60.1 (`Kkobungdan/` · `Kkobungdan/.swiftformat`) + SwiftLint 0.65.1 (`Kkobungdan/.swiftlint.yml`, error 만 실패). Xcode 빌드 페이즈와 같은 범위·설정. + **하네스 검사**: 규칙 단일 출처(`Scripts/harness/check_rules.py`) · PR 변경분 코드 규칙(`Scripts/harness/check_code.py` — 키 · 인증서 · `.env` · Secrets xcconfig 커밋, 키 · 토큰 값, 로그 속 인증 정보, `print` · `.font` · 계약 테스트 미등록 DTO · 계층 의존 · 프리뷰 위치 · 테스트 미등록, 위반은 PR 줄 주석). 로컬 훅 · git 훅을 우회해도 여기서 막힌다. ([하네스 5단계](harness/05-quality-gate.md)) |
+| **Branch policy** | PR | `staging` ← `dev` 만 / `main` ← `staging` · `hotfix/*` 만. fork PR 은 두 브랜치로 받지 않는다. `staging → main` 은 **main 의 커밋이 모두 staging 에 있는지**(hotfix 역반영 누락), `hotfix/* → main` 은 **dev 의 미출시 커밋이 섞이지 않았는지** 확인한다. ([`Scripts/ci/branch-policy.sh`](../../Scripts/ci/branch-policy.sh)) |
+| **Lint** | PR | (Linux · Docker) SwiftFormat 0.60.1 (`Kkobungdan/` · `Kkobungdan/.swiftformat`) + SwiftLint 0.65.1 (`Kkobungdan/.swiftlint.yml`, error 만 실패). Xcode 빌드 페이즈와 같은 범위·설정. + **하네스 검사**: 규칙 단일 출처(`Scripts/harness/check_rules.py`) · PR 변경분 코드 규칙(`Scripts/harness/check_code.py` — 키 · 인증서 · `.env` · Secrets xcconfig 커밋, 키 · 토큰 값, 로그 속 인증 정보, `print` · `.font` · 계약 테스트 미등록 DTO · 계층 의존 · 프리뷰 위치 · 테스트 미등록, 위반은 PR 줄 주석). 로컬 훅 · git 훅을 우회해도 여기서 막힌다. ([하네스 5단계](../harness/05-quality-gate.md)) |
 | **Changes** | 큐 | 앱 코드 변경 여부 판단(변경이 없으면 빌드·테스트 생략) + main 큐에서 PR 출발 브랜치가 hotfix 인지 판단 (조회 실패 시 hotfix 로 취급해 테스트 실행) |
 | **Unit tests (Debug)** | 큐 (dev · main 의 hotfix) | 시뮬레이터용 Debug 빌드 + `KkobungdanTests` 실행. main 큐에서는 **PR 출발 브랜치가 `hotfix/*` 일 때만** 돈다 (hotfix 는 dev 큐를 거치지 않음). staging → main 은 dev 큐에서 이미 테스트했으므로 생략. |
 | **Build (Staging)** | 큐 (staging) | 기기용 Staging 빌드, 서명 없음 + 설정 검증 |
@@ -158,7 +158,7 @@ main ──▶ hotfix/<이름>  (main 에서 분기, 버전 = App Store 출시 �
 CI 는 **배포 인증서·배포용 Secrets 를 쓰지 않는다.** (저장소가 public 이고, fork PR 에는 Secrets 가 전달되지 않는다)
 
 - 서명 없이 빌드한다. (`CODE_SIGNING_ALLOWED=NO`)
-- `Secrets.*.xcconfig` 는 [`Scripts/ci/write-stub-secrets.sh`](../Scripts/ci/write-stub-secrets.sh) 가 **가짜 값**으로 만든다.
+- `Secrets.*.xcconfig` 는 [`Scripts/ci/write-stub-secrets.sh`](../../Scripts/ci/write-stub-secrets.sh) 가 **가짜 값**으로 만든다.
   구성마다 다른 호스트(`debug.ci.invalid`, `staging.ci.invalid`, `release.ci.invalid`)를 넣어,
   각 구성이 **자기 xcconfig 를 읽는지**를 검증한다. 실제 서버 값은 배포 단계(fastlane)에서 다시 검증한다.
 - 그래서 로그·아티팩트(테스트 결과)에 민감정보가 없다.

@@ -40,7 +40,7 @@ feature/* ──PR──▶ dev ──PR──▶ staging ──PR──▶ main
 - 세 구성 모두 **같은 Bundle ID** 를 쓴다. TestFlight 는 기존 꼬붕단 App Store Connect 앱의 TestFlight 이다.
   - 같은 기기에 운영 앱과 Staging 앱을 **동시에 설치할 수 없다.** TestFlight 빌드를 설치하면 기존 앱을 대체한다.
   - 기기에서는 앱 이름 **"꼬붕단 STG"** 로 Staging 빌드를 구분한다.
-- 서버 주소 등은 `Kkobungdan/Secrets.<구성>.xcconfig` 에서 읽는다. 이 파일들은 gitignore 대상이며, 형식은 [`Secrets.example.xcconfig`](../Kkobungdan/Secrets.example.xcconfig) 를 참고한다.
+- 서버 주소 등은 `Kkobungdan/Secrets.<구성>.xcconfig` 에서 읽는다. 이 파일들은 gitignore 대상이며, 형식은 [`Secrets.example.xcconfig`](../../Kkobungdan/Secrets.example.xcconfig) 를 참고한다.
 - Firebase 는 운영·스테이징이 같은 프로젝트(`GoogleService-Info.plist`)를 쓴다.
 
 ---
@@ -158,10 +158,10 @@ App Store 에 출시된 버전에는 TestFlight 빌드도 올릴 수 없다. **�
 
 | 파일 | 트리거 | 환경 | 하는 일 |
 |---|---|---|---|
-| [`testflight.yml`](../.github/workflows/testflight.yml) | `staging` push, 수동(dev·staging·hotfix/*) | `staging` | `fastlane beta` |
-| [`hotfix-backmerge.yml`](../.github/workflows/hotfix-backmerge.yml) | `main` push (hotfix 머지일 때) | (없음) | `main → dev` 역반영 PR 자동 생성 |
-| [`release.yml`](../.github/workflows/release.yml) | `main` push | `production` | `fastlane release` |
-| [`version-check.yml`](../.github/workflows/version-check.yml) | `main` 대상 PR · `main` 머지 큐 | (없음) | `fastlane verify_release_version` |
+| [`testflight.yml`](../../.github/workflows/testflight.yml) | `staging` push, 수동(dev·staging·hotfix/*) | `staging` | `fastlane beta` |
+| [`hotfix-backmerge.yml`](../../.github/workflows/hotfix-backmerge.yml) | `main` push (hotfix 머지일 때) | (없음) | `main → dev` 역반영 PR 자동 생성 |
+| [`release.yml`](../../.github/workflows/release.yml) | `main` push | `production` | `fastlane release` |
+| [`version-check.yml`](../../.github/workflows/version-check.yml) | `main` 대상 PR · `main` 머지 큐 | (없음) | `fastlane verify_release_version` |
 
 - 러너: 빌드는 `macos-26` + Xcode 26.6 (iOS SDK 26.5), 버전 검증은 `ubuntu-latest`
 - 실패하면 빌드 로그가 아티팩트(`*-build-logs`, 7일 보관)로 올라간다.
@@ -274,4 +274,4 @@ bundle exec fastlane test         # 유닛 테스트
 bundle exec fastlane setup_signing  # match 인증서·프로필 생성 (fastlane/.env 필요)
 ```
 
-`setup_signing` 용 환경변수는 [`fastlane/.env.example`](../fastlane/.env.example) 을 `fastlane/.env` 로 복사해 채운다. (`fastlane/.env` 는 커밋하지 않는다)
+`setup_signing` 용 환경변수는 [`fastlane/.env.example`](../../fastlane/.env.example) 을 `fastlane/.env` 로 복사해 채운다. (`fastlane/.env` 는 커밋하지 않는다)

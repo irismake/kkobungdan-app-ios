@@ -43,7 +43,7 @@
 
 - 브랜치: `feat/` · `fix/` · `refactor/` · `chore/` · `ci/` · `style/` + kebab-case, `dev` 에서 분기. 긴급 수정만 `hotfix/*` (main 에서 분기).
 - 커밋 메시지: `<type>: <한국어 요약>` (예: `fix: 스플래시 중 강제 로그아웃 신호를 놓치는 문제 수정`).
-- 머지 방식 · 승격 · hotfix 절차는 `docs/CI.md` 를 따른다.
+- 머지 방식 · 승격 · hotfix 절차는 `docs/Deployment/CI.md` 를 따른다.
 
 ## 작업 절차 · 빌드 · 테스트
 

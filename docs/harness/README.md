@@ -13,7 +13,7 @@ Claude Code · Codex 가 **같은 규칙과 절차**로 일하게 하고, AI 판
 | [05-quality-gate.md](05-quality-gate.md) | 자동 검증 · 훅 · 필수 검사 항목 |
 | [06-review-feedback.md](06-review-feedback.md) | 독립 리뷰 · 피드백 루프 |
 | [08-measure.md](08-measure.md) | 측정 · 최적화 기준 |
-| [../CI.md](../CI.md) | PR · Merge Queue CI (7단계 연동 포함) |
+| [../Deployment/CI.md](../Deployment/CI.md) | PR · Merge Queue CI (7단계 연동 포함) |
 
 ---
 
@@ -73,7 +73,7 @@ Scripts/harness/
 | testing | 테스트 | pbxproj 등록 · 이름 · TDD |
 | cicd | .github · fastlane · pbxproj 등 | 머지 방식 · hotfix · 배포 승인 · 같은 Bundle ID |
 
-규칙은 코드 · `docs/CI.md` · `docs/CD.md` · 사용자 결정만 근거로 한다. 규칙과 코드가 다르면 규칙을 코드에 맞춘다.
+규칙은 코드 · `docs/Deployment/CI.md` · `docs/Deployment/CD.md` · 사용자 결정만 근거로 한다. 규칙과 코드가 다르면 규칙을 코드에 맞춘다.
 
 ### 3-2. 역할과 작업 경로
 
